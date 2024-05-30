@@ -1,0 +1,32 @@
+<drawables>
+    <bitmap id="evcc_logo_flash" filename="logo_evcc_flash.png"/>
+    
+    <bitmap scope="glance" id="battery_empty_glance" filename="icon_glance_battery_empty.png"/>
+    <bitmap scope="glance" id="battery_onequarter_glance" filename="icon_glance_battery_onequarter.png"/>
+    <bitmap scope="glance" id="battery_half_glance" filename="icon_glance_battery_half.png"/>
+    <bitmap scope="glance" id="battery_threequarters_glance" filename="icon_glance_battery_threequarters.png"/>
+    <bitmap scope="glance" id="battery_full_glance" filename="icon_glance_battery_full.png"/>
+    <bitmap scope="glance" id="charging_glance" filename="icon_glance_charging.png"/>
+    <bitmap scope="glance" id="arrow_right_glance" filename="icon_glance_arrow_right.png"/>
+    <bitmap scope="glance" id="arrow_left_glance" filename="icon_glance_arrow_left.png"/>
+    <bitmap scope="glance" id="arrow_left_three_glance" filename="icon_glance_arrow_left_three.png"/>
+    <bitmap scope="glance" id="car_glance" filename="icon_glance_car.png"/>
+
+    <bitmap scope="foreground" id="arrow_left_small" filename="icon_small_arrow_left.png"/>
+    <bitmap scope="foreground" id="arrow_left_three_small" filename="icon_small_arrow_left_three.png"/>
+
+    <bitmap scope="foreground" id="battery_empty_medium" filename="icon_medium_battery_empty.png"/>
+    <bitmap scope="foreground" id="battery_onequarter_medium" filename="icon_medium_battery_onequarter.png"/>
+    <bitmap scope="foreground" id="battery_half_medium" filename="icon_medium_battery_half.png"/>
+    <bitmap scope="foreground" id="battery_threequarters_medium" filename="icon_medium_battery_threequarters.png"/>
+    <bitmap scope="foreground" id="battery_full_medium" filename="icon_medium_battery_full.png"/>
+    <bitmap scope="foreground" id="arrow_right_medium" filename="icon_medium_arrow_right.png"/>
+    <bitmap scope="foreground" id="arrow_left_medium" filename="icon_medium_arrow_left.png"/>
+    <bitmap scope="foreground" id="arrow_left_three_medium" filename="icon_medium_arrow_left_three.png"/>
+    <bitmap scope="foreground" id="sun_medium" filename="icon_medium_sun.png"/>
+    <bitmap scope="foreground" id="house_medium" filename="icon_medium_house.png"/>
+    <bitmap scope="foreground" id="grid_medium" filename="icon_medium_grid.png"/>
+    <bitmap scope="foreground" id="charging_medium" filename="icon_medium_charging.png"/>
+    <bitmap scope="foreground" id="evcc_medium" filename="icon_medium_evcc.png"/>
+
+</drawables>

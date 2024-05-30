@@ -1,0 +1,22 @@
+project.manifest = manifest.xml
+
+# As default we use the normal glance source
+# and exclude any code in the main source directory
+# that is annotated with :tinyglance
+base.sourcePath = source;source-glance
+base.excludeAnnotations = tinyglance
+
+# For some devices we point to the tinyglance
+# source and do not exclude the :tinyglance annotation
+fr745.sourcePath = source;source-tinyglance
+fr745.excludeAnnotations = none
+fenix6.sourcePath = source;source-tinyglance
+fenix6.excludeAnnotations = none
+fenix6pro.sourcePath = source;source-tinyglance
+fenix6pro.excludeAnnotations = none
+fenix6s.sourcePath = source;source-tinyglance
+fenix6s.excludeAnnotations = none
+fenix6spro.sourcePath = source;source-tinyglance
+fenix6spro.excludeAnnotations = none
+fenix6xpro.sourcePath = source;source-tinyglance
+fenix6xpro.excludeAnnotations = none

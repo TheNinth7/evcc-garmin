@@ -1,0 +1,155 @@
+<resources>
+    <!-- Note on properties and setttings that are commented out:
+         For better usability I tried to organize the site settings
+         in either an array or setting groups. Unfortunately for both
+         the CIQ app has a bug that prevents such settings from being
+         saved. Therefore the settings are all presented in one screen.
+
+         Once the bug is fixed, groups can be introduced without any
+         code change, for the array the code needs to be changed/updated.
+    -->
+    <properties>
+        <!-- <property id="sites" type="array"></property> -->
+        <property id="site_0_url" type="string"></property>
+        <property id="site_0_user" type="string"></property>
+        <property id="site_0_pass" type="string"></property>
+        <property id="site_1_url" type="string"></property>
+        <property id="site_1_user" type="string"></property>
+        <property id="site_1_pass" type="string"></property>
+        <property id="site_2_url" type="string"></property>
+        <property id="site_2_user" type="string"></property>
+        <property id="site_2_pass" type="string"></property>
+        <property id="site_3_url" type="string"></property>
+        <property id="site_3_user" type="string"></property>
+        <property id="site_3_pass" type="string"></property>
+        <property id="site_4_url" type="string"></property>
+        <property id="site_4_user" type="string"></property>
+        <property id="site_4_pass" type="string"></property>
+        <property id="refreshInterval" type="number">10</property>
+        <property id="dataExpiry" type="number">600</property>
+        <property id="glanceOffset" type="number">1</property>
+        <property id="mediumOffset" type="number">0</property>
+    </properties>
+
+    <settings>
+        <setting propertyKey="@Properties.site_0_url" title="URL (e.g. https://yourhost:yourport) - Note: http works only with iOS, Android requires https with valid certificate!">
+            <settingConfig type="url" required="true"/>
+        </setting>
+        <setting propertyKey="@Properties.site_0_user" title="User name (basic authentication)">
+            <settingConfig type="alphaNumeric" required="false"/>
+        </setting>
+        <setting propertyKey="@Properties.site_0_pass" title="Password">
+            <settingConfig type="password" required="false"/>
+        </setting>
+        <setting propertyKey="@Properties.site_1_url" title="URL 2">
+            <settingConfig type="url" required="false"/>
+        </setting>
+        <setting propertyKey="@Properties.site_1_user" title="User name 2 (basic authentication)">
+            <settingConfig type="alphaNumeric" required="false"/>
+        </setting>
+        <setting propertyKey="@Properties.site_1_pass" title="Password 2">
+            <settingConfig type="password" required="false"/>
+        </setting>
+        <setting propertyKey="@Properties.site_2_url" title="URL 3">
+            <settingConfig type="url" required="false"/>
+        </setting>
+        <setting propertyKey="@Properties.site_2_user" title="User name 3 (basic authentication)">
+            <settingConfig type="alphaNumeric" required="false"/>
+        </setting>
+        <setting propertyKey="@Properties.site_2_pass" title="Password 3">
+            <settingConfig type="password" required="false"/>
+        </setting>
+        <setting propertyKey="@Properties.site_3_url" title="URL 4">
+            <settingConfig type="url" required="false"/>
+        </setting>
+        <setting propertyKey="@Properties.site_3_user" title="User name 4 (basic authentication)">
+            <settingConfig type="alphaNumeric" required="false"/>
+        </setting>
+        <setting propertyKey="@Properties.site_3_pass" title="Password 4">
+            <settingConfig type="password" required="false"/>
+        </setting>
+        <setting propertyKey="@Properties.site_4_url" title="URL 5">
+            <settingConfig type="url" required="false"/>
+        </setting>
+        <setting propertyKey="@Properties.site_4_user" title="User name 5 (basic authentication)">
+            <settingConfig type="alphaNumeric" required="false"/>
+        </setting>
+        <setting propertyKey="@Properties.site_4_pass" title="Password 5">
+            <settingConfig type="password" required="false"/>
+        </setting>
+
+        <!--
+        <setting propertyKey="@Properties.sites" title="List of URLs of your evcc instances (e.g. https://yourhost:yourport). Note: http works only with iOS, Android requires https with valid certificate!)" maxLength="10">
+            <settingConfig type="array" required="true"/>
+            <setting type="string" title="URL">
+                <settingConfig type="url" required="true"/>
+            </setting>
+        </setting>
+        -->
+
+        <!--
+        <group id="site_0" title="Site 1">
+            <setting propertyKey="@Properties.site_0_url" title="URL (e.g. https://yourhost:yourport) - Note: http works only with iOS, Android requires https with valid certificate!">
+                <settingConfig type="url" required="true"/>
+            </setting>
+            <setting propertyKey="@Properties.site_0_user" title="User name (basic authentication)">
+                <settingConfig type="alphaNumeric" required="false"/>
+            </setting>
+            <setting propertyKey="@Properties.site_0_pass" title="Password">
+                <settingConfig type="alphaNumeric" required="false"/>
+            </setting>
+        </group>
+        <group id="site_1" title="Site 2">
+            <setting propertyKey="@Properties.site_1_url" title="URL">
+                <settingConfig type="url" required="false"/>
+            </setting>
+            <setting propertyKey="@Properties.site_1_user" title="User name (basic authentication)">
+                <settingConfig type="alphaNumeric" required="false"/>
+            </setting>
+            <setting propertyKey="@Properties.site_1_pass" title="Password">
+                <settingConfig type="alphaNumeric" required="false"/>
+            </setting>
+        </group>
+        <group id="site_2" title="Site 3">
+            <setting propertyKey="@Properties.site_2_url" title="URL">
+                <settingConfig type="url" required="false"/>
+            </setting>
+            <setting propertyKey="@Properties.site_2_user" title="User name (basic authentication)">
+                <settingConfig type="alphaNumeric" required="false"/>
+            </setting>
+            <setting propertyKey="@Properties.site_2_pass" title="Password">
+                <settingConfig type="alphaNumeric" required="false"/>
+            </setting>
+        </group>
+        <group id="site_3" title="Site 4">
+            <setting propertyKey="@Properties.site_3_url" title="URL">
+                <settingConfig type="url" required="false"/>
+            </setting>
+            <setting propertyKey="@Properties.site_3_user" title="User name (basic authentication)">
+                <settingConfig type="alphaNumeric" required="false"/>
+            </setting>
+            <setting propertyKey="@Properties.site_3_pass" title="Password">
+                <settingConfig type="alphaNumeric" required="false"/>
+            </setting>
+        </group>
+        <group id="site_4" title="Site 5">
+            <setting propertyKey="@Properties.site_4_url" title="URL">
+                <settingConfig type="url" required="false"/>
+            </setting>
+            <setting propertyKey="@Properties.site_4_user" title="User name (basic authentication)">
+                <settingConfig type="alphaNumeric" required="false"/>
+            </setting>
+            <setting propertyKey="@Properties.site_4_pass" title="Password">
+                <settingConfig type="alphaNumeric" required="false"/>
+            </setting>
+        </group>
+        -->
+
+        <setting propertyKey="@Properties.refreshInterval" title="Refresh interval in seconds (5-60): interval in which new data is requested from your evcc instance.">
+            <settingConfig type="numeric" required="true" min="5" max="60"/>
+        </setting>
+        <setting propertyKey="@Properties.dataExpiry" title="Data expiry in seconds (5-3600): when bringing the glance or widget into view, data not older than the expiry time may be displayed until new data becomes available.">
+            <settingConfig type="numeric" required="true" min="5" max="3600"/>
+        </setting>
+    </settings>
+</resources>
