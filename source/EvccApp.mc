@@ -90,7 +90,7 @@ import Toybox.Math;
                 _widgetViews = new Array<EvccWidgetView>[0];
                 for( var i = 0; i < siteConfig.getSiteCount(); i++ ) {
                     // EvccHelper.debug( "EvccApp: site " + i + ": " + siteConfig.getSite(i).getUrl() );
-                    _widgetViews.add( new EvccWidgetView( i, siteConfig, false ) );
+                    _widgetViews.add( new EvccWidgetView( i, siteConfig, null ) );
                 }
                 // If there is more than one site, we initialize the carousel that enables
                 // the user to cycle through the sites. Otherwise we just return one view
@@ -98,11 +98,11 @@ import Toybox.Math;
                 if( _widgetViews.size() > 1 ) {
                     if ( ! ( settings has :isGlanceModeEnabled ) || ! settings.isGlanceModeEnabled ) {
                         // EvccHelper.debug( "EvccApp: no glance, starting with active site only" );
-                        var view = new EvccWidgetView( activeSite, siteConfig, true );
-                        var delegate = new EvccViewCarouselDelegate( [ view ], 0, null, _widgetViews, activeSite );
+                        var view = new EvccWidgetView( activeSite, siteConfig, _widgetViews );
+                        var delegate = new EvccViewCarouselDelegate( [ view ], 0 );
                         return [view, delegate];
                     } else {
-                        var delegate = new EvccViewCarouselDelegate( _widgetViews, activeSite, null, null, null );
+                        var delegate = new EvccViewCarouselDelegate( _widgetViews, activeSite );
                         // Start with the active site
                         return [_widgetViews[activeSite], delegate];
                     }

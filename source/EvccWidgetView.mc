@@ -15,13 +15,38 @@ import Toybox.Math;
     // very well, we need to have a top margin for the
     // image to align it better
     var _mediumOffset = 0;
+    
+    // Indicates that there is only one site
     var _isSingle as Boolean;
+    
     var _index as Number;
     var _totalSites as Number;
+    
+    // For non-glance devices, the initial widget view can only present
+    // a single widget. In this case we get the sub views already from
+    // EvccApp and only show the active site with all the other sites as sub views
+    // _actAsGlance is needed in addition to _isSingle because there is
+    // some special behavior related to this kind of glance mode
+    var _subViews as Array<EvccWidgetView>?;
     var _actAsGlance as Boolean;
+    
     var _siteConfig as EvccSiteConfig;
 
-    function initialize( index as Number, siteConfig as EvccSiteConfig, actAsGlance as Boolean ) {
+    function getSubViews() as Array<EvccWidgetView>? {
+        if( _actAsGlance ) {
+            return _subViews;
+        }
+        return null;
+    }
+    
+    function getActiveSubView() as Number? {
+        if( _actAsGlance ) {
+            return _index;
+        }
+        return null;
+    }
+
+    function initialize( index as Number, siteConfig as EvccSiteConfig, subViews as Array<EvccWidgetView>? ) {
         // EvccHelper.debug("Widget: initialize");
         View.initialize();
         _index = index;
@@ -29,7 +54,8 @@ import Toybox.Math;
         _mediumOffset = Properties.getValue( "mediumOffset" );
         _isSingle = ( siteConfig.getSiteCount() == 1 );
         _stateRequest = new EvccStateRequest( index, siteConfig.getSite( index ) );
-        _actAsGlance = actAsGlance;
+        _subViews = subViews;
+        _actAsGlance = subViews != null;
         _siteConfig = siteConfig;
     }
 
@@ -45,6 +71,8 @@ import Toybox.Math;
         try {
             // EvccHelper.debug( "Widget: onShow" );
             
+            // If we act as glance, then in the subviews the active site may be
+            // changed and upon returning we have to reset to the active site
             if( _actAsGlance ) {
                 _index = EvccSiteStore.getActiveSite( _totalSites );
                 _stateRequest = new EvccStateRequest( _index, _siteConfig.getSite( _index ) );
