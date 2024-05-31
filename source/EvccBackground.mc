@@ -5,13 +5,14 @@ import Toybox.Application.Properties;
 
 // The background service 
 (:background) class EvccBackground extends Toybox.System.ServiceDelegate {
-    var _stateRequest as EvccStateRequest; 
-    public function getStateRequest() { return _stateRequest; }
+	var _index as Number;
+    var _siteConfig as EvccSiteConfig;
 
-	function initialize( index as Number, siteConfig as EvccSiteConfig ) {
+    function initialize( index as Number, siteConfig as EvccSiteConfig ) {
         // EvccHelper.debug( "EvccBackground: initialize" );
         System.ServiceDelegate.initialize();
-        _stateRequest = new EvccStateRequest( index, siteConfig.getSite( index ) );
+        _index = index;
+        _siteConfig = siteConfig;
 	}
 	
     // When the background timer triggers, we initiate the
@@ -24,7 +25,8 @@ import Toybox.Application.Properties;
             
             // We do not want to start the state request timer with .start()
             // but only do a single request.
-            _stateRequest.makeRequest();
+            var stateRequest = new EvccStateRequest( _index, _siteConfig.getSite( _index ) );
+            stateRequest.makeRequest();
         } catch ( ex ) {
             EvccHelper.debugException( ex );
         }

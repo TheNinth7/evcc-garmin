@@ -7,28 +7,15 @@ import Toybox.Math;
 // Main class of the app, responsible for initializing
 // views and other components
 (:background :glance) class EvccApp extends Application.AppBase {
-    private var _glanceView as EvccGlanceView?;
-    private var _widgetViews as Array<EvccWidgetView>?;
-    private var _background as EvccBackground?;
-
     public static var _isInBackground = false;
 
     function initialize() {
-
         try {
             // EvccHelper.debug( "EvccApp: initialize" );
             AppBase.initialize();
-            // just to avoid the warning that _background is not used
-            // when normal glance (not tinyglance) is used
-            if( _background != null ) {}
         } catch ( ex ) {
             EvccHelper.debugException( ex );
         }
-    }
-
-    // Not used at the moment
-    function onStart(state as Dictionary?) as Void {
-        // EvccHelper.debug( "EvccApp: onStart" );
     }
 
     // Called if the app runs in glance mode
@@ -51,8 +38,7 @@ import Toybox.Math;
             EvccSiteStore.clearUnusedSites( siteConfig.getSiteCount() );
 
             if( siteConfig.getSiteCount() > 0 ) {
-                _glanceView = new EvccGlanceView( activeSite, siteConfig );
-                return [_glanceView];
+                return [new EvccGlanceView( activeSite, siteConfig )];
             } else {
                 return [new EvccGlanceErrorView( new NoSiteException() )];
             }
@@ -86,56 +72,30 @@ import Toybox.Math;
             if( siteConfig.getSiteCount() == 0 ) {
                 return [new EvccWidgetErrorView( new NoSiteException() )];
             } else {
-                // We immediately create views for each site
-                _widgetViews = new Array<EvccWidgetView>[0];
-                for( var i = 0; i < siteConfig.getSiteCount(); i++ ) {
-                    // EvccHelper.debug( "EvccApp: site " + i + ": " + siteConfig.getSite(i).getUrl() );
-                    _widgetViews.add( new EvccWidgetView( i, siteConfig, null ) );
-                }
-                // If there is more than one site, we initialize the carousel that enables
-                // the user to cycle through the sites. Otherwise we just return one view
-                // for the one site.
-                if( _widgetViews.size() > 1 ) {
+                // If there is only one site, we just return this one view
+                if( siteConfig.getSiteCount() == 1 ) {
+                    return [new EvccWidgetView( 0, siteConfig, false )];
+                } else {
+                    // If there is more than one site, we check if the device supports glances
+                    // If not, we initially present a widget view that acts as glance, i.e. displays
+                    // only the active site and has all the other sites as sub views
                     if ( ! ( settings has :isGlanceModeEnabled ) || ! settings.isGlanceModeEnabled ) {
                         // EvccHelper.debug( "EvccApp: no glance, starting with active site only" );
-                        var view = new EvccWidgetView( activeSite, siteConfig, _widgetViews );
+                        var view = new EvccWidgetView( activeSite, siteConfig, true );
                         var delegate = new EvccViewCarouselDelegate( [ view ], 0 );
                         return [view, delegate];
+                    // If glances are supported, we present the full list of sites right away
                     } else {
-                        var delegate = new EvccViewCarouselDelegate( _widgetViews, activeSite );
+                        var widgetViews = EvccWidgetView.getViewsForAllSites( siteConfig );
+                        var delegate = new EvccViewCarouselDelegate( widgetViews, activeSite );
                         // Start with the active site
-                        return [_widgetViews[activeSite], delegate];
+                        return [widgetViews[activeSite], delegate];
                     }
-                } else {
-                    return [_widgetViews[0]];
                 }
             }
         } catch ( ex ) {
             EvccHelper.debugException( ex );
             return [new EvccWidgetErrorView( ex )];
-        }
-    }
-
-    // Clean up
-    function onStop(state as Dictionary?) as Void {
-        try {
-            // EvccHelper.debug( "EvccApp: onStop" );
-
-            // We stop the request timers in all views and services
-            if( _glanceView != null && _glanceView has :getStateRequest ) {
-                _glanceView.getStateRequest().stop();
-            }
-            if( _widgetViews != null ) {
-                for( var i = 0; i < _widgetViews.size(); i++ ) {
-                    var widgetView = _widgetViews[i] as EvccWidgetView;
-                    widgetView.getStateRequest().stop();
-                }
-            }
-            if( _background != null ) {
-                _background.getStateRequest().stop();
-            }
-        } catch ( ex ) {
-            EvccHelper.debugException( ex );
         }
     }
 

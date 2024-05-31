@@ -16,29 +16,48 @@ import Toybox.Math;
     // image to align it better
     var _mediumOffset = 0;
     
-    // Indicates that there is only one site
-    var _isSingle as Boolean;
-    
     var _index as Number;
     var _totalSites as Number;
-    
-    // For non-glance devices, the initial widget view can only present
-    // a single widget. In this case we get the sub views already from
-    // EvccApp and only show the active site with all the other sites as sub views
-    // _actAsGlance is needed in addition to _isSingle because there is
-    // some special behavior related to this kind of glance mode
-    var _subViews as Array<EvccWidgetView>?;
-    var _actAsGlance as Boolean;
-    
     var _siteConfig as EvccSiteConfig;
 
+    // Indicates that there is only one site
+    var _isSingle as Boolean;
+
+    // Indicates that we act as glance and present only one site
+    // If a device does not support glances, then in the initial
+    // widget view only one site can be presented, which is the active
+    // site (_actAsGlance=true). Only if that one site is selected, the 
+    // other sites will be presented as sub view and can be cycled through.
+    var _actAsGlance as Boolean;
+    
+    function initialize( index as Number, siteConfig as EvccSiteConfig, actAsGlance as Boolean ) {
+        // EvccHelper.debug("Widget: initialize");
+        View.initialize();
+        _mediumOffset = Properties.getValue( "mediumOffset" );
+
+        _index = index;
+        _totalSites = siteConfig.getSiteCount();
+        _siteConfig = siteConfig;
+
+        // Note that _isSingle and _actAsGlance trigger different behaviors
+        // e.g. even if _actAsGlance=true, if _isSingle=false the site
+        // title will be displayed
+        _isSingle = ( siteConfig.getSiteCount() == 1 );
+        _actAsGlance = actAsGlance;
+        
+        _stateRequest = new EvccStateRequest( index, siteConfig.getSite( index ) );
+    }
+
+    // Return the list of views for the carousel to be presented 
+    // when the select behavior is triggered. In other words, when
+    // the site is selected, we will navigate to the subviews and
+    // show the active sub view (see next function)
     function getSubViews() as Array<EvccWidgetView>? {
         if( _actAsGlance ) {
-            return _subViews;
+            return getViewsForAllSites( _siteConfig );
         }
         return null;
     }
-    
     function getActiveSubView() as Number? {
         if( _actAsGlance ) {
             return _index;
@@ -46,17 +65,18 @@ import Toybox.Math;
         return null;
     }
 
-    function initialize( index as Number, siteConfig as EvccSiteConfig, subViews as Array<EvccWidgetView>? ) {
-        // EvccHelper.debug("Widget: initialize");
-        View.initialize();
-        _index = index;
-        _totalSites = siteConfig.getSiteCount();
-        _mediumOffset = Properties.getValue( "mediumOffset" );
-        _isSingle = ( siteConfig.getSiteCount() == 1 );
-        _stateRequest = new EvccStateRequest( index, siteConfig.getSite( index ) );
-        _subViews = subViews;
-        _actAsGlance = subViews != null;
-        _siteConfig = siteConfig;
+    // Generate the views for all sites
+    // If the widget view is in glance mode (_actAsGlance) this is called
+    // to return the list of sub views. If there is a dedicated glance 
+    // view, this is called by EvccApp to prepare the list of views presented
+    // initially in widget view
+    static function getViewsForAllSites( siteConfig as EvccSiteConfig ) as Array<EvccWidgetView> {
+        var widgetViews = new Array<EvccWidgetView>[0];
+        for( var i = 0; i < siteConfig.getSiteCount(); i++ ) {
+            // EvccHelper.debug( "EvccApp: site " + i + ": " + siteConfig.getSite(i).getUrl() );
+            widgetViews.add( new EvccWidgetView( i, siteConfig, false ) );
+        }
+        return widgetViews;
     }
 
     // Load your resources here
@@ -69,7 +89,7 @@ import Toybox.Math;
     // loading resources into memory.
     function onShow() as Void {
         try {
-            // EvccHelper.debug( "Widget: onShow" );
+            EvccHelper.debug( "Widget: onShow" );
             
             // If we act as glance, then in the subviews the active site may be
             // changed and upon returning we have to reset to the active site
@@ -287,7 +307,7 @@ import Toybox.Math;
     // memory.
     function onHide() as Void {
         try {
-            // EvccHelper.debug("Widget: onHide");
+            EvccHelper.debug("Widget: onHide");
             _stateRequest.stop();
         } catch ( ex ) {
             EvccHelper.debugException( ex );
