@@ -35,7 +35,7 @@ import Toybox.Application.Properties;
     function onUpdate(dc as Dc) as Void {
         try {
             // EvccHelper.debug("Glance: onUpdate");
-            var line = new EvccDrawingHorizontal( dc, Graphics.FONT_GLANCE, { :justify => Graphics.TEXT_JUSTIFY_LEFT, :backgroundColor => Graphics.COLOR_TRANSPARENT } );
+            var line = new EvccDrawingHorizontal( dc, { :font => Graphics.FONT_GLANCE, :justify => Graphics.TEXT_JUSTIFY_LEFT, :backgroundColor => Graphics.COLOR_TRANSPARENT } );
 
             if( ! _stateRequest.hasLoaded() ) {
                 line.addText( "Loading ...", {} );
@@ -51,7 +51,7 @@ import Toybox.Application.Properties;
                     var glanceOffset = Properties.getValue( "glanceOffset" );
 
                     if( state.hasBattery() ) {
-                        var column = new EvccDrawingVertical( dc, Graphics.FONT_GLANCE, {} );
+                        var column = new EvccDrawingVertical( dc, { :font => Graphics.FONT_GLANCE } );
 
                         var bitmap = Rez.Drawables.battery_empty_glance;
                         if( state.getBatterySoc() >= 80 ) {
@@ -65,7 +65,7 @@ import Toybox.Application.Properties;
                         }
                         column.addBitmap( bitmap, {} );
 
-                        var batteryState = new EvccDrawingHorizontal( dc, Graphics.FONT_GLANCE, {} );
+                        var batteryState = new EvccDrawingHorizontal( dc, { :font => Graphics.FONT_GLANCE } );
                         batteryState.addText( EvccHelper.formatSoc( state.getBatterySoc() ), {} );
                         var bp = state.getBatteryPowerRounded();
                         if( bp != 0 ) {
@@ -86,9 +86,9 @@ import Toybox.Application.Properties;
                         var loadpoint = loadpoints[i] as EvccLoadPoint;
                         var vehicle = loadpoint.getVehicle();
                         if( vehicle != null ) {
-                            var column = new EvccDrawingVertical( dc, Graphics.FONT_GLANCE, { :marginLeft => spacing } );
+                            var column = new EvccDrawingVertical( dc, { :font => Graphics.FONT_GLANCE, :marginLeft => spacing } );
                             column.addText( vehicle.getTitle().substring( 0, 8 ), {} );
-                            var vehicleState = new EvccDrawingHorizontal( dc, Graphics.FONT_GLANCE, {} );
+                            var vehicleState = new EvccDrawingHorizontal( dc, { :font => Graphics.FONT_GLANCE } );
                             if( vehicle.isGuest() ) {
                                 vehicleState.addBitmap( Rez.Drawables.car_glance, { :marginTop => glanceOffset } );
                             } else {
@@ -116,7 +116,7 @@ import Toybox.Application.Properties;
         } catch ( ex ) {
             EvccHelper.debugException( ex );
             var errorMsg = "Error:\n" + ex.getErrorMessage();
-            var drawElement = new EvccDrawingElementText( errorMsg, dc, Graphics.FONT_GLANCE, { :justify => Graphics.TEXT_JUSTIFY_LEFT, :color => Graphics.COLOR_RED } );
+            var drawElement = new EvccDrawingElementText( errorMsg, dc, { :font => Graphics.FONT_GLANCE, :justify => Graphics.TEXT_JUSTIFY_LEFT, :color => Graphics.COLOR_RED } );
             drawElement.draw( dc.getWidth() / 2, dc.getHeight() / 2 );
         }
     }

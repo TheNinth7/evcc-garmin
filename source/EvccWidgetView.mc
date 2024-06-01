@@ -89,7 +89,7 @@ import Toybox.Math;
     // loading resources into memory.
     function onShow() as Void {
         try {
-            EvccHelper.debug( "Widget: onShow" );
+            // EvccHelper.debug( "Widget: onShow" );
             
             // If we act as glance, then in the subviews the active site may be
             // changed and upon returning we have to reset to the active site
@@ -109,7 +109,7 @@ import Toybox.Math;
         try {
             // EvccHelper.debug("Widget: onUpdate");
 
-            var block = new EvccDrawingVertical( dc, Graphics.FONT_MEDIUM, {} );
+            var block = new EvccDrawingVertical( dc, { :font => Graphics.FONT_MEDIUM } );
             var variableLineCount = 0;
 
             if( ! _stateRequest.hasLoaded() ) {
@@ -168,14 +168,14 @@ import Toybox.Math;
             var logo = variableLineCount < 4; // also applies to error/loading message
 
             // If only site title or logo are displayed, we offset the content a bit
-            var lineHeight = dc.getTextDimensions( "ID.Buzz", Graphics.FONT_MEDIUM )[1];
+            var lineHeight = dc.getFontHeight( Graphics.FONT_MEDIUM );
             if( ! siteTitle && logo ) { offset = - ( lineHeight / 2 ); }
             else if ( siteTitle && ! logo ) { offset = lineHeight / 2; }
 
             block.draw( dc.getWidth() / 2, dc.getHeight() / 2 + offset );
 
             if( siteTitle ) {
-                var siteTitleElement = new EvccDrawingElementText( _stateRequest.getState().getSiteTitle().substring(0,9), dc, Graphics.FONT_GLANCE, {} );
+                var siteTitleElement = new EvccDrawingElementText( _stateRequest.getState().getSiteTitle().substring(0,9), dc, { :font => Graphics.FONT_GLANCE } );
                 var siteTitleY = ( dc.getHeight() / 2 - block.getHeight() / 2 - offset ) / 2;
                 siteTitleElement.draw( dc.getWidth() / 2, siteTitleY );
             }
@@ -191,14 +191,14 @@ import Toybox.Math;
         } catch ( ex ) {
             EvccHelper.debugException( ex );
             var errorMsg = "Error:\n" + ex.getErrorMessage();
-            var drawElement = new EvccDrawingElementText( errorMsg, dc, Graphics.FONT_GLANCE, { :color => Graphics.COLOR_RED } );
+            var drawElement = new EvccDrawingElementText( errorMsg, dc, { :font => Graphics.FONT_GLANCE, :color => Graphics.COLOR_RED } );
             drawElement.draw( dc.getWidth() / 2, dc.getHeight() / 2 );
         }
     }
 
     private function getPvElement( dc as Dc ) {
         var state = _stateRequest.getState();
-        var linePv = new EvccDrawingHorizontal( dc, Graphics.FONT_MEDIUM, {} );
+        var linePv = new EvccDrawingHorizontal( dc, {} );
         linePv.addBitmap( Rez.Drawables.sun_medium, { :marginTop => _mediumOffset } );
         if( state.getPvPowerRounded() > 0 ) {
             linePv.addText( " ", {} );
@@ -210,7 +210,7 @@ import Toybox.Math;
 
     private function getHouseElement( dc as Dc ) {
         var state = _stateRequest.getState();
-        var lineHouse = new EvccDrawingHorizontal( dc, Graphics.FONT_MEDIUM, {} );
+        var lineHouse = new EvccDrawingHorizontal( dc, {} );
         lineHouse.addBitmap( Rez.Drawables.house_medium, { :marginTop => _mediumOffset } );
         if( state.getHomePowerRounded() > 0 ) {
             lineHouse.addText( " ", {} );
@@ -222,7 +222,7 @@ import Toybox.Math;
 
     private function getGridElement( dc as Dc ) {
         var state = _stateRequest.getState();
-        var lineGrid = new EvccDrawingHorizontal( dc, Graphics.FONT_MEDIUM, {} );
+        var lineGrid = new EvccDrawingHorizontal( dc, {} );
         lineGrid.addBitmap( Rez.Drawables.grid_medium, { :marginTop => _mediumOffset } );
         
         var bp = state.getGridPowerRounded();
@@ -238,7 +238,7 @@ import Toybox.Math;
 
     private function getBatteryElement( dc as Dc ) {
         var state = _stateRequest.getState();
-        var lineBattery = new EvccDrawingHorizontal( dc, Graphics.FONT_MEDIUM, {} );
+        var lineBattery = new EvccDrawingHorizontal( dc, {} );
         var bitmap = Rez.Drawables.battery_empty_medium;
         if( state.getBatterySoc() >= 80 ) {
             bitmap = Rez.Drawables.battery_full_medium;
@@ -286,7 +286,7 @@ import Toybox.Math;
             phaseBitmap = ( loadpoint.getActivePhases() == 3 ? Rez.Drawables.arrow_left_three_medium : Rez.Drawables.arrow_left_medium );
         }
         
-        var lineVehicle = new EvccDrawingHorizontal( dc, font, {} );
+        var lineVehicle = new EvccDrawingHorizontal( dc, { :font => font } );
         
         // Small font give us two more characters, after that we truncate
         lineVehicle.addText( vehicle.getTitle().substring( 0, maxLengthMedium + 2 ), {} );
@@ -307,7 +307,7 @@ import Toybox.Math;
     // memory.
     function onHide() as Void {
         try {
-            EvccHelper.debug("Widget: onHide");
+            // EvccHelper.debug("Widget: onHide");
             _stateRequest.stop();
         } catch ( ex ) {
             EvccHelper.debugException( ex );
