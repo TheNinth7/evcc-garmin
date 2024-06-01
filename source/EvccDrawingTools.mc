@@ -34,7 +34,8 @@ import Toybox.WatchUi;
         // Only values that may be inherited can be null, for those we go to the
         // parent if no value is present in this instance
         if( _options[value] == null && _options[:parent] != null ) {
-            return ( _options[:parent] as EvccDrawingContainer ).option( value );
+            // We store the value from the parent locally for quicker access
+            _options[value] = ( _options[:parent] as EvccDrawingContainer ).option( value );
         } else if ( _options[value] == null ) {
             // If no more parent is present, we apply the following default behavior
             if( value == :backgroundColor ) { return EvccConstants.COLOR_BACKGROUND; }
@@ -239,3 +240,100 @@ import Toybox.WatchUi;
         _dc.drawBitmap( x + option( :marginLeft ), y - ( _bitmap.getHeight() / 2 ) + option( :marginTop ), _bitmap );
     }
 }
+
+/*
+// Bitmap element
+(:glance) class EvccDrawingElementBitmap extends EvccDrawingElement {
+    var _bitmapRef; 
+    var _bitmap;
+
+    function initialize( reference as ResourceId?, dc as Dc, options as Dictionary<Symbol,Object> ) {
+        EvccDrawingElement.initialize( dc, options );
+        _bitmapRef = reference;
+    }
+
+    protected function bitmapRef() as ResourceId {
+        if( _bitmapRef == null ) { throw new InvalidValueException( "ResourceId is missing!" ); }
+        return _bitmapRef;
+    }
+
+    protected function bitmap() {
+        if( _bitmap == null ) { _bitmap = WatchUi.loadResource( bitmapRef() ); }
+        return _bitmap;
+    }
+
+    function getWidth() { return bitmap().getWidth() + option( :marginLeft ) + option( :marginRight ); }
+    function getHeight() { return bitmap().getHeight() + option( :marginTop ) + option( :marginBottom ); }
+
+    // Depending on alignment we recalculate the x starting point
+    function draw( x, y ) {
+        if( option( :justify ) == Graphics.TEXT_JUSTIFY_CENTER ) {
+            x -= bitmap().getWidth() / 2;
+        }
+        _dc.drawBitmap( x + option( :marginLeft ), y - ( bitmap().getHeight() / 2 ) + option( :marginTop ), bitmap() );
+    }
+}
+*/
+/*
+class EvccDrawingElementIcon extends EvccDrawingElementBitmap {
+    var _icon as Number;
+
+    public static var ICON_BATTERY = -1;
+    public static var ICON_BATTERY_EMPTY = 0;
+    public static var ICON_BATTERY_ONEQUARTER = 1;
+    public static var ICON_BATTERY_HALF = 2;
+    public static var ICON_BATTERY_THREEQUARTERS = 3;
+    public static var ICON_BATTERY_FULL = 4;
+    public static var ICON_ARROW_RIGHT = 5;
+    public static var ICON_ARROW_LEFT = 6;
+    public static var ICON_ARROW_LEFT_THREE = 7;
+    public static var ICON_SUN = 8;
+    public static var ICON_HOUSE = 9;
+    public static var ICON_GRID = 10;
+
+    function initialize( icon as Number, dc as Dc, options as Dictionary<Symbol,Object> ) {
+        EvccDrawingElementBitmap.initialize( null, dc, options );
+        _icon = icon;
+    }
+
+    private static var _iconReferences = [
+        { Graphics.FONT_MEDIUM => Rez.Drawables.battery_empty_medium, Graphics.FONT_SMALL => Rez.Drawables.battery_empty_small },
+        { Graphics.FONT_MEDIUM => Rez.Drawables.battery_onequarter_medium, Graphics.FONT_SMALL => Rez.Drawables.battery_onequarter_small },
+        { Graphics.FONT_MEDIUM => Rez.Drawables.battery_half_medium, Graphics.FONT_SMALL => Rez.Drawables.battery_half_small },
+        { Graphics.FONT_MEDIUM => Rez.Drawables.battery_threequarters_medium, Graphics.FONT_SMALL => Rez.Drawables.battery_threequarters_small },
+        { Graphics.FONT_MEDIUM => Rez.Drawables.battery_onequarter_medium, Graphics.FONT_SMALL => Rez.Drawables.battery_onequarter_small },
+        { Graphics.FONT_MEDIUM => Rez.Drawables.arrow_right_medium, Graphics.FONT_SMALL => Rez.Drawables.arrow_right_small },
+        { Graphics.FONT_MEDIUM => Rez.Drawables.arrow_left_medium, Graphics.FONT_SMALL => Rez.Drawables.arrow_left_small },
+        { Graphics.FONT_MEDIUM => Rez.Drawables.arrow_left_three_medium, Graphics.FONT_SMALL => Rez.Drawables.arrow_left_three_small },
+        { Graphics.FONT_MEDIUM => Rez.Drawables.sun_medium, Graphics.FONT_SMALL => Rez.Drawables.sun_small },
+        { Graphics.FONT_MEDIUM => Rez.Drawables.house_medium, Graphics.FONT_SMALL => Rez.Drawables.house_small },
+        { Graphics.FONT_MEDIUM => Rez.Drawables.grid_medium, Graphics.FONT_SMALL => Rez.Drawables.grid_small }
+    ];
+    
+    protected function bitmapRef() as ResourceId {
+        var font = option( :font );
+
+        var iconReferences = _iconReferences as Array<Dictionary>;
+        
+        if( _icon == ICON_BATTERY ) {
+            var batterySoc = option( :batterySoc );
+            if( batterySoc == null ) {
+                throw new InvalidValueException( ":batterySoc is missing!");
+            }
+            if( batterySoc >= 80 ) {
+                return iconReferences[ICON_BATTERY_FULL][font];
+            } else if( batterySoc >= 60 ) {
+                return iconReferences[ICON_BATTERY_THREEQUARTERS][font];
+            } else if( batterySoc >= 40 ) {
+                return iconReferences[ICON_BATTERY_HALF][font];
+            } else if( batterySoc >= 20 ) {
+                return iconReferences[ICON_BATTERY_ONEQUARTER][font];
+            } else {
+                return iconReferences[ICON_BATTERY_EMPTY][font];
+            }
+        } else {
+            return iconReferences[_icon][font];
+        }
+    }
+}
+*/

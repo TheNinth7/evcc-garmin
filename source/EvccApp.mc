@@ -124,10 +124,9 @@ import Toybox.Math;
         // the active site and is only displaying its data.
         var activeSite = EvccSiteStore.getActiveSite( siteConfig.getSiteCount() );
 
-        _background = new EvccBackground( activeSite, siteConfig );
         _isInBackground = true;
 
-        return [_background];
+        return [new EvccBackground( activeSite, siteConfig )];
     }    
 
     // For the tiny glance we take the data updates from the 
@@ -138,7 +137,7 @@ import Toybox.Math;
     (:tinyglance) function onStorageChanged() {  
         try {
             // EvccHelper.debug( "EvccApp: onStorageChanged" );
-            if( _background == null ) {
+            if( ! _isInBackground ) {
                 // EvccHelper.debug( "EvccApp: requesting update" );
                 WatchUi.requestUpdate();
             }

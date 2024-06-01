@@ -6,14 +6,27 @@
     <bitmap scope="glance" id="battery_half_glance" filename="icon_glance_battery_half.png"/>
     <bitmap scope="glance" id="battery_threequarters_glance" filename="icon_glance_battery_threequarters.png"/>
     <bitmap scope="glance" id="battery_full_glance" filename="icon_glance_battery_full.png"/>
-    <bitmap scope="glance" id="charging_glance" filename="icon_glance_charging.png"/>
     <bitmap scope="glance" id="arrow_right_glance" filename="icon_glance_arrow_right.png"/>
     <bitmap scope="glance" id="arrow_left_glance" filename="icon_glance_arrow_left.png"/>
     <bitmap scope="glance" id="arrow_left_three_glance" filename="icon_glance_arrow_left_three.png"/>
     <bitmap scope="glance" id="car_glance" filename="icon_glance_car.png"/>
 
+    <!--
     <bitmap scope="foreground" id="arrow_left_small" filename="icon_small_arrow_left.png"/>
     <bitmap scope="foreground" id="arrow_left_three_small" filename="icon_small_arrow_left_three.png"/>
+    -->
+
+    <bitmap scope="foreground" id="battery_empty_small" filename="icon_small_battery_empty.png"/>
+    <bitmap scope="foreground" id="battery_onequarter_small" filename="icon_small_battery_onequarter.png"/>
+    <bitmap scope="foreground" id="battery_half_small" filename="icon_small_battery_half.png"/>
+    <bitmap scope="foreground" id="battery_threequarters_small" filename="icon_small_battery_threequarters.png"/>
+    <bitmap scope="foreground" id="battery_full_small" filename="icon_small_battery_full.png"/>
+    <bitmap scope="foreground" id="arrow_right_small" filename="icon_small_arrow_right.png"/>
+    <bitmap scope="foreground" id="arrow_left_small" filename="icon_small_arrow_left.png"/>
+    <bitmap scope="foreground" id="arrow_left_three_small" filename="icon_small_arrow_left_three.png"/>
+    <bitmap scope="foreground" id="sun_small" filename="icon_small_sun.png"/>
+    <bitmap scope="foreground" id="house_small" filename="icon_small_house.png"/>
+    <bitmap scope="foreground" id="grid_small" filename="icon_small_grid.png"/>
 
     <bitmap scope="foreground" id="battery_empty_medium" filename="icon_medium_battery_empty.png"/>
     <bitmap scope="foreground" id="battery_onequarter_medium" filename="icon_medium_battery_onequarter.png"/>
@@ -26,7 +39,7 @@
     <bitmap scope="foreground" id="sun_medium" filename="icon_medium_sun.png"/>
     <bitmap scope="foreground" id="house_medium" filename="icon_medium_house.png"/>
     <bitmap scope="foreground" id="grid_medium" filename="icon_medium_grid.png"/>
-    <bitmap scope="foreground" id="charging_medium" filename="icon_medium_charging.png"/>
+
     <bitmap scope="foreground" id="evcc_medium" filename="icon_medium_evcc.png"/>
 
 </drawables>
