@@ -9,6 +9,7 @@ import Toybox.WatchUi;
 // :color, :backgroundColor - colors to be used to draw the element
 // :font - font for text
 // :parent - parent drawing element. :color, :backgroundColor and :font may be inherited from a parent
+// :batterySoc, :power, :activePhases - for icons that change bases on these inputs
 (:glance) class EvccUIBlock {
     var _dc as Dc; 
     
@@ -87,15 +88,29 @@ import Toybox.WatchUi;
         return self;
     }
     function addIcon( icon as Number, options as Dictionary<Symbol,Object> ) {
-        options[:parent] = self;
-        _elements.add( new EvccUIIcon( icon, new EvccIcons(), _dc, options ) );
+        addIconInternal( icon, new EvccIcons(), options );
         return self;
     }
     function addGlanceIcon( icon as Number, options as Dictionary<Symbol,Object> ) {
-        options[:parent] = self;
-        _elements.add( new EvccUIIcon( icon, new EvccGlanceIcons(), _dc, options ) );
+        addIconInternal( icon, new EvccGlanceIcons(), options );
         return self;
     }
+    
+    private function addIconInternal( icon as Number, icons, options as Dictionary<Symbol,Object> ) {
+        options[:parent] = self;
+        
+        // Special handling for the power flow and active phases icons
+        // power flow is only shown if power is not equal 0, and
+        // active phases is only shown if the loadpoint is charging
+        if( ( icon != EvccUIIcon.ICON_POWER_FLOW || options[:power] != 0 ) &&
+            ( icon != EvccUIIcon.ICON_ACTIVE_PHASES || options[:charging] ) )  
+        {
+            _elements.add( new EvccUIIcon( icon, icons, _dc, options ) );
+        }
+        
+        return self;
+    }
+
     function addContainer( container as EvccUIContainer ) {
         container.setParent( self );
         _elements.add( container );
@@ -247,6 +262,7 @@ import Toybox.WatchUi;
     // as possible, since it requires the font to be set, which may be only
     // the case after the icon and its container are added to a parent container
     protected function bitmap() {
+        System.println( "**** bitmap() bitmapRef()=" + bitmapRef() );
         if( _bitmap == null ) { _bitmap = WatchUi.loadResource( bitmapRef() ); }
         return _bitmap;
     }
@@ -299,6 +315,15 @@ import Toybox.WatchUi;
     // icons based on the batterySoc
     public static var ICON_BATTERY = -1;
 
+    // Another special icon, based on power flow we
+    // are showing a left (in) or right (out) arrow
+    public static var ICON_POWER_FLOW = -2;
+
+    // Another special icon, based on active phases we
+    // are showing one left arrow (one phase) or three
+    // left arrows (three phases)
+    public static var ICON_ACTIVE_PHASES = -3;
+
     function initialize( icon as Number, icons, dc as Dc, options as Dictionary<Symbol,Object> ) {
         EvccUIBitmap.initialize( null, dc, options );
         _icon = icon;
@@ -310,23 +335,40 @@ import Toybox.WatchUi;
     // and batterySoc in case of the battery icon
     protected function bitmapRef() as ResourceId {
         var font = option( :font );
+        
+        System.println( "**** bitmapRef() :font=" + option( :font ) );
+        System.println( "**** bitmapRef() _icon=" + _icon );
+        System.println( "**** bitmapRef() :batterySoc=" + option( :batterySoc ) );
 
         if( _icon == ICON_BATTERY ) {
             var batterySoc = option( :batterySoc );
             if( batterySoc == null ) {
                 throw new InvalidValueException( ":batterySoc is missing!");
             }
-            if( batterySoc >= 80 ) {
+            if( batterySoc >= 90 ) {
                 return _icons[ICON_BATTERY_FULL][font];
-            } else if( batterySoc >= 60 ) {
+            } else if( batterySoc >= 63 ) {
                 return _icons[ICON_BATTERY_THREEQUARTERS][font];
-            } else if( batterySoc >= 40 ) {
+            } else if( batterySoc >= 37 ) {
                 return _icons[ICON_BATTERY_HALF][font];
-            } else if( batterySoc >= 20 ) {
+            } else if( batterySoc >= 10 ) {
                 return _icons[ICON_BATTERY_ONEQUARTER][font];
             } else {
+                System.println( "**** bitmapRef() returning " + _icons[ICON_BATTERY_EMPTY][font] );
                 return _icons[ICON_BATTERY_EMPTY][font];
             }
+        } else if( _icon == ICON_POWER_FLOW ) {
+            var power = option( :power );
+            if( power == null ) {
+                throw new InvalidValueException( ":power is missing!");
+            }
+            return power < 0 ? _icons[ICON_ARROW_LEFT][font] : _icons[ICON_ARROW_RIGHT][font];
+        } else if( _icon == ICON_ACTIVE_PHASES ) {
+            var activePhases = option( :activePhases );
+            if( activePhases == null ) {
+                throw new InvalidValueException( ":activePhases is missing!");
+            }
+            return activePhases == 3 ? _icons[ICON_ARROW_LEFT_THREE][font] : _icons[ICON_ARROW_LEFT][font];
         } else {
             return _icons[_icon][font];
         }

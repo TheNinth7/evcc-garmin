@@ -68,11 +68,7 @@ import Toybox.Application.Properties;
                         var batteryState = new EvccDrawingHorizontal( dc, { :font => Graphics.FONT_GLANCE } );
                         batteryState.addText( EvccHelper.formatSoc( state.getBatterySoc() ), {} );
                         
-                        var bp = state.getBatteryPowerRounded();
-                        if( bp != 0 ) {
-                            var dirIcon = ( bp < 0 ? EvccUIIcon.ICON_ARROW_LEFT : EvccUIIcon.ICON_ARROW_RIGHT );
-                            batteryState.addGlanceIcon( dirIcon, { :marginTop => glanceOffset } );
-                        }
+                        batteryState.addGlanceIcon( EvccUIIcon.ICON_POWER_FLOW, { :power => state.getBatteryPowerRounded(), :marginTop => glanceOffset } );
 
                         column.addContainer( batteryState );
                         line.addContainer( column );
@@ -95,10 +91,7 @@ import Toybox.Application.Properties;
                             } else {
                                 vehicleState.addText( EvccHelper.formatSoc( vehicle.getSoc() ), {} );
                             }
-                            if( loadpoint.isCharging() ) {
-                                var phaseIcon = ( loadpoint.getActivePhases() == 3 ? EvccUIIcon.ICON_ARROW_LEFT_THREE : EvccUIIcon.ICON_ARROW_LEFT );
-                                vehicleState.addGlanceIcon( phaseIcon, { :marginTop => glanceOffset } );
-                            }
+                            vehicleState.addGlanceIcon( EvccUIIcon.ICON_ACTIVE_PHASES, { :charging => loadpoint.isCharging(), :activePhases => loadpoint.getActivePhases(), :marginTop => glanceOffset } );
                             column.addContainer( vehicleState );
                             line.addContainer( column );
                             hasVehicle = true;

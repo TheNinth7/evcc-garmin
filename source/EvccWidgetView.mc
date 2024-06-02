@@ -226,7 +226,6 @@ import Toybox.Math;
         var state = _stateRequest.getState();
         var lineGrid = new EvccDrawingHorizontal( dc, {} );
         
-        //lineGrid.addBitmap( Rez.Drawables.grid_medium, { :marginTop => _mediumOffset } );
         lineGrid.addIcon( EvccUIIcon.ICON_GRID, { :marginTop => _mediumOffset } );
         
         var bp = state.getGridPowerRounded();
@@ -243,28 +242,14 @@ import Toybox.Math;
     private function getBatteryElement( dc as Dc ) {
         var state = _stateRequest.getState();
         var lineBattery = new EvccDrawingHorizontal( dc, {} );
-        /*
-        var bitmap = Rez.Drawables.battery_empty_medium;
-        if( state.getBatterySoc() >= 80 ) {
-            bitmap = Rez.Drawables.battery_full_medium;
-        } else if( state.getBatterySoc() >= 60 ) {
-            bitmap =  Rez.Drawables.battery_threequarters_medium;
-        } else if( state.getBatterySoc() >= 40 ) {
-            bitmap =  Rez.Drawables.battery_half_medium;
-        } else if( state.getBatterySoc() >= 20 ) {
-            bitmap =  Rez.Drawables.battery_onequarter_medium;
-        }
-        lineBattery.addBitmap( bitmap, { :marginTop => _mediumOffset } );
-        */
+
         lineBattery.addIcon( EvccUIIcon.ICON_BATTERY, { :batterySoc => state.getBatterySoc(), :marginTop => _mediumOffset } );
         lineBattery.addText( EvccHelper.formatSoc( state.getBatterySoc() ), {} );
         
         var bp = state.getBatteryPowerRounded();
         if( bp != 0 ) {
             lineBattery.addText( " ", {} );
-            lineBattery.addBitmap( 
-                ( bp < 0 ? Rez.Drawables.arrow_left_medium : Rez.Drawables.arrow_right_medium ), 
-                { :marginTop => _mediumOffset } );
+            lineBattery.addIcon( EvccUIIcon.ICON_POWER_FLOW, { :power => bp, :marginTop => _mediumOffset } );
             lineBattery.addText( " " + EvccHelper.formatPower( bp.abs() ), {} );
         }
         return lineBattery;
@@ -303,9 +288,7 @@ import Toybox.Math;
         }
         if( loadpoint.isCharging() ) {
             lineVehicle.addText( " ", {} );
-            var phaseIcon = ( loadpoint.getActivePhases() == 3 ? EvccUIIcon.ICON_ARROW_LEFT_THREE : EvccUIIcon.ICON_ARROW_LEFT );
-            //lineVehicle.addBitmap( phaseBitmap, { :marginTop => _mediumOffset } );
-            lineVehicle.addIcon( phaseIcon, { :marginTop => _mediumOffset } );
+            lineVehicle.addIcon( EvccUIIcon.ICON_ACTIVE_PHASES, { :charging => true, :activePhases => loadpoint.getActivePhases(), :marginTop => _mediumOffset } );
             lineVehicle.addText( " " + EvccHelper.formatPower( loadpoint.getChargePowerRounded() ), {} );
         }
         return lineVehicle;
