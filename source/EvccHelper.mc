@@ -21,6 +21,9 @@ using Toybox.Time.Gregorian;
         return soc.format("%.0f") + "%";
     }
 
+    public static function max( a, b ) { return a > b ? a : b; }
+    public static function min( a, b ) { return a < b ? a : b; }
+
     // Output a debug statement
     (:debug) public static function debug( text as String ) {
         var now = Gregorian.info(Time.now(), Time.FORMAT_SHORT);

@@ -33,10 +33,21 @@ import Toybox.Application.Properties;
 
     // Update the view
     function onUpdate(dc as Dc) as Void {
+
+        System.println( "onUpdate: s " + System.getSystemStats().usedMemory );
+
+        /*
+        System.println( "onUpdate: s " + System.getSystemStats().usedMemory );
+        var obj = new DummyContainer( {} );
+        obj.addElement({});
+        System.println( "onUpdate: e " + System.getSystemStats().usedMemory );
+        */
+
         try {
+
             // EvccHelper.debug("Glance: onUpdate");
             var line = new EvccDrawingHorizontal( dc, { :font => Graphics.FONT_GLANCE, :justify => Graphics.TEXT_JUSTIFY_LEFT, :backgroundColor => Graphics.COLOR_TRANSPARENT } );
-
+            
             if( ! _stateRequest.hasLoaded() ) {
                 line.addText( "Loading ...", {} );
             } else { 
@@ -52,25 +63,15 @@ import Toybox.Application.Properties;
 
                     if( state.hasBattery() ) {
                         var column = new EvccDrawingVertical( dc, { :font => Graphics.FONT_GLANCE } );
-
-                        var bitmap = Rez.Drawables.battery_empty_glance;
-                        if( state.getBatterySoc() >= 80 ) {
-                            bitmap = Rez.Drawables.battery_full_glance;
-                        } else if( state.getBatterySoc() >= 60 ) {
-                            bitmap =  Rez.Drawables.battery_threequarters_glance;
-                        } else if( state.getBatterySoc() >= 40 ) {
-                            bitmap =  Rez.Drawables.battery_half_glance;
-                        } else if( state.getBatterySoc() >= 20 ) {
-                            bitmap =  Rez.Drawables.battery_onequarter_glance;
-                        }
-                        column.addBitmap( bitmap, {} );
+                        column.addGlanceIcon( EvccUIIcon.ICON_BATTERY, { :batterySoc => state.getBatterySoc() } );
 
                         var batteryState = new EvccDrawingHorizontal( dc, { :font => Graphics.FONT_GLANCE } );
                         batteryState.addText( EvccHelper.formatSoc( state.getBatterySoc() ), {} );
+                        
                         var bp = state.getBatteryPowerRounded();
                         if( bp != 0 ) {
-                            var dirBitmap = ( bp < 0 ? Rez.Drawables.arrow_left_glance : Rez.Drawables.arrow_right_glance );
-                            batteryState.addBitmap( dirBitmap, { :marginTop => glanceOffset } );
+                            var dirIcon = ( bp < 0 ? EvccUIIcon.ICON_ARROW_LEFT : EvccUIIcon.ICON_ARROW_RIGHT );
+                            batteryState.addGlanceIcon( dirIcon, { :marginTop => glanceOffset } );
                         }
 
                         column.addContainer( batteryState );
@@ -95,8 +96,8 @@ import Toybox.Application.Properties;
                                 vehicleState.addText( EvccHelper.formatSoc( vehicle.getSoc() ), {} );
                             }
                             if( loadpoint.isCharging() ) {
-                                var phaseBitmap = ( loadpoint.getActivePhases() == 3 ? Rez.Drawables.arrow_left_three_glance : Rez.Drawables.arrow_left_glance );
-                                vehicleState.addBitmap( phaseBitmap, { :marginTop => glanceOffset } );
+                                var phaseIcon = ( loadpoint.getActivePhases() == 3 ? EvccUIIcon.ICON_ARROW_LEFT_THREE : EvccUIIcon.ICON_ARROW_LEFT );
+                                vehicleState.addGlanceIcon( phaseIcon, { :marginTop => glanceOffset } );
                             }
                             column.addContainer( vehicleState );
                             line.addContainer( column );
@@ -109,16 +110,16 @@ import Toybox.Application.Properties;
                     }
                 }
             }
-
             dc.clear();
             line.draw( 0, dc.getHeight() / 2 );
 
         } catch ( ex ) {
             EvccHelper.debugException( ex );
             var errorMsg = "Error:\n" + ex.getErrorMessage();
-            var drawElement = new EvccDrawingElementText( errorMsg, dc, { :font => Graphics.FONT_GLANCE, :justify => Graphics.TEXT_JUSTIFY_LEFT, :color => Graphics.COLOR_RED } );
+            var drawElement = new EvccUIText( errorMsg, dc, { :font => Graphics.FONT_GLANCE, :justify => Graphics.TEXT_JUSTIFY_LEFT, :color => Graphics.COLOR_RED } );
             drawElement.draw( dc.getWidth() / 2, dc.getHeight() / 2 );
         }
+        System.println( "onUpdate: e " + System.getSystemStats().usedMemory );
     }
 
     // This is just for safety. At least in the simulator this

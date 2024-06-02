@@ -9,7 +9,7 @@ import Toybox.WatchUi;
 // :color, :backgroundColor - colors to be used to draw the element
 // :font - font for text
 // :parent - parent drawing element. :color, :backgroundColor and :font may be inherited from a parent
-(:glance) class EvccDrawingElement {
+(:glance) class EvccUIBlock {
     var _dc as Dc; 
     
     private var _options as Dictionary<Symbol,Object>;
@@ -26,6 +26,8 @@ import Toybox.WatchUi;
         if( options[:marginBottom] == null ) { options[:marginBottom] = 0; }
         if( options[:justify] == null ) { options[:justify] = Graphics.TEXT_JUSTIFY_CENTER; }
 
+        if( options[:parent] != null && ! ( options[:parent] instanceof WeakReference ) ) { options[:parent] = options[:parent].weak(); }
+
         _options = options;
     }
 
@@ -33,9 +35,11 @@ import Toybox.WatchUi;
     function option( value as Symbol ) {
         // Only values that may be inherited can be null, for those we go to the
         // parent if no value is present in this instance
-        if( _options[value] == null && _options[:parent] != null ) {
+        var parentRef = _options[:parent] as WeakReference?;
+        var parent = ( parentRef != null ? parentRef.get() : null ) as EvccUIContainer?;
+        if( _options[value] == null && parent != null ) {
             // We store the value from the parent locally for quicker access
-            _options[value] = ( _options[:parent] as EvccDrawingContainer ).option( value );
+            _options[value] = parent.option( value );
         } else if ( _options[value] == null ) {
             // If no more parent is present, we apply the following default behavior
             if( value == :backgroundColor ) { return EvccConstants.COLOR_BACKGROUND; }
@@ -48,8 +52,8 @@ import Toybox.WatchUi;
 
     // Parent can be passed into an element either in the options structure
     // or later via this function
-    function setParent( parent as EvccDrawingContainer ) {
-        _options[:parent] = parent;
+    function setParent( parent as EvccUIContainer ) {
+        _options[:parent] = parent.weak();
     }
 
     // Functions to be implemented by implementations of this class
@@ -59,11 +63,11 @@ import Toybox.WatchUi;
 }
 
 // Base class for all drawing elements that consists of other drawing elements
-(:glance) class EvccDrawingContainer extends EvccDrawingElement {
-    var _elements as Array;
+(:glance) class EvccUIContainer extends EvccUIBlock {
+    protected var _elements as Array;
 
     function initialize( dc, options as Dictionary<Symbol,Object> ) {
-        EvccDrawingElement.initialize( dc, options );
+        EvccUIBlock.initialize( dc, options );
         _elements = new Array[0];
     }
 
@@ -74,28 +78,35 @@ import Toybox.WatchUi;
     function addError( text, options as Dictionary<Symbol,Object> ) {
         options[:color] = Graphics.COLOR_RED;
         options[:parent] = self;
-        _elements.add( new EvccDrawingElementText( text, _dc, options ) );
+        _elements.add( new EvccUIText( text, _dc, options ) );
         return self;
     }
     function addBitmap( reference, options as Dictionary<Symbol,Object> ) {
         options[:parent] = self;
-        _elements.add( new EvccDrawingElementBitmap( reference, _dc, options ) );
+        _elements.add( new EvccUIBitmap( reference, _dc, options ) );
         return self;
     }
-    function addContainer( container as EvccDrawingContainer ) {
+    function addIcon( icon as Number, options as Dictionary<Symbol,Object> ) {
+        options[:parent] = self;
+        _elements.add( new EvccUIIcon( icon, new EvccIcons(), _dc, options ) );
+        return self;
+    }
+    function addGlanceIcon( icon as Number, options as Dictionary<Symbol,Object> ) {
+        options[:parent] = self;
+        _elements.add( new EvccUIIcon( icon, new EvccGlanceIcons(), _dc, options ) );
+        return self;
+    }
+    function addContainer( container as EvccUIContainer ) {
         container.setParent( self );
         _elements.add( container );
         return self;
     }
-
-    public static function max( a, b ) { return a > b ? a : b; }
-    public static function min( a, b ) { return a < b ? a : b; }
 }
 
 // An element containing other elements that shall stacked horizontally
-(:glance) class EvccDrawingHorizontal extends EvccDrawingContainer {
+(:glance) class EvccDrawingHorizontal extends EvccUIContainer {
     function initialize( dc, options as Dictionary<Symbol,Object> ) {
-        EvccDrawingContainer.initialize( dc, options );
+        EvccUIContainer.initialize( dc, options );
     }
     
     // Draw all elements
@@ -131,7 +142,7 @@ import Toybox.WatchUi;
     {
         var height = 0;
         for( var i = 0; i < _elements.size(); i++ ) {
-            height = max( height, _elements[i].getHeight() );
+            height = EvccHelper.max( height, _elements[i].getHeight() );
         }
         return option( :marginTop ) + height + option( :marginBottom );
     }
@@ -140,20 +151,20 @@ import Toybox.WatchUi;
     // is also text, then the text is just appended to the previous element
     function addText( text, options as Dictionary<Symbol,Object> ) {
         var elements = _elements as Array;
-        if( elements.size() > 0 && elements[elements.size() - 1] instanceof EvccDrawingElementText ) {
+        if( elements.size() > 0 && elements[elements.size() - 1] instanceof EvccUIText ) {
             elements[elements.size() - 1].append( text );
         } else { 
             options[:parent] = self;
-            _elements.add( new EvccDrawingElementText( text, _dc, options ) );
+            _elements.add( new EvccUIText( text, _dc, options ) );
         }
         return self;
     }
 }
 
 // An element containing other elements that shall be stacked vertically
-(:glance) class EvccDrawingVertical extends EvccDrawingContainer {
+(:glance) class EvccDrawingVertical extends EvccUIContainer {
     function initialize( dc, options as Dictionary<Symbol,Object> ) {
-        EvccDrawingContainer.initialize( dc, options );
+        EvccUIContainer.initialize( dc, options );
     }
 
     // Draw all elements
@@ -176,7 +187,7 @@ import Toybox.WatchUi;
     {
         var width = 0;
         for( var i = 0; i < _elements.size(); i++ ) {
-            width = max( width, _elements[i].getWidth() );
+            width = EvccHelper.max( width, _elements[i].getWidth() );
         }
         return option( :marginLeft ) + width + option( :marginRight );
     }
@@ -194,17 +205,17 @@ import Toybox.WatchUi;
     // For the vertical container, new text is always added as new element
     function addText( text, options as Dictionary<Symbol,Object> ) {
         options[:parent] = self;
-        _elements.add( new EvccDrawingElementText( text, _dc, options as Dictionary<Symbol,Object> ) );
+        _elements.add( new EvccUIText( text, _dc, options as Dictionary<Symbol,Object> ) );
         return self;
     }
 }
 
 // Text element
-(:glance) class EvccDrawingElementText extends EvccDrawingElement {
+(:glance) class EvccUIText extends EvccUIBlock {
     var _text;
 
     function initialize( text, dc as Dc, options as Dictionary<Symbol,Object> ) {
-        EvccDrawingElement.initialize( dc, options );
+        EvccUIBlock.initialize( dc, options );
         _text = text;
    }
 
@@ -221,45 +232,30 @@ import Toybox.WatchUi;
 }
 
 // Bitmap element
-(:glance) class EvccDrawingElementBitmap extends EvccDrawingElement {
-    var _bitmap; 
-
-    function initialize( reference, dc as Dc, options as Dictionary<Symbol,Object> ) {
-        EvccDrawingElement.initialize( dc, options );
-        _bitmap = WatchUi.loadResource( reference );
-    }
-
-    function getWidth() { return _bitmap.getWidth() + option( :marginLeft ) + option( :marginRight ); }
-    function getHeight() { return _bitmap.getHeight() + option( :marginTop ) + option( :marginBottom ); }
-
-    // Depending on alignment we recalculate the x starting point
-    function draw( x, y ) {
-        if( option( :justify ) == Graphics.TEXT_JUSTIFY_CENTER ) {
-            x -= _bitmap.getWidth() / 2;
-        }
-        _dc.drawBitmap( x + option( :marginLeft ), y - ( _bitmap.getHeight() / 2 ) + option( :marginTop ), _bitmap );
-    }
-}
-
-/*
-// Bitmap element
-(:glance) class EvccDrawingElementBitmap extends EvccDrawingElement {
+(:glance) class EvccUIBitmap extends EvccUIBlock {
     var _bitmapRef; 
     var _bitmap;
 
     function initialize( reference as ResourceId?, dc as Dc, options as Dictionary<Symbol,Object> ) {
-        EvccDrawingElement.initialize( dc, options );
+        EvccUIBlock.initialize( dc, options );
         _bitmapRef = reference;
     }
 
-    protected function bitmapRef() as ResourceId {
-        if( _bitmapRef == null ) { throw new InvalidValueException( "ResourceId is missing!" ); }
-        return _bitmapRef;
-    }
-
+    // This function loads and gives access to the loaded resource
+    // For standard bitmaps we could load them immediately in the constructor,
+    // but for the derived icon class we want to load the resource as late
+    // as possible, since it requires the font to be set, which may be only
+    // the case after the icon and its container are added to a parent container
     protected function bitmap() {
         if( _bitmap == null ) { _bitmap = WatchUi.loadResource( bitmapRef() ); }
         return _bitmap;
+    }
+    // Accessing the reference via this function enables the derived class
+    // icon to override it and have different logic how the reference is
+    // determined
+    protected function bitmapRef() as ResourceId {
+        if( _bitmapRef == null ) { throw new InvalidValueException( "ResourceId is missing!" ); }
+        return _bitmapRef;
     }
 
     function getWidth() { return bitmap().getWidth() + option( :marginLeft ) + option( :marginRight ); }
@@ -273,12 +269,19 @@ import Toybox.WatchUi;
         _dc.drawBitmap( x + option( :marginLeft ), y - ( bitmap().getHeight() / 2 ) + option( :marginTop ), bitmap() );
     }
 }
-*/
-/*
-class EvccDrawingElementIcon extends EvccDrawingElementBitmap {
-    var _icon as Number;
 
-    public static var ICON_BATTERY = -1;
+
+// Class representing an icon. The difference between an icon and the bitmap above
+// is that for icons multiple sizes are supported and this element shows the icon
+// based on the font that is passed in the options or used by its parent element
+(:glance) class EvccUIIcon extends EvccUIBitmap {
+    var _icon as Number;
+    var _icons as Array<Dictionary>;
+
+    // Constants for the base icons
+    // The number needs to relate to an entry in the static
+    // arrays defined in the EvccIcons or EvccIconsGlance
+    // classes further below
     public static var ICON_BATTERY_EMPTY = 0;
     public static var ICON_BATTERY_ONEQUARTER = 1;
     public static var ICON_BATTERY_HALF = 2;
@@ -291,17 +294,55 @@ class EvccDrawingElementIcon extends EvccDrawingElementBitmap {
     public static var ICON_HOUSE = 9;
     public static var ICON_GRID = 10;
 
-    function initialize( icon as Number, dc as Dc, options as Dictionary<Symbol,Object> ) {
-        EvccDrawingElementBitmap.initialize( null, dc, options );
+    // For the battery we have special handling, if this
+    // constant is based in, we choose ony of the battery
+    // icons based on the batterySoc
+    public static var ICON_BATTERY = -1;
+
+    function initialize( icon as Number, icons, dc as Dc, options as Dictionary<Symbol,Object> ) {
+        EvccUIBitmap.initialize( null, dc, options );
         _icon = icon;
+        _icons = icons._icons;
     }
 
-    private static var _iconReferences = [
+    // Override the function from EvccUIBitmap and
+    // determine the reference based on the icon constant, font size
+    // and batterySoc in case of the battery icon
+    protected function bitmapRef() as ResourceId {
+        var font = option( :font );
+
+        if( _icon == ICON_BATTERY ) {
+            var batterySoc = option( :batterySoc );
+            if( batterySoc == null ) {
+                throw new InvalidValueException( ":batterySoc is missing!");
+            }
+            if( batterySoc >= 80 ) {
+                return _icons[ICON_BATTERY_FULL][font];
+            } else if( batterySoc >= 60 ) {
+                return _icons[ICON_BATTERY_THREEQUARTERS][font];
+            } else if( batterySoc >= 40 ) {
+                return _icons[ICON_BATTERY_HALF][font];
+            } else if( batterySoc >= 20 ) {
+                return _icons[ICON_BATTERY_ONEQUARTER][font];
+            } else {
+                return _icons[ICON_BATTERY_EMPTY][font];
+            }
+        } else {
+            return _icons[_icon][font];
+        }
+    }
+}
+
+// Icons in widget mode
+// Entries into the array need to correspond to constants in EvccUIIcon
+// Each array entry is a dictionary with the font as key and the bitmap reference as value
+class EvccIcons {
+    public static var _icons = [
         { Graphics.FONT_MEDIUM => Rez.Drawables.battery_empty_medium, Graphics.FONT_SMALL => Rez.Drawables.battery_empty_small },
         { Graphics.FONT_MEDIUM => Rez.Drawables.battery_onequarter_medium, Graphics.FONT_SMALL => Rez.Drawables.battery_onequarter_small },
         { Graphics.FONT_MEDIUM => Rez.Drawables.battery_half_medium, Graphics.FONT_SMALL => Rez.Drawables.battery_half_small },
         { Graphics.FONT_MEDIUM => Rez.Drawables.battery_threequarters_medium, Graphics.FONT_SMALL => Rez.Drawables.battery_threequarters_small },
-        { Graphics.FONT_MEDIUM => Rez.Drawables.battery_onequarter_medium, Graphics.FONT_SMALL => Rez.Drawables.battery_onequarter_small },
+        { Graphics.FONT_MEDIUM => Rez.Drawables.battery_full_medium, Graphics.FONT_SMALL => Rez.Drawables.battery_full_small },
         { Graphics.FONT_MEDIUM => Rez.Drawables.arrow_right_medium, Graphics.FONT_SMALL => Rez.Drawables.arrow_right_small },
         { Graphics.FONT_MEDIUM => Rez.Drawables.arrow_left_medium, Graphics.FONT_SMALL => Rez.Drawables.arrow_left_small },
         { Graphics.FONT_MEDIUM => Rez.Drawables.arrow_left_three_medium, Graphics.FONT_SMALL => Rez.Drawables.arrow_left_three_small },
@@ -309,31 +350,20 @@ class EvccDrawingElementIcon extends EvccDrawingElementBitmap {
         { Graphics.FONT_MEDIUM => Rez.Drawables.house_medium, Graphics.FONT_SMALL => Rez.Drawables.house_small },
         { Graphics.FONT_MEDIUM => Rez.Drawables.grid_medium, Graphics.FONT_SMALL => Rez.Drawables.grid_small }
     ];
-    
-    protected function bitmapRef() as ResourceId {
-        var font = option( :font );
-
-        var iconReferences = _iconReferences as Array<Dictionary>;
-        
-        if( _icon == ICON_BATTERY ) {
-            var batterySoc = option( :batterySoc );
-            if( batterySoc == null ) {
-                throw new InvalidValueException( ":batterySoc is missing!");
-            }
-            if( batterySoc >= 80 ) {
-                return iconReferences[ICON_BATTERY_FULL][font];
-            } else if( batterySoc >= 60 ) {
-                return iconReferences[ICON_BATTERY_THREEQUARTERS][font];
-            } else if( batterySoc >= 40 ) {
-                return iconReferences[ICON_BATTERY_HALF][font];
-            } else if( batterySoc >= 20 ) {
-                return iconReferences[ICON_BATTERY_ONEQUARTER][font];
-            } else {
-                return iconReferences[ICON_BATTERY_EMPTY][font];
-            }
-        } else {
-            return iconReferences[_icon][font];
-        }
-    }
 }
-*/
+
+// Glance icons are in a separate class, because the icons for widget mode are
+// not available to glances at runtime, and thus having them in the same
+// array/dictionary would lead to runtime errors
+(:glance) class EvccGlanceIcons {
+    public static var _icons = [
+        { Graphics.FONT_GLANCE => Rez.Drawables.battery_empty_glance },
+        { Graphics.FONT_GLANCE => Rez.Drawables.battery_onequarter_glance },
+        { Graphics.FONT_GLANCE => Rez.Drawables.battery_half_glance },
+        { Graphics.FONT_GLANCE => Rez.Drawables.battery_threequarters_glance },
+        { Graphics.FONT_GLANCE => Rez.Drawables.battery_full_glance },
+        { Graphics.FONT_GLANCE => Rez.Drawables.arrow_right_glance },
+        { Graphics.FONT_GLANCE => Rez.Drawables.arrow_left_glance },
+        { Graphics.FONT_GLANCE => Rez.Drawables.arrow_left_three_glance }
+    ];
+}

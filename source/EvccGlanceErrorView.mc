@@ -29,7 +29,7 @@ import Toybox.WatchUi;
         }
         
         dc.clear();
-        var drawElement = new EvccDrawingElementText( errorMsg, dc, { :font => Graphics.FONT_GLANCE, :color => Graphics.COLOR_RED, :justify => Graphics.TEXT_JUSTIFY_LEFT } );
+        var drawElement = new EvccUIText( errorMsg, dc, { :font => Graphics.FONT_GLANCE, :color => Graphics.COLOR_RED, :justify => Graphics.TEXT_JUSTIFY_LEFT } );
         drawElement.draw( 0, ( dc.getHeight() / 2 ) * 0.9 );
     }
 

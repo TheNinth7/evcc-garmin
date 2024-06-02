@@ -143,7 +143,7 @@ import Toybox.Math;
                     if( ! hasVehicle ) {
                         block.addText( "No vehicle", {} );
                     }
-                    variableLineCount += EvccDrawingContainer.min( 1, loadpoints.size() );
+                    variableLineCount += EvccHelper.min( 1, loadpoints.size() );
 
                     block.addContainer( getHouseElement( dc ) );
                 }
@@ -175,12 +175,12 @@ import Toybox.Math;
             block.draw( dc.getWidth() / 2, dc.getHeight() / 2 + offset );
 
             if( siteTitle ) {
-                var siteTitleElement = new EvccDrawingElementText( _stateRequest.getState().getSiteTitle().substring(0,9), dc, { :font => Graphics.FONT_GLANCE } );
+                var siteTitleElement = new EvccUIText( _stateRequest.getState().getSiteTitle().substring(0,9), dc, { :font => Graphics.FONT_GLANCE } );
                 var siteTitleY = ( dc.getHeight() / 2 - block.getHeight() / 2 - offset ) / 2;
                 siteTitleElement.draw( dc.getWidth() / 2, siteTitleY );
             }
             if( logo ) {
-                var logoElement = new EvccDrawingElementBitmap( Rez.Drawables.evcc_medium, dc, {} );
+                var logoElement = new EvccUIBitmap( Rez.Drawables.evcc_medium, dc, {} );
                 var logoY = dc.getHeight() - ( dc.getHeight() / 2 - block.getHeight() / 2 - offset ) / 2;
                 logoElement.draw( dc.getWidth() / 2, logoY );
             }
@@ -191,7 +191,7 @@ import Toybox.Math;
         } catch ( ex ) {
             EvccHelper.debugException( ex );
             var errorMsg = "Error:\n" + ex.getErrorMessage();
-            var drawElement = new EvccDrawingElementText( errorMsg, dc, { :font => Graphics.FONT_GLANCE, :color => Graphics.COLOR_RED } );
+            var drawElement = new EvccUIText( errorMsg, dc, { :font => Graphics.FONT_GLANCE, :color => Graphics.COLOR_RED } );
             drawElement.draw( dc.getWidth() / 2, dc.getHeight() / 2 );
         }
     }
@@ -199,7 +199,8 @@ import Toybox.Math;
     private function getPvElement( dc as Dc ) {
         var state = _stateRequest.getState();
         var linePv = new EvccDrawingHorizontal( dc, {} );
-        linePv.addBitmap( Rez.Drawables.sun_medium, { :marginTop => _mediumOffset } );
+        //linePv.addBitmap( Rez.Drawables.sun_medium, { :marginTop => _mediumOffset } );
+        linePv.addIcon( EvccUIIcon.ICON_SUN, { :marginTop => _mediumOffset } );
         if( state.getPvPowerRounded() > 0 ) {
             linePv.addText( " ", {} );
             linePv.addBitmap( Rez.Drawables.arrow_right_medium, { :marginTop => _mediumOffset } );
@@ -211,7 +212,8 @@ import Toybox.Math;
     private function getHouseElement( dc as Dc ) {
         var state = _stateRequest.getState();
         var lineHouse = new EvccDrawingHorizontal( dc, {} );
-        lineHouse.addBitmap( Rez.Drawables.house_medium, { :marginTop => _mediumOffset } );
+        //lineHouse.addBitmap( Rez.Drawables.house_medium, { :marginTop => _mediumOffset } );
+        lineHouse.addIcon( EvccUIIcon.ICON_HOUSE, { :marginTop => _mediumOffset } );
         if( state.getHomePowerRounded() > 0 ) {
             lineHouse.addText( " ", {} );
             lineHouse.addBitmap( Rez.Drawables.arrow_left_medium, { :marginTop => _mediumOffset } );
@@ -223,7 +225,9 @@ import Toybox.Math;
     private function getGridElement( dc as Dc ) {
         var state = _stateRequest.getState();
         var lineGrid = new EvccDrawingHorizontal( dc, {} );
-        lineGrid.addBitmap( Rez.Drawables.grid_medium, { :marginTop => _mediumOffset } );
+        
+        //lineGrid.addBitmap( Rez.Drawables.grid_medium, { :marginTop => _mediumOffset } );
+        lineGrid.addIcon( EvccUIIcon.ICON_GRID, { :marginTop => _mediumOffset } );
         
         var bp = state.getGridPowerRounded();
         if( bp != 0 ) {
@@ -239,6 +243,7 @@ import Toybox.Math;
     private function getBatteryElement( dc as Dc ) {
         var state = _stateRequest.getState();
         var lineBattery = new EvccDrawingHorizontal( dc, {} );
+        /*
         var bitmap = Rez.Drawables.battery_empty_medium;
         if( state.getBatterySoc() >= 80 ) {
             bitmap = Rez.Drawables.battery_full_medium;
@@ -250,6 +255,8 @@ import Toybox.Math;
             bitmap =  Rez.Drawables.battery_onequarter_medium;
         }
         lineBattery.addBitmap( bitmap, { :marginTop => _mediumOffset } );
+        */
+        lineBattery.addIcon( EvccUIIcon.ICON_BATTERY, { :batterySoc => state.getBatterySoc(), :marginTop => _mediumOffset } );
         lineBattery.addText( EvccHelper.formatSoc( state.getBatterySoc() ), {} );
         
         var bp = state.getBatteryPowerRounded();
@@ -267,7 +274,7 @@ import Toybox.Math;
         var vehicle = loadpoint.getVehicle();
         
         // If text will be too long, we go for a smaller font and bitmap size
-        var font; var phaseBitmap;
+        var font;
         
         // Based on the information displayed we determine the max length for
         // the vehicle title in font size medium
@@ -280,10 +287,10 @@ import Toybox.Math;
         // If the title is longer, we switch to small font
         if( vehicle.getTitle().length() > maxLengthMedium ) {
             font = Graphics.FONT_SMALL;
-            phaseBitmap = ( loadpoint.getActivePhases() == 3 ? Rez.Drawables.arrow_left_three_small : Rez.Drawables.arrow_left_small );
+            //phaseBitmap = ( loadpoint.getActivePhases() == 3 ? Rez.Drawables.arrow_left_three_small : Rez.Drawables.arrow_left_small );
         } else {
             font = Graphics.FONT_MEDIUM;
-            phaseBitmap = ( loadpoint.getActivePhases() == 3 ? Rez.Drawables.arrow_left_three_medium : Rez.Drawables.arrow_left_medium );
+            //phaseBitmap = ( loadpoint.getActivePhases() == 3 ? Rez.Drawables.arrow_left_three_medium : Rez.Drawables.arrow_left_medium );
         }
         
         var lineVehicle = new EvccDrawingHorizontal( dc, { :font => font } );
@@ -296,7 +303,9 @@ import Toybox.Math;
         }
         if( loadpoint.isCharging() ) {
             lineVehicle.addText( " ", {} );
-            lineVehicle.addBitmap( phaseBitmap, { :marginTop => _mediumOffset } );
+            var phaseIcon = ( loadpoint.getActivePhases() == 3 ? EvccUIIcon.ICON_ARROW_LEFT_THREE : EvccUIIcon.ICON_ARROW_LEFT );
+            //lineVehicle.addBitmap( phaseBitmap, { :marginTop => _mediumOffset } );
+            lineVehicle.addIcon( phaseIcon, { :marginTop => _mediumOffset } );
             lineVehicle.addText( " " + EvccHelper.formatPower( loadpoint.getChargePowerRounded() ), {} );
         }
         return lineVehicle;
