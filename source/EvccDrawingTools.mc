@@ -33,14 +33,14 @@ import Toybox.WatchUi;
     }
 
     // Returning the value of a certain option
-    function option( value as Symbol ) {
+    function getOption( value as Symbol ) {
         // Only values that may be inherited can be null, for those we go to the
         // parent if no value is present in this instance
         var parentRef = _options[:parent] as WeakReference?;
         var parent = ( parentRef != null ? parentRef.get() : null ) as EvccUIContainer?;
         if( _options[value] == null && parent != null ) {
             // We store the value from the parent locally for quicker access
-            _options[value] = parent.option( value );
+            _options[value] = parent.getOption( value );
         } else if ( _options[value] == null ) {
             // If no more parent is present, we apply the following default behavior
             if( value == :backgroundColor ) { return EvccConstants.COLOR_BACKGROUND; }
@@ -49,6 +49,11 @@ import Toybox.WatchUi;
         }
         // Value is present, return it
         return _options[value];
+    }
+
+    // set an option
+    function setOption( option as Symbol, value ) {
+        _options[option] = value;
     }
 
     // Parent can be passed into an element either in the options structure
@@ -131,11 +136,11 @@ import Toybox.WatchUi;
     // the starting point by half of the total width
     function draw( x, y )
     {
-        y += option( :marginTop );
-        x -= option( :justify ) == Graphics.TEXT_JUSTIFY_CENTER ? getWidth() / 2 : 0;
-        x += option( :marginLeft ); 
+        y += getOption( :marginTop );
+        x -= getOption( :justify ) == Graphics.TEXT_JUSTIFY_CENTER ? getWidth() / 2 : 0;
+        x += getOption( :marginLeft ); 
         for( var i = 0; i < _elements.size(); i++ ) {
-            var center = _elements[i].option( :justify ) == Graphics.TEXT_JUSTIFY_CENTER;
+            var center = _elements[i].getOption( :justify ) == Graphics.TEXT_JUSTIFY_CENTER;
             x += center ? _elements[i].getWidth() / 2 : 0;
             _elements[i].draw( x, y );
             x += _elements[i].getWidth() / ( center ? 2 : 1 );
@@ -149,7 +154,7 @@ import Toybox.WatchUi;
         for( var i = 0; i < _elements.size(); i++ ) {
             width += _elements[i].getWidth();
         }
-        return option( :marginLeft ) + width + option( :marginRight );
+        return getOption( :marginLeft ) + width + getOption( :marginRight );
     }
 
     // Height is the maximum of all heights
@@ -159,7 +164,7 @@ import Toybox.WatchUi;
         for( var i = 0; i < _elements.size(); i++ ) {
             height = EvccHelper.max( height, _elements[i].getHeight() );
         }
-        return option( :marginTop ) + height + option( :marginBottom );
+        return getOption( :marginTop ) + height + getOption( :marginBottom );
     }
     
     // If text is added to a horizontal element and the previous element
@@ -188,8 +193,8 @@ import Toybox.WatchUi;
     // For x we pass on the value we get in, the elements will handle horizontal alignment
     function draw( x, y )
     {
-        x += option( :marginLeft ); 
-        y = y - getHeight() / 2 + option( :marginTop );
+        x += getOption( :marginLeft ); 
+        y = y - getHeight() / 2 + getOption( :marginTop );
         for( var i = 0; i < _elements.size(); i++ ) {
             y += _elements[i].getHeight() / 2;
             _elements[i].draw( x, y );
@@ -204,7 +209,7 @@ import Toybox.WatchUi;
         for( var i = 0; i < _elements.size(); i++ ) {
             width = EvccHelper.max( width, _elements[i].getWidth() );
         }
-        return option( :marginLeft ) + width + option( :marginRight );
+        return getOption( :marginLeft ) + width + getOption( :marginRight );
     }
 
     // Height is sum of all heights
@@ -214,7 +219,7 @@ import Toybox.WatchUi;
         for( var i = 0; i < _elements.size(); i++ ) {
             height += _elements[i].getHeight();
         }
-        return option( :marginTop ) + height + option( :marginBottom );
+        return getOption( :marginTop ) + height + getOption( :marginBottom );
     }
 
     // For the vertical container, new text is always added as new element
@@ -236,13 +241,13 @@ import Toybox.WatchUi;
 
     function append( text ) { _text += text; return self; }
 
-    function getWidth() { return _dc.getTextDimensions( _text, option( :font ) )[0] + option( :marginLeft ) + option( :marginRight ); }
-    function getHeight() { return _dc.getTextDimensions( _text, option( :font ) )[1] + option( :marginTop ) + option( :marginBottom ); }
+    function getWidth() { return _dc.getTextDimensions( _text, getOption( :font ) )[0] + getOption( :marginLeft ) + getOption( :marginRight ); }
+    function getHeight() { return _dc.getTextDimensions( _text, getOption( :font ) )[1] + getOption( :marginTop ) + getOption( :marginBottom ); }
 
     // For alignment we just pass the justify parameter on to the drawText
     function draw( x, y ) {
-        _dc.setColor( option( :color ), option( :backgroundColor ) );
-        _dc.drawText( x + option( :marginLeft ), y + option( :marginTop ), option( :font ), _text, option( :justify ) | Graphics.TEXT_JUSTIFY_VCENTER );
+        _dc.setColor( getOption( :color ), getOption( :backgroundColor ) );
+        _dc.drawText( x + getOption( :marginLeft ), y + getOption( :marginTop ), getOption( :font ), _text, getOption( :justify ) | Graphics.TEXT_JUSTIFY_VCENTER );
     }
 }
 
@@ -262,7 +267,6 @@ import Toybox.WatchUi;
     // as possible, since it requires the font to be set, which may be only
     // the case after the icon and its container are added to a parent container
     protected function bitmap() {
-        System.println( "**** bitmap() bitmapRef()=" + bitmapRef() );
         if( _bitmap == null ) { _bitmap = WatchUi.loadResource( bitmapRef() ); }
         return _bitmap;
     }
@@ -274,15 +278,15 @@ import Toybox.WatchUi;
         return _bitmapRef;
     }
 
-    function getWidth() { return bitmap().getWidth() + option( :marginLeft ) + option( :marginRight ); }
-    function getHeight() { return bitmap().getHeight() + option( :marginTop ) + option( :marginBottom ); }
+    function getWidth() { return bitmap().getWidth() + getOption( :marginLeft ) + getOption( :marginRight ); }
+    function getHeight() { return bitmap().getHeight() + getOption( :marginTop ) + getOption( :marginBottom ); }
 
     // Depending on alignment we recalculate the x starting point
     function draw( x, y ) {
-        if( option( :justify ) == Graphics.TEXT_JUSTIFY_CENTER ) {
+        if( getOption( :justify ) == Graphics.TEXT_JUSTIFY_CENTER ) {
             x -= bitmap().getWidth() / 2;
         }
-        _dc.drawBitmap( x + option( :marginLeft ), y - ( bitmap().getHeight() / 2 ) + option( :marginTop ), bitmap() );
+        _dc.drawBitmap( x + getOption( :marginLeft ), y - ( bitmap().getHeight() / 2 ) + getOption( :marginTop ), bitmap() );
     }
 }
 
@@ -334,14 +338,10 @@ import Toybox.WatchUi;
     // determine the reference based on the icon constant, font size
     // and batterySoc in case of the battery icon
     protected function bitmapRef() as ResourceId {
-        var font = option( :font );
+        var font = getOption( :font );
         
-        System.println( "**** bitmapRef() :font=" + option( :font ) );
-        System.println( "**** bitmapRef() _icon=" + _icon );
-        System.println( "**** bitmapRef() :batterySoc=" + option( :batterySoc ) );
-
         if( _icon == ICON_BATTERY ) {
-            var batterySoc = option( :batterySoc );
+            var batterySoc = getOption( :batterySoc );
             if( batterySoc == null ) {
                 throw new InvalidValueException( ":batterySoc is missing!");
             }
@@ -354,17 +354,16 @@ import Toybox.WatchUi;
             } else if( batterySoc >= 10 ) {
                 return _icons[ICON_BATTERY_ONEQUARTER][font];
             } else {
-                System.println( "**** bitmapRef() returning " + _icons[ICON_BATTERY_EMPTY][font] );
                 return _icons[ICON_BATTERY_EMPTY][font];
             }
         } else if( _icon == ICON_POWER_FLOW ) {
-            var power = option( :power );
+            var power = getOption( :power );
             if( power == null ) {
                 throw new InvalidValueException( ":power is missing!");
             }
             return power < 0 ? _icons[ICON_ARROW_LEFT][font] : _icons[ICON_ARROW_RIGHT][font];
         } else if( _icon == ICON_ACTIVE_PHASES ) {
-            var activePhases = option( :activePhases );
+            var activePhases = getOption( :activePhases );
             if( activePhases == null ) {
                 throw new InvalidValueException( ":activePhases is missing!");
             }

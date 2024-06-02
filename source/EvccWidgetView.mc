@@ -111,6 +111,17 @@ import Toybox.Math;
 
             var block = new EvccDrawingVertical( dc, { :font => Graphics.FONT_MEDIUM } );
             var variableLineCount = 0;
+            
+            // Determine if site title is displayed
+            // If there is only a single site, it is not displayed.
+            // Also, if there is no state request because no site is configured,
+            // or no state (e.g. because of a connection error) then no site title
+            // is displayed
+            var siteTitle = false;
+            if( ! _isSingle && _stateRequest.getState() != null ) { 
+                siteTitle = true; 
+                variableLineCount++; 
+            }
 
             if( ! _stateRequest.hasLoaded() ) {
                 block.addText( "Loading ...", {} );
@@ -145,6 +156,11 @@ import Toybox.Math;
                     }
                     variableLineCount += EvccHelper.min( 1, loadpoints.size() );
 
+                    //block.addText( "Charging details", {} );
+                    //block.addText( "Another loadpoint", {} );
+                    //block.addText( "Charging details", {} );
+                    //variableLineCount += 1;
+
                     block.addContainer( getHouseElement( dc ) );
                 }
             }
@@ -152,23 +168,14 @@ import Toybox.Math;
             dc.setColor( EvccConstants.COLOR_FOREGROUND, EvccConstants.COLOR_BACKGROUND );
             dc.clear();
             
-            var offset = 0;
-            
-            // Determine if site title is displayed
-            // If there is only a single site, it is not displayed.
-            // Also, if there is no state request because no site is configured,
-            // or no state (e.g. because of a connection error) then no site title
-            // is displayed
-            var siteTitle = false;
-            if( ! _isSingle && _stateRequest.getState() != null ) { 
-                siteTitle = true; 
-                variableLineCount++; 
+            if( variableLineCount > 3 ) {
+                block.setOption( :font, Graphics.FONT_SMALL );
             }
-            
-            var logo = variableLineCount < 4; // also applies to error/loading message
+            var logo = variableLineCount < 5; // also applies to error/loading message
 
             // If only site title or logo are displayed, we offset the content a bit
-            var lineHeight = dc.getFontHeight( Graphics.FONT_MEDIUM );
+            var offset = 0;
+            var lineHeight = dc.getFontHeight( block.getOption( :font ) );
             if( ! siteTitle && logo ) { offset = - ( lineHeight / 2 ); }
             else if ( siteTitle && ! logo ) { offset = lineHeight / 2; }
 
@@ -176,7 +183,7 @@ import Toybox.Math;
 
             if( siteTitle ) {
                 var siteTitleElement = new EvccUIText( _stateRequest.getState().getSiteTitle().substring(0,9), dc, { :font => Graphics.FONT_GLANCE } );
-                var siteTitleY = ( dc.getHeight() / 2 - block.getHeight() / 2 - offset ) / 2;
+                var siteTitleY = ( dc.getHeight() / 2 - block.getHeight() / 2 + offset ) / 2;
                 siteTitleElement.draw( dc.getWidth() / 2, siteTitleY );
             }
             if( logo ) {
@@ -258,9 +265,6 @@ import Toybox.Math;
     private function getLoadPointElement( loadpoint as EvccLoadPoint, dc as Dc ) {
         var vehicle = loadpoint.getVehicle();
         
-        // If text will be too long, we go for a smaller font and bitmap size
-        var font;
-        
         // Based on the information displayed we determine the max length for
         // the vehicle title in font size medium
         // It is at least 4, but 
@@ -269,16 +273,13 @@ import Toybox.Math;
         //   and if there is only one view (no page indicator) we can add 1 more.  
         var maxLengthMedium = 4 + ( loadpoint.isCharging() ? 0 : 6 ) + ( vehicle.isGuest() ? 3 : 0 ) + ( _isSingle ? 1 : 0 );
         
+        var options = {};
         // If the title is longer, we switch to small font
         if( vehicle.getTitle().length() > maxLengthMedium ) {
-            font = Graphics.FONT_SMALL;
-            //phaseBitmap = ( loadpoint.getActivePhases() == 3 ? Rez.Drawables.arrow_left_three_small : Rez.Drawables.arrow_left_small );
-        } else {
-            font = Graphics.FONT_MEDIUM;
-            //phaseBitmap = ( loadpoint.getActivePhases() == 3 ? Rez.Drawables.arrow_left_three_medium : Rez.Drawables.arrow_left_medium );
+            options[:font] = Graphics.FONT_SMALL;
         }
         
-        var lineVehicle = new EvccDrawingHorizontal( dc, { :font => font } );
+        var lineVehicle = new EvccDrawingHorizontal( dc, options );
         
         // Small font give us two more characters, after that we truncate
         lineVehicle.addText( vehicle.getTitle().substring( 0, maxLengthMedium + 2 ), {} );
