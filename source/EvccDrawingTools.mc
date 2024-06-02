@@ -76,7 +76,7 @@ import Toybox.WatchUi;
 
     // Functions to add elements
     function addError( text, options as Dictionary<Symbol,Object> ) {
-        options[:color] = Graphics.COLOR_RED;
+        options[:color] = EvccConstants.COLOR_ERROR;
         options[:parent] = self;
         _elements.add( new EvccUIText( text, _dc, options ) );
         return self;

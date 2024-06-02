@@ -107,7 +107,7 @@ import Toybox.Application.Properties;
 
         } catch ( ex ) {
             EvccHelper.debugException( ex );
-            dc.setColor( Graphics.COLOR_RED, Graphics.COLOR_TRANSPARENT );
+            dc.setColor( EvccConstants.COLOR_ERROR, Graphics.COLOR_TRANSPARENT );
             var errorMsg = "Error:\n" + ex.getErrorMessage();
             dc.drawText( 0, dc.getHeight() / 2, Graphics.FONT_GLANCE, errorMsg, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER );
         }

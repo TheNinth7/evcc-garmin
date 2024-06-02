@@ -116,7 +116,7 @@ import Toybox.Application.Properties;
         } catch ( ex ) {
             EvccHelper.debugException( ex );
             var errorMsg = "Error:\n" + ex.getErrorMessage();
-            var drawElement = new EvccUIText( errorMsg, dc, { :font => Graphics.FONT_GLANCE, :justify => Graphics.TEXT_JUSTIFY_LEFT, :color => Graphics.COLOR_RED } );
+            var drawElement = new EvccUIText( errorMsg, dc, { :font => Graphics.FONT_GLANCE, :justify => Graphics.TEXT_JUSTIFY_LEFT, :color => EvccConstants.COLOR_ERROR } );
             drawElement.draw( dc.getWidth() / 2, dc.getHeight() / 2 );
         }
         System.println( "onUpdate: e " + System.getSystemStats().usedMemory );

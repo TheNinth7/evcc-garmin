@@ -28,7 +28,7 @@ class EvccWidgetErrorView extends WatchUi.View {
         }
 
         dc.clear();
-        var drawElement = new EvccUIText( errorMsg, dc, { :font => Graphics.FONT_GLANCE, :color => Graphics.COLOR_RED } );
+        var drawElement = new EvccUIText( errorMsg, dc, { :font => Graphics.FONT_GLANCE, :color => EvccConstants.COLOR_ERROR } );
         drawElement.draw( dc.getWidth() / 2, dc.getHeight() / 2 );
     }
 
