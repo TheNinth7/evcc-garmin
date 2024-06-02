@@ -1,5 +1,4 @@
 import Toybox.Lang;
-import Toybox.Math;
 import Toybox.Time;
 
 // A class representing the state of an evcc site
@@ -29,10 +28,10 @@ import Toybox.Time;
 
     public function hasBattery() as Boolean { return _hasBattery; }
     public function getBatterySoc() as Number { return _batterySoc; }
-    public function getBatteryPowerRounded() as Number { return roundPower( _batteryPower ); }
-    public function getGridPowerRounded() as Number { return roundPower( _gridPower ); }
-    public function getHomePowerRounded() as Number { return roundPower( _homePower ); }
-    public function getPvPowerRounded() as Number { return roundPower( _pvPower ); }
+    public function getBatteryPowerRounded() as Number { return EvccHelper.roundPower( _batteryPower ); }
+    public function getGridPowerRounded() as Number { return EvccHelper.roundPower( _gridPower ); }
+    public function getHomePowerRounded() as Number { return EvccHelper.roundPower( _homePower ); }
+    public function getPvPowerRounded() as Number { return EvccHelper.roundPower( _pvPower ); }
     public function getSiteTitle() as String { return _siteTitle; }
 
     private var _loadPoints = new Array<EvccLoadPoint>[0];
@@ -99,10 +98,6 @@ import Toybox.Time;
 
         return result; 
     }
- 
-    static function roundPower( power as Number ) {
-        return Math.round( power / 100.0 ) * 100;
-    }
 }
 
 // Class representing a load point, implementing
@@ -113,16 +108,22 @@ import Toybox.Time;
     private var _isCharging = false;
     private var _chargePower = 0;
     private var _activePhases = 0;
+    private var _mode = null;
+    private var _chargeRemainingDuration = 0;
 
     private static const CHARGING = "charging";
     private static const PHASESACTIVE = "phasesActive";
-    private static const CHARGEPOWER = "chargePower";
     private static const CONNECTED = "connected";
+    private static const MODE = "mode";
+    private static const CHARGEPOWER = "chargePower";
+    private static const CHARGEREMAININGDURATION = "chargeRemainingDuration";
 
     function initialize( dataLp as Dictionary<String, Object?>, dataResult as Dictionary<String, Object?> ) {
         _isCharging = dataLp[CHARGING];
         _activePhases = dataLp[PHASESACTIVE];
         _chargePower = dataLp[CHARGEPOWER];
+        _mode = dataLp[MODE];
+        _chargeRemainingDuration = dataLp[CHARGEREMAININGDURATION];
 
         if( dataLp[CONNECTED] as Boolean )
         {
@@ -135,6 +136,8 @@ import Toybox.Time;
             CHARGING => _isCharging,
             PHASESACTIVE => _activePhases,
             CHARGEPOWER => _chargePower,
+            MODE => _mode,
+            CHARGEREMAININGDURATION => _chargeRemainingDuration
         };
 
         if( _vehicle != null ) {
@@ -145,14 +148,18 @@ import Toybox.Time;
         return loadpoint;
     }
  
-    // public function isCharging() as Boolean { return true; }
-    // public function getActivePhases() as Number { return 3; }
-    // public function getChargePowerRounded() as Number { return 1500; }
-
     public function isCharging() as Boolean { return _isCharging; }
     public function getActivePhases() as Number { return _activePhases; }
-    public function getChargePowerRounded() as Number { return EvccState.roundPower( _chargePower ); }
+    public function getChargePowerRounded() as Number { return EvccHelper.roundPower( _chargePower ); }
     public function getVehicle() as EvccConnectedVehicle { return _vehicle; }
+    
+    // Possible values: "pv", "now", "minpv", "off"
+    public function getMode() as String { return _mode; }
+    
+    // Returns the remaining duration as formatted string
+    public function getChargeRemainingDuration() as String { 
+        return EvccHelper.formatDuration( _chargeRemainingDuration );
+    }
 }
 
 (:glance :background) class EvccConnectedVehicle {

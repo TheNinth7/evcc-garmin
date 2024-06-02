@@ -263,6 +263,10 @@ import Toybox.Math;
     }
 
     private function getLoadPointElement( loadpoint as EvccLoadPoint, dc as Dc ) {
+        
+        System.println( "**** " + loadpoint.getMode() );
+        System.println( "**** " + loadpoint.getChargeRemainingDuration() );
+
         var vehicle = loadpoint.getVehicle();
         
         // Based on the information displayed we determine the max length for

@@ -2,10 +2,20 @@ import Toybox.Lang;
 using Toybox.System;
 using Toybox.Time;
 using Toybox.Time.Gregorian;
+import Toybox.Math;
 
 (:background :glance) class EvccHelper {
     
+    // Function used to round the power values we get from evcc
+    static function roundPower( power as Number ) {
+        // We round to full 100 W
+        return Math.round( power / 100.0 ) * 100;
+    }
+
+    // Function to format power values
     public static function formatPower( power as Number ) {
+        // We always use kW, even for small values, to make
+        // the display consistent
         return ( power / 1000.0 ).format("%.1f") + "kW";    
         
         /* Code for showing values < 1 kW as W
@@ -17,8 +27,24 @@ using Toybox.Time.Gregorian;
         */
     }
 
+    // Format SoC of battery or vehicles
     public static function formatSoc( soc as Number ) as String { 
         return soc.format("%.0f") + "%";
+    }
+
+    // Returns a formatted string of duration specified in nano seconds (as provided in the evcc response)
+    // Format is the same as used on the evcc Web UI (hh:mm h or mm:ss m)
+    public static function formatDuration( durationNano as Number ) as String { 
+        var duration = ( durationNano / 1000000000 ) as Number;
+        var hours = ( ( duration / 60 ) / 60 ) as Number;
+        if( hours > 0 ) {
+            var minutes = ( ( duration / 60 ) % 60 ) as Number;
+            return hours.format("%02d") + ":" + minutes.format("%02d") + " h"; 
+        } else {
+            var minutes = ( duration / 60 ) as Number;
+            var seconds = ( duration % 60 ) as Number;
+            return minutes.format("%02d") + ":" + seconds.format("%02d") + " m"; 
+        }
     }
 
     public static function max( a, b ) { return a > b ? a : b; }
