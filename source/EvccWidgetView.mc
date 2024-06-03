@@ -104,6 +104,8 @@ import Toybox.Math;
         }
     }
 
+    private static var MAX_LINES = 5;
+
     // Update the view
     function onUpdate(dc as Dc) as Void {
         try {
@@ -111,6 +113,8 @@ import Toybox.Math;
 
             var block = new EvccDrawingVertical( dc, { :font => Graphics.FONT_MEDIUM } );
             var variableLineCount = 0;
+
+
             
             // Determine if site title is displayed
             // If there is only a single site, it is not displayed.
@@ -144,22 +148,34 @@ import Toybox.Math;
 
                     var loadpoints = state.getLoadPoints() as Array<EvccLoadPoint>;
                     var hasVehicle = false;
-                    for (var i = 0; i < loadpoints.size(); i++) {
+                    /*
+                    System.println( "**** MAX_LINES " + MAX_LINES );
+                    System.println( "**** variableLineCount " + variableLineCount );
+                    System.println( "**** loadpoints.size() " + loadpoints.size() );
+                    System.println( "**** state.getNumOfLPsCharging() " + state.getNumOfLPsCharging() );
+                    */
+                    var showChargingDetails = MAX_LINES - variableLineCount >= loadpoints.size() + state.getNumOfLPsCharging();
+                    for (var i = 0; i < loadpoints.size() && variableLineCount < MAX_LINES; i++) {
                         var loadpoint = loadpoints[i] as EvccLoadPoint;
                         if( loadpoint.getVehicle() != null ) {
                             block.addContainer( getLoadPointElement( loadpoint, dc ) );
+                            variableLineCount++;
                             hasVehicle = true;
+                            if( loadpoint.isCharging() && showChargingDetails ) {
+                                block.addContainer( getChargingElement( loadpoint, dc ) );
+                                variableLineCount++;
+                            }
                         }
                     }
                     if( ! hasVehicle ) {
                         block.addText( "No vehicle", {} );
+                        variableLineCount++;
                     }
-                    variableLineCount += EvccHelper.min( 1, loadpoints.size() );
 
                     //block.addText( "Charging details", {} );
                     //block.addText( "Another loadpoint", {} );
                     //block.addText( "Charging details", {} );
-                    //variableLineCount += 1;
+                    //variableLineCount += 3;
 
                     block.addContainer( getHouseElement( dc ) );
                 }
@@ -172,7 +188,7 @@ import Toybox.Math;
                 block.setOption( :font, Graphics.FONT_SMALL );
             }
             var logo = variableLineCount < 5; // also applies to error/loading message
-
+            
             // If only site title or logo are displayed, we offset the content a bit
             var offset = 0;
             var lineHeight = dc.getFontHeight( block.getOption( :font ) );
@@ -263,24 +279,27 @@ import Toybox.Math;
     }
 
     private function getLoadPointElement( loadpoint as EvccLoadPoint, dc as Dc ) {
-        
-        System.println( "**** " + loadpoint.getMode() );
-        System.println( "**** " + loadpoint.getChargeRemainingDuration() );
-
         var vehicle = loadpoint.getVehicle();
         
         // Based on the information displayed we determine the max length for
         // the vehicle title in font size medium
         // It is at least 4, but 
-        //   if we are not charging (no kW) we can add 6 more, 
+        //   if we are not charging (no kW) we gain 6 more but loose the length of the mode, 
         //   if the vehicle is guest (no SoC) we can add 3 more,
-        //   and if there is only one view (no page indicator) we can add 1 more.  
-        var maxLengthMedium = 4 + ( loadpoint.isCharging() ? 0 : 6 ) + ( vehicle.isGuest() ? 3 : 0 ) + ( _isSingle ? 1 : 0 );
-        
+        //   and if charging power is less than 10 kW we gain one more  
+        var maxLengthMedium = 5 + ( loadpoint.isCharging() ? 0 : 6 - loadpoint.getModeFormatted().length() ) + ( vehicle.isGuest() ? 3 : 0 ) + ( loadpoint.isCharging() && loadpoint.getChargePowerRounded() < 10000 ? 1 : 0 );
+
         var options = {};
         // If the title is longer, we switch to small font
         if( vehicle.getTitle().length() > maxLengthMedium ) {
             options[:font] = Graphics.FONT_SMALL;
+        }
+
+        // If there is a page indicator, and the vehicle title
+        // is at the limit, we shift the line by thewidth reserved 
+        // for the page indicator
+        if( ! _isSingle && vehicle.getTitle().length() >= maxLengthMedium + 2 ) {
+            options[:marginLeft] = dc.getWidth() * ( 0.5 - EvccPageIndicator.RADIUS_FACTOR ) * 2;
         }
         
         var lineVehicle = new EvccDrawingHorizontal( dc, options );
@@ -296,7 +315,27 @@ import Toybox.Math;
             lineVehicle.addIcon( EvccUIIcon.ICON_ACTIVE_PHASES, { :charging => true, :activePhases => loadpoint.getActivePhases(), :marginTop => _mediumOffset } );
             lineVehicle.addText( " " + EvccHelper.formatPower( loadpoint.getChargePowerRounded() ), {} );
         }
+        // If the vehicle is not charging, we show the charging mode in this line
+        else {
+            lineVehicle.addText( " " + loadpoint.getModeFormatted(), {} );
+        }
+        
         return lineVehicle;
+    }
+
+    private function getChargingElement( loadpoint as EvccLoadPoint, dc as Dc ) {
+        
+        var lineCharging = new EvccDrawingHorizontal( dc, { :font => Graphics.FONT_SMALL } );
+        
+        lineCharging.addText( loadpoint.getModeFormatted(), {} );
+        
+        if( loadpoint.getChargeRemainingDuration() > 0 ) {
+            lineCharging.addText( ": ", {} );
+            lineCharging.addIcon( EvccUIIcon.ICON_DURATION, {} );
+            lineCharging.addText( " " + loadpoint.getChargeRemainingDurationFormatted(), {} );
+        }
+        
+        return lineCharging;
     }
 
     // Called when this View is removed from the screen. Save the

@@ -27,6 +27,7 @@
     <bitmap scope="foreground" id="sun_small" filename="icon_small_sun.png"/>
     <bitmap scope="foreground" id="house_small" filename="icon_small_house.png"/>
     <bitmap scope="foreground" id="grid_small" filename="icon_small_grid.png"/>
+    <bitmap scope="foreground" id="clock_small" filename="icon_small_clock.png"/>
 
     <bitmap scope="foreground" id="battery_empty_medium" filename="icon_medium_battery_empty.png"/>
     <bitmap scope="foreground" id="battery_onequarter_medium" filename="icon_medium_battery_onequarter.png"/>
@@ -39,6 +40,7 @@
     <bitmap scope="foreground" id="sun_medium" filename="icon_medium_sun.png"/>
     <bitmap scope="foreground" id="house_medium" filename="icon_medium_house.png"/>
     <bitmap scope="foreground" id="grid_medium" filename="icon_medium_grid.png"/>
+    <bitmap scope="foreground" id="clock_medium" filename="icon_medium_clock.png"/>
 
     <bitmap scope="foreground" id="evcc_medium" filename="icon_medium_evcc.png"/>
 

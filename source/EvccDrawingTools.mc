@@ -313,6 +313,7 @@ import Toybox.WatchUi;
     public static var ICON_SUN = 8;
     public static var ICON_HOUSE = 9;
     public static var ICON_GRID = 10;
+    public static var ICON_DURATION = 11;
 
     // For the battery we have special handling, if this
     // constant is based in, we choose ony of the battery
@@ -340,6 +341,7 @@ import Toybox.WatchUi;
     protected function bitmapRef() as ResourceId {
         var font = getOption( :font );
         
+        // For the battery we determine the icon based on SoC
         if( _icon == ICON_BATTERY ) {
             var batterySoc = getOption( :batterySoc );
             if( batterySoc == null ) {
@@ -356,12 +358,15 @@ import Toybox.WatchUi;
             } else {
                 return _icons[ICON_BATTERY_EMPTY][font];
             }
+        // For power flow we determine the icon (in/out)
+        // based on the power
         } else if( _icon == ICON_POWER_FLOW ) {
             var power = getOption( :power );
             if( power == null ) {
                 throw new InvalidValueException( ":power is missing!");
             }
             return power < 0 ? _icons[ICON_ARROW_LEFT][font] : _icons[ICON_ARROW_RIGHT][font];
+        // And for active phases it is based on the active phases
         } else if( _icon == ICON_ACTIVE_PHASES ) {
             var activePhases = getOption( :activePhases );
             if( activePhases == null ) {
@@ -389,7 +394,8 @@ class EvccIcons {
         { Graphics.FONT_MEDIUM => Rez.Drawables.arrow_left_three_medium, Graphics.FONT_SMALL => Rez.Drawables.arrow_left_three_small },
         { Graphics.FONT_MEDIUM => Rez.Drawables.sun_medium, Graphics.FONT_SMALL => Rez.Drawables.sun_small },
         { Graphics.FONT_MEDIUM => Rez.Drawables.house_medium, Graphics.FONT_SMALL => Rez.Drawables.house_small },
-        { Graphics.FONT_MEDIUM => Rez.Drawables.grid_medium, Graphics.FONT_SMALL => Rez.Drawables.grid_small }
+        { Graphics.FONT_MEDIUM => Rez.Drawables.grid_medium, Graphics.FONT_SMALL => Rez.Drawables.grid_small },
+        { Graphics.FONT_MEDIUM => Rez.Drawables.clock_medium, Graphics.FONT_SMALL => Rez.Drawables.clock_small }
     ];
 }
 

@@ -35,7 +35,9 @@ import Toybox.Time;
     public function getSiteTitle() as String { return _siteTitle; }
 
     private var _loadPoints = new Array<EvccLoadPoint>[0];
+    private var _numOfLPsCharging = 0;
     public function getLoadPoints() as Array<EvccLoadPoint> { return _loadPoints; }
+    public function getNumOfLPsCharging() as Number { return _numOfLPsCharging; }
 
     // Creating a new state object.
     // The code works both with the response from evcc and the
@@ -60,12 +62,12 @@ import Toybox.Time;
         _siteTitle = result[SITETITLE];
 
         _loadPoints = new Array<EvccLoadPoint>[0];
-
         var loadPoints = result[LOADPOINTS] as Array;
-
         for (var i = 0; i < loadPoints.size(); i++) {
-            var loadPoint = loadPoints[i] as Dictionary;
-            _loadPoints.add( new EvccLoadPoint( loadPoint, result ));
+            var loadPointData = loadPoints[i] as Dictionary;
+            var loadPoint = new EvccLoadPoint( loadPointData, result );
+            if( loadPoint.isCharging() ) { _numOfLPsCharging++; }
+            _loadPoints.add( loadPoint );
         }
     }
 
@@ -155,9 +157,17 @@ import Toybox.Time;
     
     // Possible values: "pv", "now", "minpv", "off"
     public function getMode() as String { return _mode; }
-    
+    // Return the text to be displayed for the mode
+    public function getModeFormatted() as String { 
+        if( _mode.equals( "pv" ) ) { return "PV"; }
+        else if( _mode.equals( "minpv" ) ) { return "mPV"; }
+        else if( _mode.equals( "now" ) ) { return "Fast"; }
+        else if( _mode.equals( "off" ) ) { return "Off"; }
+        else { return _mode; }
+    }
+    public function getChargeRemainingDuration() as Number { return _chargeRemainingDuration; }
     // Returns the remaining duration as formatted string
-    public function getChargeRemainingDuration() as String { 
+    public function getChargeRemainingDurationFormatted() as String { 
         return EvccHelper.formatDuration( _chargeRemainingDuration );
     }
 }

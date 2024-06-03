@@ -13,19 +13,24 @@ class EvccPageIndicator {
     // Dots are drawn in a circle around the center
     // of the screen ("orbit"), this constant indicates the
     // default angle that should be between 2 dots
-    private const DOT_DISTANCE_ANGLE = 8;
+    private static const DOT_DISTANCE_ANGLE = 8;
     
     // Default angle around which the dots shall be
     // drawn. 270 is the left side of the screen
-    private const CENTER_ANGLE = 270;
+    private static const CENTER_ANGLE = 270;
     
     // How large should dots be in relation to the
     // total screen width
-    private const DOT_SIZE_FACTOR = 0.02;
+    private static const DOT_SIZE_FACTOR = 0.02;
     
     // How thick should the line drawn around the dots
     // be in relation to the total screen width
-    private const LINE_WIDTH_FACTOR = 0.005;
+    private static const LINE_WIDTH_FACTOR = 0.005;
+
+    // How large should the orbit radius be in relation to the
+    // total width of the screen
+    public static const RADIUS_FACTOR = 0.45;
+
 
     public function initialize( dc as Dc ) {
         setCenterAngle( CENTER_ANGLE );
@@ -66,7 +71,7 @@ class EvccPageIndicator {
 
     // Function to draw a single dot at an angle
     function drawDot( angle as Float, active as Boolean ) {
-        var dotCoordinates = orbitXY( _dc.getWidth() / 2, _dc.getHeight() / 2, angle, _dc.getWidth() * 0.45 );
+        var dotCoordinates = orbitXY( _dc.getWidth() / 2, _dc.getHeight() / 2, angle, _dc.getWidth() * RADIUS_FACTOR );
         drawDotXY( dotCoordinates[0], dotCoordinates[1], active );
     }
 
