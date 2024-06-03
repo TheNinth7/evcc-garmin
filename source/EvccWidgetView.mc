@@ -15,6 +15,7 @@ import Toybox.Math;
     // very well, we need to have a top margin for the
     // image to align it better
     var _mediumOffset = 0;
+    var _vehicleTitleBaseMaxLength = 0;
     
     var _index as Number;
     var _totalSites as Number;
@@ -34,6 +35,7 @@ import Toybox.Math;
         // EvccHelper.debug("Widget: initialize");
         View.initialize();
         _mediumOffset = Properties.getValue( "mediumOffset" );
+        _vehicleTitleBaseMaxLength = Properties.getValue( "vehicleTitleBaseMaxLength" );
 
         _index = index;
         _totalSites = siteConfig.getSiteCount();
@@ -110,11 +112,8 @@ import Toybox.Math;
     function onUpdate(dc as Dc) as Void {
         try {
             // EvccHelper.debug("Widget: onUpdate");
-
-            var block = new EvccDrawingVertical( dc, { :font => Graphics.FONT_MEDIUM } );
+            var block = new EvccDrawingVertical( dc, { :font => EvccFonts.FONT_MEDIUM } );
             var variableLineCount = 0;
-
-
             
             // Determine if site title is displayed
             // If there is only a single site, it is not displayed.
@@ -148,21 +147,17 @@ import Toybox.Math;
 
                     var loadpoints = state.getLoadPoints() as Array<EvccLoadPoint>;
                     var hasVehicle = false;
-                    /*
-                    System.println( "**** MAX_LINES " + MAX_LINES );
-                    System.println( "**** variableLineCount " + variableLineCount );
-                    System.println( "**** loadpoints.size() " + loadpoints.size() );
-                    System.println( "**** state.getNumOfLPsCharging() " + state.getNumOfLPsCharging() );
-                    */
+                    
                     var showChargingDetails = MAX_LINES - variableLineCount >= loadpoints.size() + state.getNumOfLPsCharging();
                     for (var i = 0; i < loadpoints.size() && variableLineCount < MAX_LINES; i++) {
                         var loadpoint = loadpoints[i] as EvccLoadPoint;
                         if( loadpoint.getVehicle() != null ) {
-                            block.addContainer( getLoadPointElement( loadpoint, dc ) );
+                            var loadpointLine = getLoadPointElement( loadpoint, dc );
+                            block.addContainer( loadpointLine );
                             variableLineCount++;
                             hasVehicle = true;
                             if( loadpoint.isCharging() && showChargingDetails ) {
-                                block.addContainer( getChargingElement( loadpoint, dc ) );
+                                block.addContainer( getChargingElement( loadpoint, dc, loadpointLine.getOption( :marginLeft ) ) );
                                 variableLineCount++;
                             }
                         }
@@ -172,10 +167,9 @@ import Toybox.Math;
                         variableLineCount++;
                     }
 
-                    //block.addText( "Charging details", {} );
-                    //block.addText( "Another loadpoint", {} );
-                    //block.addText( "Charging details", {} );
-                    //variableLineCount += 3;
+                    block.addText( "Another text line", { :font => EvccFonts.FONT_GLANCE } );
+                    block.addText( "Another text line", {} );
+                    variableLineCount += 2;
 
                     block.addContainer( getHouseElement( dc ) );
                 }
@@ -183,9 +177,13 @@ import Toybox.Math;
 
             dc.setColor( EvccConstants.COLOR_FOREGROUND, EvccConstants.COLOR_BACKGROUND );
             dc.clear();
-            
+
+            // var ref = Rez.Drawables.svg_test;
+            // var bmp = WatchUi.loadResource( ref );
+            // dc.drawBitmap2( dc.getWidth() / 2, dc.getHeight() / 2, bmp, {} );
+
             if( variableLineCount > 3 ) {
-                block.setOption( :font, Graphics.FONT_SMALL );
+                block.setOption( :font, EvccFonts.FONT_SMALL );
             }
             var logo = variableLineCount < 5; // also applies to error/loading message
             
@@ -195,10 +193,10 @@ import Toybox.Math;
             if( ! siteTitle && logo ) { offset = - ( lineHeight / 2 ); }
             else if ( siteTitle && ! logo ) { offset = lineHeight / 2; }
 
-            block.draw( dc.getWidth() / 2, dc.getHeight() / 2 + offset );
+            //block.draw( dc.getWidth() / 2, dc.getHeight() / 2 + offset );
 
             if( siteTitle ) {
-                var siteTitleElement = new EvccUIText( _stateRequest.getState().getSiteTitle().substring(0,9), dc, { :font => Graphics.FONT_GLANCE } );
+                var siteTitleElement = new EvccUIText( _stateRequest.getState().getSiteTitle().substring(0,9), dc, { :font => EvccFonts.FONT_GLANCE } );
                 var siteTitleY = ( dc.getHeight() / 2 - block.getHeight() / 2 + offset ) / 2;
                 siteTitleElement.draw( dc.getWidth() / 2, siteTitleY );
             }
@@ -214,7 +212,7 @@ import Toybox.Math;
         } catch ( ex ) {
             EvccHelper.debugException( ex );
             var errorMsg = "Error:\n" + ex.getErrorMessage();
-            var drawElement = new EvccUIText( errorMsg, dc, { :font => Graphics.FONT_GLANCE, :color => EvccConstants.COLOR_ERROR } );
+            var drawElement = new EvccUIText( errorMsg, dc, { :font => EvccFonts.FONT_GLANCE, :color => EvccConstants.COLOR_ERROR } );
             drawElement.draw( dc.getWidth() / 2, dc.getHeight() / 2 );
         }
     }
@@ -222,7 +220,6 @@ import Toybox.Math;
     private function getPvElement( dc as Dc ) {
         var state = _stateRequest.getState();
         var linePv = new EvccDrawingHorizontal( dc, {} );
-        //linePv.addBitmap( Rez.Drawables.sun_medium, { :marginTop => _mediumOffset } );
         linePv.addIcon( EvccUIIcon.ICON_SUN, { :marginTop => _mediumOffset } );
         if( state.getPvPowerRounded() > 0 ) {
             linePv.addText( " ", {} );
@@ -235,7 +232,6 @@ import Toybox.Math;
     private function getHouseElement( dc as Dc ) {
         var state = _stateRequest.getState();
         var lineHouse = new EvccDrawingHorizontal( dc, {} );
-        //lineHouse.addBitmap( Rez.Drawables.house_medium, { :marginTop => _mediumOffset } );
         lineHouse.addIcon( EvccUIIcon.ICON_HOUSE, { :marginTop => _mediumOffset } );
         if( state.getHomePowerRounded() > 0 ) {
             lineHouse.addText( " ", {} );
@@ -283,22 +279,25 @@ import Toybox.Math;
         
         // Based on the information displayed we determine the max length for
         // the vehicle title in font size medium
-        // It is at least 4, but 
-        //   if we are not charging (no kW) we gain 6 more but loose the length of the mode, 
+        // The base length is the max length for charging with a double-digit
+        // amount of watts. To that, we add values based on information that
+        // is not displayed:
+        //   if we are not charging (no kW) we gain 8 more but loose the length of the mode (the mode also has brackets, but this is compensated by the smaller font size used), 
         //   if the vehicle is guest (no SoC) we can add 3 more,
-        //   and if charging power is less than 10 kW we gain one more  
-        var maxLengthMedium = 5 + ( loadpoint.isCharging() ? 0 : 6 - loadpoint.getModeFormatted().length() ) + ( vehicle.isGuest() ? 3 : 0 ) + ( loadpoint.isCharging() && loadpoint.getChargePowerRounded() < 10000 ? 1 : 0 );
+        //   if charging power is less than 10 kW we gain one more
+        //   if we have to display the page indicator, we loose one
+        var maxLengthMedium = _vehicleTitleBaseMaxLength + ( loadpoint.isCharging() ? 0 : 9 - loadpoint.getModeFormatted().length() ) + ( vehicle.isGuest() ? 3 : 0 ) + ( loadpoint.isCharging() && loadpoint.getChargePowerRounded() < 10000 ? 1 : 0 ) - ( _isSingle ? 0 : 3 );
 
         var options = {};
         // If the title is longer, we switch to small font
         if( vehicle.getTitle().length() > maxLengthMedium ) {
-            options[:font] = Graphics.FONT_SMALL;
+            options[:font] = EvccFonts.FONT_SMALL;
         }
 
         // If there is a page indicator, and the vehicle title
         // is at the limit, we shift the line by thewidth reserved 
         // for the page indicator
-        if( ! _isSingle && vehicle.getTitle().length() >= maxLengthMedium + 2 ) {
+        if( ! _isSingle && vehicle.getTitle().length() >= maxLengthMedium + 1 ) {
             options[:marginLeft] = dc.getWidth() * ( 0.5 - EvccPageIndicator.RADIUS_FACTOR ) * 2;
         }
         
@@ -317,20 +316,20 @@ import Toybox.Math;
         }
         // If the vehicle is not charging, we show the charging mode in this line
         else {
-            lineVehicle.addText( " " + loadpoint.getModeFormatted(), {} );
+            lineVehicle.addText( " (" + loadpoint.getModeFormatted() + ")", { :font => EvccFonts.FONT_GLANCE } );
         }
         
         return lineVehicle;
     }
 
-    private function getChargingElement( loadpoint as EvccLoadPoint, dc as Dc ) {
+    private function getChargingElement( loadpoint as EvccLoadPoint, dc as Dc, marginLeft as Number ) {
         
-        var lineCharging = new EvccDrawingHorizontal( dc, { :font => Graphics.FONT_SMALL } );
+        var lineCharging = new EvccDrawingHorizontal( dc, { :font => EvccFonts.FONT_GLANCE, :marginLeft => marginLeft } );
         
         lineCharging.addText( loadpoint.getModeFormatted(), {} );
         
         if( loadpoint.getChargeRemainingDuration() > 0 ) {
-            lineCharging.addText( ": ", {} );
+            lineCharging.addText( " - ", {} );
             lineCharging.addIcon( EvccUIIcon.ICON_DURATION, {} );
             lineCharging.addText( " " + loadpoint.getChargeRemainingDurationFormatted(), {} );
         }

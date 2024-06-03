@@ -82,14 +82,6 @@ import Toybox.Application.Properties;
                     line1X += bmp.getWidth();
                     line2X += bmp.getWidth() * 0.21;
                     line1 += EvccHelper.formatSoc( siteData.getBatterySoc() ) + "  ";
-
-                    /*
-                    if( dc.getWidth() < 176 ) {
-                        line1 += "B " + EvccHelper.formatSoc( siteData.getBatterySoc() ) + "  ";
-                    } else {
-                        line1 += "Bat " + EvccHelper.formatSoc( siteData.getBatterySoc() ) + " - ";
-                    }
-                    */
                 }
                 var loadpoints = siteData.getLoadPoints();
                 if( loadpoints.size() > 0 && loadpoints[0].getVehicle() != null ) {

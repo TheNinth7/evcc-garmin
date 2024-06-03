@@ -1,124 +1,150 @@
 {
     "device-families":{
-        "resources":{
-            "logo":"60",
-            "icon_glance":"35",
-            "icon_small":"47",
-            "icon_medium":"55"
-        },
         "resources-round-360x360":{
             "logo":"60",
+            "icon_xtiny":"29",
             "icon_glance":"34",
+            "icon_tiny":"39",
             "icon_small":"43",
             "icon_medium":"50"
         },
         "resources-round-390x390":{
             "logo":"60",
+            "icon_xtiny":"28",
             "icon_glance":"33",
+            "icon_tiny":"39",
             "icon_small":"44",
             "icon_medium":"51"
         },
         "resources-round-416x416":{
             "logo":"60",
+            "icon_xtiny":"30",
             "icon_glance":"35",
+            "icon_tiny":"41",
             "icon_small":"47",
             "icon_medium":"55"
         },
         "resources-round-454x454":{
             "logo":"60",
+            "icon_xtiny":"33",
             "icon_glance":"39",
+            "icon_tiny":"45",
             "icon_small":"51",
             "icon_medium":"59"
         },
         "resources-round-240x240":{
             "logo":"40",
+            "icon_xtiny":"19",
             "icon_glance":"22",
+            "icon_tiny":"26",
             "icon_small":"29",
             "icon_medium":"34"
         },
         "resources-round-260x260":{
             "logo":"40",
+            "icon_xtiny":"19",
             "icon_glance":"22",
+            "icon_tiny":"28",
             "icon_small":"31",
             "icon_medium":"37"
         },
         "resources-round-280x280":{
             "logo":"40",
+            "icon_xtiny":"19",
             "icon_glance":"22",
+            "icon_tiny":"30",
             "icon_small":"34",
             "icon_medium":"39"
         },
         "resources-venu3s":{
             "logo":"70",
+            "icon_xtiny":"32",
             "icon_glance":"40",
+            "icon_tiny":"40",
             "icon_small":"47",
             "icon_medium":"53"
         },
         "resources-fr265":{
             "logo":"60",
+            "icon_xtiny":"34",
             "icon_glance":"39",
+            "icon_tiny":"43",
             "icon_small":"50",
             "icon_medium":"58"
         },
         "resources-fr745":{
             "logo":"40",
+            "icon_xtiny":"19",
             "icon_glance":"19",
+            "icon_tiny":"26",
             "icon_small":"29",
             "icon_medium":"34"
         },
         "resources-vivoactive3":{
             "logo-40x33":"33",
+            "icon_xtiny":"16",
             "icon_glance":"20",
+            "icon_tiny":"22",
             "icon_small":"24",
             "icon_medium":"28"
         },
         "resources-vivoactive3m":{
             "logo-40x33":"33",
+            "icon_xtiny":"16",
             "icon_glance":"20",
+            "icon_tiny":"22",
             "icon_small":"24",
             "icon_medium":"28"
         },
         "resources-vivoactive3mlte":{
             "logo-40x33":"33",
+            "icon_xtiny":"16",
             "icon_glance":"20",
+            "icon_tiny":"22",
             "icon_small":"24",
             "icon_medium":"28"
         },
         "resources-vivoactive4":{
             "logo":"35",
+            "icon_xtiny":"19",
             "icon_glance":"19",
+            "icon_tiny":"27",
             "icon_small":"30",
             "icon_medium":"35"
         },
         "resources-vivoactive4s":{
             "logo":"30",
+            "icon_xtiny":"17",
             "icon_glance":"17",
+            "icon_tiny":"23",
             "icon_small":"26",
             "icon_medium":"30"
         },
         "resources-vivoactive5":{
             "logo":"70",
+            "icon_xtiny":"32",
             "icon_glance":"41",
+            "icon_tiny":"41",
             "icon_small":"48",
             "icon_medium":"54"
         }
     },
     "files":{
-        "battery_empty.svg":{ "anti-aliasing":"3", "types":["icon_glance", "icon_small", "icon_medium"] },
-        "battery_onequarter.svg":{ "anti-aliasing":"3", "types":["icon_glance", "icon_small", "icon_medium"] },
-        "battery_half.svg":{ "anti-aliasing":"3", "types":["icon_glance", "icon_small", "icon_medium"]},
-        "battery_threequarters.svg":{ "anti-aliasing":"3", "types":["icon_glance", "icon_small", "icon_medium"] },
-        "battery_full.svg":{ "anti-aliasing":"3", "types":["icon_glance", "icon_small", "icon_medium"] },
-        "arrow_right.svg":{ "anti-aliasing":"3", "types":["icon_glance", "icon_small", "icon_medium"] },
-        "arrow_left.svg":{ "anti-aliasing":"3", "types":["icon_glance", "icon_small", "icon_medium"] },
-        "arrow_left_three.svg":{ "anti-aliasing":"3", "types":["icon_glance", "icon_small", "icon_medium"] },
+        "battery_empty.svg":{ "anti-aliasing":"3", "types":["icon_xtiny", "icon_glance", "icon_tiny", "icon_small", "icon_medium"] },
+        "battery_onequarter.svg":{ "anti-aliasing":"3", "types":["icon_xtiny", "icon_glance", "icon_tiny", "icon_small", "icon_medium"] },
+        "battery_half.svg":{ "anti-aliasing":"3", "types":["icon_xtiny", "icon_glance", "icon_tiny", "icon_small", "icon_medium"]},
+        "battery_threequarters.svg":{ "anti-aliasing":"3", "types":["icon_xtiny", "icon_glance", "icon_tiny", "icon_small", "icon_medium"] },
+        "battery_full.svg":{ "anti-aliasing":"3", "types":["icon_xtiny", "icon_glance", "icon_tiny", "icon_small", "icon_medium"] },
+        "arrow_right.svg":{ "anti-aliasing":"3", "types":["icon_xtiny", "icon_glance", "icon_tiny", "icon_small", "icon_medium"] },
+        "arrow_left.svg":{ "anti-aliasing":"3", "types":["icon_xtiny", "icon_glance", "icon_tiny", "icon_small", "icon_medium"] },
+        "arrow_left_three.svg":{ "anti-aliasing":"3", "types":["icon_xtiny", "icon_glance", "icon_tiny", "icon_small", "icon_medium"] },
+        "grid.svg":{ "anti-aliasing":"3", "types":["icon_xtiny", "icon_glance", "icon_tiny", "icon_small", "icon_medium"] },
+        "house.svg":{ "anti-aliasing":"3", "types":["icon_xtiny", "icon_glance", "icon_tiny", "icon_small", "icon_medium"] },
+        "sun.svg":{ "anti-aliasing":"3", "types":["icon_xtiny", "icon_glance", "icon_tiny", "icon_small", "icon_medium"] },
+        "clock.svg":{ "anti-aliasing":"3", "types":["icon_xtiny", "icon_glance"] },
+        "evcc.svg":{ "anti-aliasing":"3", "types":["icon_xtiny", "icon_glance", "icon_tiny", "icon_small", "icon_medium"] },
         "car.svg":{ "anti-aliasing":"3", "types":["icon_glance"] },
-        "grid.svg":{ "anti-aliasing":"3", "types":["icon_small", "icon_medium"] },
-        "house.svg":{ "anti-aliasing":"3", "types":["icon_small", "icon_medium"] },
-        "sun.svg":{ "anti-aliasing":"3", "types":["icon_small", "icon_medium"] },
-        "clock.svg":{ "anti-aliasing":"3", "types":["icon_small", "icon_medium"] },
         "evcc_flash.svg":{ "anti-aliasing":"3", "types":["logo"] },
-        "evcc_flash_40x33.svg":{ "anti-aliasing":"3", "types":["logo-40x33"], "png-name":"logo_evcc_flash.png" },
-        "evcc.svg":{ "anti-aliasing":"3", "types":["icon_medium"] }
+        "evcc_flash_40x33.svg":{ "anti-aliasing":"3", "types":["logo-40x33"], "png-name":"logo_evcc_flash.png" }
     }
 }

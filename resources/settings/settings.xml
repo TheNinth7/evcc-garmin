@@ -29,6 +29,7 @@
         <property id="dataExpiry" type="number">600</property>
         <property id="glanceOffset" type="number">1</property>
         <property id="mediumOffset" type="number">0</property>
+        <property id="vehicleTitleBaseMaxLength" type="number">6</property>
     </properties>
 
     <settings>

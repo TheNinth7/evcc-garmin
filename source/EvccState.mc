@@ -159,13 +159,17 @@ import Toybox.Time;
     public function getMode() as String { return _mode; }
     // Return the text to be displayed for the mode
     public function getModeFormatted() as String { 
-        if( _mode.equals( "pv" ) ) { return "PV"; }
-        else if( _mode.equals( "minpv" ) ) { return "mPV"; }
-        else if( _mode.equals( "now" ) ) { return "Fast"; }
-        else if( _mode.equals( "off" ) ) { return "Off"; }
-        else { return _mode; }
+        if( _mode != null && _mode instanceof String ) {
+            if( _mode.equals( "pv" ) ) { return "Solar"; }
+            else if( _mode.equals( "minpv" ) ) { return "Min+Solar"; }
+            else if( _mode.equals( "now" ) ) { return "Fast"; }
+            else if( _mode.equals( "off" ) ) { return "Off"; }
+            else { return _mode; }
+        }
+        return "";
     }
-    public function getChargeRemainingDuration() as Number { return _chargeRemainingDuration; }
+
+    public function getChargeRemainingDuration() as Number { return _chargeRemainingDuration != null ? _chargeRemainingDuration : 0; }
     // Returns the remaining duration as formatted string
     public function getChargeRemainingDurationFormatted() as String { 
         return EvccHelper.formatDuration( _chargeRemainingDuration );

@@ -11,7 +11,7 @@ import Toybox.Application.Properties;
 import Toybox.Application.Storage;
 import Toybox.Time;
 
-(:glance :background) class EvccStateRequest {
+(:background) class EvccStateRequest {
     
     private var _timer;
     private var _refreshInterval = 10;
@@ -103,7 +103,7 @@ import Toybox.Time;
         // This jq statement narrows down the response already on the server-side
         // to only the fields we need. This saves valuable memory space, but any
         // new fields from evcc that are to be used need to be added here.
-        url += "?jq={result:{loadpoints:[.loadpoints[]|{chargePower:.chargePower,charging:.charging,connected:.connected,vehicleName:.vehicleName,vehicleSoc:.vehicleSoc,title:.title,phasesActive:.phasesActive}],pvPower:.pvPower,gridPower:.gridPower,homePower:.homePower,siteTitle:.siteTitle,batterySoc:.batterySoc,batteryPower:.batteryPower,vehicles:.vehicles|map_values({title:.title})}}";
+        url += "?jq={result:{loadpoints:[.loadpoints[]|{chargePower:.chargePower,charging:.charging,connected:.connected,vehicleName:.vehicleName,vehicleSoc:.vehicleSoc,title:.title,phasesActive:.phasesActive,mode:.mode,chargeRemainingDuration:.chargeRemainingDuration}],pvPower:.pvPower,gridPower:.gridPower,homePower:.homePower,siteTitle:.siteTitle,batterySoc:.batterySoc,batteryPower:.batteryPower,vehicles:.vehicles|map_values({title:.title})}}";
 
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_GET,

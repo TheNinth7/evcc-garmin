@@ -34,7 +34,7 @@ import Toybox.Application.Properties;
     // Update the view
     function onUpdate(dc as Dc) as Void {
 
-        System.println( "onUpdate: s " + System.getSystemStats().usedMemory );
+        //System.println( "onUpdate: s " + System.getSystemStats().usedMemory );
 
         /*
         System.println( "onUpdate: s " + System.getSystemStats().usedMemory );
@@ -46,7 +46,7 @@ import Toybox.Application.Properties;
         try {
 
             // EvccHelper.debug("Glance: onUpdate");
-            var line = new EvccDrawingHorizontal( dc, { :font => Graphics.FONT_GLANCE, :justify => Graphics.TEXT_JUSTIFY_LEFT, :backgroundColor => Graphics.COLOR_TRANSPARENT } );
+            var line = new EvccDrawingHorizontal( dc, { :font => EvccFonts.FONT_GLANCE, :justify => Graphics.TEXT_JUSTIFY_LEFT, :backgroundColor => Graphics.COLOR_TRANSPARENT } );
             
             if( ! _stateRequest.hasLoaded() ) {
                 line.addText( "Loading ...", {} );
@@ -62,10 +62,10 @@ import Toybox.Application.Properties;
                     var glanceOffset = Properties.getValue( "glanceOffset" );
 
                     if( state.hasBattery() ) {
-                        var column = new EvccDrawingVertical( dc, { :font => Graphics.FONT_GLANCE } );
+                        var column = new EvccDrawingVertical( dc, { :font => EvccFonts.FONT_GLANCE } );
                         column.addGlanceIcon( EvccUIIcon.ICON_BATTERY, { :batterySoc => state.getBatterySoc() } );
 
-                        var batteryState = new EvccDrawingHorizontal( dc, { :font => Graphics.FONT_GLANCE } );
+                        var batteryState = new EvccDrawingHorizontal( dc, { :font => EvccFonts.FONT_GLANCE } );
                         batteryState.addText( EvccHelper.formatSoc( state.getBatterySoc() ), {} );
                         
                         batteryState.addGlanceIcon( EvccUIIcon.ICON_POWER_FLOW, { :power => state.getBatteryPowerRounded(), :marginTop => glanceOffset } );
@@ -78,14 +78,14 @@ import Toybox.Application.Properties;
                     var hasVehicle = false;
                     // We use the height of the font as spacing between the columns
                     // This gives us a space that is suitable for each screen size/resolution
-                    var spacing = dc.getTextDimensions( "   ", Graphics.FONT_GLANCE )[0];
+                    var spacing = dc.getTextDimensions( "   ", EvccFonts.FONT_GLANCE )[0];
                     for (var i = 0; i < loadpoints.size(); i++) {
                         var loadpoint = loadpoints[i] as EvccLoadPoint;
                         var vehicle = loadpoint.getVehicle();
                         if( vehicle != null ) {
-                            var column = new EvccDrawingVertical( dc, { :font => Graphics.FONT_GLANCE, :marginLeft => spacing } );
+                            var column = new EvccDrawingVertical( dc, { :font => EvccFonts.FONT_GLANCE, :marginLeft => spacing } );
                             column.addText( vehicle.getTitle().substring( 0, 8 ), {} );
-                            var vehicleState = new EvccDrawingHorizontal( dc, { :font => Graphics.FONT_GLANCE } );
+                            var vehicleState = new EvccDrawingHorizontal( dc, { :font => EvccFonts.FONT_GLANCE } );
                             if( vehicle.isGuest() ) {
                                 vehicleState.addBitmap( Rez.Drawables.car_glance, { :marginTop => glanceOffset } );
                             } else {
@@ -109,10 +109,10 @@ import Toybox.Application.Properties;
         } catch ( ex ) {
             EvccHelper.debugException( ex );
             var errorMsg = "Error:\n" + ex.getErrorMessage();
-            var drawElement = new EvccUIText( errorMsg, dc, { :font => Graphics.FONT_GLANCE, :justify => Graphics.TEXT_JUSTIFY_LEFT, :color => EvccConstants.COLOR_ERROR } );
+            var drawElement = new EvccUIText( errorMsg, dc, { :font => EvccFonts.FONT_GLANCE, :justify => Graphics.TEXT_JUSTIFY_LEFT, :color => EvccConstants.COLOR_ERROR } );
             drawElement.draw( dc.getWidth() / 2, dc.getHeight() / 2 );
         }
-        System.println( "onUpdate: e " + System.getSystemStats().usedMemory );
+        //System.println( "onUpdate: e " + System.getSystemStats().usedMemory );
     }
 
     // This is just for safety. At least in the simulator this

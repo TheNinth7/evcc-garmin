@@ -29,8 +29,8 @@ import Toybox.WatchUi;
         }
         
         dc.clear();
-        var drawElement = new EvccUIText( errorMsg, dc, { :font => Graphics.FONT_GLANCE, :color => EvccConstants.COLOR_ERROR, :justify => Graphics.TEXT_JUSTIFY_LEFT } );
-        drawElement.draw( 0, ( dc.getHeight() / 2 ) * 0.9 );
+        dc.setColor( EvccConstants.COLOR_ERROR, Graphics.COLOR_TRANSPARENT );
+        dc.drawText( 0, dc.getHeight() / 2 * 0.9, Graphics.FONT_GLANCE, errorMsg, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER );
     }
 
 }
