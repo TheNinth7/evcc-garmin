@@ -8,6 +8,7 @@ import Toybox.WatchUi;
 // :justify - one of the Graphics.TEXT_JUSTIFY_xxx constants, horizontal alignment
 // :color, :backgroundColor - colors to be used to draw the element
 // :font - font for text
+// :relativeFont - for specificy font size in relation to the parent. Value of 1 for example means shift to one font size smaller
 // :parent - parent drawing element. :color, :backgroundColor and :font may be inherited from a parent
 // :batterySoc, :power, :activePhases - for icons that change bases on these inputs
 (:glance) class EvccUIBlock {
@@ -41,6 +42,13 @@ import Toybox.WatchUi;
         if( _options[value] == null && parent != null ) {
             // We store the value from the parent locally for quicker access
             _options[value] = parent.getOption( value );
+            
+            // If we take over the font form the parent element, we apply any relativeFont definition
+            // and shift the font accordingly. Ee.g. parent font EvccFonts.FONT_MEDIUM (=0) and :relativeFont=3
+            // results in using EvccFonts.GLANCE (=3)
+            if( value == :font && _options[:relativeFont] != null ) {
+                _options[value] = EvccHelper.min( ( _options[value] as Number ) + ( _options[:relativeFont] as Number ), EvccFonts._fonts.size() - 1 );
+            }
         } else if ( _options[value] == null ) {
             // If no more parent is present, we apply the following default behavior
             if( value == :backgroundColor ) { return EvccConstants.COLOR_BACKGROUND; }
@@ -61,6 +69,13 @@ import Toybox.WatchUi;
     function setParent( parent as EvccUIContainer ) {
         _options[:parent] = parent.weak();
     }
+
+    // Get the Garmin font definition for the current font
+    function getGarminFont() {
+        var fonts = EvccFonts._fonts as Array<FontDefinition>;
+        return fonts[getOption( :font )];
+    }
+
 
     // Functions to be implemented by implementations of this class
     function getWidth();
@@ -241,14 +256,13 @@ import Toybox.WatchUi;
 
     function append( text ) { _text += text; return self; }
 
-    function getWidth() { return _dc.getTextDimensions( _text, getOption( :font ) )[0] + getOption( :marginLeft ) + getOption( :marginRight ); }
-    function getHeight() { return _dc.getTextDimensions( _text, getOption( :font ) )[1] + getOption( :marginTop ) + getOption( :marginBottom ); }
+    function getWidth() { return _dc.getTextDimensions( _text, getGarminFont() )[0] + getOption( :marginLeft ) + getOption( :marginRight ); }
+    function getHeight() { return _dc.getTextDimensions( _text, getGarminFont() )[1] + getOption( :marginTop ) + getOption( :marginBottom ); }
 
     // For alignment we just pass the justify parameter on to the drawText
     function draw( x, y ) {
         _dc.setColor( getOption( :color ), getOption( :backgroundColor ) );
-        var fonts = EvccFonts._fonts as Array<FontDefinition>;
-        _dc.drawText( x + getOption( :marginLeft ), y + getOption( :marginTop ), fonts[getOption( :font )], _text, getOption( :justify ) | Graphics.TEXT_JUSTIFY_VCENTER );
+        _dc.drawText( x + getOption( :marginLeft ), y + getOption( :marginTop ), getGarminFont(), _text, getOption( :justify ) | Graphics.TEXT_JUSTIFY_VCENTER );
     }
 }
 
@@ -314,7 +328,8 @@ import Toybox.WatchUi;
     public static var ICON_SUN = 8;
     public static var ICON_HOUSE = 9;
     public static var ICON_GRID = 10;
-    public static var ICON_DURATION = 11;
+    public static var ICON_EVCC = 11;
+    public static var ICON_DURATION = 12;
 
     // For the battery we have special handling, if this
     // constant is based in, we choose ony of the battery
@@ -382,11 +397,7 @@ import Toybox.WatchUi;
 
         // Throw an exception if we could not find the icon
         if( ref == null ) {
-            var fontName = font;
-            if( font == Graphics.FONT_GLANCE ) { fontName = "FONT_GLANCE"; }
-            else if( font == Graphics.FONT_SMALL ) { fontName = "FONT_SMALL"; }
-            else if( font == Graphics.FONT_MEDIUM ) { fontName = "FONT_MEDIUM"; }
-            throw new InvalidValueException( "Icon " + _icon + " not found for font " + fontName );
+            throw new InvalidValueException( "Icon " + _icon + " not found for font " + font );
         }
 
         return ref;
@@ -419,30 +430,17 @@ class EvccIcons {
         [ Rez.Drawables.sun_medium, Rez.Drawables.sun_small, Rez.Drawables.sun_tiny, Rez.Drawables.sun_glance, Rez.Drawables.sun_xtiny ],
         [ Rez.Drawables.house_medium, Rez.Drawables.house_small, Rez.Drawables.house_tiny, Rez.Drawables.house_glance, Rez.Drawables.house_xtiny ],
         [ Rez.Drawables.grid_medium, Rez.Drawables.grid_small, Rez.Drawables.grid_tiny, Rez.Drawables.grid_glance, Rez.Drawables.grid_xtiny ],
+        [ Rez.Drawables.evcc_medium, Rez.Drawables.evcc_small, Rez.Drawables.evcc_tiny, Rez.Drawables.evcc_glance, Rez.Drawables.evcc_xtiny ],
         [ null, null, null, Rez.Drawables.clock_glance, Rez.Drawables.clock_xtiny ]
     ];
-/*
-    public static var _icons = [
-        { Graphics.FONT_MEDIUM => Rez.Drawables.battery_empty_medium, Graphics.FONT_SMALL => Rez.Drawables.battery_empty_tiny, Graphics.FONT_TINY => Rez.Drawables.battery_empty_tiny, Graphics.FONT_GLANCE => Rez.Drawables.battery_empty_glance, Graphics.FONT_XTINY => Rez.Drawables.battery_empty_xtiny },
-        { Graphics.FONT_MEDIUM => Rez.Drawables.battery_onequarter_medium, Graphics.FONT_SMALL => Rez.Drawables.battery_onequarter_small, Graphics.FONT_TINY => Rez.Drawables.battery_onequarter_tiny, Graphics.FONT_GLANCE => Rez.Drawables.battery_onequarter_glance, Graphics.FONT_XTINY => Rez.Drawables.battery_onequarter_xtiny },
-        { Graphics.FONT_MEDIUM => Rez.Drawables.battery_half_medium, Graphics.FONT_SMALL => Rez.Drawables.battery_half_small, Graphics.FONT_TINY => Rez.Drawables.battery_half_tiny, Graphics.FONT_GLANCE => Rez.Drawables.battery_half_glance, Graphics.FONT_XTINY => Rez.Drawables.battery_half_xtiny },
-        { Graphics.FONT_MEDIUM => Rez.Drawables.battery_threequarters_medium, Graphics.FONT_SMALL => Rez.Drawables.battery_threequarters_small, Graphics.FONT_TINY => Rez.Drawables.battery_threequarters_tiny, Graphics.FONT_GLANCE => Rez.Drawables.battery_threequarters_glance, Graphics.FONT_XTINY => Rez.Drawables.battery_threequarters_xtiny },
-        { Graphics.FONT_MEDIUM => Rez.Drawables.battery_full_medium, Graphics.FONT_SMALL => Rez.Drawables.battery_full_small, Graphics.FONT_TINY => Rez.Drawables.battery_full_tiny, Graphics.FONT_GLANCE => Rez.Drawables.battery_full_glance, Graphics.FONT_XTINY => Rez.Drawables.battery_full_xtiny },
-        { Graphics.FONT_MEDIUM => Rez.Drawables.arrow_right_medium, Graphics.FONT_SMALL => Rez.Drawables.arrow_right_small, Graphics.FONT_TINY => Rez.Drawables.arrow_right_tiny, Graphics.FONT_GLANCE => Rez.Drawables.arrow_right_glance, Graphics.FONT_XTINY => Rez.Drawables.arrow_right_xtiny },
-        { Graphics.FONT_MEDIUM => Rez.Drawables.arrow_left_medium, Graphics.FONT_SMALL => Rez.Drawables.arrow_left_small, Graphics.FONT_TINY => Rez.Drawables.arrow_left_tiny, Graphics.FONT_GLANCE => Rez.Drawables.arrow_left_glance, Graphics.FONT_XTINY => Rez.Drawables.arrow_left_xtiny },
-        { Graphics.FONT_MEDIUM => Rez.Drawables.arrow_left_three_medium, Graphics.FONT_SMALL => Rez.Drawables.arrow_left_three_small, Graphics.FONT_TINY => Rez.Drawables.arrow_left_three_tiny, Graphics.FONT_GLANCE => Rez.Drawables.arrow_left_three_glance, Graphics.FONT_XTINY => Rez.Drawables.arrow_left_three_xtiny },
-        { Graphics.FONT_MEDIUM => Rez.Drawables.sun_medium, Graphics.FONT_SMALL => Rez.Drawables.sun_small, Graphics.FONT_TINY => Rez.Drawables.sun_tiny, Graphics.FONT_GLANCE => Rez.Drawables.sun_glance, Graphics.FONT_XTINY => Rez.Drawables.sun_xtiny },
-        { Graphics.FONT_MEDIUM => Rez.Drawables.house_medium, Graphics.FONT_SMALL => Rez.Drawables.house_small, Graphics.FONT_TINY => Rez.Drawables.house_tiny, Graphics.FONT_GLANCE => Rez.Drawables.house_glance, Graphics.FONT_XTINY => Rez.Drawables.house_xtiny },
-        { Graphics.FONT_MEDIUM => Rez.Drawables.grid_medium, Graphics.FONT_SMALL => Rez.Drawables.grid_small, Graphics.FONT_TINY => Rez.Drawables.grid_tiny, Graphics.FONT_GLANCE => Rez.Drawables.grid_glance, Graphics.FONT_XTINY => Rez.Drawables.grid_xtiny },
-        { Graphics.FONT_GLANCE => Rez.Drawables.clock_glance, Graphics.FONT_GLANCE => Rez.Drawables.clock_xtiny }
-    ];
-*/
 }
 
 // Glance icons are in a separate class, because the icons for widget mode are
 // not available to glances at runtime, and thus having them in the same
 // array/dictionary would lead to runtime errors
 (:glance) class EvccGlanceIcons {
+    // array for glance needs to have the same structure as the normal array above
+    // non-relevant entries can be set to null, or if at the end left out
     public static var _icons = [
         [ null, null, null, Rez.Drawables.battery_empty_glance, null ],
         [ null, null, null, Rez.Drawables.battery_onequarter_glance, null ],

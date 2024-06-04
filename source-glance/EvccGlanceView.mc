@@ -36,15 +36,7 @@ import Toybox.Application.Properties;
 
         //System.println( "onUpdate: s " + System.getSystemStats().usedMemory );
 
-        /*
-        System.println( "onUpdate: s " + System.getSystemStats().usedMemory );
-        var obj = new DummyContainer( {} );
-        obj.addElement({});
-        System.println( "onUpdate: e " + System.getSystemStats().usedMemory );
-        */
-
         try {
-
             // EvccHelper.debug("Glance: onUpdate");
             var line = new EvccDrawingHorizontal( dc, { :font => EvccFonts.FONT_GLANCE, :justify => Graphics.TEXT_JUSTIFY_LEFT, :backgroundColor => Graphics.COLOR_TRANSPARENT } );
             

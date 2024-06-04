@@ -1,22 +1,12 @@
 <drawables>
     <bitmap id="evcc_logo_flash" filename="logo_evcc_flash.png"/>
-    
-    <!-- **** fonts to be used in the glance **** -->
-    <bitmap scope="glance" id="battery_empty_glance" filename="icon_glance_battery_empty.png"/>
-    <bitmap scope="glance" id="battery_onequarter_glance" filename="icon_glance_battery_onequarter.png"/>
-    <bitmap scope="glance" id="battery_half_glance" filename="icon_glance_battery_half.png"/>
-    <bitmap scope="glance" id="battery_threequarters_glance" filename="icon_glance_battery_threequarters.png"/>
-    <bitmap scope="glance" id="battery_full_glance" filename="icon_glance_battery_full.png"/>
-    <bitmap scope="glance" id="arrow_right_glance" filename="icon_glance_arrow_right.png"/>
-    <bitmap scope="glance" id="arrow_left_glance" filename="icon_glance_arrow_left.png"/>
-    <bitmap scope="glance" id="arrow_left_three_glance" filename="icon_glance_arrow_left_three.png"/>
-    <bitmap scope="glance" id="car_glance" filename="icon_glance_car.png"/>
-
-    <!-- **** fonts to be used in the widget **** -->
 
     <!-- clock symbol is only needed in smaller fonts -->
     <bitmap scope="foreground" id="clock_xtiny" filename="icon_glance_clock.png"/>
     <bitmap scope="foreground" id="clock_glance" filename="icon_glance_clock.png"/>
+
+    <!-- car symbol is only needed in glance -->
+    <bitmap scope="glance" id="car_glance" filename="icon_glance_car.png"/>
 
     <!-- xtiny font size -->
     <bitmap scope="foreground" id="battery_empty_xtiny" filename="icon_xtiny_battery_empty.png"/>
@@ -30,19 +20,21 @@
     <bitmap scope="foreground" id="sun_xtiny" filename="icon_xtiny_sun.png"/>
     <bitmap scope="foreground" id="house_xtiny" filename="icon_xtiny_house.png"/>
     <bitmap scope="foreground" id="grid_xtiny" filename="icon_xtiny_grid.png"/>
+    <bitmap scope="foreground" id="evcc_xtiny" filename="icon_xtiny_evcc.png"/>
 
     <!-- glance font size -->
-    <bitmap scope="foreground" id="battery_empty_glance" filename="icon_glance_battery_empty.png"/>
-    <bitmap scope="foreground" id="battery_onequarter_glance" filename="icon_glance_battery_onequarter.png"/>
-    <bitmap scope="foreground" id="battery_half_glance" filename="icon_glance_battery_half.png"/>
-    <bitmap scope="foreground" id="battery_threequarters_glance" filename="icon_glance_battery_threequarters.png"/>
-    <bitmap scope="foreground" id="battery_full_glance" filename="icon_glance_battery_full.png"/>
-    <bitmap scope="foreground" id="arrow_right_glance" filename="icon_glance_arrow_right.png"/>
-    <bitmap scope="foreground" id="arrow_left_glance" filename="icon_glance_arrow_left.png"/>
-    <bitmap scope="foreground" id="arrow_left_three_glance" filename="icon_glance_arrow_left_three.png"/>
+    <bitmap scope="glance" id="battery_empty_glance" filename="icon_glance_battery_empty.png"/>
+    <bitmap scope="glance" id="battery_onequarter_glance" filename="icon_glance_battery_onequarter.png"/>
+    <bitmap scope="glance" id="battery_half_glance" filename="icon_glance_battery_half.png"/>
+    <bitmap scope="glance" id="battery_threequarters_glance" filename="icon_glance_battery_threequarters.png"/>
+    <bitmap scope="glance" id="battery_full_glance" filename="icon_glance_battery_full.png"/>
+    <bitmap scope="glance" id="arrow_right_glance" filename="icon_glance_arrow_right.png"/>
+    <bitmap scope="glance" id="arrow_left_glance" filename="icon_glance_arrow_left.png"/>
+    <bitmap scope="glance" id="arrow_left_three_glance" filename="icon_glance_arrow_left_three.png"/>
     <bitmap scope="foreground" id="sun_glance" filename="icon_glance_sun.png"/>
     <bitmap scope="foreground" id="house_glance" filename="icon_glance_house.png"/>
     <bitmap scope="foreground" id="grid_glance" filename="icon_glance_grid.png"/>
+    <bitmap scope="foreground" id="evcc_glance" filename="icon_glance_evcc.png"/>
 
     <!-- tiny font size -->
     <bitmap scope="foreground" id="battery_empty_tiny" filename="icon_tiny_battery_empty.png"/>
@@ -56,6 +48,7 @@
     <bitmap scope="foreground" id="sun_tiny" filename="icon_tiny_sun.png"/>
     <bitmap scope="foreground" id="house_tiny" filename="icon_tiny_house.png"/>
     <bitmap scope="foreground" id="grid_tiny" filename="icon_tiny_grid.png"/>
+    <bitmap scope="foreground" id="evcc_tiny" filename="icon_tiny_evcc.png"/>
 
     <!-- small font size -->
     <bitmap scope="foreground" id="battery_empty_small" filename="icon_small_battery_empty.png"/>
@@ -69,6 +62,7 @@
     <bitmap scope="foreground" id="sun_small" filename="icon_small_sun.png"/>
     <bitmap scope="foreground" id="house_small" filename="icon_small_house.png"/>
     <bitmap scope="foreground" id="grid_small" filename="icon_small_grid.png"/>
+    <bitmap scope="foreground" id="evcc_small" filename="icon_small_evcc.png"/>
 
     <!-- medium font size -->
     <bitmap scope="foreground" id="battery_empty_medium" filename="icon_medium_battery_empty.png"/>
@@ -82,7 +76,7 @@
     <bitmap scope="foreground" id="sun_medium" filename="icon_medium_sun.png"/>
     <bitmap scope="foreground" id="house_medium" filename="icon_medium_house.png"/>
     <bitmap scope="foreground" id="grid_medium" filename="icon_medium_grid.png"/>
-
     <bitmap scope="foreground" id="evcc_medium" filename="icon_medium_evcc.png"/>
+
 
 </drawables>

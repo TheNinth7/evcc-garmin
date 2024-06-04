@@ -30,7 +30,7 @@ import Toybox.Math;
     // site (_actAsGlance=true). Only if that one site is selected, the 
     // other sites will be presented as sub view and can be cycled through.
     var _actAsGlance as Boolean;
-    
+
     function initialize( index as Number, siteConfig as EvccSiteConfig, actAsGlance as Boolean ) {
         // EvccHelper.debug("Widget: initialize");
         View.initialize();
@@ -106,7 +106,8 @@ import Toybox.Math;
         }
     }
 
-    private static var MAX_LINES = 5;
+    private static var MAX_VAR_LINES = 6; // 1 x site title, 1 x battery, 2 x loadpoints with 2 lines each
+    private static var FIXED_LINES = 4; // pv, grid, home, logo
 
     // Update the view
     function onUpdate(dc as Dc) as Void {
@@ -148,8 +149,8 @@ import Toybox.Math;
                     var loadpoints = state.getLoadPoints() as Array<EvccLoadPoint>;
                     var hasVehicle = false;
                     
-                    var showChargingDetails = MAX_LINES - variableLineCount >= loadpoints.size() + state.getNumOfLPsCharging();
-                    for (var i = 0; i < loadpoints.size() && variableLineCount < MAX_LINES; i++) {
+                    var showChargingDetails = MAX_VAR_LINES - variableLineCount >= loadpoints.size() + state.getNumOfLPsCharging();
+                    for (var i = 0; i < loadpoints.size() && variableLineCount < MAX_VAR_LINES; i++) {
                         var loadpoint = loadpoints[i] as EvccLoadPoint;
                         if( loadpoint.getVehicle() != null ) {
                             var loadpointLine = getLoadPointElement( loadpoint, dc );
@@ -167,9 +168,10 @@ import Toybox.Math;
                         variableLineCount++;
                     }
 
-                    block.addText( "Another text line", { :font => EvccFonts.FONT_GLANCE } );
-                    block.addText( "Another text line", {} );
-                    variableLineCount += 2;
+                    //block.addText( "Charging details", { :relativeFont => 3 } );
+                    //block.addText( "Another loadpoint", {} );
+                    //block.addText( "Charging details", { :relativeFont => 3 } );
+                    //variableLineCount += 3;
 
                     block.addContainer( getHouseElement( dc ) );
                 }
@@ -178,30 +180,36 @@ import Toybox.Math;
             dc.setColor( EvccConstants.COLOR_FOREGROUND, EvccConstants.COLOR_BACKGROUND );
             dc.clear();
 
-            // var ref = Rez.Drawables.svg_test;
-            // var bmp = WatchUi.loadResource( ref );
-            // dc.drawBitmap2( dc.getWidth() / 2, dc.getHeight() / 2, bmp, {} );
-
-            if( variableLineCount > 3 ) {
-                block.setOption( :font, EvccFonts.FONT_SMALL );
+            var fonts = EvccFonts._fonts as Array<FontDefinition>;
+            var font = 0;
+            for( ; font < fonts.size(); font++ ) {
+                var maxLines = ( ( dc.getHeight() / dc.getFontHeight( fonts[font] ) ) + 1 ).toNumber();
+                System.println( "**** max lines for font " + font + "=" + maxLines );
+                if( maxLines >= FIXED_LINES + variableLineCount ) {
+                    System.println( "**** choosing font " + font );
+                    block.setOption( :font, font );
+                    break;
+                }
             }
-            var logo = variableLineCount < 5; // also applies to error/loading message
+            
+            var logo = true; // variableLineCount < 5; // also applies to error/loading message
             
             // If only site title or logo are displayed, we offset the content a bit
             var offset = 0;
-            var lineHeight = dc.getFontHeight( block.getOption( :font ) );
+            var lineHeight = dc.getFontHeight( block.getGarminFont() );
             if( ! siteTitle && logo ) { offset = - ( lineHeight / 2 ); }
             else if ( siteTitle && ! logo ) { offset = lineHeight / 2; }
 
-            //block.draw( dc.getWidth() / 2, dc.getHeight() / 2 + offset );
+            block.draw( dc.getWidth() / 2, dc.getHeight() / 2 + offset );
 
             if( siteTitle ) {
-                var siteTitleElement = new EvccUIText( _stateRequest.getState().getSiteTitle().substring(0,9), dc, { :font => EvccFonts.FONT_GLANCE } );
+                // Font size is glance, or smaller if the main content is smaller than glance
+                var siteTitleElement = new EvccUIText( _stateRequest.getState().getSiteTitle().substring(0,9), dc, { :font => EvccHelper.max( font, EvccFonts.FONT_GLANCE ) } );
                 var siteTitleY = ( dc.getHeight() / 2 - block.getHeight() / 2 + offset ) / 2;
                 siteTitleElement.draw( dc.getWidth() / 2, siteTitleY );
             }
             if( logo ) {
-                var logoElement = new EvccUIBitmap( Rez.Drawables.evcc_medium, dc, {} );
+                var logoElement = new EvccUIIcon( EvccUIIcon.ICON_EVCC, new EvccIcons(), dc, { :font => EvccHelper.max( 0, font - 2 ) } );
                 var logoY = dc.getHeight() - ( dc.getHeight() / 2 - block.getHeight() / 2 - offset ) / 2;
                 logoElement.draw( dc.getWidth() / 2, logoY );
             }
@@ -223,7 +231,7 @@ import Toybox.Math;
         linePv.addIcon( EvccUIIcon.ICON_SUN, { :marginTop => _mediumOffset } );
         if( state.getPvPowerRounded() > 0 ) {
             linePv.addText( " ", {} );
-            linePv.addBitmap( Rez.Drawables.arrow_right_medium, { :marginTop => _mediumOffset } );
+            linePv.addIcon( EvccUIIcon.ICON_ARROW_RIGHT, { :marginTop => _mediumOffset } );
         }
         linePv.addText( " " + EvccHelper.formatPower( state.getPvPowerRounded() ), {} );
         return linePv;
@@ -235,7 +243,7 @@ import Toybox.Math;
         lineHouse.addIcon( EvccUIIcon.ICON_HOUSE, { :marginTop => _mediumOffset } );
         if( state.getHomePowerRounded() > 0 ) {
             lineHouse.addText( " ", {} );
-            lineHouse.addBitmap( Rez.Drawables.arrow_left_medium, { :marginTop => _mediumOffset } );
+            lineHouse.addIcon( EvccUIIcon.ICON_ARROW_LEFT, { :marginTop => _mediumOffset } );
         }
         lineHouse.addText( " " + EvccHelper.formatPower( state.getHomePowerRounded() ), {} );
         return lineHouse;
@@ -250,9 +258,7 @@ import Toybox.Math;
         var bp = state.getGridPowerRounded();
         if( bp != 0 ) {
             lineGrid.addText( " ", {} );
-            lineGrid.addBitmap( 
-                ( bp < 0 ? Rez.Drawables.arrow_left_medium : Rez.Drawables.arrow_right_medium ), 
-                { :marginTop => _mediumOffset } );
+            lineGrid.addIcon( EvccUIIcon.ICON_POWER_FLOW, { :power => bp, :marginTop => _mediumOffset } );
         }
         lineGrid.addText( " " + EvccHelper.formatPower( bp.abs() ), {} );
         return lineGrid;
@@ -324,7 +330,7 @@ import Toybox.Math;
 
     private function getChargingElement( loadpoint as EvccLoadPoint, dc as Dc, marginLeft as Number ) {
         
-        var lineCharging = new EvccDrawingHorizontal( dc, { :font => EvccFonts.FONT_GLANCE, :marginLeft => marginLeft } );
+        var lineCharging = new EvccDrawingHorizontal( dc, { :relativeFont => 3, :marginLeft => marginLeft } );
         
         lineCharging.addText( loadpoint.getModeFormatted(), {} );
         
