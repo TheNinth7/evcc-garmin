@@ -9,6 +9,8 @@ import Toybox.WatchUi;
 // :color, :backgroundColor - colors to be used to draw the element
 // :font - font for text
 // :relativeFont - for specificy font size in relation to the parent. Value of 1 for example means shift to one font size smaller
+// :isTruncatable - indicates if a text element can be truncated to make the line fit to the screen
+// :piSpacing - indicates spacing that needs to be left for the page indicator when truncating
 // :parent - parent drawing element. :color, :backgroundColor and :font may be inherited from a parent
 // :batterySoc, :power, :activePhases - for icons that change bases on these inputs
 (:glance) class EvccUIBlock {
@@ -20,13 +22,13 @@ import Toybox.WatchUi;
     function initialize( dc as Dc, options as Dictionary<Symbol,Object> ) {
         _dc = dc;
 
-        // margins and justify are not inherited and immediately
-        // default to certain values
+        // these values are not inherited and immediately default to certain values
         if( options[:marginLeft] == null ) { options[:marginLeft] = 0; }
         if( options[:marginRight] == null ) { options[:marginRight] = 0; }
         if( options[:marginTop] == null ) { options[:marginTop] = 0; }
         if( options[:marginBottom] == null ) { options[:marginBottom] = 0; }
         if( options[:justify] == null ) { options[:justify] = Graphics.TEXT_JUSTIFY_CENTER; }
+        if( options[:piSpacing] == null ) { options[:piSpacing] = 0; }
 
         if( options[:parent] != null && ! ( options[:parent] instanceof WeakReference ) ) { options[:parent] = options[:parent].weak(); }
 
@@ -81,6 +83,17 @@ import Toybox.WatchUi;
     function getWidth();
     function getHeight();
     function draw( x, y );
+
+    // Calculate the available screen width at a given y coordinate
+    function getDcWidthAtY( y as Number ) as Number {
+        // Pythagoras: b = sqrt( c*c - a*a )
+        // b: distance of screen edge from center
+        // c: radius
+        // a: y distance from center
+        var c = _dc.getWidth() / 2;
+        var a = ( y - _dc.getHeight() / 2 ).abs();
+        return ( Math.sqrt( c*c - a*a ) * 2 ) as Number;
+    }
 }
 
 // Base class for all drawing elements that consists of other drawing elements
@@ -139,7 +152,10 @@ import Toybox.WatchUi;
 }
 
 // An element containing other elements that shall stacked horizontally
-(:glance) class EvccDrawingHorizontal extends EvccUIContainer {
+(:glance) class EvccUIHorizontal extends EvccUIContainer {
+    
+    var _truncatableElement as EvccUIText?;
+
     function initialize( dc, options as Dictionary<Symbol,Object> ) {
         EvccUIContainer.initialize( dc, options );
     }
@@ -152,8 +168,25 @@ import Toybox.WatchUi;
     function draw( x, y )
     {
         y += getOption( :marginTop );
+
+        //System.println( "**** piSpacing=" + getOption( :piSpacing ) );
+
+        var availableWidth = getDcWidthAtY( y ) - getOption( :piSpacing ) * 1.5;
+        if( _truncatableElement != null ) {
+            while( availableWidth < getWidth() && _truncatableElement._text.length() > 1 ) {
+                //System.println( "**** before truncate " + _truncatableElement._text );
+                _truncatableElement.truncate( 1 );
+                //System.println( "**** after truncate " + _truncatableElement._text );
+            }
+        }
+        
+        // If there is a page indicator, we center between the dot,
+        // which is at the middle of the spacing, and the right
+        // side of the screen
+        x += getOption( :piSpacing ) / 4;
         x -= getOption( :justify ) == Graphics.TEXT_JUSTIFY_CENTER ? getWidth() / 2 : 0;
         x += getOption( :marginLeft ); 
+        
         for( var i = 0; i < _elements.size(); i++ ) {
             var center = _elements[i].getOption( :justify ) == Graphics.TEXT_JUSTIFY_CENTER;
             x += center ? _elements[i].getWidth() / 2 : 0;
@@ -186,18 +219,30 @@ import Toybox.WatchUi;
     // is also text, then the text is just appended to the previous element
     function addText( text, options as Dictionary<Symbol,Object> ) {
         var elements = _elements as Array;
-        if( elements.size() > 0 && elements[elements.size() - 1] instanceof EvccUIText && options.isEmpty() ) {
+        // We append the text to an existing element if:
+        // - there is a previous element
+        // - it is a text element
+        // - it is not truncatable
+        // - and we do not have any options set for the new text
+        if( elements.size() > 0 && 
+            elements[elements.size() - 1] instanceof EvccUIText && 
+            elements[elements.size() - 1].getOption( :isTruncatable ) != true && 
+            options.isEmpty() ) 
+        {
             elements[elements.size() - 1].append( text );
         } else { 
             options[:parent] = self;
             _elements.add( new EvccUIText( text, _dc, options ) );
+            if( options[:isTruncatable] == true ) {
+                _truncatableElement = _elements[_elements.size() - 1];
+            }
         }
         return self;
     }
 }
 
 // An element containing other elements that shall be stacked vertically
-(:glance) class EvccDrawingVertical extends EvccUIContainer {
+(:glance) class EvccUIVertical extends EvccUIContainer {
     function initialize( dc, options as Dictionary<Symbol,Object> ) {
         EvccUIContainer.initialize( dc, options );
     }
@@ -252,7 +297,13 @@ import Toybox.WatchUi;
     function initialize( text, dc as Dc, options as Dictionary<Symbol,Object> ) {
         EvccUIBlock.initialize( dc, options );
         _text = text;
-   }
+    }
+
+    // Removes the specified number of characters from the
+    // end of the text
+    function truncate( chars as Number ) {
+        _text = _text.substring( 0, _text.length() - chars );
+    }
 
     function append( text ) { _text += text; return self; }
 
@@ -326,7 +377,7 @@ import Toybox.WatchUi;
     public static var ICON_ARROW_LEFT = 6;
     public static var ICON_ARROW_LEFT_THREE = 7;
     public static var ICON_SUN = 8;
-    public static var ICON_HOUSE = 9;
+    public static var ICON_HOME = 9;
     public static var ICON_GRID = 10;
     public static var ICON_EVCC = 11;
     public static var ICON_DURATION = 12;

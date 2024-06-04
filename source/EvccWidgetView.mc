@@ -31,6 +31,9 @@ import Toybox.Math;
     // other sites will be presented as sub view and can be cycled through.
     var _actAsGlance as Boolean;
 
+    // Indicates that a page indicator will be displayed
+    var _showPageIndicator as Boolean;
+
     function initialize( index as Number, siteConfig as EvccSiteConfig, actAsGlance as Boolean ) {
         // EvccHelper.debug("Widget: initialize");
         View.initialize();
@@ -46,6 +49,7 @@ import Toybox.Math;
         // title will be displayed
         _isSingle = ( siteConfig.getSiteCount() == 1 );
         _actAsGlance = actAsGlance;
+        _showPageIndicator = ! _isSingle && ! _actAsGlance;
         
         _stateRequest = new EvccStateRequest( index, siteConfig.getSite( index ) );
     }
@@ -113,7 +117,7 @@ import Toybox.Math;
     function onUpdate(dc as Dc) as Void {
         try {
             // EvccHelper.debug("Widget: onUpdate");
-            var block = new EvccDrawingVertical( dc, { :font => EvccFonts.FONT_MEDIUM } );
+            var block = new EvccUIVertical( dc, { :font => EvccFonts.FONT_MEDIUM } );
             var variableLineCount = 0;
             
             // Determine if site title is displayed
@@ -138,17 +142,19 @@ import Toybox.Math;
                 } else { 
                     var state = _stateRequest.getState();
 
-                    block.addContainer( getPvElement( dc ) );
-                    block.addContainer( getGridElement( dc ) );
-
+                    // PV
+                    block.addContainer( getBasicElement( EvccUIIcon.ICON_SUN, state.getPvPowerRounded(), EvccUIIcon.ICON_ARROW_RIGHT, dc ) );
+                    // Grid
+                    block.addContainer( getBasicElement( EvccUIIcon.ICON_GRID, state.getGridPowerRounded(), EvccUIIcon.ICON_POWER_FLOW, dc ) );
+                    // Battery
                     if( state.hasBattery() ) {
-                        block.addContainer( getBatteryElement( dc ) );
+                        block.addContainer( getBasicElement( EvccUIIcon.ICON_BATTERY, state.getBatteryPowerRounded(), EvccUIIcon.ICON_POWER_FLOW, dc ) );
                         variableLineCount++;
                     }                
 
+                    // Loadpoints
                     var loadpoints = state.getLoadPoints() as Array<EvccLoadPoint>;
                     var hasVehicle = false;
-                    
                     var showChargingDetails = MAX_VAR_LINES - variableLineCount >= loadpoints.size() + state.getNumOfLPsCharging();
                     for (var i = 0; i < loadpoints.size() && variableLineCount < MAX_VAR_LINES; i++) {
                         var loadpoint = loadpoints[i] as EvccLoadPoint;
@@ -173,50 +179,63 @@ import Toybox.Math;
                     //block.addText( "Charging details", { :relativeFont => 3 } );
                     //variableLineCount += 3;
 
-                    block.addContainer( getHouseElement( dc ) );
+                    // Home
+                    block.addContainer( getBasicElement( EvccUIIcon.ICON_HOME, state.getHomePowerRounded(), EvccUIIcon.ICON_ARROW_LEFT, dc ) );
                 }
             }
 
-            dc.setColor( EvccConstants.COLOR_FOREGROUND, EvccConstants.COLOR_BACKGROUND );
-            dc.clear();
-
+            // Determine font size, and if logo is to be displayed
             var fonts = EvccFonts._fonts as Array<FontDefinition>;
             var font = 0;
+            var logo = true;
             for( ; font < fonts.size(); font++ ) {
+                // Before we move to smaller font sizes
+                // we remove the logo
+                if( logo && font == 3 ) {
+                    font--; logo = false; variableLineCount--;
+                }
                 var maxLines = ( ( dc.getHeight() / dc.getFontHeight( fonts[font] ) ) + 1 ).toNumber();
-                System.println( "**** max lines for font " + font + "=" + maxLines );
+                // System.println( "**** max lines for font " + font + "=" + maxLines );
                 if( maxLines >= FIXED_LINES + variableLineCount ) {
-                    System.println( "**** choosing font " + font );
+                    // System.println( "**** choosing font " + font );
                     block.setOption( :font, font );
                     break;
                 }
             }
-            
-            var logo = true; // variableLineCount < 5; // also applies to error/loading message
-            
+
+            // Start drawing
+            dc.setColor( EvccConstants.COLOR_FOREGROUND, EvccConstants.COLOR_BACKGROUND );
+            dc.clear();
+
+            // Draw main content
             // If only site title or logo are displayed, we offset the content a bit
             var offset = 0;
             var lineHeight = dc.getFontHeight( block.getGarminFont() );
             if( ! siteTitle && logo ) { offset = - ( lineHeight / 2 ); }
             else if ( siteTitle && ! logo ) { offset = lineHeight / 2; }
-
             block.draw( dc.getWidth() / 2, dc.getHeight() / 2 + offset );
 
+            // Draw title
             if( siteTitle ) {
                 // Font size is glance, or smaller if the main content is smaller than glance
                 var siteTitleElement = new EvccUIText( _stateRequest.getState().getSiteTitle().substring(0,9), dc, { :font => EvccHelper.max( font, EvccFonts.FONT_GLANCE ) } );
                 var siteTitleY = ( dc.getHeight() / 2 - block.getHeight() / 2 + offset ) / 2;
                 siteTitleElement.draw( dc.getWidth() / 2, siteTitleY );
             }
+            
+            // Draw logo
             if( logo ) {
+                // Logo size is two sizes larger than font size
                 var logoElement = new EvccUIIcon( EvccUIIcon.ICON_EVCC, new EvccIcons(), dc, { :font => EvccHelper.max( 0, font - 2 ) } );
                 var logoY = dc.getHeight() - ( dc.getHeight() / 2 - block.getHeight() / 2 - offset ) / 2;
                 logoElement.draw( dc.getWidth() / 2, logoY );
             }
 
-            if( ! _isSingle && ! _actAsGlance ) {
+            // Draw page indicator
+            if( _showPageIndicator ) {
                 new EvccPageIndicator( dc ).drawPageIndicator( _index, _totalSites );
             }
+        
         } catch ( ex ) {
             EvccHelper.debugException( ex );
             var errorMsg = "Error:\n" + ex.getErrorMessage();
@@ -225,96 +244,58 @@ import Toybox.Math;
         }
     }
 
-    private function getPvElement( dc as Dc ) {
-        var state = _stateRequest.getState();
-        var linePv = new EvccDrawingHorizontal( dc, {} );
-        linePv.addIcon( EvccUIIcon.ICON_SUN, { :marginTop => _mediumOffset } );
-        if( state.getPvPowerRounded() > 0 ) {
-            linePv.addText( " ", {} );
-            linePv.addIcon( EvccUIIcon.ICON_ARROW_RIGHT, { :marginTop => _mediumOffset } );
-        }
-        linePv.addText( " " + EvccHelper.formatPower( state.getPvPowerRounded() ), {} );
-        return linePv;
+
+    // Returns the spacing that elements should keep to 
+    // the left side of the screen if there is a page
+    // indicator
+    private function getPiSpacing( dc as Dc ) as Number {
+        return _showPageIndicator ? dc.getWidth() * ( 0.5 - EvccPageIndicator.RADIUS_FACTOR ) * 2 : 0;
     }
 
-    private function getHouseElement( dc as Dc ) {
+    // Function to generate line for PV, grid, battery and home
+    private function getBasicElement( icon as Number, power as Number, flowIcon as Number, dc as Dc ) as EvccUIHorizontal {
         var state = _stateRequest.getState();
-        var lineHouse = new EvccDrawingHorizontal( dc, {} );
-        lineHouse.addIcon( EvccUIIcon.ICON_HOUSE, { :marginTop => _mediumOffset } );
-        if( state.getHomePowerRounded() > 0 ) {
-            lineHouse.addText( " ", {} );
-            lineHouse.addIcon( EvccUIIcon.ICON_ARROW_LEFT, { :marginTop => _mediumOffset } );
+        var lineOptions = {};
+        var iconOptions = { :marginTop => _mediumOffset };
+        if( icon == EvccUIIcon.ICON_BATTERY ) { 
+            // For battery the SoC is used to choose on of the icons with different fill
+            iconOptions[:batterySoc] = state.getBatterySoc(); 
+            // If there is a page indicator, we shift the battery symbol
+            lineOptions[:piSpacing] = getPiSpacing( dc );
         }
-        lineHouse.addText( " " + EvccHelper.formatPower( state.getHomePowerRounded() ), {} );
-        return lineHouse;
+        var line = new EvccUIHorizontal( dc, lineOptions );
+        line.addIcon( icon, iconOptions );
+        // For battery we display the SoC as text as well
+        if( icon == EvccUIIcon.ICON_BATTERY ) { line.addText( EvccHelper.formatSoc( state.getBatterySoc() ), {} ); }
+
+        if( power != 0 ) {
+            line.addText( " ", {} );
+            var flowOptions = { :marginTop => _mediumOffset };
+            if( flowIcon == EvccUIIcon.ICON_POWER_FLOW ) { flowOptions[:power] = power; }
+            line.addIcon( flowIcon, flowOptions );
+        }
+        // For battery we show the power only if it is not 0,
+        // for all others we always show it
+        if( icon != EvccUIIcon.ICON_BATTERY || power != 0 ) {
+            line.addText( " " + EvccHelper.formatPower( power.abs() ), {} );
+        }
+        return line;
     }
 
-    private function getGridElement( dc as Dc ) {
-        var state = _stateRequest.getState();
-        var lineGrid = new EvccDrawingHorizontal( dc, {} );
-        
-        lineGrid.addIcon( EvccUIIcon.ICON_GRID, { :marginTop => _mediumOffset } );
-        
-        var bp = state.getGridPowerRounded();
-        if( bp != 0 ) {
-            lineGrid.addText( " ", {} );
-            lineGrid.addIcon( EvccUIIcon.ICON_POWER_FLOW, { :power => bp, :marginTop => _mediumOffset } );
-        }
-        lineGrid.addText( " " + EvccHelper.formatPower( bp.abs() ), {} );
-        return lineGrid;
-    }
-
-    private function getBatteryElement( dc as Dc ) {
-        var state = _stateRequest.getState();
-        var lineBattery = new EvccDrawingHorizontal( dc, {} );
-
-        lineBattery.addIcon( EvccUIIcon.ICON_BATTERY, { :batterySoc => state.getBatterySoc(), :marginTop => _mediumOffset } );
-        lineBattery.addText( EvccHelper.formatSoc( state.getBatterySoc() ), {} );
-        
-        var bp = state.getBatteryPowerRounded();
-        if( bp != 0 ) {
-            lineBattery.addText( " ", {} );
-            lineBattery.addIcon( EvccUIIcon.ICON_POWER_FLOW, { :power => bp, :marginTop => _mediumOffset } );
-            lineBattery.addText( " " + EvccHelper.formatPower( bp.abs() ), {} );
-        }
-        return lineBattery;
-    }
-
+    // Function to generate main loadpoint lines
     private function getLoadPointElement( loadpoint as EvccLoadPoint, dc as Dc ) {
         var vehicle = loadpoint.getVehicle();
         
-        // Based on the information displayed we determine the max length for
-        // the vehicle title in font size medium
-        // The base length is the max length for charging with a double-digit
-        // amount of watts. To that, we add values based on information that
-        // is not displayed:
-        //   if we are not charging (no kW) we gain 8 more but loose the length of the mode (the mode also has brackets, but this is compensated by the smaller font size used), 
-        //   if the vehicle is guest (no SoC) we can add 3 more,
-        //   if charging power is less than 10 kW we gain one more
-        //   if we have to display the page indicator, we loose one
-        var maxLengthMedium = _vehicleTitleBaseMaxLength + ( loadpoint.isCharging() ? 0 : 9 - loadpoint.getModeFormatted().length() ) + ( vehicle.isGuest() ? 3 : 0 ) + ( loadpoint.isCharging() && loadpoint.getChargePowerRounded() < 10000 ? 1 : 0 ) - ( _isSingle ? 0 : 3 );
-
-        var options = {};
-        // If the title is longer, we switch to small font
-        if( vehicle.getTitle().length() > maxLengthMedium ) {
-            options[:font] = EvccFonts.FONT_SMALL;
-        }
-
-        // If there is a page indicator, and the vehicle title
-        // is at the limit, we shift the line by thewidth reserved 
-        // for the page indicator
-        if( ! _isSingle && vehicle.getTitle().length() >= maxLengthMedium + 1 ) {
-            options[:marginLeft] = dc.getWidth() * ( 0.5 - EvccPageIndicator.RADIUS_FACTOR ) * 2;
-        }
-        
-        var lineVehicle = new EvccDrawingHorizontal( dc, options );
+        var lineVehicle = new EvccUIHorizontal( dc, { :piSpacing => getPiSpacing( dc ) } );
         
         // Small font give us two more characters, after that we truncate
-        lineVehicle.addText( vehicle.getTitle().substring( 0, maxLengthMedium + 2 ), {} );
+        lineVehicle.addText( vehicle.getTitle(), { :isTruncatable => true } );
         
+        // For guest vehicles there is no SoC
         if( ! vehicle.isGuest() ) {
             lineVehicle.addText( " " + EvccHelper.formatSoc( vehicle.getSoc() ), {} );
         }
+        // If the vehicle is charging, we show the power
         if( loadpoint.isCharging() ) {
             lineVehicle.addText( " ", {} );
             lineVehicle.addIcon( EvccUIIcon.ICON_ACTIVE_PHASES, { :charging => true, :activePhases => loadpoint.getActivePhases(), :marginTop => _mediumOffset } );
@@ -328,18 +309,15 @@ import Toybox.Math;
         return lineVehicle;
     }
 
+    // Function to generate charging info below main loadpoint line
     private function getChargingElement( loadpoint as EvccLoadPoint, dc as Dc, marginLeft as Number ) {
-        
-        var lineCharging = new EvccDrawingHorizontal( dc, { :relativeFont => 3, :marginLeft => marginLeft } );
-        
+        var lineCharging = new EvccUIHorizontal( dc, { :relativeFont => 3, :marginLeft => marginLeft } );
         lineCharging.addText( loadpoint.getModeFormatted(), {} );
-        
         if( loadpoint.getChargeRemainingDuration() > 0 ) {
             lineCharging.addText( " - ", {} );
             lineCharging.addIcon( EvccUIIcon.ICON_DURATION, {} );
             lineCharging.addText( " " + loadpoint.getChargeRemainingDurationFormatted(), {} );
         }
-        
         return lineCharging;
     }
 

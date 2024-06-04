@@ -8,9 +8,12 @@ import Toybox.WatchUi;
 // :justify - one of the Graphics.TEXT_JUSTIFY_xxx constants, horizontal alignment
 // :color, :backgroundColor - colors to be used to draw the element
 // :font - font for text
+// :relativeFont - for specificy font size in relation to the parent. Value of 1 for example means shift to one font size smaller
+// :isTruncatable - indicates if a text element can be truncated to make the line fit to the screen
+// :piSpacing - indicates spacing that needs to be left for the page indicator when truncating
 // :parent - parent drawing element. :color, :backgroundColor and :font may be inherited from a parent
 // :batterySoc, :power, :activePhases - for icons that change bases on these inputs
- class EvccUIBlock {
+class EvccUIBlock {
     var _dc as Dc; 
     
     private var _options as Dictionary<Symbol,Object>;
@@ -19,13 +22,13 @@ import Toybox.WatchUi;
     function initialize( dc as Dc, options as Dictionary<Symbol,Object> ) {
         _dc = dc;
 
-        // margins and justify are not inherited and immediately
-        // default to certain values
+        // these values are not inherited and immediately default to certain values
         if( options[:marginLeft] == null ) { options[:marginLeft] = 0; }
         if( options[:marginRight] == null ) { options[:marginRight] = 0; }
         if( options[:marginTop] == null ) { options[:marginTop] = 0; }
         if( options[:marginBottom] == null ) { options[:marginBottom] = 0; }
         if( options[:justify] == null ) { options[:justify] = Graphics.TEXT_JUSTIFY_CENTER; }
+        if( options[:piSpacing] == null ) { options[:piSpacing] = 0; }
 
         if( options[:parent] != null && ! ( options[:parent] instanceof WeakReference ) ) { options[:parent] = options[:parent].weak(); }
 
@@ -41,6 +44,13 @@ import Toybox.WatchUi;
         if( _options[value] == null && parent != null ) {
             // We store the value from the parent locally for quicker access
             _options[value] = parent.getOption( value );
+            
+            // If we take over the font form the parent element, we apply any relativeFont definition
+            // and shift the font accordingly. Ee.g. parent font EvccFonts.FONT_MEDIUM (=0) and :relativeFont=3
+            // results in using EvccFonts.GLANCE (=3)
+            if( value == :font && _options[:relativeFont] != null ) {
+                _options[value] = EvccHelper.min( ( _options[value] as Number ) + ( _options[:relativeFont] as Number ), EvccFonts._fonts.size() - 1 );
+            }
         } else if ( _options[value] == null ) {
             // If no more parent is present, we apply the following default behavior
             if( value == :backgroundColor ) { return EvccConstants.COLOR_BACKGROUND; }
@@ -62,14 +72,32 @@ import Toybox.WatchUi;
         _options[:parent] = parent.weak();
     }
 
+    // Get the Garmin font definition for the current font
+    function getGarminFont() {
+        var fonts = EvccFonts._fonts as Array<FontDefinition>;
+        return fonts[getOption( :font )];
+    }
+
+
     // Functions to be implemented by implementations of this class
     function getWidth();
     function getHeight();
     function draw( x, y );
+
+    // Calculate the available screen width at a given y coordinate
+    function getDcWidthAtY( y as Number ) as Number {
+        // Pythagoras: b = sqrt( c*c - a*a )
+        // b: distance of screen edge from center
+        // c: radius
+        // a: y distance from center
+        var c = _dc.getWidth() / 2;
+        var a = ( y - _dc.getHeight() / 2 ).abs();
+        return ( Math.sqrt( c*c - a*a ) * 2 ) as Number;
+    }
 }
 
 // Base class for all drawing elements that consists of other drawing elements
- class EvccUIContainer extends EvccUIBlock {
+class EvccUIContainer extends EvccUIBlock {
     protected var _elements as Array;
 
     function initialize( dc, options as Dictionary<Symbol,Object> ) {
@@ -124,7 +152,10 @@ import Toybox.WatchUi;
 }
 
 // An element containing other elements that shall stacked horizontally
- class EvccDrawingHorizontal extends EvccUIContainer {
+class EvccUIHorizontal extends EvccUIContainer {
+    
+    var _truncatableElement as EvccUIText?;
+
     function initialize( dc, options as Dictionary<Symbol,Object> ) {
         EvccUIContainer.initialize( dc, options );
     }
@@ -137,8 +168,25 @@ import Toybox.WatchUi;
     function draw( x, y )
     {
         y += getOption( :marginTop );
+
+        //System.println( "**** piSpacing=" + getOption( :piSpacing ) );
+
+        var availableWidth = getDcWidthAtY( y ) - getOption( :piSpacing ) * 1.5;
+        if( _truncatableElement != null ) {
+            while( availableWidth < getWidth() && _truncatableElement._text.length() > 1 ) {
+                //System.println( "**** before truncate " + _truncatableElement._text );
+                _truncatableElement.truncate( 1 );
+                //System.println( "**** after truncate " + _truncatableElement._text );
+            }
+        }
+        
+        // If there is a page indicator, we center between the dot,
+        // which is at the middle of the spacing, and the right
+        // side of the screen
+        x += getOption( :piSpacing ) / 4;
         x -= getOption( :justify ) == Graphics.TEXT_JUSTIFY_CENTER ? getWidth() / 2 : 0;
         x += getOption( :marginLeft ); 
+        
         for( var i = 0; i < _elements.size(); i++ ) {
             var center = _elements[i].getOption( :justify ) == Graphics.TEXT_JUSTIFY_CENTER;
             x += center ? _elements[i].getWidth() / 2 : 0;
@@ -171,18 +219,30 @@ import Toybox.WatchUi;
     // is also text, then the text is just appended to the previous element
     function addText( text, options as Dictionary<Symbol,Object> ) {
         var elements = _elements as Array;
-        if( elements.size() > 0 && elements[elements.size() - 1] instanceof EvccUIText && options.isEmpty() ) {
+        // We append the text to an existing element if:
+        // - there is a previous element
+        // - it is a text element
+        // - it is not truncatable
+        // - and we do not have any options set for the new text
+        if( elements.size() > 0 && 
+            elements[elements.size() - 1] instanceof EvccUIText && 
+            elements[elements.size() - 1].getOption( :isTruncatable ) != true && 
+            options.isEmpty() ) 
+        {
             elements[elements.size() - 1].append( text );
         } else { 
             options[:parent] = self;
             _elements.add( new EvccUIText( text, _dc, options ) );
+            if( options[:isTruncatable] == true ) {
+                _truncatableElement = _elements[_elements.size() - 1];
+            }
         }
         return self;
     }
 }
 
 // An element containing other elements that shall be stacked vertically
- class EvccDrawingVertical extends EvccUIContainer {
+class EvccUIVertical extends EvccUIContainer {
     function initialize( dc, options as Dictionary<Symbol,Object> ) {
         EvccUIContainer.initialize( dc, options );
     }
@@ -231,28 +291,34 @@ import Toybox.WatchUi;
 }
 
 // Text element
- class EvccUIText extends EvccUIBlock {
+class EvccUIText extends EvccUIBlock {
     var _text;
 
     function initialize( text, dc as Dc, options as Dictionary<Symbol,Object> ) {
         EvccUIBlock.initialize( dc, options );
         _text = text;
-   }
+    }
+
+    // Removes the specified number of characters from the
+    // end of the text
+    function truncate( chars as Number ) {
+        _text = _text.substring( 0, _text.length() - chars );
+    }
 
     function append( text ) { _text += text; return self; }
 
-    function getWidth() { return _dc.getTextDimensions( _text, getOption( :font ) )[0] + getOption( :marginLeft ) + getOption( :marginRight ); }
-    function getHeight() { return _dc.getTextDimensions( _text, getOption( :font ) )[1] + getOption( :marginTop ) + getOption( :marginBottom ); }
+    function getWidth() { return _dc.getTextDimensions( _text, getGarminFont() )[0] + getOption( :marginLeft ) + getOption( :marginRight ); }
+    function getHeight() { return _dc.getTextDimensions( _text, getGarminFont() )[1] + getOption( :marginTop ) + getOption( :marginBottom ); }
 
     // For alignment we just pass the justify parameter on to the drawText
     function draw( x, y ) {
         _dc.setColor( getOption( :color ), getOption( :backgroundColor ) );
-        _dc.drawText( x + getOption( :marginLeft ), y + getOption( :marginTop ), getOption( :font ), _text, getOption( :justify ) | Graphics.TEXT_JUSTIFY_VCENTER );
+        _dc.drawText( x + getOption( :marginLeft ), y + getOption( :marginTop ), getGarminFont(), _text, getOption( :justify ) | Graphics.TEXT_JUSTIFY_VCENTER );
     }
 }
 
 // Bitmap element
- class EvccUIBitmap extends EvccUIBlock {
+class EvccUIBitmap extends EvccUIBlock {
     var _bitmapRef; 
     var _bitmap;
 
@@ -294,7 +360,7 @@ import Toybox.WatchUi;
 // Class representing an icon. The difference between an icon and the bitmap above
 // is that for icons multiple sizes are supported and this element shows the icon
 // based on the font that is passed in the options or used by its parent element
- class EvccUIIcon extends EvccUIBitmap {
+class EvccUIIcon extends EvccUIBitmap {
     var _icon as Number;
     var _icons as Array<Dictionary>;
 
@@ -311,9 +377,10 @@ import Toybox.WatchUi;
     public static var ICON_ARROW_LEFT = 6;
     public static var ICON_ARROW_LEFT_THREE = 7;
     public static var ICON_SUN = 8;
-    public static var ICON_HOUSE = 9;
+    public static var ICON_HOME = 9;
     public static var ICON_GRID = 10;
-    public static var ICON_DURATION = 11;
+    public static var ICON_EVCC = 11;
+    public static var ICON_DURATION = 12;
 
     // For the battery we have special handling, if this
     // constant is based in, we choose ony of the battery
@@ -381,15 +448,21 @@ import Toybox.WatchUi;
 
         // Throw an exception if we could not find the icon
         if( ref == null ) {
-            var fontName = font;
-            if( font == Graphics.FONT_GLANCE ) { fontName = "FONT_GLANCE"; }
-            else if( font == Graphics.FONT_SMALL ) { fontName = "FONT_SMALL"; }
-            else if( font == Graphics.FONT_MEDIUM ) { fontName = "FONT_MEDIUM"; }
-            throw new InvalidValueException( "Icon " + _icon + " not found for font " + fontName );
+            throw new InvalidValueException( "Icon " + _icon + " not found for font " + font );
         }
 
         return ref;
     }
+}
+
+class EvccFonts {
+    public static var _fonts = [ Graphics.FONT_MEDIUM, Graphics.FONT_SMALL, Graphics.FONT_TINY, Graphics.FONT_GLANCE, Graphics.FONT_XTINY ] as Array<FontDefinition>;
+
+    public static var FONT_MEDIUM = 0;
+    public static var FONT_SMALL = 1;
+    public static var FONT_TINY = 2;
+    public static var FONT_GLANCE = 3;
+    public static var FONT_XTINY = 4;
 }
 
 // Icons in widget mode
@@ -397,18 +470,19 @@ import Toybox.WatchUi;
 // Each array entry is a dictionary with the font as key and the bitmap reference as value
 class EvccIcons {
     public static var _icons = [
-        { Graphics.FONT_MEDIUM => Rez.Drawables.battery_empty_medium, Graphics.FONT_SMALL => Rez.Drawables.battery_empty_small },
-        { Graphics.FONT_MEDIUM => Rez.Drawables.battery_onequarter_medium, Graphics.FONT_SMALL => Rez.Drawables.battery_onequarter_small },
-        { Graphics.FONT_MEDIUM => Rez.Drawables.battery_half_medium, Graphics.FONT_SMALL => Rez.Drawables.battery_half_small },
-        { Graphics.FONT_MEDIUM => Rez.Drawables.battery_threequarters_medium, Graphics.FONT_SMALL => Rez.Drawables.battery_threequarters_small },
-        { Graphics.FONT_MEDIUM => Rez.Drawables.battery_full_medium, Graphics.FONT_SMALL => Rez.Drawables.battery_full_small },
-        { Graphics.FONT_MEDIUM => Rez.Drawables.arrow_right_medium, Graphics.FONT_SMALL => Rez.Drawables.arrow_right_small },
-        { Graphics.FONT_MEDIUM => Rez.Drawables.arrow_left_medium, Graphics.FONT_SMALL => Rez.Drawables.arrow_left_small },
-        { Graphics.FONT_MEDIUM => Rez.Drawables.arrow_left_three_medium, Graphics.FONT_SMALL => Rez.Drawables.arrow_left_three_small },
-        { Graphics.FONT_MEDIUM => Rez.Drawables.sun_medium, Graphics.FONT_SMALL => Rez.Drawables.sun_small },
-        { Graphics.FONT_MEDIUM => Rez.Drawables.house_medium, Graphics.FONT_SMALL => Rez.Drawables.house_small },
-        { Graphics.FONT_MEDIUM => Rez.Drawables.grid_medium, Graphics.FONT_SMALL => Rez.Drawables.grid_small },
-        { Graphics.FONT_GLANCE => Rez.Drawables.clock_glance }
+        [ Rez.Drawables.battery_empty_medium, Rez.Drawables.battery_empty_small, Rez.Drawables.battery_empty_tiny, Rez.Drawables.battery_empty_glance, Rez.Drawables.battery_empty_xtiny ],
+        [ Rez.Drawables.battery_onequarter_medium, Rez.Drawables.battery_onequarter_small, Rez.Drawables.battery_onequarter_tiny, Rez.Drawables.battery_onequarter_glance, Rez.Drawables.battery_onequarter_xtiny ],
+        [ Rez.Drawables.battery_half_medium, Rez.Drawables.battery_half_small, Rez.Drawables.battery_half_tiny, Rez.Drawables.battery_half_glance, Rez.Drawables.battery_half_xtiny ],
+        [ Rez.Drawables.battery_threequarters_medium, Rez.Drawables.battery_threequarters_small, Rez.Drawables.battery_threequarters_tiny, Rez.Drawables.battery_threequarters_glance, Rez.Drawables.battery_threequarters_xtiny ],
+        [ Rez.Drawables.battery_full_medium, Rez.Drawables.battery_full_small, Rez.Drawables.battery_full_tiny, Rez.Drawables.battery_full_glance, Rez.Drawables.battery_full_xtiny ],
+        [ Rez.Drawables.arrow_right_medium, Rez.Drawables.arrow_right_small, Rez.Drawables.arrow_right_tiny, Rez.Drawables.arrow_right_glance, Rez.Drawables.arrow_right_xtiny ],
+        [ Rez.Drawables.arrow_left_medium, Rez.Drawables.arrow_left_small, Rez.Drawables.arrow_left_tiny, Rez.Drawables.arrow_left_glance, Rez.Drawables.arrow_left_xtiny ],
+        [ Rez.Drawables.arrow_left_three_medium, Rez.Drawables.arrow_left_three_small, Rez.Drawables.arrow_left_three_tiny, Rez.Drawables.arrow_left_three_glance, Rez.Drawables.arrow_left_three_xtiny ],
+        [ Rez.Drawables.sun_medium, Rez.Drawables.sun_small, Rez.Drawables.sun_tiny, Rez.Drawables.sun_glance, Rez.Drawables.sun_xtiny ],
+        [ Rez.Drawables.house_medium, Rez.Drawables.house_small, Rez.Drawables.house_tiny, Rez.Drawables.house_glance, Rez.Drawables.house_xtiny ],
+        [ Rez.Drawables.grid_medium, Rez.Drawables.grid_small, Rez.Drawables.grid_tiny, Rez.Drawables.grid_glance, Rez.Drawables.grid_xtiny ],
+        [ Rez.Drawables.evcc_medium, Rez.Drawables.evcc_small, Rez.Drawables.evcc_tiny, Rez.Drawables.evcc_glance, Rez.Drawables.evcc_xtiny ],
+        [ null, null, null, Rez.Drawables.clock_glance, Rez.Drawables.clock_xtiny ]
     ];
 }
 
@@ -416,14 +490,16 @@ class EvccIcons {
 // not available to glances at runtime, and thus having them in the same
 // array/dictionary would lead to runtime errors
 class EvccGlanceIcons {
+    // array for glance needs to have the same structure as the normal array above
+    // non-relevant entries can be set to null, or if at the end left out
     public static var _icons = [
-        { Graphics.FONT_GLANCE => Rez.Drawables.battery_empty_glance },
-        { Graphics.FONT_GLANCE => Rez.Drawables.battery_onequarter_glance },
-        { Graphics.FONT_GLANCE => Rez.Drawables.battery_half_glance },
-        { Graphics.FONT_GLANCE => Rez.Drawables.battery_threequarters_glance },
-        { Graphics.FONT_GLANCE => Rez.Drawables.battery_full_glance },
-        { Graphics.FONT_GLANCE => Rez.Drawables.arrow_right_glance },
-        { Graphics.FONT_GLANCE => Rez.Drawables.arrow_left_glance },
-        { Graphics.FONT_GLANCE => Rez.Drawables.arrow_left_three_glance }
+        [ null, null, null, Rez.Drawables.battery_empty_glance, null ],
+        [ null, null, null, Rez.Drawables.battery_onequarter_glance, null ],
+        [ null, null, null, Rez.Drawables.battery_half_glance, null ],
+        [ null, null, null, Rez.Drawables.battery_threequarters_glance, null ],
+        [ null, null, null, Rez.Drawables.battery_full_glance, null ],
+        [ null, null, null, Rez.Drawables.arrow_right_glance, null ],
+        [ null, null, null, Rez.Drawables.arrow_left_glance, null ],
+        [ null, null, null, Rez.Drawables.arrow_left_three_glance, null ]
     ];
 }
