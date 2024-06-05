@@ -321,6 +321,9 @@ import Toybox.WatchUi;
 }
 
 // Bitmap element
+// This class is written with the goal of keeping memory usage low
+// The actual bitmap is therefore only loaded when needed and then
+// immediatly discarded again
 (:glance) class EvccUIBitmap extends EvccUIBlock {
 
     // We store only the reference and width and height,
