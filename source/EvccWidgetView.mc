@@ -113,6 +113,8 @@ import Toybox.Math;
     private static var MAX_VAR_LINES = 6; // 1 x site title, 1 x battery, 2 x loadpoints with 2 lines each
     private static var FIXED_LINES = 4; // pv, grid, home, logo
 
+    //private var block;
+
     // Update the view
     function onUpdate(dc as Dc) as Void {
         try {
@@ -214,12 +216,19 @@ import Toybox.Math;
             if( ! siteTitle && logo ) { offset = - ( lineHeight / 2 ); }
             else if ( siteTitle && ! logo ) { offset = lineHeight / 2; }
             block.draw( dc.getWidth() / 2, dc.getHeight() / 2 + offset );
+            
+            // Perform remaining calculation that need the block
+            var siteTitleY = ( dc.getHeight() / 2 - block.getHeight() / 2 + offset ) / 2;
+            var logoY = dc.getHeight() - ( dc.getHeight() / 2 - block.getHeight() / 2 - offset ) / 2;
+            // Memory is scarce, so we free it up immediately, otherwise
+            // the draw() calls below will run into out of memory on some
+            // devices such as the Fenix 6S.
+            block = null;
 
             // Draw title
             if( siteTitle ) {
                 // Font size is glance, or smaller if the main content is smaller than glance
                 var siteTitleElement = new EvccUIText( _stateRequest.getState().getSiteTitle().substring(0,9), dc, { :font => EvccHelper.max( font, EvccFonts.FONT_GLANCE ) } );
-                var siteTitleY = ( dc.getHeight() / 2 - block.getHeight() / 2 + offset ) / 2;
                 siteTitleElement.draw( dc.getWidth() / 2, siteTitleY );
             }
             
@@ -227,7 +236,6 @@ import Toybox.Math;
             if( logo ) {
                 // Logo size is two sizes larger than font size
                 var logoElement = new EvccUIIcon( EvccUIIcon.ICON_EVCC, new EvccIcons(), dc, { :font => EvccHelper.max( 0, font - 2 ) } );
-                var logoY = dc.getHeight() - ( dc.getHeight() / 2 - block.getHeight() / 2 - offset ) / 2;
                 logoElement.draw( dc.getWidth() / 2, logoY );
             }
 

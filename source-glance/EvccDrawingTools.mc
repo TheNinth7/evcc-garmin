@@ -22,43 +22,47 @@ import Toybox.WatchUi;
     function initialize( dc as Dc, options as Dictionary<Symbol,Object> ) {
         _dc = dc;
 
-        // these values are not inherited and immediately default to certain values
-        if( options[:marginLeft] == null ) { options[:marginLeft] = 0; }
-        if( options[:marginRight] == null ) { options[:marginRight] = 0; }
-        if( options[:marginTop] == null ) { options[:marginTop] = 0; }
-        if( options[:marginBottom] == null ) { options[:marginBottom] = 0; }
-        if( options[:justify] == null ) { options[:justify] = Graphics.TEXT_JUSTIFY_CENTER; }
-        if( options[:piSpacing] == null ) { options[:piSpacing] = 0; }
-
+        // If a parent is passed in, we convert it to a WeakReference,
+        // to avoid a circular reference, which would result in a 
+        // memory leak
         if( options[:parent] != null && ! ( options[:parent] instanceof WeakReference ) ) { options[:parent] = options[:parent].weak(); }
 
         _options = options;
     }
 
     // Returning the value of a certain option
-    function getOption( value as Symbol ) {
-        // Only values that may be inherited can be null, for those we go to the
-        // parent if no value is present in this instance
+    function getOption( option as Symbol ) {
+        // If the option is present, we return it right away
+        if( _options[option] != null ) {
+            return _options[option];
+        }
+        
+        // The following options are not inherited, and are immediately
+        // set to default values
+        if( option == :marginLeft || option == :marginRight || option == :marginTop || option == :marginBottom || option == :piSpacing ) { return 0; }
+        if( option == :justify ) { return Graphics.TEXT_JUSTIFY_CENTER; }
+
+        // All other options can be inherited, so we look up the parent
         var parentRef = _options[:parent] as WeakReference?;
         var parent = ( parentRef != null ? parentRef.get() : null ) as EvccUIContainer?;
-        if( _options[value] == null && parent != null ) {
-            // We store the value from the parent locally for quicker access
-            _options[value] = parent.getOption( value );
-            
+        if( parent != null ) {
+            var value = parent.getOption( option );
             // If we take over the font form the parent element, we apply any relativeFont definition
             // and shift the font accordingly. Ee.g. parent font EvccFonts.FONT_MEDIUM (=0) and :relativeFont=3
             // results in using EvccFonts.GLANCE (=3)
-            if( value == :font && _options[:relativeFont] != null ) {
-                _options[value] = EvccHelper.min( ( _options[value] as Number ) + ( _options[:relativeFont] as Number ), EvccFonts._fonts.size() - 1 );
+            if( option == :font && _options[:relativeFont] != null ) {
+                value = EvccHelper.min( ( value as Number ) + ( _options[:relativeFont] as Number ), EvccFonts._fonts.size() - 1 );
             }
-        } else if ( _options[value] == null ) {
+            return value;
+        } else {
             // If no more parent is present, we apply the following default behavior
-            if( value == :backgroundColor ) { return EvccConstants.COLOR_BACKGROUND; }
-            if( value == :color ) { return EvccConstants.COLOR_FOREGROUND; }
-            if( value == :font ) { throw new InvalidValueException( "Font not set!"); }
+            if( option == :backgroundColor ) { return EvccConstants.COLOR_BACKGROUND; }
+            if( option == :color ) { return EvccConstants.COLOR_FOREGROUND; }
+            if( option == :font ) { throw new InvalidValueException( "Font not set!"); }
         }
-        // Value is present, return it
-        return _options[value];
+
+        // Value is not present
+        return null;
     }
 
     // set an option
@@ -69,7 +73,7 @@ import Toybox.WatchUi;
     // Parent can be passed into an element either in the options structure
     // or later via this function
     function setParent( parent as EvccUIContainer ) {
-        _options[:parent] = parent.weak();
+        setOption( :parent, parent.weak() );
     }
 
     // Get the Garmin font definition for the current font
@@ -77,7 +81,6 @@ import Toybox.WatchUi;
         var fonts = EvccFonts._fonts as Array<FontDefinition>;
         return fonts[getOption( :font )];
     }
-
 
     // Functions to be implemented by implementations of this class
     function getWidth();
@@ -319,23 +322,36 @@ import Toybox.WatchUi;
 
 // Bitmap element
 (:glance) class EvccUIBitmap extends EvccUIBlock {
+
+    // We store only the reference and width and height,
+    // the actual bitmap resource is loaded only when needed
+    // to save memory
     var _bitmapRef; 
-    var _bitmap;
+    var _width as Number?;
+    var _height as Number?;
 
     function initialize( reference as ResourceId?, dc as Dc, options as Dictionary<Symbol,Object> ) {
         EvccUIBlock.initialize( dc, options );
         _bitmapRef = reference;
     }
 
-    // This function loads and gives access to the loaded resource
-    // For standard bitmaps we could load them immediately in the constructor,
-    // but for the derived icon class we want to load the resource as late
-    // as possible, since it requires the font to be set, which may be only
-    // the case after the icon and its container are added to a parent container
-    protected function bitmap() {
-        if( _bitmap == null ) { _bitmap = WatchUi.loadResource( bitmapRef() ); }
-        return _bitmap;
+    // Load width/height
+    // We don't do this in the constructor because for the EvccUIIcon sub class, the font
+    // size is needed to determine the actual icon used, and that one is not available
+    // at initialization time
+    private function loadData() {
+        if( _width == null || _height == null ) {
+            var bitmap = bitmap();
+            _width = bitmap.getWidth();
+            _height = bitmap.getHeight();
+        }
     }
+
+    // Load the actual bitmap
+    private function bitmap() {
+        return WatchUi.loadResource( bitmapRef() );
+    }
+
     // Accessing the reference via this function enables the derived class
     // icon to override it and have different logic how the reference is
     // determined
@@ -344,15 +360,19 @@ import Toybox.WatchUi;
         return _bitmapRef;
     }
 
-    function getWidth() { return bitmap().getWidth() + getOption( :marginLeft ) + getOption( :marginRight ); }
-    function getHeight() { return bitmap().getHeight() + getOption( :marginTop ) + getOption( :marginBottom ); }
+    // These function first make sure that the bitmap width/height is loaded and then
+    // calculate the total width/height
+    function getWidth() { loadData(); return _width + getOption( :marginLeft ) + getOption( :marginRight ); }
+    function getHeight() { loadData(); return _height + getOption( :marginTop ) + getOption( :marginBottom ); }
 
-    // Depending on alignment we recalculate the x starting point
+    // Draw the bitmap
     function draw( x, y ) {
+        var bitmap = bitmap();
+        // Depending on alignment we recalculate the x starting point
         if( getOption( :justify ) == Graphics.TEXT_JUSTIFY_CENTER ) {
-            x -= bitmap().getWidth() / 2;
+            x -= bitmap.getWidth() / 2;
         }
-        _dc.drawBitmap( x + getOption( :marginLeft ), y - ( bitmap().getHeight() / 2 ) + getOption( :marginTop ), bitmap() );
+        _dc.drawBitmap( x + getOption( :marginLeft ), y - ( bitmap.getHeight() / 2 ) + getOption( :marginTop ), bitmap );
     }
 }
 
