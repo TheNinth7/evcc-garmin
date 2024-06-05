@@ -86,7 +86,10 @@ import Toybox.Application.Properties;
                 var loadpoints = siteData.getLoadPoints();
                 if( loadpoints.size() > 0 && loadpoints[0].getVehicle() != null ) {
                     var vehicle = loadpoints[0].getVehicle();
-                    line1 += vehicle.getTitle().substring( 0, 8 ) + " " + EvccHelper.formatSoc( vehicle.getSoc() );
+                    line1 += vehicle.getTitle().substring( 0, 8 );
+                    if( ! vehicle.isGuest() ) {
+                        line1 += " " + EvccHelper.formatSoc( vehicle.getSoc() );
+                    }
                 } else {
                     line1 += "No vehicle";
                 }

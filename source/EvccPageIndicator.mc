@@ -31,7 +31,6 @@ class EvccPageIndicator {
     // total width of the screen
     public static const RADIUS_FACTOR = 0.45;
 
-
     public function initialize( dc as Dc ) {
         setCenterAngle( CENTER_ANGLE );
         setDotDistanceAngle( DOT_DISTANCE_ANGLE );

@@ -70,7 +70,8 @@ import Toybox.Application.Properties;
                     var hasVehicle = false;
                     // We use the height of the font as spacing between the columns
                     // This gives us a space that is suitable for each screen size/resolution
-                    var spacing = dc.getTextDimensions( "   ", EvccFonts.FONT_GLANCE )[0];
+                    var spacing = dc.getTextDimensions( " ", EvccFonts.FONT_GLANCE )[0];
+                    if( loadpoints.size() <= 1 ) { spacing = spacing * 3; }
                     for (var i = 0; i < loadpoints.size(); i++) {
                         var loadpoint = loadpoints[i] as EvccLoadPoint;
                         var vehicle = loadpoint.getVehicle();

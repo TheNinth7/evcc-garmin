@@ -183,10 +183,12 @@ import Toybox.WatchUi;
             }
         }
         
-        // If there is a page indicator, we center between the dot,
-        // which is at the middle of the spacing, and the right
-        // side of the screen
-        x += getOption( :piSpacing ) / 4;
+        // If there is a page indicator, we center between the edge of the dot
+        // and the right side of the screen
+        // the dots are curved, so it would be hard to calculate the exact place
+        // where the dot is here, but a third of the :piSpacing gives us a reasonable
+        // approximation
+        x += getOption( :piSpacing ) / 3;
         x -= getOption( :justify ) == Graphics.TEXT_JUSTIFY_CENTER ? getWidth() / 2 : 0;
         x += getOption( :marginLeft ); 
         
