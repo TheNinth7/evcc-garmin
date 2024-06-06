@@ -64,16 +64,9 @@ import Toybox.Time;
             if( stateData != null ) {
                 if( stateData[EvccState.SITETITLE] != null && ! stateData[EvccState.SITETITLE].equals( "" ) ) {
                     state = new EvccState( stateData, new Moment( siteData[NAME_DATATIMESTAMP] as Number ) );
-                } else {
-                    // EvccHelper.debug( "EvccSiteStore: stored data found but evcc site title is missing" );
                 }
-            } else {
-                // EvccHelper.debug( "EvccSiteStore: stored data found but state is missing" );
             }
-        } else {
-            // EvccHelper.debug( "EvccSiteStore: no stored data found" );
         }
-
         return state;
     }
 
@@ -93,6 +86,8 @@ import Toybox.Time;
             siteData[NAME_DATATIMESTAMP] = _state.getTimestamp().value();
             Storage.setValue( EvccConstants.STORAGE_SITE_PREFIX + _index, siteData );
             _state = null;
+        } else {
+            // EvccHelper.debug( "EvccSiteStore: state is null!" );
         }
     }
 }

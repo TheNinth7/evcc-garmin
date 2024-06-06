@@ -108,8 +108,8 @@ import Toybox.Application.Properties;
         //System.println( "onUpdate: e " + System.getSystemStats().usedMemory );
     }
 
-    // It seems onHide() is not called in glance view, so
-    // we are doing the clean-up in the EvccApp.onStop() function
+    // Note: for glances, onHide() is not called automatically,
+    // instead we do it manually in the EvccApp.onStop() function
     function onHide() as Void {
         try {
             EvccHelper.debug("Glance: onHide");

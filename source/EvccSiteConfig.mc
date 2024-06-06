@@ -29,6 +29,11 @@ import Toybox.Application.Properties;
             }
         }
 
+        /* Code for defaulting to Robert's local instances, for debugging
+        if( _sites.size() == 0 ) {
+            _sites = [new EvccSite( "http://net-nas-1:7070", 0 ), new EvccSite( "http://net-nas-3:7070", 1 ) ];
+        }
+        /*
         /* Code for array structure setting, not used
         var storedSites = Properties.getValue( "sites" );
         if( storedSites != null && storedSites instanceof Array ) {

@@ -39,7 +39,7 @@ import Toybox.Time;
     // exists and how old it is make a request immediately.
     public function start()
     {
-        // EvccHelper.debug("StateRequest: start");
+        EvccHelper.debug("StateRequest: start");
 
         // Only when this state request is started we load the state data
         // We cannot load the state in initialize, because on some devices,

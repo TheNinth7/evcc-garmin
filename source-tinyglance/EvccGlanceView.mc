@@ -109,6 +109,8 @@ import Toybox.Application.Properties;
     }
 
     // Stop the local timer and background timer
+    // Note: for glances, onHide() is not called automatically,
+    // instead we do it manually in the EvccApp.onStop() function
     function onHide() as Void {
         try {
             // EvccHelper.debug("TinyGlance: onHide");

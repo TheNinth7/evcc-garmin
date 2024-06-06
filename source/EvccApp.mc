@@ -15,6 +15,7 @@ import Toybox.Math;
     // onStop() method, we therefore set the _isInBackground to true and 
     // only set it to false when getGlanceView() or getInitialView() are called.
     public static var _isInBackground = true;
+    private static var _glanceView as EvccGlanceView?;
     
     function initialize() {
         try {
@@ -46,7 +47,8 @@ import Toybox.Math;
             EvccSiteStore.clearUnusedSites( siteConfig.getSiteCount() );
 
             if( siteConfig.getSiteCount() > 0 ) {
-                return [new EvccGlanceView( activeSite, siteConfig )];
+                _glanceView = new EvccGlanceView( activeSite, siteConfig );
+                return [_glanceView];
             } else {
                 return [new EvccGlanceErrorView( new NoSiteException() )];
             }
@@ -142,18 +144,14 @@ import Toybox.Math;
     // not called automatically, so we do this here
     function onStop( state as Lang.Dictionary or Null ) as Void {
         try {
-            //EvccHelper.debug( "EvccApp: onStop" );
+            // EvccHelper.debug( "EvccApp: onStop" );
             
             // If we are in the background, WatchUi is not available and the
             // call would go into a runtime error, so we have to check this
             // first
-            if( ! _isInBackground ) {
-                var view = WatchUi.getCurrentView()[0];
-                // EvccGlanceView for tiny glance does not have onHide
-                if( view instanceof EvccGlanceView && view has :onHide ) {
-                    // EvccHelper.debug( "EvccApp: onStop: glance mode, calling onHide" );
-                    view.onHide();
-                }
+            if( _glanceView != null ) {
+                // EvccHelper.debug( "EvccApp: onStop: glance mode, calling onHide" );
+                _glanceView.onHide();
             }
         } catch ( ex ) {
             EvccHelper.debugException( ex );
