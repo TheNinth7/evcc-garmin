@@ -21,5 +21,5 @@ import Toybox.Graphics;
     // Default foreground and background
     public static const COLOR_BACKGROUND = Graphics.COLOR_BLACK;
     public static const COLOR_FOREGROUND = Graphics.COLOR_WHITE;
-    public static const COLOR_ERROR = Graphics.COLOR_DK_RED;
+    public static const COLOR_ERROR = Graphics.COLOR_RED;
 }

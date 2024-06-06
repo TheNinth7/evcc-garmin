@@ -7,8 +7,15 @@ import Toybox.Math;
 // Main class of the app, responsible for initializing
 // views and other components
 (:background :glance) class EvccApp extends Application.AppBase {
-    public static var _isInBackground = false;
-
+    
+    // getServiceDelegate() is implemented only for devices with annotation
+    // :tinyglance. For other devices, the background service
+    // is still started briefly but stopped immediately. To be able
+    // to detect that these executions are in background, especially in the
+    // onStop() method, we therefore set the _isInBackground to true and 
+    // only set it to false when getGlanceView() or getInitialView() are called.
+    public static var _isInBackground = true;
+    
     function initialize() {
         try {
             // EvccHelper.debug( "EvccApp: initialize" );
@@ -22,6 +29,7 @@ import Toybox.Math;
     function getGlanceView() {
         try {
             // EvccHelper.debug( "EvccApp: getGlanceView" );
+            _isInBackground = false;
 
             // Read the site settings (evcc URLs, ...)
             var siteConfig = new EvccSiteConfig();
@@ -52,6 +60,7 @@ import Toybox.Math;
     function getInitialView() as [Views] or [Views, InputDelegates] {
         try {
             // EvccHelper.debug( "EvccApp: getInitialView" );
+            _isInBackground = false;
 
             // Read the site settings (evcc URLs, ...)
             var siteConfig = new EvccSiteConfig();
@@ -124,9 +133,31 @@ import Toybox.Math;
         // the active site and is only displaying its data.
         var activeSite = EvccSiteStore.getActiveSite( siteConfig.getSiteCount() );
 
-        _isInBackground = true;
-
         return [new EvccBackground( activeSite, siteConfig )];
+    }    
+
+    // Called when the app is stopped
+    // The onHide() function of the views takes care
+    // of required clean-ups. For glances, onHide() is
+    // not called automatically, so we do this here
+    function onStop( state as Lang.Dictionary or Null ) as Void {
+        try {
+            //EvccHelper.debug( "EvccApp: onStop" );
+            
+            // If we are in the background, WatchUi is not available and the
+            // call would go into a runtime error, so we have to check this
+            // first
+            if( ! _isInBackground ) {
+                var view = WatchUi.getCurrentView()[0];
+                // EvccGlanceView for tiny glance does not have onHide
+                if( view instanceof EvccGlanceView && view has :onHide ) {
+                    // EvccHelper.debug( "EvccApp: onStop: glance mode, calling onHide" );
+                    view.onHide();
+                }
+            }
+        } catch ( ex ) {
+            EvccHelper.debugException( ex );
+       }
     }    
 
     // For the tiny glance we take the data updates from the 
