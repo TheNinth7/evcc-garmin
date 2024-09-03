@@ -80,6 +80,22 @@
             "icon_small":"29",
             "icon_medium":"34"
         },
+        "resources-fr955":{
+            "logo":"40",
+            "icon_xtiny":"21",
+            "icon_glance":"24",
+            "icon_tiny":"29",
+            "icon_small":"32",
+            "icon_medium":"39"
+        },
+        "resources-fr965":{
+            "logo":"65",
+            "icon_xtiny":"37",
+            "icon_glance":"42",
+            "icon_tiny":"47",
+            "icon_small":"53",
+            "icon_medium":"61"
+        },
         "resources-vivoactive3":{
             "logo-40x33":"33",
             "icon_xtiny":"16",

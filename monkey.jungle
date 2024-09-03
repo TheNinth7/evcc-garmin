@@ -10,6 +10,10 @@ base.excludeAnnotations = tinyglance
 # source and do not exclude the :tinyglance annotation
 fr745.sourcePath = source;source-tinyglance
 fr745.excludeAnnotations = none
+fr945.sourcePath = source;source-tinyglance
+fr945.excludeAnnotations = none
+fr945lte.sourcePath = source;source-tinyglance
+fr945lte.excludeAnnotations = none
 fenix6.sourcePath = source;source-tinyglance
 fenix6.excludeAnnotations = none
 fenix6pro.sourcePath = source;source-tinyglance
