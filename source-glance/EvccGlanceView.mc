@@ -112,7 +112,7 @@ import Toybox.Application.Properties;
     // instead we do it manually in the EvccApp.onStop() function
     function onHide() as Void {
         try {
-            EvccHelper.debug("Glance: onHide");
+            // EvccHelper.debug("Glance: onHide");
             _stateRequest.stop();
         } catch ( ex ) {
             EvccHelper.debugException( ex );

@@ -10,6 +10,7 @@ import Toybox.Timer;
 import Toybox.Application.Properties;
 import Toybox.Application.Storage;
 import Toybox.Time;
+import Toybox.PersistedContent;
 
 (:background) class EvccStateRequest {
     
@@ -121,7 +122,7 @@ import Toybox.Time;
     }
 
     // Receive the data from the web request
-    function onReceive( responseCode as Number, data as Dictionary<String, Object?> or String or Null ) as Void {
+    function onReceive( responseCode as Number, data as Dictionary<String, Object?> or String or PersistedContent.Iterator or Null ) as Void {
         // EvccHelper.debug("StateRequest: onReceive");
         _hasLoaded = true;
         _error = false; _errorMessage = ""; _errorCode = "";

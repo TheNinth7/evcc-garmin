@@ -34,8 +34,13 @@ import Toybox.Math;
 
     // Returns a formatted string of duration specified in nano seconds (as provided in the evcc response)
     // Format is the same as used on the evcc Web UI (hh:mm h or mm:ss m)
-    public static function formatDuration( durationNano as Number ) as String { 
-        var duration = ( durationNano / 1000000000 ) as Number;
+    public static function formatDuration( duration as Number ) as String { 
+        // Earlier evcc versions use nanoseconds, later ones (>~ 0.127.1)
+        // use seconds. If the value is greater than a billion, we assume it
+        // is nanos and convert to seconds
+        if( duration > 1000000000 ) {
+            duration = ( duration / 1000000000 ) as Number;
+        }
         var hours = ( ( duration / 60 ) / 60 ) as Number;
         if( hours > 0 ) {
             var minutes = ( ( duration / 60 ) % 60 ) as Number;

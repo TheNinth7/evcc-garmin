@@ -4,6 +4,7 @@ import Toybox.Timer;
 import Toybox.Application.Properties;
 import Toybox.Application.Storage;
 import Toybox.Time;
+import Toybox.PersistedContent;
 
 (:glance :background) class EvccStateRequest {
     
@@ -39,7 +40,7 @@ import Toybox.Time;
     // exists and how old it is make a request immediately.
     public function start()
     {
-        EvccHelper.debug("StateRequest: start");
+        // EvccHelper.debug("StateRequest: start");
 
         // Only when this state request is started we load the state data
         // We cannot load the state in initialize, because on some devices,
@@ -115,7 +116,7 @@ import Toybox.Time;
     }
 
     // Receive the data from the web request
-    function onReceive( responseCode as Number, data as Dictionary<String, Object?> or String or Null ) as Void {
+    function onReceive( responseCode as Number, data as Dictionary<String, Object?> or String or PersistedContent.Iterator or Null ) as Void {
         // EvccHelper.debug("StateRequest: onReceive");
         _hasLoaded = true;
         _error = false; _errorMessage = ""; _errorCode = "";

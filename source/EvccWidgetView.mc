@@ -334,7 +334,7 @@ import Toybox.Math;
     // memory.
     function onHide() as Void {
         try {
-            EvccHelper.debug("Widget: onHide");
+            // EvccHelper.debug("Widget: onHide");
             _stateRequest.stop();
         } catch ( ex ) {
             EvccHelper.debugException( ex );

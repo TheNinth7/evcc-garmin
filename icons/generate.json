@@ -127,7 +127,39 @@
             "icon_tiny":"41",
             "icon_small":"48",
             "icon_medium":"54"
-        }
+        },
+        "resources-fenix843mm":{
+            "logo":"60",
+            "icon_xtiny":"34",
+            "icon_glance":"39",
+            "icon_tiny":"43",
+            "icon_small":"50",
+            "icon_medium":"58"
+        },
+        "resources-fenix847mm":{
+            "logo":"65",
+            "icon_xtiny":"37",
+            "icon_glance":"42",
+            "icon_tiny":"47",
+            "icon_small":"53",
+            "icon_medium":"61"
+        },
+        "resources-fenix8solar47mm":{
+            "logo":"40",
+            "icon_xtiny":"21",
+            "icon_glance":"24",
+            "icon_tiny":"29",
+            "icon_small":"32",
+            "icon_medium":"39"
+        },
+        "resources-fenix8solar51mm":{
+            "logo":"40",
+            "icon_xtiny":"22",
+            "icon_glance":"26",
+            "icon_tiny":"30",
+            "icon_small":"34",
+            "icon_medium":"39"
+       }
     },
     "files":{
         "battery_empty.svg":{ "anti-aliasing":"3", "types":["icon_xtiny", "icon_glance", "icon_tiny", "icon_small", "icon_medium"] },
