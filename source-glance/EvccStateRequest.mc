@@ -101,7 +101,8 @@ import Toybox.PersistedContent;
         url += "?jq={result:{loadpoints:[.loadpoints[]|{chargePower:.chargePower,charging:.charging,connected:.connected,vehicleName:.vehicleName,vehicleSoc:.vehicleSoc,title:.title,phasesActive:.phasesActive,mode:.mode,chargeRemainingDuration:.chargeRemainingDuration}],pvPower:.pvPower,gridPower:.gridPower,homePower:.homePower,siteTitle:.siteTitle,batterySoc:.batterySoc,batteryPower:.batteryPower,vehicles:.vehicles|map_values({title:.title})}}";
 
         var options = {
-            :method => Communications.HTTP_REQUEST_METHOD_GET,
+            // Removed to potentially fix issue with iOS 16
+            //:method => Communications.HTTP_REQUEST_METHOD_GET,
             :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_JSON
         };
 
