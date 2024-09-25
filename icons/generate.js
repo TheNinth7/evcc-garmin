@@ -27,10 +27,14 @@ var errors = "";
 // e.g. "resources-round-240x240", in which case
 // only this folder is regenerated.
 if( WScript.Arguments.Unnamed.Count > 0 ) {
-    errors += generateFamily( WScript.Arguments.Item(0) );
+    if( ! device_families[WScript.Arguments.Item(0)] ) {
+        errors += "Device family \"" + WScript.Arguments.Item(0) + "\" not found. Note: don't forget the \"resources-\" prefix!";
+    } else {
+        errors += generateFamily( WScript.Arguments.Item(0), device_families, files );
+    }
 } else {
     for( var family in device_families ) {
-        errors += generateFamily( family );
+        errors += generateFamily( family, device_families, files );
     }
 }
 
@@ -40,7 +44,7 @@ if( errors != "" ) {
 
 /* Function to generate the resource folder for one
    device family */
-function generateFamily( family ) {
+function generateFamily( family, device_families, files ) {
     WScript.Echo( "Generating " + family );
     
     var fso = new ActiveXObject("Scripting.FileSystemObject");

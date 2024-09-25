@@ -56,6 +56,38 @@
             "icon_small":"34",
             "icon_medium":"39"
         },
+        "resources-venu2":{
+            "logo":"70",
+            "icon_xtiny":"32",
+            "icon_glance":"43",
+            "icon_tiny":"43",
+            "icon_small":"49",
+            "icon_medium":"58"
+        },
+        "resources-venu2plus":{
+            "logo":"70",
+            "icon_xtiny":"32",
+            "icon_glance":"43",
+            "icon_tiny":"43",
+            "icon_small":"49",
+            "icon_medium":"58"
+        },
+        "resources-venu2s":{
+            "logo":"61",
+            "icon_xtiny":"29",
+            "icon_glance":"37",
+            "icon_tiny":"37",
+            "icon_small":"43",
+            "icon_medium":"52"
+        },
+        "resources-venu3":{
+            "logo":"70",
+            "icon_xtiny":"35",
+            "icon_glance":"45",
+            "icon_tiny":"45",
+            "icon_small":"50",
+            "icon_medium":"58"
+        },
         "resources-venu3s":{
             "logo":"70",
             "icon_xtiny":"32",
