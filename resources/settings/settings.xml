@@ -153,7 +153,7 @@
         <setting propertyKey="@Properties.dataExpiry" title="Data expiry in seconds (5-3600): when bringing the glance or widget into view, data not older than the expiry time may be displayed until new data becomes available.">
             <settingConfig type="numeric" required="true" min="5" max="3600"/>
         </setting>
-        <setting propertyKey="@Properties.reduceResponseSize" title="Save memory by limiting the data requested from evcc. On some mobile devices (iOS 16, maybe others) the limited query may lead to a temporary -202 error. In this case, try to disable this setting. If that leads to an -403 error or app crashes, please contact the developer.">
+        <setting propertyKey="@Properties.reduceResponseSize" title="Save memory by limiting the data requested from evcc. On some mobile devices (iOS 16, maybe others) this leads to -202 error. If the app at first shows an -202 error and then actual data on the next refresh, you can disable this setting to avoid the temporary -202 error.">
             <settingConfig type="boolean" required="true"/>
         </setting>
     </settings>
