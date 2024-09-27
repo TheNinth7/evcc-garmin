@@ -30,6 +30,7 @@
         <property id="glanceOffset" type="number">1</property>
         <property id="mediumOffset" type="number">0</property>
         <property id="vehicleTitleBaseMaxLength" type="number">6</property>
+        <property id="reduceResponseSize" type="boolean">true</property>
     </properties>
 
     <settings>
@@ -151,6 +152,9 @@
         </setting>
         <setting propertyKey="@Properties.dataExpiry" title="Data expiry in seconds (5-3600): when bringing the glance or widget into view, data not older than the expiry time may be displayed until new data becomes available.">
             <settingConfig type="numeric" required="true" min="5" max="3600"/>
+        </setting>
+        <setting propertyKey="@Properties.reduceResponseSize" title="Save memory by limiting the data requested from evcc. On some mobile devices (iOS 16, maybe others) the limited query may lead to a temporary -202 error. In this case, try to disable this setting. If that leads to an -403 error or app crashes, please contact the developer.">
+            <settingConfig type="boolean" required="true"/>
         </setting>
     </settings>
 </resources>

@@ -13,6 +13,7 @@ import Toybox.Graphics;
     public static const PROPERTY_SITE_PASS_SUFFIX = "_pass";
     public static const PROPERTY_REFRESH_INTERVAL = "refreshInterval";
     public static const PROPERTY_DATA_EXPIRY = "dataExpiry";
+    public static const PROPERTY_REDUCE_RESPONSE_SIZE = "reduceResponseSize";
 
     // Number of sites supported, needs to match the number of settings
     // defined in settings.xml

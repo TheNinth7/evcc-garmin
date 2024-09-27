@@ -11,6 +11,7 @@ import Toybox.PersistedContent;
     private var _timer;
     private var _refreshInterval = 10;
     private var _dataExpiry = 60;
+    private var _reduceResponseSize = true;
     private var _siteConfig as EvccSite;
 
     private var _hasLoaded = false;
@@ -31,7 +32,8 @@ import Toybox.PersistedContent;
         
         _refreshInterval = Properties.getValue( EvccConstants.PROPERTY_REFRESH_INTERVAL );
         _dataExpiry = Properties.getValue( EvccConstants.PROPERTY_DATA_EXPIRY );
-    
+        _reduceResponseSize = Properties.getValue( EvccConstants.PROPERTY_REDUCE_RESPONSE_SIZE );
+
         _siteConfig = siteConfig;
         _siteStore = new EvccSiteStore( index );
     }
@@ -98,11 +100,16 @@ import Toybox.PersistedContent;
         // This jq statement narrows down the response already on the server-side
         // to only the fields we need. This saves valuable memory space, but any
         // new fields from evcc that are to be used need to be added here.
-        url += "?jq={result:{loadpoints:[.loadpoints[]|{chargePower:.chargePower,charging:.charging,connected:.connected,vehicleName:.vehicleName,vehicleSoc:.vehicleSoc,title:.title,phasesActive:.phasesActive,mode:.mode,chargeRemainingDuration:.chargeRemainingDuration}],pvPower:.pvPower,gridPower:.gridPower,homePower:.homePower,siteTitle:.siteTitle,batterySoc:.batterySoc,batteryPower:.batteryPower,vehicles:.vehicles|map_values({title:.title})}}";
+        // Some mobile devices (namely iOS 16, maybe others) return an -202 error
+        // when using this long query string, so there is an option in the settings to
+        // turn it off.
+        if( _reduceResponseSize ) {
+            // EvccHelper.debug("StateRequest: adding query string for reducing response size ...");
+            url += "?jq={result:{loadpoints:[.loadpoints[]|{chargePower:.chargePower,charging:.charging,connected:.connected,vehicleName:.vehicleName,vehicleSoc:.vehicleSoc,title:.title,phasesActive:.phasesActive,mode:.mode,chargeRemainingDuration:.chargeRemainingDuration}],pvPower:.pvPower,gridPower:.gridPower,homePower:.homePower,siteTitle:.siteTitle,batterySoc:.batterySoc,batteryPower:.batteryPower,vehicles:.vehicles|map_values({title:.title})}}";
+        }
 
         var options = {
-            // Removed to potentially fix issue with iOS 16
-            //:method => Communications.HTTP_REQUEST_METHOD_GET,
+            :method => Communications.HTTP_REQUEST_METHOD_GET,
             :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_JSON
         };
 
@@ -121,6 +128,10 @@ import Toybox.PersistedContent;
         // EvccHelper.debug("StateRequest: onReceive");
         _hasLoaded = true;
         _error = false; _errorMessage = ""; _errorCode = "";
+        
+        // For testing the iOS 16 workaround
+        // if( _reduceResponseSize ) { responseCode = -202; }
+
         if( responseCode == 200 ) {
             if( data instanceof Dictionary && data["result"] != null ) {
                 _siteStore.setState( data["result"] );
@@ -134,6 +145,12 @@ import Toybox.PersistedContent;
             if ( responseCode == -104 ) {
                 _error = true; _errorMessage = "No phone"; _errorCode = "";
                 // EvccHelper.debug( _errorMessage + " " + _errorCode );
+            } else if ( responseCode == -202 && _reduceResponseSize ) {
+                // If there is a -202 error and we are using the query string for reducing the response size,
+                // then we'll try without. On some devices (iOS 16, maybe others), the query string leads to
+                // -202 errors
+                _error = true; _errorMessage = "Error -202\nRetrying ...\nWait " + _refreshInterval + " seconds"; _errorCode = "";
+                _reduceResponseSize = false;
             } else {
                 _error = true; _errorMessage = "Request failed"; _errorCode = responseCode.toString();
                 // EvccHelper.debug( _errorMessage + " " + _errorCode );
