@@ -161,7 +161,7 @@ import Toybox.Math;
                     for (var i = 0; i < loadpoints.size() && variableLineCount < MAX_VAR_LINES; i++) {
                         var loadpoint = loadpoints[i] as EvccLoadPoint;
                         if( loadpoint.getVehicle() != null ) {
-                            var loadpointLine = getLoadPointElement( loadpoint, dc );
+                            var loadpointLine = getLoadPointElement( loadpoint, dc, showChargingDetails );
                             block.addContainer( loadpointLine );
                             variableLineCount++;
                             hasVehicle = true;
@@ -196,7 +196,13 @@ import Toybox.Math;
                 if( logo && font == 3 ) {
                     font--; logo = false; variableLineCount--;
                 }
-                var maxLines = ( ( dc.getHeight() / dc.getFontHeight( fonts[font] ) ) + 1 ).toNumber();
+                
+                // 2024-10-18: removed + 1 to reduce the maximum number of lines
+                // on some systems with a high number of loadpoints the + 1 was one step to far
+                // and the top line was not fully displayed
+                //var maxLines = ( ( dc.getHeight() / dc.getFontHeight( fonts[font] ) ) + 1 ).toNumber();
+                var maxLines = ( ( dc.getHeight() / dc.getFontHeight( fonts[font] ) ) ).toNumber();
+                
                 // System.println( "**** max lines for font " + font + "=" + maxLines );
                 if( maxLines >= FIXED_LINES + variableLineCount ) {
                     // System.println( "**** choosing font " + font );
@@ -291,7 +297,7 @@ import Toybox.Math;
     }
 
     // Function to generate main loadpoint lines
-    private function getLoadPointElement( loadpoint as EvccLoadPoint, dc as Dc ) {
+    private function getLoadPointElement( loadpoint as EvccLoadPoint, dc as Dc, showChargingDetails as Boolean ) {
         var vehicle = loadpoint.getVehicle();
         
         var lineVehicle = new EvccUIHorizontal( dc, { :piSpacing => getPiSpacing( dc ) } );
@@ -309,9 +315,11 @@ import Toybox.Math;
             lineVehicle.addIcon( EvccUIIcon.ICON_ACTIVE_PHASES, { :charging => true, :activePhases => loadpoint.getActivePhases(), :marginTop => _mediumOffset } );
             lineVehicle.addText( " " + EvccHelper.formatPower( loadpoint.getChargePowerRounded() ), {} );
         }
-        // If the vehicle is not charging, we show the charging mode in this line
-        else {
-            lineVehicle.addText( " (" + loadpoint.getModeFormatted() + ")", { :font => EvccFonts.FONT_GLANCE } );
+        // If the vehicle is not charging, we show the charging mode in this line, but only if charging details are displayed (space consideration)
+        else if( showChargingDetails ) {
+            // 2024-10-18: changed charging mode font size to relative
+            //lineVehicle.addText( " (" + loadpoint.getModeFormatted() + ")", { :font => EvccFonts.FONT_GLANCE } );
+            lineVehicle.addText( " (" + loadpoint.getModeFormatted() + ")", { :relativeFont => 3 } );
         }
         
         return lineVehicle;
