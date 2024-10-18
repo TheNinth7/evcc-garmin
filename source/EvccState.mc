@@ -66,7 +66,7 @@ import Toybox.Time;
         for (var i = 0; i < loadPoints.size(); i++) {
             var loadPointData = loadPoints[i] as Dictionary;
             var loadPoint = new EvccLoadPoint( loadPointData, result );
-            if( loadPoint.isCharging() ) { _numOfLPsCharging++; }
+            if( ! loadPoint.isHeater() && loadPoint.isCharging() ) { _numOfLPsCharging++; }
             _loadPoints.add( loadPoint );
         }
     }
@@ -107,11 +107,14 @@ import Toybox.Time;
 // and serializing the data into a Dictionary.
 (:glance :background) class EvccLoadPoint {
     private var _vehicle = null;
+    private var _heater = null;
+
     private var _isCharging = false;
     private var _chargePower = 0;
     private var _activePhases = 0;
     private var _mode = null;
     private var _chargeRemainingDuration = 0;
+
 
     private static const CHARGING = "charging";
     private static const PHASESACTIVE = "phasesActive";
@@ -119,7 +122,8 @@ import Toybox.Time;
     private static const MODE = "mode";
     private static const CHARGEPOWER = "chargePower";
     private static const CHARGEREMAININGDURATION = "chargeRemainingDuration";
-
+    private static const CHARGERFEATUREHEATING = "chargerFeatureHeating";
+    
     function initialize( dataLp as Dictionary<String, Object?>, dataResult as Dictionary<String, Object?> ) {
         _isCharging = dataLp[CHARGING];
         _activePhases = dataLp[PHASESACTIVE];
@@ -127,8 +131,9 @@ import Toybox.Time;
         _mode = dataLp[MODE];
         _chargeRemainingDuration = dataLp[CHARGEREMAININGDURATION];
 
-        if( dataLp[CONNECTED] as Boolean )
-        {
+        if( dataLp[CHARGERFEATUREHEATING] as Boolean ) {
+            _heater = new EvccHeater( dataLp );
+        } else if( dataLp[CONNECTED] as Boolean ) {
             _vehicle = new EvccConnectedVehicle( dataLp, dataResult );
         }
     }
@@ -145,6 +150,10 @@ import Toybox.Time;
         if( _vehicle != null ) {
             loadpoint[CONNECTED] = true;
             loadpoint = _vehicle.serialize( loadpoint );
+        } else if ( _heater != null ) {
+            loadpoint[CONNECTED] = true;
+            loadpoint[CHARGERFEATUREHEATING] = true;
+            loadpoint = _heater.serialize( loadpoint );
         }
 
         return loadpoint;
@@ -154,7 +163,10 @@ import Toybox.Time;
     public function getActivePhases() as Number { return _activePhases; }
     public function getChargePowerRounded() as Number { return EvccHelper.roundPower( _chargePower ); }
     public function getVehicle() as EvccConnectedVehicle { return _vehicle; }
-    
+
+    public function isHeater() as Boolean { return _heater != null; }
+    public function getHeater() as EvccHeater { return _heater; }
+
     // Possible values: "pv", "now", "minpv", "off"
     public function getMode() as String { return _mode; }
     // Return the text to be displayed for the mode
@@ -225,7 +237,7 @@ import Toybox.Time;
             }
         }
     }
-
+    
     function serialize( loadpoint as Dictionary<String, Object?> ) as Dictionary<String, Object?> {
         if( _isGuest ) {
             loadpoint[LP_TITLE] = _name;
@@ -241,4 +253,26 @@ import Toybox.Time;
     public function getTitle() as String { return _title; }
     public function getSoc() as Number { return _soc; }
     public function isGuest() as Boolean { return _isGuest; }
+}
+
+(:glance :background) class EvccHeater {
+    private var _title = "";
+    private var _temp = 0;
+    
+    private static const LP_TITLE = "title";
+    private static const VEHICLESOC = "vehicleSoc";
+
+    function initialize( dataLp as Dictionary<String, Object?> ) {
+        _title = dataLp[LP_TITLE] as String;
+        _temp = dataLp[VEHICLESOC] as Number;
+    }
+
+    function serialize( loadpoint as Dictionary<String, Object?> ) as Dictionary<String, Object?> {
+        loadpoint[LP_TITLE] = _title;
+        loadpoint[VEHICLESOC] = _temp;
+        return loadpoint;
+    }
+
+    public function getTitle() as String { return _title; }
+    public function getTemperature() as Number { return _temp; }
 }

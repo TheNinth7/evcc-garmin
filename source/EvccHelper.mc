@@ -29,7 +29,20 @@ import Toybox.Math;
 
     // Format SoC of battery or vehicles
     public static function formatSoc( soc as Number ) as String { 
-        return soc.format("%.0f") + "%";
+        if( soc != null ) {
+            return soc.format("%.0f") + "%";
+        } else {
+            return "";
+        }
+    }
+
+    // Format temperature of heaters
+    public static function formatTemp( temp as Number ) as String { 
+        if( temp != null ) {
+            return temp.format("%.0f") + "°";
+        } else {
+            return "";
+        }
     }
 
     // Returns a formatted string of duration specified in nano seconds (as provided in the evcc response)

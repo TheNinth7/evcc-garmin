@@ -160,7 +160,11 @@ import Toybox.Math;
                     var showChargingDetails = MAX_VAR_LINES - variableLineCount >= loadpoints.size() + state.getNumOfLPsCharging();
                     for (var i = 0; i < loadpoints.size() && variableLineCount < MAX_VAR_LINES; i++) {
                         var loadpoint = loadpoints[i] as EvccLoadPoint;
-                        if( loadpoint.getVehicle() != null ) {
+                        if( loadpoint.isHeater() ) {
+                            block.addContainer( getHeaterElement( loadpoint, dc ) );
+                            variableLineCount++;
+                            hasVehicle = true;
+                        } else if( loadpoint.getVehicle() != null ) {
                             var loadpointLine = getLoadPointElement( loadpoint, dc, showChargingDetails );
                             block.addContainer( loadpointLine );
                             variableLineCount++;
@@ -175,11 +179,6 @@ import Toybox.Math;
                         block.addText( "No vehicle", {} );
                         variableLineCount++;
                     }
-
-                    //block.addText( "Charging details", { :relativeFont => 3 } );
-                    //block.addText( "Another loadpoint", {} );
-                    //block.addText( "Charging details", { :relativeFont => 3 } );
-                    //variableLineCount += 3;
 
                     // Home
                     block.addContainer( getBasicElement( EvccUIIcon.ICON_HOME, state.getHomePowerRounded(), EvccUIIcon.ICON_ARROW_LEFT, dc ) );
@@ -302,7 +301,6 @@ import Toybox.Math;
         
         var lineVehicle = new EvccUIHorizontal( dc, { :piSpacing => getPiSpacing( dc ) } );
         
-        // Small font give us two more characters, after that we truncate
         lineVehicle.addText( vehicle.getTitle(), { :isTruncatable => true } );
         
         // For guest vehicles there is no SoC
@@ -314,9 +312,11 @@ import Toybox.Math;
             lineVehicle.addText( " ", {} );
             lineVehicle.addIcon( EvccUIIcon.ICON_ACTIVE_PHASES, { :charging => true, :activePhases => loadpoint.getActivePhases(), :marginTop => _mediumOffset } );
             lineVehicle.addText( " " + EvccHelper.formatPower( loadpoint.getChargePowerRounded() ), {} );
+            if( ! showChargingDetails ) {
+                lineVehicle.addText( " (" + loadpoint.getModeFormatted() + ")", { :relativeFont => 5 } );
+            }
         }
-        // If the vehicle is not charging, we show the charging mode in this line, but only if charging details are displayed (space consideration)
-        else if( showChargingDetails ) {
+        else {
             // 2024-10-18: changed charging mode font size to relative
             //lineVehicle.addText( " (" + loadpoint.getModeFormatted() + ")", { :font => EvccFonts.FONT_GLANCE } );
             lineVehicle.addText( " (" + loadpoint.getModeFormatted() + ")", { :relativeFont => 3 } );
@@ -336,6 +336,31 @@ import Toybox.Math;
         }
         return lineCharging;
     }
+
+
+    // Function to generate the line for heater loadpoints
+    private function getHeaterElement( loadpoint as EvccLoadPoint, dc as Dc ) {
+        var heater = loadpoint.getHeater();
+        var lineHeater = new EvccUIHorizontal( dc, { :piSpacing => getPiSpacing( dc ) } );
+        
+        lineHeater.addText( heater.getTitle(), { :isTruncatable => true } );
+        lineHeater.addText( " " + EvccHelper.formatTemp( heater.getTemperature() ), {} );
+        
+        // If the heater is charging, we show the power
+        if( loadpoint.getChargePowerRounded() > 0 ) {
+            lineHeater.addText( " ", {} );
+            lineHeater.addIcon( EvccUIIcon.ICON_ACTIVE_PHASES, { :charging => true, :activePhases => loadpoint.getActivePhases(), :marginTop => _mediumOffset } );
+            lineHeater.addText( " " + EvccHelper.formatPower( loadpoint.getChargePowerRounded() ), {} );
+            lineHeater.addText( " (" + loadpoint.getModeFormatted() + ")", { :relativeFont => 5 } );
+        }
+        else {
+            lineHeater.addText( " (" + loadpoint.getModeFormatted() + ")", { :relativeFont => 3 } );
+        }
+        
+        return lineHeater;
+    }
+
+
 
     // Called when this View is removed from the screen. Save the
     // state of this View here. This includes freeing resources from
