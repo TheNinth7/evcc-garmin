@@ -110,8 +110,9 @@ import Toybox.Math;
         }
     }
 
+    private static var SMALL_LINE = 0.6; // site title, charging details and logo count only as the fraction of a line specified here
     private static var MAX_VAR_LINES = 6; // 1 x site title, 1 x battery, 2 x loadpoints with 2 lines each
-    private static var FIXED_LINES = 4; // pv, grid, home, logo
+    private static var FIXED_LINES = 3 + SMALL_LINE; // 3 full lines (pv, grid, home) + 1 small line (logo)
 
     //private var block;
 
@@ -130,7 +131,7 @@ import Toybox.Math;
             var siteTitle = false;
             if( ! _isSingle && _stateRequest.getState() != null ) { 
                 siteTitle = true; 
-                variableLineCount++; 
+                variableLineCount += SMALL_LINE; 
             }
 
             if( ! _stateRequest.hasLoaded() ) {
@@ -157,7 +158,7 @@ import Toybox.Math;
                     // Loadpoints
                     var loadpoints = state.getLoadPoints() as Array<EvccLoadPoint>;
                     var hasVehicle = false;
-                    var showChargingDetails = MAX_VAR_LINES - variableLineCount >= loadpoints.size() + state.getNumOfLPsCharging();
+                    var showChargingDetails = MAX_VAR_LINES - variableLineCount >= loadpoints.size() + ( state.getNumOfLPsCharging() * SMALL_LINE );
                     for (var i = 0; i < loadpoints.size() && variableLineCount < MAX_VAR_LINES; i++) {
                         var loadpoint = loadpoints[i] as EvccLoadPoint;
                         if( loadpoint.isHeater() ) {
@@ -171,7 +172,7 @@ import Toybox.Math;
                             hasVehicle = true;
                             if( loadpoint.isCharging() && showChargingDetails ) {
                                 block.addContainer( getChargingElement( loadpoint, dc, loadpointLine.getOption( :marginLeft ) ) );
-                                variableLineCount++;
+                                variableLineCount += SMALL_LINE;
                             }
                         }
                     }
@@ -193,7 +194,7 @@ import Toybox.Math;
                 // Before we move to smaller font sizes
                 // we remove the logo
                 if( logo && font == 3 ) {
-                    font--; logo = false; variableLineCount--;
+                    font--; logo = false; variableLineCount -= SMALL_LINE;
                 }
                 
                 // 2024-10-18: removed + 1 to reduce the maximum number of lines

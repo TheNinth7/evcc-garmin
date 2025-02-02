@@ -105,7 +105,7 @@ import Toybox.PersistedContent;
         // turn it off.
         if( _reduceResponseSize ) {
             // EvccHelper.debug("StateRequest: adding query string for reducing response size ...");
-            url += "?jq={result:{loadpoints:[.loadpoints[]|{chargePower:.chargePower,chargerFeatureHeating:.chargerFeatureHeating,charging:.charging,connected:.connected,vehicleName:.vehicleName,vehicleSoc:.vehicleSoc,title:.title,phasesActive:.phasesActive,mode:.mode,chargeRemainingDuration:.chargeRemainingDuration}],pvPower:.pvPower,gridPower:.gridPower,homePower:.homePower,siteTitle:.siteTitle,batterySoc:.batterySoc,batteryPower:.batteryPower,vehicles:.vehicles|map_values({title:.title})}}";
+            url += "?jq={result:{loadpoints:[.loadpoints[]|{chargePower:.chargePower,chargerFeatureHeating:.chargerFeatureHeating,charging:.charging,connected:.connected,vehicleName:.vehicleName,vehicleSoc:.vehicleSoc,title:.title,phasesActive:.phasesActive,mode:.mode,chargeRemainingDuration:.chargeRemainingDuration}],pvPower:.pvPower,gridPower:.gridPower,grid:.grid|{power:.power},homePower:.homePower,siteTitle:.siteTitle,batterySoc:.batterySoc,batteryPower:.batteryPower,vehicles:.vehicles|map_values({title:.title})}}";
         }
 
         var options = {

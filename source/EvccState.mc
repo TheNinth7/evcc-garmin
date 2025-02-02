@@ -21,6 +21,8 @@ import Toybox.Time;
     private static const BATTERYSOC = "batterySoc";
     private static const BATTERYPOWER = "batteryPower";
     private static const GRIDPOWER = "gridPower";
+    private static const GRID = "grid";
+    private static const POWER = "power";
     private static const HOMEPOWER = "homePower";
     private static const PVPOWER = "pvPower";
     public static const SITETITLE = "siteTitle";
@@ -56,7 +58,15 @@ import Toybox.Time;
             _hasBattery = true;
         }
 
+        // For grid power we support both the old structure with
+        // result.gridPower and the new structure with result.grid.power
+        // used by evcc from 0.132.2 onwards
         _gridPower = result[GRIDPOWER];
+        if( _gridPower == null ) {
+            var grid = result[GRID] as Array;
+            _gridPower = grid[POWER];
+        }
+
         _homePower = result[HOMEPOWER];
         _pvPower = result[PVPOWER];
         _siteTitle = result[SITETITLE];
@@ -77,7 +87,7 @@ import Toybox.Time;
     // and from the storage
     function serialize() as Dictionary<String, Object?> { 
         var result = { 
-            GRIDPOWER => _gridPower,
+            GRIDPOWER => _gridPower, // for grid power we serialize using the old structure, see initialize()
             HOMEPOWER => _homePower,
             PVPOWER => _pvPower,
             SITETITLE => _siteTitle
