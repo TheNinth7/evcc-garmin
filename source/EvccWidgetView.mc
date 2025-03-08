@@ -138,10 +138,7 @@ import Toybox.Math;
                 block.addText( "Loading ...", {} );
             } else { 
                 if( _stateRequest.hasError() ) {
-                    block.addError( 
-                        _stateRequest.getErrorMessage() +
-                        ( _stateRequest.getErrorCode().equals( "" ) ? "" : "\n" + _stateRequest.getErrorCode() ), 
-                        {} );
+                    throw new StateRequestException( _stateRequest.getErrorCode(), _stateRequest.getErrorMessage() );
                 } else { 
                     var state = _stateRequest.getState();
 
@@ -252,9 +249,12 @@ import Toybox.Math;
         
         } catch ( ex ) {
             EvccHelper.debugException( ex );
-            var errorMsg = "Error:\n" + ex.getErrorMessage();
-            var drawElement = new EvccUIText( errorMsg, dc, { :font => EvccFonts.FONT_GLANCE, :color => EvccConstants.COLOR_ERROR } );
-            drawElement.draw( dc.getWidth() / 2, dc.getHeight() / 2 );
+            EvccHelperUI.drawError( dc, ex );
+
+            // NEW ERROR HANDLING
+            // var errorMsg = "Error: " + ex.getErrorMessage();
+            // var drawElement = new EvccUIText( errorMsg, dc, { :font => EvccFonts.FONT_GLANCE, :color => EvccConstants.COLOR_ERROR } );
+            // drawElement.draw( dc.getWidth() / 2, dc.getHeight() / 2 );
         }
     }
 

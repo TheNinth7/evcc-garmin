@@ -3,6 +3,8 @@ using Toybox.System;
 using Toybox.Time;
 using Toybox.Time.Gregorian;
 import Toybox.Math;
+import Toybox.Graphics;
+import Toybox.WatchUi;
 
 (:background :glance) class EvccHelper {
     

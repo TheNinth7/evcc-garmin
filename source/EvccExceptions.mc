@@ -18,3 +18,17 @@ import Toybox.Lang;
         _index = index;
     }
 }
+
+// Exception indicating that for a site a user name
+// is specified but the password is missing
+(:glance) class StateRequestException extends Exception {
+    private var _code as String;
+    private var _msg as String;
+    function getErrorCode() as String { return _code; }
+    function getErrorMessage() as String? { return _msg; }
+    function initialize( code as String, msg as String ) {
+        Exception.initialize();
+        _code = code;
+        _msg = msg;
+    }
+}

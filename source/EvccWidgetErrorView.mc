@@ -1,6 +1,7 @@
 import Toybox.Graphics;
 import Toybox.Lang;
 import Toybox.WatchUi;
+import Toybox.Math;
 
 // A simple widget view for displaying an error message
 // It is used for errors that occur before the standard widget view
@@ -17,19 +18,12 @@ class EvccWidgetErrorView extends WatchUi.View {
 
     // Update the view
     function onUpdate(dc as Dc) as Void {
-        var errorMsg;
         
-        if( _ex instanceof NoSiteException ) {
-            errorMsg = "No site, please\ncheck app settings";
-        } else if ( _ex instanceof NoPasswordException ) {
-            errorMsg = "Password for site " + _ex.getSite() + " is missing"; 
-        } else {
-            errorMsg = "Error:\n" + _ex.getErrorMessage();
-        }
+        EvccHelperUI.drawError( dc, _ex );
 
-        dc.clear();
-        var drawElement = new EvccUIText( errorMsg, dc, { :font => Graphics.FONT_GLANCE, :color => EvccConstants.COLOR_ERROR } );
-        drawElement.draw( dc.getWidth() / 2, dc.getHeight() / 2 );
+        // NEW ERROR HANDLING
+        //var drawElement = new EvccUIText( errorMsg, dc, { :font => Graphics.FONT_GLANCE, :color => EvccConstants.COLOR_ERROR } );
+        //drawElement.draw( dc.getWidth() / 2, dc.getHeight() / 2 );
     }
 
 }

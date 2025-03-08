@@ -16,7 +16,12 @@ import Toybox.Math;
     // only set it to false when getGlanceView() or getInitialView() are called.
     public static var _isInBackground = true;
     private static var _glanceView as EvccGlanceView?;
+    private static var _isGlance as Boolean = false;
     
+    public static function isGlance() as Boolean {
+        return _isGlance;
+    }
+
     function initialize() {
         try {
             // EvccHelper.debug( "EvccApp: initialize" );
@@ -31,6 +36,7 @@ import Toybox.Math;
         try {
             // EvccHelper.debug( "EvccApp: getGlanceView" );
             _isInBackground = false;
+            _isGlance = true;
 
             // Read the site settings (evcc URLs, ...)
             var siteConfig = new EvccSiteConfig();

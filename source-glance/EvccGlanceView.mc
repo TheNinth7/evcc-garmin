@@ -44,7 +44,7 @@ import Toybox.Application.Properties;
                 line.addText( "Loading ...", {} );
             } else { 
                 if( _stateRequest.hasError() ) {
-                    line.addError( _stateRequest.getErrorMessage(), { :justify => Graphics.TEXT_JUSTIFY_LEFT } );
+                    throw new StateRequestException( _stateRequest.getErrorCode(), _stateRequest.getErrorMessage() );
                 } else { 
                     var state=_stateRequest.getState();
                     
@@ -101,9 +101,12 @@ import Toybox.Application.Properties;
 
         } catch ( ex ) {
             EvccHelper.debugException( ex );
-            var errorMsg = "Error:\n" + ex.getErrorMessage();
-            var drawElement = new EvccUIText( errorMsg, dc, { :font => EvccFonts.FONT_GLANCE, :justify => Graphics.TEXT_JUSTIFY_LEFT, :color => EvccConstants.COLOR_ERROR } );
-            drawElement.draw( dc.getWidth() / 2, dc.getHeight() / 2 );
+            EvccHelperUI.drawError( dc, ex );
+
+            // NEW ERROR HANDLING
+            //var errorMsg = "Error:\n" + ex.getErrorMessage();
+            //var drawElement = new EvccUIText( errorMsg, dc, { :font => EvccFonts.FONT_GLANCE, :justify => Graphics.TEXT_JUSTIFY_LEFT, :color => EvccConstants.COLOR_ERROR } );
+            //drawElement.draw( dc.getWidth() / 2, dc.getHeight() / 2 );
         }
         //System.println( "onUpdate: e " + System.getSystemStats().usedMemory );
     }

@@ -31,6 +31,7 @@
         <property id="mediumOffset" type="number">0</property>
         <property id="vehicleTitleBaseMaxLength" type="number">6</property>
         <property id="reduceResponseSize" type="boolean">true</property>
+        <property id="appVersion" type="string">1.2.1.2</property>
     </properties>
 
     <settings>

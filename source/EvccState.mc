@@ -57,7 +57,7 @@ import Toybox.Time;
             _batteryPower = result[BATTERYPOWER] as Number;
             _hasBattery = true;
         }
-
+    
         // For grid power we support both the old structure with
         // result.gridPower and the new structure with result.grid.power
         // used by evcc from 0.132.2 onwards
