@@ -87,11 +87,11 @@ import Toybox.Math;
             var settings = System.getDeviceSettings();
 
             if( siteConfig.getSiteCount() == 0 ) {
-                return [new EvccWidgetErrorView( new NoSiteException() )];
+                return [new EvccWidgetErrorView( new NoSiteException() ), new EvccViewSimpleDelegate()];
             } else {
                 // If there is only one site, we just return this one view
                 if( siteConfig.getSiteCount() == 1 ) {
-                    return [new EvccWidgetView( 0, siteConfig, false )];
+                    return [new EvccWidgetView( 0, siteConfig, false ), new EvccViewSimpleDelegate()];
                 } else {
                     // If there is more than one site, we check if the device supports glances
                     // If not, we initially present a widget view that acts as glance, i.e. displays

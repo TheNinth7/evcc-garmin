@@ -14,12 +14,13 @@ import Toybox.Application;
     
    public static function drawError( dc as Dc, ex as Exception )
     {
-        dc.clear();
-        
         var errorMsg;
         var useTxtArea = false;
         var glance = EvccApp.isGlance();
         var backgroundColor = glance ? Graphics.COLOR_TRANSPARENT : EvccConstants.COLOR_BACKGROUND;
+
+        dc.setColor( EvccConstants.COLOR_ERROR, backgroundColor );
+        dc.clear();
 
         if( ex instanceof NoSiteException ) {
             errorMsg = "No site, please\ncheck app settings";
@@ -28,7 +29,7 @@ import Toybox.Application;
         } else if ( ex instanceof StateRequestException ) {
             errorMsg = ex.getErrorMessage() + ( ex.getErrorCode().equals( "" ) ? "" : "\n" + ex.getErrorCode() );
         } else {
-            errorMsg = ex.getErrorMessage() + "\nevvc-garmin v" + Properties.getValue( "appVersion" );
+            errorMsg = ex.getErrorMessage() + "\nevvc-garmin " + EvccHelper.getVersion();
             useTxtArea = true;
         }
 
@@ -58,7 +59,6 @@ import Toybox.Application;
 
             txtArea.draw( dc );     
         } else {
-            dc.setColor( EvccConstants.COLOR_ERROR, backgroundColor );
             if( glance )
             {
                 dc.drawText( 0, dc.getHeight() / 2 * 0.9, Graphics.FONT_GLANCE, errorMsg, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER );

@@ -7,13 +7,13 @@ import Toybox.Application;
 // In Garmin SDK this is called a view loop, but that implementation was
 // buggy and did not have a pretty page indicator, so this app uses a,
 // custom one
-class EvccViewCarouselDelegate extends WatchUi.BehaviorDelegate {
+class EvccViewCarouselDelegate extends EvccViewSimpleDelegate {
     private var _views as Array<EvccWidgetView>;
     private var _activeView as Number;
 
     function initialize( views as Array<EvccWidgetView>, activeView as Number ) {
         // EvccHelper.debug( "ViewWidgetDelegate: initialize" );
-        BehaviorDelegate.initialize();
+        EvccViewSimpleDelegate.initialize();
         _views = views;
         _activeView = activeView;
     }

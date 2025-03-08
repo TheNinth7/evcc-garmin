@@ -5,9 +5,13 @@ using Toybox.Time.Gregorian;
 import Toybox.Math;
 import Toybox.Graphics;
 import Toybox.WatchUi;
+import Toybox.Application;
 
 (:background :glance) class EvccHelper {
     
+    static function getVersion() {
+        return Application.loadResource( Rez.Strings.AppVersion );
+    }
     // Function used to round the power values we get from evcc
     static function roundPower( power as Number ) {
         // We round to full 100 W
