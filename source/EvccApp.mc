@@ -15,26 +15,25 @@ import Toybox.Math;
     // onStop() method, we therefore set the _isInBackground to true and 
     // only set it to false when getGlanceView() or getInitialView() are called.
     public static var _isInBackground = true;
-    private static var _glanceView as EvccGlanceView?;
+    (:glanceonly) private static var _glanceView as EvccGlanceView?;
     private static var _isGlance as Boolean = false;
-    
     public static function isGlance() as Boolean {
         return _isGlance;
     }
 
     function initialize() {
         try {
-            // EvccHelper.debug( "EvccApp: initialize" );
+            // EvccHelperBase.debug( "EvccApp: initialize" );
             AppBase.initialize();
         } catch ( ex ) {
-            EvccHelper.debugException( ex );
+            EvccHelperBase.debugException( ex );
         }
     }
 
     // Called if the app runs in glance mode
-    function getGlanceView() {
+    (:glanceonly) function getGlanceView() {
         try {
-            // EvccHelper.debug( "EvccApp: getGlanceView" );
+            // EvccHelperBase.debug( "EvccApp: getGlanceView" );
             _isInBackground = false;
             _isGlance = true;
 
@@ -44,13 +43,13 @@ import Toybox.Math;
             // We store the active site, so when the widget is reopened, it 
             // starts with the site displayed last. Also the glance is using
             // the active site and is only displaying its data.
-            var activeSite = EvccSiteStore.getActiveSite( siteConfig.getSiteCount() );
+            var activeSite = EvccBreadCrumbRootReadOnly.getSelectedChild( siteConfig.getSiteCount() );
 
             // We delete any unused site entries from storage
             // This is for the case when sites get deleted from
             // the settings and we want to clean up their persistant
             // data
-            EvccSiteStore.clearUnusedSites( siteConfig.getSiteCount() );
+            EvccStateStore.clearUnusedSites( siteConfig.getSiteCount() );
 
             if( siteConfig.getSiteCount() > 0 ) {
                 _glanceView = new EvccGlanceView( activeSite, siteConfig );
@@ -59,7 +58,7 @@ import Toybox.Math;
                 return [new EvccGlanceErrorView( new NoSiteException() )];
             }
         } catch ( ex ) {
-            EvccHelper.debugException( ex );
+            EvccHelperBase.debugException( ex );
             return [new EvccGlanceErrorView( ex )];
         }
     }
@@ -67,7 +66,7 @@ import Toybox.Math;
     // Called if the app runs in widget mode
     function getInitialView() as [Views] or [Views, InputDelegates] {
         try {
-            // EvccHelper.debug( "EvccApp: getInitialView" );
+            // EvccHelperBase.debug( "EvccApp: getInitialView" );
             _isInBackground = false;
 
             // Read the site settings (evcc URLs, ...)
@@ -76,43 +75,40 @@ import Toybox.Math;
             // We store the active site, so when the widget is reopened, it 
             // starts with the site displayed last. Also the glance is using
             // the active site and is only displaying its data.
-            var activeSite = EvccSiteStore.getActiveSite( siteConfig.getSiteCount() );
+            var breadCrumb = new EvccBreadCrumbRoot( siteConfig.getSiteCount() );
+            var activeSite = breadCrumb.getSelectedChild();
 
             // We delete any unused site entries from storage
             // This is for the case when sites get deleted from
             // the settings and we want to clean up their persistant
             // data
-            EvccSiteStore.clearUnusedSites( siteConfig.getSiteCount() );
+            EvccStateStore.clearUnusedSites( siteConfig.getSiteCount() );
 
             var settings = System.getDeviceSettings();
 
             if( siteConfig.getSiteCount() == 0 ) {
-                return [new EvccWidgetErrorView( new NoSiteException() ), new EvccViewSimpleDelegate()];
+                throw new NoSiteException();
             } else {
-                // If there is only one site, we just return this one view
-                if( siteConfig.getSiteCount() == 1 ) {
-                    return [new EvccWidgetView( 0, siteConfig, false ), new EvccViewSimpleDelegate()];
+                // We check if the device supports glances
+                // If not, we initially present a widget view that acts as glance, i.e. displays
+                // only the active site and has all the other sites as sub views
+                if ( ! ( settings has :isGlanceModeEnabled ) || ! settings.isGlanceModeEnabled ) {
+                    // EvccHelperBase.debug( "EvccApp: no glance, starting with active site only" );
+                    var views = new Array<EvccWidgetSiteBaseView>[0];
+                    views.add( new EvccWidgetSiteMainView( views, 0, null, siteConfig, activeSite, true ) );
+                    var delegate = new EvccViewCarouselDelegate( views, breadCrumb );
+                    return [views[0], delegate];
+                // If glances are supported, we present the full list of sites or menu entries right away
                 } else {
-                    // If there is more than one site, we check if the device supports glances
-                    // If not, we initially present a widget view that acts as glance, i.e. displays
-                    // only the active site and has all the other sites as sub views
-                    if ( ! ( settings has :isGlanceModeEnabled ) || ! settings.isGlanceModeEnabled ) {
-                        // EvccHelper.debug( "EvccApp: no glance, starting with active site only" );
-                        var view = new EvccWidgetView( activeSite, siteConfig, true );
-                        var delegate = new EvccViewCarouselDelegate( [ view ], 0 );
-                        return [view, delegate];
-                    // If glances are supported, we present the full list of sites right away
-                    } else {
-                        var widgetViews = EvccWidgetView.getViewsForAllSites( siteConfig );
-                        var delegate = new EvccViewCarouselDelegate( widgetViews, activeSite );
-                        // Start with the active site
-                        return [widgetViews[activeSite], delegate];
-                    }
+                    var views = EvccWidgetSiteMainView.getRootViews( siteConfig );
+                    var delegate = new EvccViewCarouselDelegate( views, breadCrumb );
+                    // Start with the active site
+                    return [views[activeSite], delegate];
                 }
             }
         } catch ( ex ) {
-            EvccHelper.debugException( ex );
-            return [new EvccWidgetErrorView( ex )];
+            EvccHelperBase.debugException( ex );
+            return [new EvccWidgetErrorView( ex ), new EvccViewSimpleDelegate()];
         }
     }
 
@@ -122,24 +118,24 @@ import Toybox.Math;
     // data
     (:release) function onAppUpdate() as Void {
         try {
-            // EvccHelper.debug( "EvccApp: onAppUpdate" );
+            // EvccHelperBase.debug( "EvccApp: onAppUpdate" );
             Storage.clearValues();
         } catch ( ex ) {
-            EvccHelper.debugException( ex );
+            EvccHelperBase.debugException( ex );
        }
     }
     
     // This function starts the background service
     // It is currently only used in tinyglance mode
-    (:tinyglance) function getServiceDelegate() {  
-        // EvccHelper.debug( "EvccApp: getServiceDelegate" );
+    (:glanceonly :tinyglance) function getServiceDelegate() {  
+        // EvccHelperBase.debug( "EvccApp: getServiceDelegate" );
 
         var siteConfig = new EvccSiteConfig();
         
         // We store the active site, so when the widget is reopened, it 
         // starts with the site displayed last. Also the glance is using
         // the active site and is only displaying its data.
-        var activeSite = EvccSiteStore.getActiveSite( siteConfig.getSiteCount() );
+        var activeSite = EvccBreadCrumbRootReadOnly.getSelectedChild( siteConfig.getSiteCount() );
 
         return [new EvccBackground( activeSite, siteConfig )];
     }    
@@ -148,19 +144,19 @@ import Toybox.Math;
     // The onHide() function of the views takes care
     // of required clean-ups. For glances, onHide() is
     // not called automatically, so we do this here
-    function onStop( state as Lang.Dictionary or Null ) as Void {
+    (:glanceonly) function onStop( state as Lang.Dictionary or Null ) as Void {
         try {
-            // EvccHelper.debug( "EvccApp: onStop" );
+            // EvccHelperBase.debug( "EvccApp: onStop" );
             
             // If we are in the background, WatchUi is not available and the
             // call would go into a runtime error, so we have to check this
             // first
             if( _glanceView != null ) {
-                // EvccHelper.debug( "EvccApp: onStop: glance mode, calling onHide" );
+                // EvccHelperBase.debug( "EvccApp: onStop: glance mode, calling onHide" );
                 _glanceView.onHide();
             }
         } catch ( ex ) {
-            EvccHelper.debugException( ex );
+            EvccHelperBase.debugException( ex );
        }
     }    
 
@@ -169,15 +165,15 @@ import Toybox.Math;
     // onStorageChanged is also called in the background service,
     // where WatchUi is not available, so we have to check for
     // that before calling requestUpdate().
-    (:tinyglance) function onStorageChanged() {  
+    (:glanceonly :tinyglance) function onStorageChanged() {  
         try {
-            // EvccHelper.debug( "EvccApp: onStorageChanged" );
+            // EvccHelperBase.debug( "EvccApp: onStorageChanged" );
             if( ! _isInBackground ) {
-                // EvccHelper.debug( "EvccApp: requesting update" );
+                // EvccHelperBase.debug( "EvccApp: requesting update" );
                 WatchUi.requestUpdate();
             }
         } catch ( ex ) {
-            EvccHelper.debugException( ex );
+            EvccHelperBase.debugException( ex );
        }
     }    
 }

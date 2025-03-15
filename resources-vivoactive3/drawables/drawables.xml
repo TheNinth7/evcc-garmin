@@ -1,82 +1,82 @@
 <drawables>
-    <bitmap id="evcc_logo_flash" filename="logo_evcc_flash.png"/>
+    <bitmap id="logo_flash" filename="logo_flash_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="logo_evcc" filename="logo_evcc_crushed.png" packingFormat="png"/>
 
     <!-- clock symbol is only needed in smaller fonts -->
-    <bitmap scope="foreground" id="clock_xtiny" filename="icon_glance_clock.png"/>
-    <bitmap scope="foreground" id="clock_glance" filename="icon_glance_clock.png"/>
+    <bitmap scope="foreground" id="clock_xtiny" filename="icon_xtiny_clock_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="clock_tiny" filename="icon_tiny_clock_crushed.png" packingFormat="png"/>
 
     <!-- car symbol is only needed in glance -->
-    <bitmap scope="glance" id="car_glance" filename="icon_glance_car.png"/>
+    <bitmap scope="glance" id="car_glance" filename="icon_glance_car_crushed.png" packingFormat="png"/>
 
     <!-- xtiny font size -->
-    <bitmap scope="foreground" id="battery_empty_xtiny" filename="icon_xtiny_battery_empty.png"/>
-    <bitmap scope="foreground" id="battery_onequarter_xtiny" filename="icon_xtiny_battery_onequarter.png"/>
-    <bitmap scope="foreground" id="battery_half_xtiny" filename="icon_xtiny_battery_half.png"/>
-    <bitmap scope="foreground" id="battery_threequarters_xtiny" filename="icon_xtiny_battery_threequarters.png"/>
-    <bitmap scope="foreground" id="battery_full_xtiny" filename="icon_xtiny_battery_full.png"/>
-    <bitmap scope="foreground" id="arrow_right_xtiny" filename="icon_xtiny_arrow_right.png"/>
-    <bitmap scope="foreground" id="arrow_left_xtiny" filename="icon_xtiny_arrow_left.png"/>
-    <bitmap scope="foreground" id="arrow_left_three_xtiny" filename="icon_xtiny_arrow_left_three.png"/>
-    <bitmap scope="foreground" id="sun_xtiny" filename="icon_xtiny_sun.png"/>
-    <bitmap scope="foreground" id="house_xtiny" filename="icon_xtiny_house.png"/>
-    <bitmap scope="foreground" id="grid_xtiny" filename="icon_xtiny_grid.png"/>
-    <bitmap scope="foreground" id="evcc_xtiny" filename="icon_xtiny_evcc.png"/>
+    <bitmap scope="foreground" id="battery_empty_xtiny" filename="icon_xtiny_battery_empty_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="battery_onequarter_xtiny" filename="icon_xtiny_battery_onequarter_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="battery_half_xtiny" filename="icon_xtiny_battery_half_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="battery_threequarters_xtiny" filename="icon_xtiny_battery_threequarters_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="battery_full_xtiny" filename="icon_xtiny_battery_full_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="arrow_right_xtiny" filename="icon_xtiny_arrow_right_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="arrow_left_xtiny" filename="icon_xtiny_arrow_left_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="arrow_left_three_xtiny" filename="icon_xtiny_arrow_left_three_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="sun_xtiny" filename="icon_xtiny_sun_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="house_xtiny" filename="icon_xtiny_house_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="grid_xtiny" filename="icon_xtiny_grid_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="forecast_xtiny" filename="icon_xtiny_forecast_crushed.png" packingFormat="png"/>
 
     <!-- glance font size -->
-    <bitmap scope="glance" id="battery_empty_glance" filename="icon_glance_battery_empty.png"/>
-    <bitmap scope="glance" id="battery_onequarter_glance" filename="icon_glance_battery_onequarter.png"/>
-    <bitmap scope="glance" id="battery_half_glance" filename="icon_glance_battery_half.png"/>
-    <bitmap scope="glance" id="battery_threequarters_glance" filename="icon_glance_battery_threequarters.png"/>
-    <bitmap scope="glance" id="battery_full_glance" filename="icon_glance_battery_full.png"/>
-    <bitmap scope="glance" id="arrow_right_glance" filename="icon_glance_arrow_right.png"/>
-    <bitmap scope="glance" id="arrow_left_glance" filename="icon_glance_arrow_left.png"/>
-    <bitmap scope="glance" id="arrow_left_three_glance" filename="icon_glance_arrow_left_three.png"/>
-    <bitmap scope="foreground" id="sun_glance" filename="icon_glance_sun.png"/>
-    <bitmap scope="foreground" id="house_glance" filename="icon_glance_house.png"/>
-    <bitmap scope="foreground" id="grid_glance" filename="icon_glance_grid.png"/>
-    <bitmap scope="foreground" id="evcc_glance" filename="icon_glance_evcc.png"/>
+    <bitmap scope="glance" id="battery_empty_glance" filename="icon_glance_battery_empty_crushed.png" packingFormat="png"/>
+    <bitmap scope="glance" id="battery_onequarter_glance" filename="icon_glance_battery_onequarter_crushed.png" packingFormat="png"/>
+    <bitmap scope="glance" id="battery_half_glance" filename="icon_glance_battery_half_crushed.png" packingFormat="png"/>
+    <bitmap scope="glance" id="battery_threequarters_glance" filename="icon_glance_battery_threequarters_crushed.png" packingFormat="png"/>
+    <bitmap scope="glance" id="battery_full_glance" filename="icon_glance_battery_full_crushed.png" packingFormat="png"/>
+    <bitmap scope="glance" id="arrow_right_glance" filename="icon_glance_arrow_right_crushed.png" packingFormat="png"/>
+    <bitmap scope="glance" id="arrow_left_glance" filename="icon_glance_arrow_left_crushed.png" packingFormat="png"/>
+    <bitmap scope="glance" id="arrow_left_three_glance" filename="icon_glance_arrow_left_three_crushed.png" packingFormat="png"/>
 
     <!-- tiny font size -->
-    <bitmap scope="foreground" id="battery_empty_tiny" filename="icon_tiny_battery_empty.png"/>
-    <bitmap scope="foreground" id="battery_onequarter_tiny" filename="icon_tiny_battery_onequarter.png"/>
-    <bitmap scope="foreground" id="battery_half_tiny" filename="icon_tiny_battery_half.png"/>
-    <bitmap scope="foreground" id="battery_threequarters_tiny" filename="icon_tiny_battery_threequarters.png"/>
-    <bitmap scope="foreground" id="battery_full_tiny" filename="icon_tiny_battery_full.png"/>
-    <bitmap scope="foreground" id="arrow_right_tiny" filename="icon_tiny_arrow_right.png"/>
-    <bitmap scope="foreground" id="arrow_left_tiny" filename="icon_tiny_arrow_left.png"/>
-    <bitmap scope="foreground" id="arrow_left_three_tiny" filename="icon_tiny_arrow_left_three.png"/>
-    <bitmap scope="foreground" id="sun_tiny" filename="icon_tiny_sun.png"/>
-    <bitmap scope="foreground" id="house_tiny" filename="icon_tiny_house.png"/>
-    <bitmap scope="foreground" id="grid_tiny" filename="icon_tiny_grid.png"/>
-    <bitmap scope="foreground" id="evcc_tiny" filename="icon_tiny_evcc.png"/>
+    <bitmap scope="foreground" id="battery_empty_tiny" filename="icon_tiny_battery_empty_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="battery_onequarter_tiny" filename="icon_tiny_battery_onequarter_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="battery_half_tiny" filename="icon_tiny_battery_half_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="battery_threequarters_tiny" filename="icon_tiny_battery_threequarters_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="battery_full_tiny" filename="icon_tiny_battery_full_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="arrow_right_tiny" filename="icon_tiny_arrow_right_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="arrow_left_tiny" filename="icon_tiny_arrow_left_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="arrow_left_three_tiny" filename="icon_tiny_arrow_left_three_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="sun_tiny" filename="icon_tiny_sun_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="house_tiny" filename="icon_tiny_house_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="grid_tiny" filename="icon_tiny_grid_crushed.png" packingFormat="png"/>
+    <!-- <bitmap scope="foreground" id="forecast_tiny" filename="icon_tiny_forecast_crushed.png" packingFormat="png"/> -->
+    <!-- <bitmap scope="foreground" id="evcc_tiny" filename="icon_tiny_evcc_crushed.png" packingFormat="png"/> -->
 
     <!-- small font size -->
-    <bitmap scope="foreground" id="battery_empty_small" filename="icon_small_battery_empty.png"/>
-    <bitmap scope="foreground" id="battery_onequarter_small" filename="icon_small_battery_onequarter.png"/>
-    <bitmap scope="foreground" id="battery_half_small" filename="icon_small_battery_half.png"/>
-    <bitmap scope="foreground" id="battery_threequarters_small" filename="icon_small_battery_threequarters.png"/>
-    <bitmap scope="foreground" id="battery_full_small" filename="icon_small_battery_full.png"/>
-    <bitmap scope="foreground" id="arrow_right_small" filename="icon_small_arrow_right.png"/>
-    <bitmap scope="foreground" id="arrow_left_small" filename="icon_small_arrow_left.png"/>
-    <bitmap scope="foreground" id="arrow_left_three_small" filename="icon_small_arrow_left_three.png"/>
-    <bitmap scope="foreground" id="sun_small" filename="icon_small_sun.png"/>
-    <bitmap scope="foreground" id="house_small" filename="icon_small_house.png"/>
-    <bitmap scope="foreground" id="grid_small" filename="icon_small_grid.png"/>
-    <bitmap scope="foreground" id="evcc_small" filename="icon_small_evcc.png"/>
+    <bitmap scope="foreground" id="battery_empty_small" filename="icon_small_battery_empty_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="battery_onequarter_small" filename="icon_small_battery_onequarter_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="battery_half_small" filename="icon_small_battery_half_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="battery_threequarters_small" filename="icon_small_battery_threequarters_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="battery_full_small" filename="icon_small_battery_full_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="arrow_right_small" filename="icon_small_arrow_right_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="arrow_left_small" filename="icon_small_arrow_left_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="arrow_left_three_small" filename="icon_small_arrow_left_three_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="sun_small" filename="icon_small_sun_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="house_small" filename="icon_small_house_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="grid_small" filename="icon_small_grid_crushed.png" packingFormat="png"/>
+    <!-- <bitmap scope="foreground" id="forecast_small" filename="icon_small_forecast_crushed.png" packingFormat="png"/> -->
+    <!-- <bitmap scope="foreground" id="evcc_small" filename="icon_small_evcc_crushed.png" packingFormat="png"/> -->
 
     <!-- medium font size -->
-    <bitmap scope="foreground" id="battery_empty_medium" filename="icon_medium_battery_empty.png"/>
-    <bitmap scope="foreground" id="battery_onequarter_medium" filename="icon_medium_battery_onequarter.png"/>
-    <bitmap scope="foreground" id="battery_half_medium" filename="icon_medium_battery_half.png"/>
-    <bitmap scope="foreground" id="battery_threequarters_medium" filename="icon_medium_battery_threequarters.png"/>
-    <bitmap scope="foreground" id="battery_full_medium" filename="icon_medium_battery_full.png"/>
-    <bitmap scope="foreground" id="arrow_right_medium" filename="icon_medium_arrow_right.png"/>
-    <bitmap scope="foreground" id="arrow_left_medium" filename="icon_medium_arrow_left.png"/>
-    <bitmap scope="foreground" id="arrow_left_three_medium" filename="icon_medium_arrow_left_three.png"/>
-    <bitmap scope="foreground" id="sun_medium" filename="icon_medium_sun.png"/>
-    <bitmap scope="foreground" id="house_medium" filename="icon_medium_house.png"/>
-    <bitmap scope="foreground" id="grid_medium" filename="icon_medium_grid.png"/>
-    <bitmap scope="foreground" id="evcc_medium" filename="icon_medium_evcc.png"/>
+    <bitmap scope="foreground" id="battery_empty_medium" filename="icon_medium_battery_empty_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="battery_onequarter_medium" filename="icon_medium_battery_onequarter_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="battery_half_medium" filename="icon_medium_battery_half_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="battery_threequarters_medium" filename="icon_medium_battery_threequarters_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="battery_full_medium" filename="icon_medium_battery_full_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="arrow_right_medium" filename="icon_medium_arrow_right_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="arrow_left_medium" filename="icon_medium_arrow_left_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="arrow_left_three_medium" filename="icon_medium_arrow_left_three_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="sun_medium" filename="icon_medium_sun_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="house_medium" filename="icon_medium_house_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="grid_medium" filename="icon_medium_grid_crushed.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="forecast_medium" filename="icon_medium_forecast_crushed.png" packingFormat="png"/>
+    <!-- <bitmap scope="foreground" id="evcc_medium" filename="icon_medium_evcc_crushed.png" packingFormat="png"/> -->
 
 
 </drawables>

@@ -1,26 +1,47 @@
 project.manifest = manifest.xml
 
+# Explanation of source directories
+# source-base: codes used by all variants
+#
+# source-base-annot-glance/tinyglance: 
+# base source that is used by the full glance and not the tiny glance
+# this source has to be duplicated, once with (:glance) annotiation
+# in source-base-annot-glance and once without in source-base-annot-tinyglance
+#
+# source-glance: source used by and only by the two glance variants
+# source-glance-full: source used only by the full glance
+# source-glance-tiny: source used only by the tiny glance
+
+sourceBase = source;source\_base;source\background;source\glance;source\widget
+sourceFullGlance = $(sourceBase);source-annot-glance
+sourceTinyGlance = $(sourceBase);source-annot-tinyglance
+sourceNoGlance = $(sourceBase);source-annot-glance
+
 # As default we use the normal glance source
 # and exclude any code in the main source directory
 # that is annotated with :tinyglance
-base.sourcePath = source;source-glance
-base.excludeAnnotations = tinyglance
+base.sourcePath = $(sourceFullGlance)
+base.excludeAnnotations = tinyglance;simple
 
 # For some devices we point to the tinyglance
 # source and do not exclude the :tinyglance annotation
-fr745.sourcePath = source;source-tinyglance
-fr745.excludeAnnotations = none
-fr945.sourcePath = source;source-tinyglance
-fr945.excludeAnnotations = none
-fr945lte.sourcePath = source;source-tinyglance
-fr945lte.excludeAnnotations = none
-fenix6.sourcePath = source;source-tinyglance
-fenix6.excludeAnnotations = none
-fenix6pro.sourcePath = source;source-tinyglance
-fenix6pro.excludeAnnotations = none
-fenix6s.sourcePath = source;source-tinyglance
-fenix6s.excludeAnnotations = none
-fenix6spro.sourcePath = source;source-tinyglance
-fenix6spro.excludeAnnotations = none
-fenix6xpro.sourcePath = source;source-tinyglance
-fenix6xpro.excludeAnnotations = none
+fr745.sourcePath = $(sourceTinyGlance)
+fr745.excludeAnnotations = fullglance;simple
+fr945.sourcePath = $(sourceTinyGlance)
+fr945.excludeAnnotations = fullglance;simple
+fr945lte.sourcePath = $(sourceTinyGlance)
+fr945lte.excludeAnnotations = fullglance;simple
+fenix6pro.sourcePath = $(sourceTinyGlance)
+fenix6pro.excludeAnnotations = fullglance;simple
+fenix6s.sourcePath = $(sourceTinyGlance)
+fenix6s.excludeAnnotations = fullglance;simple
+fenix6spro.sourcePath = $(sourceTinyGlance)
+fenix6spro.excludeAnnotations = fullglance;simple
+fenix6xpro.sourcePath = $(sourceTinyGlance)
+fenix6xpro.excludeAnnotations = fullglance;simple
+
+fenix6.sourcePath = $(sourceNoGlance)
+fenix6.excludeAnnotations = glanceonly;complex
+
+vivoactive3.sourcePath = $(sourceNoGlance)
+vivoactive3.excludeAnnotations = glanceonly;complex

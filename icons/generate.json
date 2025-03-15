@@ -1,7 +1,9 @@
 {
     "device-families":{
         "resources-round-360x360":{
-            "logo":"60",
+            "devices":"fr265s",
+            "logo_flash":"60",
+            "logo_evcc":"20",
             "icon_xtiny":"29",
             "icon_glance":"34",
             "icon_tiny":"39",
@@ -9,7 +11,9 @@
             "icon_medium":"50"
         },
         "resources-round-390x390":{
-            "logo":"60",
+            "devices":"epix2pro42mm",
+            "logo_flash":"60",
+            "logo_evcc":"20",
             "icon_xtiny":"28",
             "icon_glance":"33",
             "icon_tiny":"39",
@@ -17,15 +21,19 @@
             "icon_medium":"51"
         },
         "resources-round-416x416":{
-            "logo":"60",
-            "icon_xtiny":"30",
+            "devices":"epix2pro47mm",
+            "logo_flash":"60",
+            "logo_evcc":"22",
+            "icon_xtiny":"31",
             "icon_glance":"35",
-            "icon_tiny":"41",
+            "icon_tiny":"42",
             "icon_small":"47",
             "icon_medium":"55"
         },
         "resources-round-454x454":{
-            "logo":"60",
+            "devices":"epix2pro51mm",
+            "logo_flash":"60",
+            "logo_evcc":"23",
             "icon_xtiny":"33",
             "icon_glance":"39",
             "icon_tiny":"45",
@@ -33,7 +41,9 @@
             "icon_medium":"59"
         },
         "resources-round-240x240":{
-            "logo":"40",
+            "devices":"fenix7s, fenix7spro, fenix6s, fenix6spro, fr945, fr945lte",
+            "logo_flash":"40",
+            "logo_evcc":"13",
             "icon_xtiny":"19",
             "icon_glance":"22",
             "icon_tiny":"26",
@@ -41,23 +51,28 @@
             "icon_medium":"34"
         },
         "resources-round-260x260":{
-            "logo":"40",
+            "devices":"fenix6, fenix6pro, fenix7",
+            "logo_flash":"40",
+            "logo_evcc":"13",
             "icon_xtiny":"19",
             "icon_glance":"22",
-            "icon_tiny":"28",
-            "icon_small":"31",
+            "icon_tiny":"29",
+            "icon_small":"32",
             "icon_medium":"37"
         },
         "resources-round-280x280":{
-            "logo":"40",
+            "devices":"fenix6xpro, fenix7x, fenix7xpro, fenix7xpronowifi",
+            "logo_flash":"40",
+            "logo_evcc":"13",
             "icon_xtiny":"19",
             "icon_glance":"22",
-            "icon_tiny":"30",
+            "icon_tiny":"31",
             "icon_small":"34",
-            "icon_medium":"39"
+            "icon_medium":"40"
         },
         "resources-venu2":{
-            "logo":"70",
+            "logo_flash":"70",
+            "logo_evcc":"22",
             "icon_xtiny":"32",
             "icon_glance":"43",
             "icon_tiny":"43",
@@ -65,7 +80,8 @@
             "icon_medium":"58"
         },
         "resources-venu2plus":{
-            "logo":"70",
+            "logo_flash":"70",
+            "logo_evcc":"22",
             "icon_xtiny":"32",
             "icon_glance":"43",
             "icon_tiny":"43",
@@ -73,7 +89,8 @@
             "icon_medium":"58"
         },
         "resources-venu2s":{
-            "logo":"61",
+            "logo_flash":"61",
+            "logo_evcc":"20",
             "icon_xtiny":"29",
             "icon_glance":"37",
             "icon_tiny":"37",
@@ -81,7 +98,8 @@
             "icon_medium":"52"
         },
         "resources-venu3":{
-            "logo":"70",
+            "logo_flash":"70",
+            "logo_evcc":"25",
             "icon_xtiny":"35",
             "icon_glance":"45",
             "icon_tiny":"45",
@@ -89,7 +107,8 @@
             "icon_medium":"58"
         },
         "resources-venu3s":{
-            "logo":"70",
+            "logo_flash":"70",
+            "logo_evcc":"22",
             "icon_xtiny":"32",
             "icon_glance":"40",
             "icon_tiny":"40",
@@ -97,7 +116,8 @@
             "icon_medium":"53"
         },
         "resources-fr265":{
-            "logo":"60",
+            "logo_flash":"60",
+            "logo_evcc":"24",
             "icon_xtiny":"34",
             "icon_glance":"39",
             "icon_tiny":"43",
@@ -105,7 +125,8 @@
             "icon_medium":"58"
         },
         "resources-fr745":{
-            "logo":"40",
+            "logo_flash":"40",
+            "logo_evcc":"13",
             "icon_xtiny":"19",
             "icon_glance":"19",
             "icon_tiny":"26",
@@ -113,7 +134,8 @@
             "icon_medium":"34"
         },
         "resources-fr955":{
-            "logo":"40",
+            "logo_flash":"40",
+            "logo_evcc":"15",
             "icon_xtiny":"21",
             "icon_glance":"24",
             "icon_tiny":"29",
@@ -121,7 +143,8 @@
             "icon_medium":"39"
         },
         "resources-fr965":{
-            "logo":"65",
+            "logo_flash":"65",
+            "logo_evcc":"26",
             "icon_xtiny":"37",
             "icon_glance":"42",
             "icon_tiny":"47",
@@ -130,14 +153,16 @@
         },
         "resources-vivoactive3":{
             "logo-40x33":"33",
-            "icon_xtiny":"16",
-            "icon_glance":"20",
-            "icon_tiny":"22",
-            "icon_small":"24",
-            "icon_medium":"28"
+            "logo_evcc":"15",
+            "icon_xtiny":"22",
+            "icon_glance":"22",
+            "icon_tiny":"30",
+            "icon_small":"30",
+            "icon_medium":"34"
         },
         "resources-vivoactive3m":{
             "logo-40x33":"33",
+            "logo_evcc":"11",
             "icon_xtiny":"16",
             "icon_glance":"20",
             "icon_tiny":"22",
@@ -146,6 +171,7 @@
         },
         "resources-vivoactive3mlte":{
             "logo-40x33":"33",
+            "logo_evcc":"11",
             "icon_xtiny":"16",
             "icon_glance":"20",
             "icon_tiny":"22",
@@ -153,7 +179,8 @@
             "icon_medium":"28"
         },
         "resources-vivoactive4":{
-            "logo":"35",
+            "logo_flash":"35",
+            "logo_evcc":"13",
             "icon_xtiny":"19",
             "icon_glance":"19",
             "icon_tiny":"27",
@@ -161,7 +188,8 @@
             "icon_medium":"35"
         },
         "resources-vivoactive4s":{
-            "logo":"30",
+            "logo_flash":"30",
+            "logo_evcc":"12",
             "icon_xtiny":"17",
             "icon_glance":"17",
             "icon_tiny":"23",
@@ -169,7 +197,8 @@
             "icon_medium":"30"
         },
         "resources-vivoactive5":{
-            "logo":"70",
+            "logo_flash":"70",
+            "logo_evcc":"22",
             "icon_xtiny":"32",
             "icon_glance":"41",
             "icon_tiny":"41",
@@ -177,7 +206,8 @@
             "icon_medium":"54"
         },
         "resources-fenix843mm":{
-            "logo":"60",
+            "logo_flash":"60",
+            "logo_evcc":"24",
             "icon_xtiny":"34",
             "icon_glance":"39",
             "icon_tiny":"43",
@@ -185,7 +215,8 @@
             "icon_medium":"58"
         },
         "resources-fenix847mm":{
-            "logo":"65",
+            "logo_flash":"65",
+            "logo_evcc":"26",
             "icon_xtiny":"37",
             "icon_glance":"42",
             "icon_tiny":"47",
@@ -193,7 +224,8 @@
             "icon_medium":"61"
         },
         "resources-fenix8solar47mm":{
-            "logo":"40",
+            "logo_flash":"40",
+            "logo_evcc":"15",
             "icon_xtiny":"21",
             "icon_glance":"24",
             "icon_tiny":"29",
@@ -201,7 +233,8 @@
             "icon_medium":"39"
         },
         "resources-fenix8solar51mm":{
-            "logo":"40",
+            "logo_flash":"40",
+            "logo_evcc":"15",
             "icon_xtiny":"22",
             "icon_glance":"26",
             "icon_tiny":"30",
@@ -218,13 +251,14 @@
         "arrow_right.svg":{ "anti-aliasing":"3", "types":["icon_xtiny", "icon_glance", "icon_tiny", "icon_small", "icon_medium"] },
         "arrow_left.svg":{ "anti-aliasing":"3", "types":["icon_xtiny", "icon_glance", "icon_tiny", "icon_small", "icon_medium"] },
         "arrow_left_three.svg":{ "anti-aliasing":"3", "types":["icon_xtiny", "icon_glance", "icon_tiny", "icon_small", "icon_medium"] },
-        "grid.svg":{ "anti-aliasing":"3", "types":["icon_xtiny", "icon_glance", "icon_tiny", "icon_small", "icon_medium"] },
-        "house.svg":{ "anti-aliasing":"3", "types":["icon_xtiny", "icon_glance", "icon_tiny", "icon_small", "icon_medium"] },
-        "sun.svg":{ "anti-aliasing":"3", "types":["icon_xtiny", "icon_glance", "icon_tiny", "icon_small", "icon_medium"] },
-        "clock.svg":{ "anti-aliasing":"3", "types":["icon_xtiny", "icon_glance"] },
-        "evcc.svg":{ "anti-aliasing":"3", "types":["icon_xtiny", "icon_glance", "icon_tiny", "icon_small", "icon_medium"] },
+        "grid.svg":{ "anti-aliasing":"3", "types":["icon_xtiny", "icon_tiny", "icon_small", "icon_medium"] },
+        "house.svg":{ "anti-aliasing":"3", "types":["icon_xtiny", "icon_tiny", "icon_small", "icon_medium"] },
+        "sun.svg":{ "anti-aliasing":"3", "types":["icon_xtiny", "icon_tiny", "icon_small", "icon_medium"] },
+        "forecast.svg":{ "anti-aliasing":"3", "types":["icon_xtiny", "icon_tiny", "icon_small", "icon_medium"] },
+        "clock.svg":{ "anti-aliasing":"3", "types":["icon_xtiny", "icon_tiny"] },
+        "evcc.svg":{ "anti-aliasing":"3", "types":["logo_evcc"], "png-name":"logo_evcc.png" },
         "car.svg":{ "anti-aliasing":"3", "types":["icon_glance"] },
-        "evcc_flash.svg":{ "anti-aliasing":"3", "types":["logo"] },
-        "evcc_flash_40x33.svg":{ "anti-aliasing":"3", "types":["logo-40x33"], "png-name":"logo_evcc_flash.png" }
+        "evcc_flash.svg":{ "anti-aliasing":"3", "types":["logo_flash"], "png-name":"logo_flash.png" },
+        "evcc_flash_40x33.svg":{ "anti-aliasing":"3", "types":["logo-40x33"], "png-name":"logo_flash.png" }
     }
 }
