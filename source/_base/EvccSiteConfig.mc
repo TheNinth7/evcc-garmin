@@ -14,6 +14,9 @@ import Toybox.Application.Properties;
     }
     function getSiteCount() as Number { return _sites.size(); }
 
+    // The class is implemented as Singleton, since the site configuration
+    // is global for the whole app, it needs to exist only once and as
+    // singleton can be accessed easily from anywhere in the app
     private static var _instance as EvccSiteConfig?;
     static function getInstance() as EvccSiteConfig {
         if( _instance == null ) {

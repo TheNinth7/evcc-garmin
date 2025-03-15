@@ -9,16 +9,14 @@ import Toybox.Math;
  // data from the state of a site
  class EvccWidgetSiteBaseView extends WatchUi.View {
     
-    private var _stateRequest as EvccStateRequest;
-    public function getStateRequest() { return _stateRequest; }
-    function setStateRequest( stateRequest as EvccStateRequest ) { _stateRequest = stateRequest; }
-
     private var _pageIndex as Number;
     function getPageIndex() as Number { return _pageIndex; }
     private var _siteIndex as Number;
     function getSiteIndex() as Number { return _siteIndex; }
     function setSiteIndex( siteIndex as Number ) { _siteIndex = siteIndex; }
     
+    function getStateRequest() as EvccStateRequest { return EvccStateRequestSingleton.getStateRequest( _siteIndex ); }
+
     private var _views as Array<EvccWidgetSiteBaseView>;
     function getTotalPages() as Number { return _views.size(); }
     function addView( view as EvccWidgetSiteBaseView ) { _views.add( view ); }
@@ -35,8 +33,6 @@ import Toybox.Math;
         _pageIndex = pageIndex;
         _siteIndex = siteIndex;
         _parentView = parentView;
-
-        _stateRequest = new EvccStateRequest( siteIndex );
     }
 
     // Return the list of views for the carousel to be presented 
@@ -59,7 +55,7 @@ import Toybox.Math;
     function onShow() as Void {
         try {
             // EvccHelperBase.debug( "Widget: onShow" );
-            _stateRequest.start();
+            EvccStateRequestSingleton.activateStateRequest( _siteIndex );
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
         }
@@ -68,6 +64,8 @@ import Toybox.Math;
     // Update the view
     function onUpdate(dc as Dc) as Void {
         try {
+            var stateRequest = getStateRequest();
+
             // EvccHelperBase.debug("Widget: onUpdate");
             dc.setColor( EvccConstants.COLOR_FOREGROUND, EvccConstants.COLOR_BACKGROUND );
             dc.clear();
@@ -76,11 +74,11 @@ import Toybox.Math;
             var font = EvccUILibWidget.FONT_MEDIUM; // We start with the largest font
             var block = new EvccUIVertical( dc, { :font => font } );
             
-            if( ! _stateRequest.hasLoaded() ) {
+            if( ! stateRequest.hasLoaded() ) {
                 block.addText( "Loading ...", {} );
             } else { 
-                if( _stateRequest.hasError() ) {
-                    throw new StateRequestException( _stateRequest.getErrorCode(), _stateRequest.getErrorMessage() );
+                if( stateRequest.hasError() ) {
+                    throw new StateRequestException( stateRequest.getErrorCode(), stateRequest.getErrorMessage() );
                 } else { 
                     addContent( block, dc );
                 }
@@ -113,6 +111,8 @@ import Toybox.Math;
     }
 
     function drawShell( dc as Dc ) as EvccContentArea {
+        var stateRequest = getStateRequest();
+
         var font = EvccUILibWidget.FONT_XTINY;
         
         var siteConfig = EvccSiteConfig.getInstance();
@@ -126,8 +126,8 @@ import Toybox.Math;
 
         if( siteConfig.getSiteCount() > 1 ) {
             hasSiteTitle = true;
-            if( _stateRequest.getState() != null ) {
-                header.addText( _stateRequest.getState().getSiteTitle().substring(0,9), {}  );
+            if( stateRequest.getState() != null ) {
+                header.addText( stateRequest.getState().getSiteTitle().substring(0,9), {}  );
                 //header.addText( "ABCDEFGHIJ", {}  );
             } else {
                 header.addText( " ", {} );
@@ -227,6 +227,7 @@ import Toybox.Math;
     // details
     public function actsAsGlance() as Boolean { return false; }
 
+    /*
     // Called when this View is removed from the screen. Save the
     // state of this View here. This includes freeing resources from
     // memory.
@@ -238,6 +239,7 @@ import Toybox.Math;
             EvccHelperBase.debugException( ex );
         }
     }
+    */
 }
 
 class EvccContentArea {

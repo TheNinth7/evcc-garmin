@@ -109,7 +109,6 @@ import Toybox.Math;
             // site last selected
             if( _actAsGlance ) {
                 setSiteIndex( new EvccBreadCrumbRoot( EvccSiteConfig.getInstance().getSiteCount() ).getSelectedChild() );
-                self.setStateRequest( new EvccStateRequest( getSiteIndex() ) );
             }
             EvccWidgetSiteBaseView.onShow();
         } catch ( ex ) {

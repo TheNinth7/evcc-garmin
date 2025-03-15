@@ -142,21 +142,25 @@ import Toybox.Math;
     // The onHide() function of the views takes care
     // of required clean-ups. For glances, onHide() is
     // not called automatically, so we do this here
-    (:glanceonly) function onStop( state as Lang.Dictionary or Null ) as Void {
+    function onStop( state as Lang.Dictionary or Null ) as Void {
         try {
             // EvccHelperBase.debug( "EvccApp: onStop" );
-            
-            // If we are in the background, WatchUi is not available and the
-            // call would go into a runtime error, so we have to check this
-            // first
-            if( _glanceView != null ) {
-                // EvccHelperBase.debug( "EvccApp: onStop: glance mode, calling onHide" );
-                _glanceView.onHide();
+            hideGlance();
+            if( ! _isGlance && ! _isInBackground ) {
+                EvccStateRequestSingleton.stopStateRequest();
             }
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
        }
-    }    
+    }
+
+    (:glanceonly) private function hideGlance() {
+        if( _glanceView != null ) {
+            // EvccHelperBase.debug( "EvccApp: onStop: glance mode, calling onHide" );
+            _glanceView.onHide();
+        }
+    }
+    (:noglance) private function hideGlance() {}
 
     // For the tiny glance we take the data updates from the 
     // background service and just update the UI

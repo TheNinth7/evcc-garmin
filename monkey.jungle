@@ -17,31 +17,35 @@ sourceFullGlance = $(sourceBase);source-annot-glance
 sourceTinyGlance = $(sourceBase);source-annot-tinyglance
 sourceNoGlance = $(sourceBase);source-annot-glance
 
+exclFullGlance = noglance;tinyglance
+exclTinyGlance = noglance;fullglance
+exclNoGlance = tinyglance;fullglance;glanceonly
+
 # As default we use the normal glance source
 # and exclude any code in the main source directory
 # that is annotated with :tinyglance
 base.sourcePath = $(sourceFullGlance)
-base.excludeAnnotations = tinyglance;simple
+base.excludeAnnotations = $(exclFullGlance);simple
 
 # For some devices we point to the tinyglance
 # source and do not exclude the :tinyglance annotation
 fr745.sourcePath = $(sourceTinyGlance)
-fr745.excludeAnnotations = fullglance;simple
+fr745.excludeAnnotations = $(exclTinyGlance);simple
 fr945.sourcePath = $(sourceTinyGlance)
-fr945.excludeAnnotations = fullglance;simple
+fr945.excludeAnnotations = $(exclTinyGlance);simple
 fr945lte.sourcePath = $(sourceTinyGlance)
-fr945lte.excludeAnnotations = fullglance;simple
+fr945lte.excludeAnnotations = $(exclTinyGlance);simple
 fenix6pro.sourcePath = $(sourceTinyGlance)
-fenix6pro.excludeAnnotations = fullglance;simple
+fenix6pro.excludeAnnotations = $(exclTinyGlance);simple
 fenix6s.sourcePath = $(sourceTinyGlance)
-fenix6s.excludeAnnotations = fullglance;simple
+fenix6s.excludeAnnotations = $(exclTinyGlance);simple
 fenix6spro.sourcePath = $(sourceTinyGlance)
-fenix6spro.excludeAnnotations = fullglance;simple
+fenix6spro.excludeAnnotations = $(exclTinyGlance);simple
 fenix6xpro.sourcePath = $(sourceTinyGlance)
-fenix6xpro.excludeAnnotations = fullglance;simple
+fenix6xpro.excludeAnnotations = $(exclTinyGlance);simple
 
 fenix6.sourcePath = $(sourceNoGlance)
-fenix6.excludeAnnotations = glanceonly;complex
+fenix6.excludeAnnotations = $(exclNoGlance);complex
 
 vivoactive3.sourcePath = $(sourceNoGlance)
-vivoactive3.excludeAnnotations = glanceonly;complex
+vivoactive3.excludeAnnotations = $(exclNoGlance);complex

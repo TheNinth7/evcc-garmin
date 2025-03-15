@@ -11,7 +11,6 @@ import Toybox.Application.Properties;
         // EvccHelperBase.debug( "EvccBackground: initialize" );
         System.ServiceDelegate.initialize();
         _index = index;
-        _siteConfig = siteConfig;
 	}
 	
     // When the background timer triggers, we initiate the
@@ -24,7 +23,7 @@ import Toybox.Application.Properties;
 
             // We do not want to start the state request timer with .start()
             // but only do a single request.
-            var stateRequest = new EvccStateRequest( _index, EvccSiteConfig.getInstance().getSite( _index ) );
+            var stateRequest = new EvccStateRequest( _index );
             stateRequest.makeRequest();
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
