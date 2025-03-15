@@ -12,10 +12,10 @@ import Toybox.Application.Properties;
     private var _stateRequest as EvccStateRequest;
     public function getStateRequest() { return _stateRequest; }
 
-    function initialize( index as Number, siteConfig as EvccSiteConfig ) {
+    function initialize( index as Number ) {
         // EvccHelperBase.debug("Glance: initialize");
         GlanceView.initialize();
-        _stateRequest = new EvccStateRequest( index, siteConfig.getSite( index ) );
+        _stateRequest = new EvccStateRequest( index );
     }
 
     function onLayout(dc as Dc) as Void {
@@ -65,7 +65,7 @@ import Toybox.Application.Properties;
                     var hasVehicle = false;
                     // We use the height of the font as spacing between the columns
                     // This gives us a space that is suitable for each screen size/resolution
-                    var spacing = dc.getTextDimensions( " ", Graphics.FONT_GLANCE )[0];
+                    var spacing = dc.getTextDimensions( "  ", Graphics.FONT_GLANCE )[0];
                     if( loadpoints.size() <= 1 ) { spacing = spacing * 3; }
                     for (var i = 0; i < loadpoints.size(); i++) {
                         var loadpoint = loadpoints[i] as EvccLoadPoint;

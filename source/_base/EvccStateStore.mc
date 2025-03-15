@@ -55,9 +55,9 @@ import Toybox.Time;
     }
 
     // Persist the data to storage
-    // Having this separately from storeState() fullfils two purposes
+    // Having this separately from setState() fullfils two purposes
     // First, it reduces the write operations to persistant storage
-    // Second, storeState() is called in the same time as the JSON response
+    // Second, setState() is called in the same time as the JSON response
     // is processed. Storage.setValue() is also memory-intensive, so doing
     // both at once would cause out of memory errors. So instead we have persist()
     // be called when the application is stopped, at that point, there is no

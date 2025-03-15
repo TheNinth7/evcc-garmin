@@ -13,12 +13,12 @@ import Toybox.Application.Properties;
 // the storage by the background service
 (:glance :tinyglance :glanceonly) class EvccGlanceView extends WatchUi.GlanceView {
     private var _timer = new Timer.Timer();
-    private var _siteStore as EvccStateStore;
+    private var _stateStore as EvccStateStore;
 
-    function initialize( index as Number, siteConfig as EvccSiteConfig ) {
+    function initialize( index as Number ) {
         // EvccHelperBase.debug("TinyGlance: initialize");
         GlanceView.initialize();
-        _siteStore = new EvccStateStore( EvccBreadCrumbRootReadOnly.getSelectedChild( siteConfig.getSiteCount() ) );
+        _stateStore = new EvccStateStore( EvccBreadCrumbRootReadOnly.getSelectedChild( EvccSiteConfig.getInstance().getSiteCount() ) );
     }
 
     function onLayout(dc as Dc) as Void {
@@ -59,7 +59,7 @@ import Toybox.Application.Properties;
             var line1Y = ( dc.getHeight() / 2 ) * 0.95 - ( Graphics.getFontHeight( Graphics.FONT_GLANCE ) / 2 );
             var line2Y = ( dc.getHeight() / 2 ) * 0.95 + ( Graphics.getFontHeight( Graphics.FONT_GLANCE ) / 2 );
             
-            var siteData = _siteStore.getStateFromStorage() as EvccState?;
+            var siteData = _stateStore.getStateFromStorage() as EvccState?;
 
             if ( siteData != null ) {
                 line1 = "";

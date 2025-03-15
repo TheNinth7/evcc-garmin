@@ -8,11 +8,12 @@ import Toybox.PersistedContent;
 
 (:glance :background) class EvccStateRequest {
     
+    private var _siteIndex as Number;
+
     private var _timer;
     private var _refreshInterval = 10;
     private var _dataExpiry = 60;
     private var _reduceResponseSize = true;
-    private var _siteConfig as EvccSite;
 
     private var _hasLoaded = false;
     private var _stateStore as EvccStateStore;
@@ -27,15 +28,15 @@ import Toybox.PersistedContent;
     public function getErrorCode() as String { return _errorCode; }
     public function getState() as EvccState? { return _stateStore.getState(); }
 
-    function initialize( index as Number, siteConfig as EvccSite ) {
+    function initialize( siteIndex as Number ) {
         // EvccHelperBase.debug("StateRequest: initialize");
         
         _refreshInterval = Properties.getValue( EvccConstants.PROPERTY_REFRESH_INTERVAL );
         _dataExpiry = Properties.getValue( EvccConstants.PROPERTY_DATA_EXPIRY );
         _reduceResponseSize = Properties.getValue( EvccConstants.PROPERTY_REDUCE_RESPONSE_SIZE );
 
-        _siteConfig = siteConfig;
-        _stateStore = new EvccStateStore( index );
+        _stateStore = new EvccStateStore( siteIndex );
+        _siteIndex = siteIndex;
     }
 
     // Start the request timer, and depending on whether stored state
@@ -94,8 +95,9 @@ import Toybox.PersistedContent;
     //! Make the web request
     function makeRequest() as Void {
         // EvccHelperBase.debug("StateRequest: makeRequest");
-        
-        var url = _siteConfig.getUrl() + "/api/state";
+        var siteConfig = EvccSiteConfig.getInstance().getSite( _siteIndex );
+
+        var url = siteConfig.getUrl() + "/api/state";
         var parameters = null;
 
         // This jq statement narrows down the response already on the server-side
@@ -122,9 +124,9 @@ import Toybox.PersistedContent;
         };
 
         // Add basic authentication
-        if( _siteConfig.needsBasicAuth() ) {
+        if( siteConfig.needsBasicAuth() ) {
             options[:headers] = { 
-                "Authorization" => "Basic " + StringUtil.encodeBase64( Lang.format( "$1$:$2$", [_siteConfig.getUser(), _siteConfig.getPassword() ] ) )
+                "Authorization" => "Basic " + StringUtil.encodeBase64( Lang.format( "$1$:$2$", [siteConfig.getUser(), siteConfig.getPassword() ] ) )
             };
         }
 

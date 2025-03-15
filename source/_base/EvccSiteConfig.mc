@@ -14,7 +14,15 @@ import Toybox.Application.Properties;
     }
     function getSiteCount() as Number { return _sites.size(); }
 
-    function initialize() {
+    private static var _instance as EvccSiteConfig?;
+    static function getInstance() as EvccSiteConfig {
+        if( _instance == null ) {
+            _instance = new EvccSiteConfig();
+        }
+        return _instance;
+    }
+
+    private function initialize() {
         // EvccHelperBase.debug("EvccSiteConfig: initialize");
         // Read sites from the configuration
         // While the Garmin SDK supports array structures for settings,

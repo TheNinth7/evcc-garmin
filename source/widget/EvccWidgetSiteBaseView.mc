@@ -13,9 +13,6 @@ import Toybox.Math;
     public function getStateRequest() { return _stateRequest; }
     function setStateRequest( stateRequest as EvccStateRequest ) { _stateRequest = stateRequest; }
 
-    private var _siteConfig as EvccSiteConfig;
-    function getSiteConfig() as EvccSiteConfig { return _siteConfig; }
-
     private var _pageIndex as Number;
     function getPageIndex() as Number { return _pageIndex; }
     private var _siteIndex as Number;
@@ -30,17 +27,16 @@ import Toybox.Math;
     private var _parentView as EvccWidgetSiteBaseView?;
     function getParentView() as EvccWidgetSiteBaseView? { return _parentView; }
 
-    function initialize( views as Array<EvccWidgetSiteBaseView>, pageIndex as Number, parentView as EvccWidgetSiteBaseView?, siteConfig as EvccSiteConfig, siteIndex as Number ) {
+    function initialize( views as Array<EvccWidgetSiteBaseView>, pageIndex as Number, parentView as EvccWidgetSiteBaseView?, siteIndex as Number ) {
         // EvccHelperBase.debug("Widget: initialize");
         View.initialize();
 
         _views = views;
         _pageIndex = pageIndex;
-        _siteConfig = siteConfig;
         _siteIndex = siteIndex;
         _parentView = parentView;
 
-        _stateRequest = new EvccStateRequest( siteIndex, siteConfig.getSite( siteIndex ) );
+        _stateRequest = new EvccStateRequest( siteIndex );
     }
 
     // Return the list of views for the carousel to be presented 
@@ -119,15 +115,16 @@ import Toybox.Math;
     function drawShell( dc as Dc ) as EvccContentArea {
         var font = EvccUILibWidget.FONT_XTINY;
         
+        var siteConfig = EvccSiteConfig.getInstance();
         var fonts = EvccUILibWidget._fonts as Array<FontDefinition>;
         var spacing = Graphics.getFontHeight( fonts[font] ) / 3;
 
         var header = new EvccUIVertical( dc, { :font => font, :marginTop => spacing, :marginBottom => spacing } );
-        var hasSiteTitle = _siteConfig.getSiteCount() > 1;
+        var hasSiteTitle = siteConfig.getSiteCount() > 1;
 
         var xCenter = dc.getWidth() / 2;
 
-        if( _siteConfig.getSiteCount() > 1 ) {
+        if( siteConfig.getSiteCount() > 1 ) {
             hasSiteTitle = true;
             if( _stateRequest.getState() != null ) {
                 header.addText( _stateRequest.getState().getSiteTitle().substring(0,9), {}  );

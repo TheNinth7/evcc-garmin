@@ -24,18 +24,18 @@ import Toybox.Math;
     // Holds views to be shown when select is pressed
     var _subViews as Array<EvccWidgetSiteBaseView>?;
 
-    function initialize( views as Array<EvccWidgetSiteBaseView>, pageIndex as Number, parentView as EvccWidgetSiteBaseView?, siteConfig as EvccSiteConfig, siteIndex as Number, actAsGlance as Boolean ) {
+    function initialize( views as Array<EvccWidgetSiteBaseView>, pageIndex as Number, parentView as EvccWidgetSiteBaseView?, siteIndex as Number, actAsGlance as Boolean ) {
         // EvccHelperBase.debug("Widget: initialize");
-        EvccWidgetSiteBaseView.initialize( views, pageIndex, parentView, siteConfig, siteIndex );
+        EvccWidgetSiteBaseView.initialize( views, pageIndex, parentView, siteIndex );
 
         _vehicleTitleBaseMaxLength = Properties.getValue( EvccConstants.PROPERTY_VEHICLE_TITLE_BASE_MAX_LENGTH );
         _actAsGlance = actAsGlance;
 
-        if( _actAsGlance && getSiteConfig().getSiteCount() > 1 ) {
-            _subViews = getRootViews( getSiteConfig() );
+        if( _actAsGlance && EvccSiteConfig.getInstance().getSiteCount() > 1 ) {
+            _subViews = getRootViews();
         } else {
             _subViews = new Array<EvccWidgetSiteBaseView>[0];
-            _subViews = EvccWidgetSiteMainView.addSubViews( _subViews, self, getSiteConfig(), getSiteIndex() );
+            _subViews = EvccWidgetSiteMainView.addSubViews( _subViews, self, getSiteIndex() );
         }
     }
 
@@ -47,14 +47,15 @@ import Toybox.Math;
             if( staterq != null ) {
                 if( staterq.hasLoaded() && ! staterq.hasError() && staterq.getState().hasForecast() ) {
                     _checkedForecast = true;
+                    var siteConfig = EvccSiteConfig.getInstance();
                     // If we act as glance and have only one site, the forecast goes into the subviews
                     // If we have multiple sites, the forecast goes into the subviews
                     // If we do not act as glance and have only one site, we add it to the views in the current carousel
                     // If we act as glance and have multiple sites, no forecast is added, this will be done one level down
-                    if( ( _actAsGlance && getSiteConfig().getSiteCount() == 1 ) || ( ! _actAsGlance && getSiteConfig().getSiteCount() > 1 ) ) {
-                        _subViews.add( new EvccWidgetSiteForecastView( _subViews, _subViews.size() + 1, self, getSiteConfig(), getSiteIndex() ) );
-                    } else if ( getSiteConfig().getSiteCount() == 1 ) {
-                        addView( new EvccWidgetSiteForecastView( getViews(), getViews().size(), self.getParentView(), getSiteConfig(), getSiteIndex() ) );
+                    if( ( _actAsGlance && siteConfig.getSiteCount() == 1 ) || ( ! _actAsGlance && siteConfig.getSiteCount() > 1 ) ) {
+                        _subViews.add( new EvccWidgetSiteForecastView( _subViews, _subViews.size() + 1, self, getSiteIndex() ) );
+                    } else if ( siteConfig.getSiteCount() == 1 ) {
+                        addView( new EvccWidgetSiteForecastView( getViews(), getViews().size(), self.getParentView(), getSiteIndex() ) );
                     }
                 }
             }
@@ -78,18 +79,19 @@ import Toybox.Math;
     // to return the list of sub views. If there is a dedicated glance 
     // view, this is called by EvccApp to prepare the list of views presented
     // initially in widget view
-    static function getRootViews( siteConfig as EvccSiteConfig ) as Array<EvccWidgetSiteBaseView> {
+    static function getRootViews() as Array<EvccWidgetSiteBaseView> {
         var views = new Array<EvccWidgetSiteBaseView>[0];
-        for( var i = 0; i < siteConfig.getSiteCount(); i++ ) {
-           views.add( new EvccWidgetSiteMainView( views, i, null, siteConfig, i, false ) );
+        var siteCount = EvccSiteConfig.getInstance().getSiteCount();
+        for( var i = 0; i < siteCount; i++ ) {
+           views.add( new EvccWidgetSiteMainView( views, i, null, i, false ) );
         }
-        if( siteConfig.getSiteCount() == 1 ) {
-            views = EvccWidgetSiteMainView.addSubViews( views, null, siteConfig, 0 );
+        if( siteCount == 1 ) {
+            views = EvccWidgetSiteMainView.addSubViews( views, null, 0 );
         }
         return views;
     }
 
-    static function addSubViews( views as Array<EvccWidgetSiteBaseView>, parentView as EvccWidgetSiteBaseView?, siteConfig as EvccSiteConfig, siteIndex as Number ) as Array<EvccWidgetSiteBaseView> {
+    static function addSubViews( views as Array<EvccWidgetSiteBaseView>, parentView as EvccWidgetSiteBaseView?, siteIndex as Number ) as Array<EvccWidgetSiteBaseView> {
         // Currently not in use, since forecast is added dynamically on the
         // first update.
         return views;
@@ -106,8 +108,8 @@ import Toybox.Math;
             // and we have to switch the glance view to the 
             // site last selected
             if( _actAsGlance ) {
-                setSiteIndex( new EvccBreadCrumbRoot( getSiteConfig().getSiteCount() ).getSelectedChild() );
-                self.setStateRequest( new EvccStateRequest( getSiteIndex(), getSiteConfig().getSite( getSiteIndex() ) ) );
+                setSiteIndex( new EvccBreadCrumbRoot( EvccSiteConfig.getInstance().getSiteCount() ).getSelectedChild() );
+                self.setStateRequest( new EvccStateRequest( getSiteIndex() ) );
             }
             EvccWidgetSiteBaseView.onShow();
         } catch ( ex ) {

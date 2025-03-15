@@ -7,8 +7,8 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
     private var _label as Array;
     private var _indicator as Array;
 
-    function initialize( views as Array<EvccWidgetSiteBaseView>, pageIndex as Number, parentView as EvccWidgetSiteBaseView?, siteConfig as EvccSiteConfig, siteIndex as Number ) {
-        EvccWidgetSiteBaseView.initialize( views, pageIndex, parentView, siteConfig, siteIndex );
+    function initialize( views as Array<EvccWidgetSiteBaseView>, pageIndex as Number, parentView as EvccWidgetSiteBaseView?, siteIndex as Number ) {
+        EvccWidgetSiteBaseView.initialize( views, pageIndex, parentView, siteIndex );
 
         _label = [ "tday", "tmrw" ];
         var now = Gregorian.info(Time.now().add( Gregorian.duration({:days => 2})), Time.FORMAT_MEDIUM);
@@ -33,7 +33,7 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
 
         // Check if scale is available and configured to be applied
         // Otherwise set scale=1
-        var applyScale = getSiteConfig().getSite( getSiteIndex() ).scaleForecast() && forecast.getScale() != null;
+        var applyScale = EvccSiteConfig.getInstance().getSite( getSiteIndex() ).scaleForecast() && forecast.getScale() != null;
         var scale = applyScale ? forecast.getScale() : 1;
 
         var energy = forecast.getEnergy() as Array<Float?>;
@@ -87,7 +87,7 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
 
         // Check if scale is available and configured to be applied
         // Otherwise set scale=1
-        var applyScale = getSiteConfig().getSite( getSiteIndex() ).scaleForecast() && forecast.getScale() != null;
+        var applyScale = EvccSiteConfig.getInstance().getSite( getSiteIndex() ).scaleForecast() && forecast.getScale() != null;
         var scale = applyScale ? forecast.getScale() : 1;
 
         for( var i = 0; i < energy.size(); i++ ) {
