@@ -15,15 +15,15 @@ class EvccWidgetSystemInfoView extends WatchUi.View {
     function onUpdate(dc as Dc) as Void {
             dc.setColor( EvccConstants.COLOR_FOREGROUND, EvccConstants.COLOR_BACKGROUND );
             dc.clear();
-            var block = new EvccUIVertical( dc, { :font => EvccUILibWidgetSingleton.FONT_SMALL } );
+            var block = new EvccUIVertical( dc, { :font => EvccUILibWidgetSingleton.FONT_XTINY } );
             block.addText( "evvc-garmin", {}  );
             block.addText( EvccHelperUI.getVersion(), {} );
 
-            _spacing = Graphics.getFontHeight( EvccUILibWidgetSingleton.FONT_SMALL ) / 2;
+            _spacing = Graphics.getFontHeight( EvccUILibWidgetSingleton.FONT_XTINY ) / 2;
 
             var monkeyVersion = Lang.format("$1$.$2$.$3$", System.getDeviceSettings().monkeyVersion );
 
-            block.addText( "Monkey Version", { :marginTop => _spacing } );
+            block.addText( "monkey Version", { :marginTop => _spacing } );
             block.addText( monkeyVersion, {} );
 
             checkFonts( block, dc );
@@ -31,25 +31,23 @@ class EvccWidgetSystemInfoView extends WatchUi.View {
     }
 
     (:debug) function checkFonts( block as EvccUIVertical, dc as Dc ) as Void {
+        block.addText( "fonts: " + fontMode(), { :marginTop => _spacing } );
+
         var fonts = EvccUILibWidgetSingleton.getInstance().fonts as Array<FontDefinition>;
         var icons = EvccUILibWidgetSingleton.icons as Array<Array>;
-        var ok = true;
-
-        var spacingOption = { :marginTop => _spacing };
-        
+        var text = "icons: OK";
         for( var i = 0; i < fonts.size(); i++ ) {
             var bitmap = WatchUi.loadResource( icons[EvccUIIcon.ICON_SUN][i] );
             if( bitmap.getHeight() != dc.getFontHeight( fonts[i]) ) {
-                block.addText( "font/icon mismatch (f" + i + ")", spacingOption );
                 EvccHelperBase.debug( "font/icon mismatch (f" + i + ", fh=" + dc.getFontHeight( fonts[i]) + " bh=" + bitmap.getHeight() + ")" );
-                ok = false;
-                spacingOption = {};
+                text = "icons: mismatch";
             }
         }
-        if( ok ) {
-            block.addText( "fonts check: OK", spacingOption );
-        }
+        block.addText( text, {} );
     }
+
+    (:debug :vectorfonts) function fontMode() as String { return "vector"; }
+    (:debug :staticfonts) function fontMode() as String { return "static"; }
 
     (:release) function checkFonts( block as EvccUIVertical, dc as Dc ) as Void {}
 }

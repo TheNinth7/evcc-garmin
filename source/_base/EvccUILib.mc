@@ -2,7 +2,9 @@ import Toybox.Lang;
 import Toybox.Graphics;
 
 // Fonts and icons for widgets
-class EvccUILibWidgetSingleton {
+// If vector fonts are supported we use them to get an even
+// distribution of the font sizes
+(:vectorfonts) class EvccUILibWidgetSingleton extends EvccUILibWidgetBase {
     private static var _instance as EvccUILibWidgetSingleton?;
     static function getInstance() as EvccUILibWidgetSingleton {
         if( _instance == null ) {
@@ -10,10 +12,40 @@ class EvccUILibWidgetSingleton {
         }
         return _instance;
     }
-
     private function initialize() {
+        EvccUILibWidgetBase.initialize();
+        var lfonts = fonts as Array<FontDefinition?>;
+        if( !( Graphics has :getVectorFont ) ) {
+            throw new OperationNotAllowedException( "Device does not support vector fonts!" );
+        }
+        var height = Graphics.getFontHeight( lfonts[0] );
+        var faces = [ "RobotoRegular", "RobotoCondensedRegular" ];
+        for( var i = 0; i < lfonts.size(); i++ ) {
+            // System.println( "***** Adding font " + i + " size=" + height );
+            lfonts[i] = Graphics.getVectorFont( { :face => faces, :size => height } );
+            if( lfonts[i] == null ) {
+                throw new InvalidValueException( "Font faces not found!" );
+            }
+            height = Math.round( height * 0.86 ).toNumber();
+        }
     }
+}
 
+// Fonts and icons for widgets
+(:staticfonts) class EvccUILibWidgetSingleton extends EvccUILibWidgetBase {
+    private static var _instance as EvccUILibWidgetSingleton?;
+    static function getInstance() as EvccUILibWidgetSingleton {
+        if( _instance == null ) {
+            _instance = new EvccUILibWidgetSingleton();
+        }
+        return _instance;
+    }
+    private function initialize() {
+        EvccUILibWidgetBase.initialize();
+    }
+}
+
+class EvccUILibWidgetBase {
     public var fonts = [ Graphics.FONT_MEDIUM, Graphics.FONT_SMALL, Graphics.FONT_TINY, Graphics.FONT_XTINY ] as Array<FontDefinition>;
     public static var FONT_MEDIUM = 0;
     public static var FONT_SMALL = 1;
@@ -37,7 +69,7 @@ class EvccUILibWidgetSingleton {
 }
 
 // Fonts and icons for glance
-(:glanceonly :glance :fullglance) class EvccUILibGlanceSingleton {
+(:glance :glanceonly :fullglance) class EvccUILibGlanceSingleton {
     private static var _instance as EvccUILibGlanceSingleton?;
     static function getInstance() as EvccUILibGlanceSingleton {
         if( _instance == null ) {

@@ -89,16 +89,6 @@ import Toybox.Math;
             var fonts = EvccUILibWidgetSingleton.getInstance().fonts as Array<FontDefinition>;
             var font = EvccUILibWidgetSingleton.FONT_MEDIUM; // We start with the largest font
 
-            /*
-            if( Graphics has :getVectorFont ) {
-                // var tinyHeight = Graphics.getFontHeight( Graphics.FONT_TINY );
-                var vectorFont = Graphics.getVectorFont( { :face => "RobotoCondensedRegular", :size => 35 } );
-                if( vectorFont != null ) {
-                    EvccUILibWidgetSingleton.getInstance().fonts[3] = vectorFont;
-                }
-            }
-            */
-
             // System.println( "***** Limit by height=" + limitHeight() );
             // System.println( "***** Limit by width=" + limitWidth() );
 

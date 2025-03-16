@@ -69,6 +69,10 @@ import Toybox.Math;
             // EvccHelperBase.debug( "EvccApp: getInitialView" );
             _isInBackground = false;
 
+            // Initialize the singleton here, to save computing time
+            // in the view (reduce chance to trip the watchdog)
+            EvccUILibWidgetSingleton.getInstance();
+
             // Read the site settings (evcc URLs, ...)
             var siteConfig = EvccSiteConfigSingleton.getInstance();
 

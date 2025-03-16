@@ -25,7 +25,7 @@ exclNoGlance = tinyglance;fullglance;glanceonly
 # and exclude any code in the main source directory
 # that is annotated with :tinyglance
 base.sourcePath = $(sourceFullGlance)
-base.excludeAnnotations = $(exclFullGlance);simple
+base.excludeAnnotations = $(exclFullGlance);simple;staticfonts
 
 # For some devices we point to the tinyglance
 # source and do not exclude the :tinyglance annotation
