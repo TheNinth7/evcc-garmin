@@ -31,7 +31,7 @@ import Toybox.Math;
         _vehicleTitleBaseMaxLength = Properties.getValue( EvccConstants.PROPERTY_VEHICLE_TITLE_BASE_MAX_LENGTH );
         _actAsGlance = actAsGlance;
 
-        if( _actAsGlance && EvccSiteConfig.getInstance().getSiteCount() > 1 ) {
+        if( _actAsGlance && EvccSiteConfigSingleton.getInstance().getSiteCount() > 1 ) {
             _subViews = getRootViews();
         } else {
             _subViews = new Array<EvccWidgetSiteBaseView>[0];
@@ -47,7 +47,7 @@ import Toybox.Math;
             if( staterq != null ) {
                 if( staterq.hasLoaded() && ! staterq.hasError() && staterq.getState().hasForecast() ) {
                     _checkedForecast = true;
-                    var siteConfig = EvccSiteConfig.getInstance();
+                    var siteConfig = EvccSiteConfigSingleton.getInstance();
                     // If we act as glance and have only one site, the forecast goes into the subviews
                     // If we have multiple sites, the forecast goes into the subviews
                     // If we do not act as glance and have only one site, we add it to the views in the current carousel
@@ -81,7 +81,7 @@ import Toybox.Math;
     // initially in widget view
     static function getRootViews() as Array<EvccWidgetSiteBaseView> {
         var views = new Array<EvccWidgetSiteBaseView>[0];
-        var siteCount = EvccSiteConfig.getInstance().getSiteCount();
+        var siteCount = EvccSiteConfigSingleton.getInstance().getSiteCount();
         for( var i = 0; i < siteCount; i++ ) {
            views.add( new EvccWidgetSiteMainView( views, i, null, i, false ) );
         }
@@ -108,7 +108,7 @@ import Toybox.Math;
             // and we have to switch the glance view to the 
             // site last selected
             if( _actAsGlance ) {
-                setSiteIndex( new EvccBreadCrumbRoot( EvccSiteConfig.getInstance().getSiteCount() ).getSelectedChild() );
+                setSiteIndex( new EvccBreadCrumbRoot( EvccSiteConfigSingleton.getInstance().getSiteCount() ).getSelectedChild() );
             }
             EvccWidgetSiteBaseView.onShow();
         } catch ( ex ) {

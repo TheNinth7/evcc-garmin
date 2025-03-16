@@ -70,9 +70,10 @@ import Toybox.Math;
             dc.setColor( EvccConstants.COLOR_FOREGROUND, EvccConstants.COLOR_BACKGROUND );
             dc.clear();
 
+            // EvccUILibWidgetSingleton.getInstance().fonts[3] = Graphics.FONT_GLANCE;
+
             var ca = drawShell( dc );
-            var font = EvccUILibWidget.FONT_MEDIUM; // We start with the largest font
-            var block = new EvccUIVertical( dc, { :font => font } );
+            var block = new EvccUIVertical( dc, {} );
             
             if( ! stateRequest.hasLoaded() ) {
                 block.addText( "Loading ...", {} );
@@ -85,18 +86,32 @@ import Toybox.Math;
             }
 
             // Determine font size
-            var fonts = EvccUILibWidget._fonts as Array<FontDefinition>;
-            for( ; font < fonts.size() - 1; font++ ) {
-                for( ; font < fonts.size() - 1; font++ ) {
-                    if( limitHeight() && block.getHeight() <= ca.height ) {
-                        break;
-                    } else if ( limitWidth() && block.getWidth() <= ca.width ) {
-                        break;
-                    } else {
-                        block.setOption( :font, font );
-                    }
+            var fonts = EvccUILibWidgetSingleton.getInstance().fonts as Array<FontDefinition>;
+            var font = EvccUILibWidgetSingleton.FONT_MEDIUM; // We start with the largest font
+
+            /*
+            if( Graphics has :getVectorFont ) {
+                // var tinyHeight = Graphics.getFontHeight( Graphics.FONT_TINY );
+                var vectorFont = Graphics.getVectorFont( { :face => "RobotoCondensedRegular", :size => 35 } );
+                if( vectorFont != null ) {
+                    EvccUILibWidgetSingleton.getInstance().fonts[3] = vectorFont;
                 }
             }
+            */
+
+            // System.println( "***** Limit by height=" + limitHeight() );
+            // System.println( "***** Limit by width=" + limitWidth() );
+
+            for( ; font < fonts.size(); font++ ) {
+                block.setOption( :font, font );
+                if( limitHeight() && block.getHeight() <= ca.height ) {
+                    break;
+                } else if ( limitWidth() && block.getWidth() <= ca.width ) {
+                    break;
+                }
+            }
+            // System.println( "***** break font size=" + font );
+            // System.println( "***** block font size=" + block.getOption( :font ) );
 
             block.draw( ca.x, ca.y );
         } catch ( ex ) {
@@ -113,10 +128,10 @@ import Toybox.Math;
     function drawShell( dc as Dc ) as EvccContentArea {
         var stateRequest = getStateRequest();
 
-        var font = EvccUILibWidget.FONT_XTINY;
+        var font = EvccUILibWidgetSingleton.FONT_XTINY;
         
-        var siteConfig = EvccSiteConfig.getInstance();
-        var fonts = EvccUILibWidget._fonts as Array<FontDefinition>;
+        var siteConfig = EvccSiteConfigSingleton.getInstance();
+        var fonts = EvccUILibWidgetSingleton.getInstance().fonts as Array<FontDefinition>;
         var spacing = Graphics.getFontHeight( fonts[font] ) / 3;
 
         var header = new EvccUIVertical( dc, { :font => font, :marginTop => spacing, :marginBottom => spacing } );
@@ -138,7 +153,7 @@ import Toybox.Math;
             if( hasSiteTitle ) {
                 pageTitle.setOption( :marginTop, spacing * 2 / 3 );
             } else {
-                pageTitle.setOption( :font, EvccUILibWidget.FONT_MEDIUM );
+                pageTitle.setOption( :font, EvccUILibWidgetSingleton.FONT_MEDIUM );
             }
             header.addBlock( pageTitle );
         }
@@ -167,14 +182,22 @@ import Toybox.Math;
 
         if( showPageIndicator() ) {
             new EvccPageIndicator( dc ).drawPageIndicator( _pageIndex, getTotalPages() );
-            var piSpacing = getPiSpacing( dc );
-            ca.width -= piSpacing;
-            ca.x += piSpacing / 4;
+            var piX = dc.getWidth() * ( 0.5 - EvccPageIndicator.RADIUS_FACTOR );
+            
+            // piX is the x coordinate of the page indicator
+            // On the left side we leave double that space,
+            // on the right side the same space
+            ca.width -= piX * 3;
+            ca.x = piX + ( dc.getWidth() - piX ) / 2;
         }
 
         if( showSelectIndicator() ) {
             new EvccSelectIndicator( dc ).drawSelectIndicator();
         }
+
+        dc.setPenWidth( 1 );
+        dc.drawCircle( dc.getWidth() / 2, dc.getHeight() / 2, dc.getWidth() / 2 );
+        dc.drawRectangle( ca.x - ca.width / 2, ca.y - ca.height / 2, ca.width, ca.height );
 
         return ca;
     }

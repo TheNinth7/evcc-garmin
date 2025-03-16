@@ -18,7 +18,7 @@ import Toybox.Application.Properties;
     function initialize( index as Number ) {
         // EvccHelperBase.debug("TinyGlance: initialize");
         GlanceView.initialize();
-        _stateStore = new EvccStateStore( EvccBreadCrumbRootReadOnly.getSelectedChild( EvccSiteConfig.getInstance().getSiteCount() ) );
+        _stateStore = new EvccStateStore( EvccBreadCrumbRootReadOnly.getSelectedChild( EvccSiteConfigSingleton.getInstance().getSiteCount() ) );
     }
 
     function onLayout(dc as Dc) as Void {

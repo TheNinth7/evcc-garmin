@@ -101,7 +101,7 @@ import Toybox.PersistedContent;
     //! Make the web request
     function makeRequest() as Void {
         // EvccHelperBase.debug("StateRequest: makeRequest");
-        var siteConfig = EvccSiteConfig.getInstance().getSite( _siteIndex );
+        var siteConfig = EvccSiteConfigSingleton.getInstance().getSite( _siteIndex );
 
         var url = siteConfig.getUrl() + "/api/state";
         var parameters = null;

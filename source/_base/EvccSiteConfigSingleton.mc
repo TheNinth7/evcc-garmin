@@ -5,7 +5,7 @@ import Toybox.Application.Properties;
 // In its current implementation, each site has setting fields
 // with an index (e.g. site_0_url ). Unfortunately array settings
 // do not work (Garmin bugs), so we had to revert to this solution
-(:glance :background) class EvccSiteConfig {
+(:glance :background) class EvccSiteConfigSingleton {
     // Array of URLs for the evcc instances
     private var _sites = new Array<EvccSite>[0] as Array<EvccSite>;
 
@@ -17,16 +17,16 @@ import Toybox.Application.Properties;
     // The class is implemented as Singleton, since the site configuration
     // is global for the whole app, it needs to exist only once and as
     // singleton can be accessed easily from anywhere in the app
-    private static var _instance as EvccSiteConfig?;
-    static function getInstance() as EvccSiteConfig {
+    private static var _instance as EvccSiteConfigSingleton?;
+    static function getInstance() as EvccSiteConfigSingleton {
         if( _instance == null ) {
-            _instance = new EvccSiteConfig();
+            _instance = new EvccSiteConfigSingleton();
         }
         return _instance;
     }
 
     private function initialize() {
-        // EvccHelperBase.debug("EvccSiteConfig: initialize");
+        // EvccHelperBase.debug("EvccSiteConfigSingleton: initialize");
         // Read sites from the configuration
         // While the Garmin SDK supports array structures for settings,
         // their implementation is extremly buggy and the consensus in the
@@ -39,17 +39,6 @@ import Toybox.Application.Properties;
                 _sites.add( new EvccSite( url, i ) );
             }
         }
-
-        /* Code for defaulting to Robert's local instances, for debugging
-        if( _sites.size() == 0 ) {
-            _sites = [new EvccSite( "http://net-nas-1:7070", 0 ), new EvccSite( "http://net-nas-3:7070", 1 ) ];
-        }
-        /*
-        /* Code for array structure setting, not used
-        var storedSites = Properties.getValue( "sites" );
-        if( storedSites != null && storedSites instanceof Array ) {
-            _sites = storedSites;
-        } */
     }
 }
 

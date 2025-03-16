@@ -63,15 +63,15 @@ class EvccUIBlock {
         if( parent != null ) {
             var value = parent.getOption( option );
             // If we take over the font form the parent element, we apply any relativeFont definition
-            // and shift the font accordingly. Ee.g. parent font EvccUILibWidget.FONT_MEDIUM (=0) and :relativeFont=3
-            // results in using EvccUILibWidget.FONT_XTINY (=3)
+            // and shift the font accordingly. Ee.g. parent font EvccUILibWidgetSingleton.FONT_MEDIUM (=0) and :relativeFont=3
+            // results in using EvccUILibWidgetSingleton.FONT_XTINY (=3)
             if( option == :font && applyRelativeFont ) {
-                value = EvccHelperUI.min( ( value as Number ) + ( _options[:relativeFont] as Number ), EvccUILibWidget._fonts.size() - 1 );
+                value = EvccHelperUI.min( ( value as Number ) + ( _options[:relativeFont] as Number ), EvccUILibWidgetSingleton.getInstance().fonts.size() - 1 );
             }
             return value;
         } else {
             // If no more parent is present, we apply the following default behavior
-            if( option == :uiLib ) { return new EvccUILibWidget(); }
+            if( option == :uiLib ) { return EvccUILibWidgetSingleton.getInstance(); }
             if( option == :backgroundColor ) { return EvccConstants.COLOR_BACKGROUND; }
             if( option == :color ) { return EvccConstants.COLOR_FOREGROUND; }
             if( option == :font ) { throw new InvalidValueException( "Font not set!"); }
@@ -94,12 +94,12 @@ class EvccUIBlock {
 
     // Get the Garmin font definition for the current font
     function getGarminFont() {
-        var fonts = getOption( :uiLib )._fonts as Array<FontDefinition>;
+        var fonts = getOption( :uiLib ).fonts as Array<FontDefinition>;
         return fonts[getOption( :font )];
     }
 
     function getBaseGarminFont() {
-        var fonts = getOption( :uiLib )._fonts as Array<FontDefinition>;
+        var fonts = getOption( :uiLib ).fonts as Array<FontDefinition>;
         return fonts[getOption( :baseFont )];
     }
 
@@ -552,7 +552,7 @@ class EvccUIIcon extends EvccUIBitmap {
     // to changing font size
     protected function bitmapRef() as ResourceId {
         var font = getOption( :font );
-        var icons = getOption( :uiLib )._icons as Array<Array>;
+        var icons = getOption( :uiLib ).icons as Array<Array>;
         var ref = icons[_icon][font];
         // Throw an exception if we could not find the icon
         if( ref == null ) {
@@ -572,53 +572,4 @@ class EvccUIIcon extends EvccUIBitmap {
             EvccUIBitmap.loadData();
         }
     }
-}
-
-// Fonts and icons for widgets
-// Entries into the array need to correspond to constants in EvccUIIcon
-// Each array entry is an array with the font as key and the bitmap reference as value
-class EvccUILibWidget {
-    public static var _fonts = [ Graphics.FONT_MEDIUM, Graphics.FONT_SMALL, Graphics.FONT_TINY, Graphics.FONT_XTINY ] as Array<FontDefinition>;
-    public static var FONT_MEDIUM = 0;
-    public static var FONT_SMALL = 1;
-    public static var FONT_TINY = 2;
-    public static var FONT_XTINY = 3;
-    public static var _icons = [
-        [ Rez.Drawables.battery_empty_medium, Rez.Drawables.battery_empty_small, Rez.Drawables.battery_empty_tiny, Rez.Drawables.battery_empty_xtiny ],
-        [ Rez.Drawables.battery_onequarter_medium, Rez.Drawables.battery_onequarter_small, Rez.Drawables.battery_onequarter_tiny, Rez.Drawables.battery_onequarter_xtiny ],
-        [ Rez.Drawables.battery_half_medium, Rez.Drawables.battery_half_small, Rez.Drawables.battery_half_tiny, Rez.Drawables.battery_half_xtiny ],
-        [ Rez.Drawables.battery_threequarters_medium, Rez.Drawables.battery_threequarters_small, Rez.Drawables.battery_threequarters_tiny, Rez.Drawables.battery_threequarters_xtiny ],
-        [ Rez.Drawables.battery_full_medium, Rez.Drawables.battery_full_small, Rez.Drawables.battery_full_tiny, Rez.Drawables.battery_full_xtiny ],
-        [ Rez.Drawables.arrow_right_medium, Rez.Drawables.arrow_right_small, Rez.Drawables.arrow_right_tiny, Rez.Drawables.arrow_right_xtiny ],
-        [ Rez.Drawables.arrow_left_medium, Rez.Drawables.arrow_left_small, Rez.Drawables.arrow_left_tiny, Rez.Drawables.arrow_left_xtiny ],
-        [ Rez.Drawables.arrow_left_three_medium, Rez.Drawables.arrow_left_three_small, Rez.Drawables.arrow_left_three_tiny, Rez.Drawables.arrow_left_three_xtiny ],
-        [ Rez.Drawables.sun_medium, Rez.Drawables.sun_small, Rez.Drawables.sun_tiny, Rez.Drawables.sun_xtiny ],
-        [ Rez.Drawables.house_medium, Rez.Drawables.house_small, Rez.Drawables.house_tiny, Rez.Drawables.house_xtiny ],
-        [ Rez.Drawables.grid_medium, Rez.Drawables.grid_small, Rez.Drawables.grid_tiny, Rez.Drawables.grid_xtiny ],
-        //[ Rez.Drawables.evcc_medium, Rez.Drawables.evcc_small, Rez.Drawables.evcc_tiny, Rez.Drawables.evcc_xtiny ],
-        // [ null, null, null, Rez.Drawables.evcc_xtiny ],
-        [ null, null, Rez.Drawables.clock_tiny, Rez.Drawables.clock_xtiny ],
-        [ Rez.Drawables.forecast_medium, null, null, Rez.Drawables.forecast_xtiny ]
-        //[ Rez.Drawables.forecast_medium, Rez.Drawables.forecast_small, Rez.Drawables.forecast_tiny, Rez.Drawables.forecast_xtiny ]
-    ];
-}
-
-// Fonts and icons for glance
-(:glanceonly) class EvccUILibGlance {
-
-    public static var _fonts = [Graphics.FONT_GLANCE] as Array<FontDefinition>;
-    public static var FONT_GLANCE = 0;
-
-    // array for glance needs to have the same structure as the normal array above, but
-    // only for glance font, and the icons needed
-    public static var _icons = [
-        [ Rez.Drawables.battery_empty_glance ],
-        [ Rez.Drawables.battery_onequarter_glance ],
-        [ Rez.Drawables.battery_half_glance ],
-        [ Rez.Drawables.battery_threequarters_glance ],
-        [ Rez.Drawables.battery_full_glance ],
-        [ Rez.Drawables.arrow_right_glance ],
-        [ Rez.Drawables.arrow_left_glance ],
-        [ Rez.Drawables.arrow_left_three_glance ]
-    ];
 }

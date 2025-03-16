@@ -38,7 +38,7 @@ import Toybox.Math;
             _isGlance = true;
 
             // Read the site settings (evcc URLs, ...)
-            var siteConfig = EvccSiteConfig.getInstance();
+            var siteConfig = EvccSiteConfigSingleton.getInstance();
             
             // We store the active site, so when the widget is reopened, it 
             // starts with the site displayed last. Also the glance is using
@@ -70,7 +70,7 @@ import Toybox.Math;
             _isInBackground = false;
 
             // Read the site settings (evcc URLs, ...)
-            var siteConfig = EvccSiteConfig.getInstance();
+            var siteConfig = EvccSiteConfigSingleton.getInstance();
 
             // We store the active site, so when the widget is reopened, it 
             // starts with the site displayed last. Also the glance is using
@@ -133,7 +133,7 @@ import Toybox.Math;
         // We store the active site, so when the widget is reopened, it 
         // starts with the site displayed last. Also the glance is using
         // the active site and is only displaying its data.
-        var activeSite = EvccBreadCrumbRootReadOnly.getSelectedChild( EvccSiteConfig.getInstance().getSiteCount() );
+        var activeSite = EvccBreadCrumbRootReadOnly.getSelectedChild( EvccSiteConfigSingleton.getInstance().getSiteCount() );
 
         return [new EvccBackground( activeSite )];
     }    

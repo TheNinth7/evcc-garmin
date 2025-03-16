@@ -33,7 +33,7 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
 
         // Check if scale is available and configured to be applied
         // Otherwise set scale=1
-        var applyScale = EvccSiteConfig.getInstance().getSite( getSiteIndex() ).scaleForecast() && forecast.getScale() != null;
+        var applyScale = EvccSiteConfigSingleton.getInstance().getSite( getSiteIndex() ).scaleForecast() && forecast.getScale() != null;
         var scale = applyScale ? forecast.getScale() : 1;
 
         var energy = forecast.getEnergy() as Array<Float?>;
@@ -87,7 +87,7 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
 
         // Check if scale is available and configured to be applied
         // Otherwise set scale=1
-        var applyScale = EvccSiteConfig.getInstance().getSite( getSiteIndex() ).scaleForecast() && forecast.getScale() != null;
+        var applyScale = EvccSiteConfigSingleton.getInstance().getSite( getSiteIndex() ).scaleForecast() && forecast.getScale() != null;
         var scale = applyScale ? forecast.getScale() : 1;
 
         for( var i = 0; i < energy.size(); i++ ) {

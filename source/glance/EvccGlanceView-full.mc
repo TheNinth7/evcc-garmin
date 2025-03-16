@@ -38,7 +38,7 @@ import Toybox.Application.Properties;
 
         try {
             // EvccHelperBase.debug("Glance: onUpdate");
-            var line = new EvccUIHorizontal( dc, { :uiLib => new EvccUILibGlance(), :font => EvccUILibGlance.FONT_GLANCE, :justify => Graphics.TEXT_JUSTIFY_LEFT, :backgroundColor => Graphics.COLOR_TRANSPARENT } );
+            var line = new EvccUIHorizontal( dc, { :uiLib => EvccUILibGlanceSingleton.getInstance(), :font => EvccUILibGlanceSingleton.FONT_GLANCE, :justify => Graphics.TEXT_JUSTIFY_LEFT, :backgroundColor => Graphics.COLOR_TRANSPARENT } );
             
             if( ! _stateRequest.hasLoaded() ) {
                 line.addText( "Loading ...", {} );
@@ -49,10 +49,10 @@ import Toybox.Application.Properties;
                     var state=_stateRequest.getState();
                     
                     if( state.hasBattery() ) {
-                        var column = new EvccUIVertical( dc, { :font => EvccUILibGlance.FONT_GLANCE } );
+                        var column = new EvccUIVertical( dc, { :font => EvccUILibGlanceSingleton.FONT_GLANCE } );
                         column.addIcon( EvccUIIcon.ICON_BATTERY, { :batterySoc => state.getBatterySoc() } );
 
-                        var batteryState = new EvccUIHorizontal( dc, { :font => EvccUILibGlance.FONT_GLANCE } );
+                        var batteryState = new EvccUIHorizontal( dc, { :font => EvccUILibGlanceSingleton.FONT_GLANCE } );
                         batteryState.addText( EvccHelperUI.formatSoc( state.getBatterySoc() ), {} );
                         
                         batteryState.addIcon( EvccUIIcon.ICON_POWER_FLOW, { :power => state.getBatteryPowerRounded() } );
@@ -65,15 +65,24 @@ import Toybox.Application.Properties;
                     var hasVehicle = false;
                     // We use the height of the font as spacing between the columns
                     // This gives us a space that is suitable for each screen size/resolution
-                    var spacing = dc.getTextDimensions( "  ", Graphics.FONT_GLANCE )[0];
-                    if( loadpoints.size() <= 1 ) { spacing = spacing * 3; }
+                    var spacing = dc.getTextDimensions( " ", Graphics.FONT_GLANCE )[0];
+
+                    var displayedLPs = new Array<EvccLoadPoint>[0];
                     for (var i = 0; i < loadpoints.size(); i++) {
                         var loadpoint = loadpoints[i] as EvccLoadPoint;
+                        if( loadpoint.getVehicle() != null ) {
+                            displayedLPs.add( loadpoint );
+                        }
+                    }
+
+                    if( displayedLPs.size() <= 1 ) { spacing = spacing * 3; }
+                    for (var i = 0; i < displayedLPs.size(); i++) {
+                        var loadpoint = displayedLPs[i] as EvccLoadPoint;
                         var vehicle = loadpoint.getVehicle();
                         if( vehicle != null ) {
-                            var column = new EvccUIVertical( dc, { :font => EvccUILibGlance.FONT_GLANCE, :marginLeft => spacing } );
+                            var column = new EvccUIVertical( dc, { :font => EvccUILibGlanceSingleton.FONT_GLANCE, :marginLeft => spacing } );
                             column.addText( vehicle.getTitle().substring( 0, 8 ), {} );
-                            var vehicleState = new EvccUIHorizontal( dc, { :font => EvccUILibGlance.FONT_GLANCE } );
+                            var vehicleState = new EvccUIHorizontal( dc, { :font => EvccUILibGlanceSingleton.FONT_GLANCE } );
                             if( vehicle.isGuest() ) {
                                 vehicleState.addBitmap( Rez.Drawables.car_glance, {} );
                             } else {
