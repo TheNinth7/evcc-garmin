@@ -31,7 +31,7 @@ import Toybox.Math;
         _vehicleTitleBaseMaxLength = Properties.getValue( EvccConstants.PROPERTY_VEHICLE_TITLE_BASE_MAX_LENGTH );
         _actAsGlance = actAsGlance;
 
-        if( _actAsGlance && EvccSiteConfigSingleton.getInstance().getSiteCount() > 1 ) {
+        if( _actAsGlance && EvccSiteConfigSingleton.getSiteCount() > 1 ) {
             _subViews = getRootViews();
         } else {
             _subViews = new Array<EvccWidgetSiteBaseView>[0];
@@ -47,14 +47,14 @@ import Toybox.Math;
             if( staterq != null ) {
                 if( staterq.hasLoaded() && ! staterq.hasError() && staterq.getState().hasForecast() ) {
                     _checkedForecast = true;
-                    var siteConfig = EvccSiteConfigSingleton.getInstance();
+                    var siteCount = EvccSiteConfigSingleton.getSiteCount();
                     // If we act as glance and have only one site, the forecast goes into the subviews
                     // If we have multiple sites, the forecast goes into the subviews
                     // If we do not act as glance and have only one site, we add it to the views in the current carousel
                     // If we act as glance and have multiple sites, no forecast is added, this will be done one level down
-                    if( ( _actAsGlance && siteConfig.getSiteCount() == 1 ) || ( ! _actAsGlance && siteConfig.getSiteCount() > 1 ) ) {
+                    if( ( _actAsGlance && siteCount == 1 ) || ( ! _actAsGlance && siteCount > 1 ) ) {
                         _subViews.add( new EvccWidgetSiteForecastView( _subViews, _subViews.size() + 1, self, getSiteIndex() ) );
-                    } else if ( siteConfig.getSiteCount() == 1 ) {
+                    } else if ( siteCount == 1 ) {
                         addView( new EvccWidgetSiteForecastView( getViews(), getViews().size(), self.getParentView(), getSiteIndex() ) );
                     }
                 }
@@ -81,7 +81,7 @@ import Toybox.Math;
     // initially in widget view
     static function getRootViews() as Array<EvccWidgetSiteBaseView> {
         var views = new Array<EvccWidgetSiteBaseView>[0];
-        var siteCount = EvccSiteConfigSingleton.getInstance().getSiteCount();
+        var siteCount = EvccSiteConfigSingleton.getSiteCount();
         for( var i = 0; i < siteCount; i++ ) {
            views.add( new EvccWidgetSiteMainView( views, i, null, i, false ) );
         }
@@ -108,7 +108,7 @@ import Toybox.Math;
             // and we have to switch the glance view to the 
             // site last selected
             if( _actAsGlance ) {
-                setSiteIndex( new EvccBreadCrumbRoot( EvccSiteConfigSingleton.getInstance().getSiteCount() ).getSelectedChild() );
+                setSiteIndex( new EvccBreadCrumbRoot( EvccSiteConfigSingleton.getSiteCount() ).getSelectedChild() );
             }
             EvccWidgetSiteBaseView.onShow();
         } catch ( ex ) {
@@ -213,11 +213,11 @@ import Toybox.Math;
             lineVehicle.addIcon( EvccUIIcon.ICON_ACTIVE_PHASES, { :charging => true, :activePhases => loadpoint.getActivePhases() } );
             lineVehicle.addText( " " + EvccHelperWidget.formatPower( loadpoint.getChargePowerRounded() ), {} );
             if( ! showChargingDetails ) {
-                lineVehicle.addText( " (" + loadpoint.getModeFormatted() + ")", { :relativeFont => 5 } );
+                lineVehicle.addText( " (" + loadpoint.getModeFormatted() + ")", { :relativeFont => 4 } );
             }
         }
         else {
-            lineVehicle.addText( " (" + loadpoint.getModeFormatted() + ")", { :relativeFont => 3 } );
+            lineVehicle.addText( " (" + loadpoint.getModeFormatted() + ")", { :relativeFont => 4 } );
         }
         
         return lineVehicle;
@@ -249,10 +249,10 @@ import Toybox.Math;
             lineHeater.addText( " ", {} );
             lineHeater.addIcon( EvccUIIcon.ICON_ACTIVE_PHASES, { :charging => true, :activePhases => loadpoint.getActivePhases() } );
             lineHeater.addText( " " + EvccHelperWidget.formatPower( loadpoint.getChargePowerRounded() ), {} );
-            lineHeater.addText( " (" + loadpoint.getModeFormatted() + ")", { :relativeFont => 5 } );
+            lineHeater.addText( " (" + loadpoint.getModeFormatted() + ")", { :relativeFont => 4 } );
         }
         else {
-            lineHeater.addText( " (" + loadpoint.getModeFormatted() + ")", { :relativeFont => 3 } );
+            lineHeater.addText( " (" + loadpoint.getModeFormatted() + ")", { :relativeFont => 4 } );
         }
         
         return lineHeater;

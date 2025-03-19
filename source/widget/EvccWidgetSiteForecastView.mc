@@ -24,34 +24,17 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
     }
 
     
-    // Prepare the view
-    // Optimization potential: have a function for generating the lines
-    // It would need to adjust to different cases, so not sure if it would
-    // really save space
-    (:complex) function addContent( block as EvccUIVertical, dc as Dc ) {
+    // Prepare the content
+    (:exclForCalcSimple) function addContent( block as EvccUIVertical, dc as Dc ) {
         var forecast = getStateRequest().getState().getForecast();
 
         // Check if scale is available and configured to be applied
         // Otherwise set scale=1
-        var applyScale = EvccSiteConfigSingleton.getInstance().getSite( getSiteIndex() ).scaleForecast() && forecast.getScale() != null;
+        var applyScale = new EvccSite( getSiteIndex() ).scaleForecast() && forecast.getScale() != null;
         var scale = applyScale ? forecast.getScale() : 1;
 
         var energy = forecast.getEnergy() as Array<Float?>;
-        /*
-        var energyScaled = new Array<Float?>[energy.size()];
 
-        // Scale needs to be applied before we calculate the
-        // digits
-        for( var i = 0; i < energy.size(); i++ ) {
-            energyScaled[i] = energy[i] * scale;
-        }
-
-        var max = EvccHelperUI.maxn( energyScaled );
-        // + 1 gives us the number of digits, however values
-        // will be recalculated to kWh, therefore we cut
-        // three digits
-        var digits = Math.floor( Math.log( max, 10 ) ) - 2;
-        */
         var row = new EvccUIHorizontal( dc, {} );
         var column1 = new EvccUIVertical( dc, {} );
         var column3 = new EvccUIVertical( dc, {} );
@@ -65,7 +48,7 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
             var unit = new EvccUIHorizontal( dc, {:justify => Graphics.TEXT_JUSTIFY_LEFT} );
             unit.addText( " kWh", {} );
             if( _indicator[i] != null ) {
-                unit.addText( " " + _indicator[i], { :relativeFont => 3, :vjustifyTextToBottom => true } );
+                unit.addText( " " + _indicator[i], { :relativeFont => 4, :vjustifyTextToBottom => true } );
             }
             column3.addBlock( unit );
         }
@@ -80,21 +63,21 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
         }
     }
 
-
-    (:simple) function addContent( block as EvccUIVertical, dc as Dc ) {
+    // Prepare the content - simple version for devices with less computational power
+    (:exclForCalcComplex) function addContent( block as EvccUIVertical, dc as Dc ) {
         var forecast = getStateRequest().getState().getForecast();
         var energy = forecast.getEnergy() as Array<Float?>;
 
         // Check if scale is available and configured to be applied
         // Otherwise set scale=1
-        var applyScale = EvccSiteConfigSingleton.getInstance().getSite( getSiteIndex() ).scaleForecast() && forecast.getScale() != null;
+        var applyScale = new EvccSite( getSiteIndex() ).scaleForecast() && forecast.getScale() != null;
         var scale = applyScale ? forecast.getScale() : 1;
 
         for( var i = 0; i < energy.size(); i++ ) {
             var line = new EvccUIHorizontal( dc, { :marginLeft => getPiSpacing( dc ) } );
             line.addText( _label[i] + ": " + formatEnergy( energy[i] * scale ) + "kWh", {} );
             if( _indicator[i] != null ) {
-                line.addText( " " + _indicator[i], { :relativeFont => 3, :vjustifyTextToBottom => true } );
+                line.addText( " " + _indicator[i], { :relativeFont => 4, :vjustifyTextToBottom => true } );
             }
             block.addBlock( line );
         }
@@ -111,16 +94,9 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
     // Digits is the number of digits to be displayed before the
     // decimal point - if there are less it will be filled with
     // zeros
-    /*
-    public static function formatEnergyTable( energy as Float, digits as Number ) {
-        digits += 2; // digits in format string include decimal point and digits after the point
-        return ( Math.round( energy / 100.0 ) / 10 ).format( "%0" + digits.toNumber() + ".1f" ) + " kWh";    
-    }
-    */
     private function formatEnergy( energy as Float ) {
         return ( Math.round( energy / 100.0 ) / 10 ).format( "%.1f" );    
     }
-
 
     /*
     // Replaces view with a test of the algorithm for aligning

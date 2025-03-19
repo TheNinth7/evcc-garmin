@@ -73,6 +73,13 @@ import Toybox.Math;
             // EvccUILibWidgetSingleton.getInstance().fonts[3] = Graphics.FONT_GLANCE;
 
             var ca = drawShell( dc );
+            /*
+            var ca = new EvccContentArea();
+            ca.width = dc.getWidth();
+            ca.height = dc.getHeight();
+            ca.x = ca.width / 2;
+            ca.y = ca.height / 2;
+            */
             var block = new EvccUIVertical( dc, {} );
             
             if( ! stateRequest.hasLoaded() ) {
@@ -89,10 +96,19 @@ import Toybox.Math;
             var fonts = EvccUILibWidgetSingleton.getInstance().fonts as Array<FontDefinition>;
             var font = EvccUILibWidgetSingleton.FONT_MEDIUM; // We start with the largest font
 
+            // To save computing resources, if the block 
+            // has more than 6 elements, we do not even try the largest font
+            if( block.getElementCount() > 6 ) {
+                font++;
+            }
+
             // System.println( "***** Limit by height=" + limitHeight() );
             // System.println( "***** Limit by width=" + limitWidth() );
 
-            for( ; font < fonts.size(); font++ ) {
+            // We only scale to the second-smallest font, the smallest font
+            // is reserved for explicit declarations (:font or :relativeFont)
+            // but will not automatically be choosen for the main content
+            for( ; font < fonts.size() - 1; font++ ) {
                 block.setOption( :font, font );
                 if( limitHeight() && block.getHeight() <= ca.height ) {
                     break;
@@ -100,8 +116,12 @@ import Toybox.Math;
                     break;
                 }
             }
-            // System.println( "***** break font size=" + font );
-            // System.println( "***** block font size=" + block.getOption( :font ) );
+
+            EvccHelperBase.debug( "Using font " + block.getOption( :font ) );
+            // System.println( "***** font=" + font );
+            // System.println( "***** block font=" + block.getOption( :font ) );
+            // System.println( "***** block height=" + block.getHeight() );
+            // System.println( "***** ca =" + ca.height );
 
             block.draw( ca.x, ca.y );
         } catch ( ex ) {
@@ -120,22 +140,20 @@ import Toybox.Math;
 
         var font = EvccUILibWidgetSingleton.FONT_XTINY;
         
-        var siteConfig = EvccSiteConfigSingleton.getInstance();
+        var siteCount = EvccSiteConfigSingleton.getSiteCount();
         var fonts = EvccUILibWidgetSingleton.getInstance().fonts as Array<FontDefinition>;
         var spacing = Graphics.getFontHeight( fonts[font] ) / 3;
 
-        var header = new EvccUIVertical( dc, { :font => font, :marginTop => spacing, :marginBottom => spacing } );
-        var hasSiteTitle = siteConfig.getSiteCount() > 1;
+        var header = new EvccUIVertical( dc, { :font => font, :marginTop => spacing } );
+        var hasSiteTitle = siteCount > 1;
 
         var xCenter = dc.getWidth() / 2;
 
-        if( siteConfig.getSiteCount() > 1 ) {
+        if( siteCount > 1 ) {
             hasSiteTitle = true;
             if( stateRequest.getState() != null ) {
                 header.addText( stateRequest.getState().getSiteTitle().substring(0,9), {}  );
                 //header.addText( "ABCDEFGHIJ", {}  );
-            } else {
-                header.addText( " ", {} );
             }
         }
         var pageTitle = getPageTitle( dc );
@@ -148,10 +166,13 @@ import Toybox.Math;
             header.addBlock( pageTitle );
         }
         
+        if( header.getElementCount() > 0 ) {
+            header.setOption( :marginBottom, spacing );
+        }
         var headerHeight = header.getHeight();
         header.draw( xCenter, headerHeight / 2 );
 
-        var logo = new EvccUIBitmap( Rez.Drawables.logo_evcc, dc, { :marginTop => spacing * 2, :marginBottom => spacing } );
+        var logo = new EvccUIBitmap( Rez.Drawables.logo_evcc, dc, { :marginTop => spacing, :marginBottom => spacing } );
         
         //var logo = new EvccUIBitmap( Rez.Drawables.logo_evcc, dc, { :marginTop => spacing * 2, :marginBottom => spacing * 2 } );
         var logoHeight = logo.getHeight();
@@ -215,18 +236,6 @@ import Toybox.Math;
     function limitHeight() as Boolean { return true; }
     function limitWidth() as Boolean { return false; }
 
-/*
-    // Function to indicate if a page indicator shall be shown
-    function showPageIndicator() as Boolean {
-        return getTotalPages() > 1;
-    }
-    // Returns the spacing that elements should keep to 
-    // the left side of the screen to accommodate a potential
-    // page indicator
-    function getPiSpacing( dc as Dc ) as Number {
-        return showPageIndicator() ? dc.getWidth() * ( 0.5 - EvccPageIndicator.RADIUS_FACTOR ) * 2 : 0;
-    }
-*/
     // Function to indicate if a select indicator shall be shown,
     // indicating that the select button has a function in tis
     // view
@@ -240,19 +249,6 @@ import Toybox.Math;
     // details
     public function actsAsGlance() as Boolean { return false; }
 
-    /*
-    // Called when this View is removed from the screen. Save the
-    // state of this View here. This includes freeing resources from
-    // memory.
-    function onHide() as Void {
-        try {
-            // EvccHelperBase.debug("Widget: onHide");
-            _stateRequest.stop();
-        } catch ( ex ) {
-            EvccHelperBase.debugException( ex );
-        }
-    }
-    */
 }
 
 class EvccContentArea {

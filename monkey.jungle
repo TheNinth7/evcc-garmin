@@ -1,51 +1,96 @@
 project.manifest = manifest.xml
 
-# Explanation of source directories
+# Source Directories:
+#
 # source-base: codes used by all variants
 #
 # source-base-annot-glance/tinyglance: 
 # base source that is used by the full glance and not the tiny glance
 # this source has to be duplicated, once with (:glance) annotiation
 # in source-base-annot-glance and once without in source-base-annot-tinyglance
-#
-# source-glance: source used by and only by the two glance variants
-# source-glance-full: source used only by the full glance
-# source-glance-tiny: source used only by the tiny glance
 
+# Define source variables for the glance variants
 sourceBase = source;source\_base;source\background;source\glance;source\widget
-sourceFullGlance = $(sourceBase);source-annot-glance
-sourceTinyGlance = $(sourceBase);source-annot-tinyglance
-sourceNoGlance = $(sourceBase);source-annot-glance
+sourceGlanceFull = $(sourceBase);source-annot-glance
+sourceGlanceTiny = $(sourceBase);source-annot-tinyglance
+sourceGlanceNone = $(sourceBase);source-annot-glance
 
-exclFullGlance = noglance;tinyglance
-exclTinyGlance = noglance;fullglance
-exclNoGlance = tinyglance;fullglance;glanceonly
+# Define exclude annotations variables for the glance variants
+# glanceFull to be used as exclude annotation for full glance devices
 
-# As default we use the normal glance source
-# and exclude any code in the main source directory
-# that is annotated with :tinyglance
-base.sourcePath = $(sourceFullGlance)
-base.excludeAnnotations = $(exclFullGlance);simple;staticfonts
+glanceFull = exclForGlanceFull
+glanceTiny = exclForGlanceTiny
+glanceNone = exclForGlanceNone
 
-# For some devices we point to the tinyglance
-# source and do not exclude the :tinyglance annotation
-fr745.sourcePath = $(sourceTinyGlance)
-fr745.excludeAnnotations = $(exclTinyGlance);simple
-fr945.sourcePath = $(sourceTinyGlance)
-fr945.excludeAnnotations = $(exclTinyGlance);simple
-fr945lte.sourcePath = $(sourceTinyGlance)
-fr945lte.excludeAnnotations = $(exclTinyGlance);simple
-fenix6pro.sourcePath = $(sourceTinyGlance)
-fenix6pro.excludeAnnotations = $(exclTinyGlance);simple
-fenix6s.sourcePath = $(sourceTinyGlance)
-fenix6s.excludeAnnotations = $(exclTinyGlance);simple
-fenix6spro.sourcePath = $(sourceTinyGlance)
-fenix6spro.excludeAnnotations = $(exclTinyGlance);simple
-fenix6xpro.sourcePath = $(sourceTinyGlance)
-fenix6xpro.excludeAnnotations = $(exclTinyGlance);simple
+fontsStatic = exclForFontsStatic
+fontsVector = exclForFontsVector
+fontsStaticOptimized = exclForFontsStaticOptimized
 
-fenix6.sourcePath = $(sourceNoGlance)
-fenix6.excludeAnnotations = $(exclNoGlance);complex
+calcComplex = exclForCalcComplex
+calcSimple = exclForCalcSimple
 
-vivoactive3.sourcePath = $(sourceNoGlance)
-vivoactive3.excludeAnnotations = $(exclNoGlance);complex
+systemInfo = exclForSystemInfo
+systemInfoNone = exclForSystemInfoNone
+
+sitesMultiple = exclForSitesMultiple
+sitesOne = exclForSitesOne
+
+# Full glance, complex code and static fonts is the default
+base.sourcePath = $(sourceGlanceFull)
+base.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple)
+base.resourcePath = $(base.resourcePath);settings
+
+venu2.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple)
+venu2plus.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple)
+venu2s.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple)
+
+# Tiny glance
+fr745.sourcePath = $(sourceGlanceTiny)
+fr745.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(inclsystemInfo);$(systemInfo);$(sitesOne)
+fr745.resourcePath = resources;resources-fr745;settings-simple
+fr945.sourcePath = $(sourceGlanceTiny)
+fr945.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne)
+fr945.resourcePath = resources;resources-round-240x240;settings-simple
+fr945lte.sourcePath = $(sourceGlanceTiny)
+fr945lte.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne)
+fr945lte.resourcePath = resources;resources-round-240x240;settings-simple
+#Fenix 6
+fenix6.sourcePath = $(sourceGlanceNone)
+fenix6.excludeAnnotations = $(glanceNone);$(calcSimple);$(fontsStatic);$(systemInfoNone);$(sitesOne)
+fenix6.resourcePath = resources;resources-round-260x260;settings-simple
+fenix6s.sourcePath = $(sourceGlanceNone)
+fenix6s.excludeAnnotations = $(glanceNone);$(calcSimple);$(fontsStatic);$(systemInfoNone);$(sitesOne)
+fenix6s.resourcePath = resources;resources-round-240x240;settings-simple
+# Fenix 6 Pro
+fenix6pro.sourcePath = $(sourceGlanceTiny)
+fenix6pro.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne)
+fenix6pro.resourcePath = resources;resources-round-260x260;settings-simple
+fenix6spro.sourcePath = $(sourceGlanceTiny)
+fenix6spro.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne)
+fenix6spro.resourcePath = resources;resources-round-240x240;settings-simple
+fenix6xpro.sourcePath = $(sourceGlanceTiny)
+fenix6xpro.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne)
+fenix6xpro.resourcePath = resources;resources-fenix6xpro;settings-simple
+
+# No glance
+# Fenix 6 has glances, but our prg file is too large to be
+# run as glance on that watch
+# fenix6.sourcePath = $(sourceGlanceNone)
+# fenix6.excludeAnnotations = $(glanceNone);complex;$(fontsStatic)
+vivoactive3.sourcePath = $(sourceGlanceNone)
+vivoactive3.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne)
+vivoactive3.resourcePath = resources;resources-vivoactive3;settings-simple
+vivoactive3m.sourcePath = $(sourceGlanceNone)
+vivoactive3m.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne)
+vivoactive3m.resourcePath = resources;resources-vivoactive3m;settings-simple
+vivoactive3mlte.sourcePath = $(sourceGlanceNone)
+vivoactive3mlte.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne)
+vivoactive3mlte.resourcePath = resources;resources-vivoactive3mlte;settings-simple
+
+vivoactive4.sourcePath = $(sourceGlanceNone)
+vivoactive4.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesMultiple)
+vivoactive4s.sourcePath = $(sourceGlanceNone)
+vivoactive4s.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesMultiple)
+vivoactive5.sourcePath = $(sourceGlanceFull)
+vivoactive5.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple)
+

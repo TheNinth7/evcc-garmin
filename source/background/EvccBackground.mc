@@ -4,7 +4,7 @@ import Toybox.System;
 import Toybox.Application.Properties;
 
 // The background service 
-(:background :tinyglance :glanceonly) class EvccBackground extends Toybox.System.ServiceDelegate {
+(:background :exclForGlanceFull :exclForGlanceNone) class EvccBackground extends Toybox.System.ServiceDelegate {
 	var _index as Number;
 
     function initialize( index as Number ) {

@@ -7,7 +7,7 @@ import Toybox.Application.Properties;
 // The view implementing the standard glance
 // This implementation is intended to be used for glances with
 // 64kB or more memory for the glance
-(:glance :fullglance :glanceonly) class EvccGlanceView extends WatchUi.GlanceView {
+(:glance :exclForGlanceTiny :exclForGlanceNone) class EvccGlanceView extends WatchUi.GlanceView {
     
     private var _stateRequest as EvccStateRequest;
     public function getStateRequest() { return _stateRequest; }

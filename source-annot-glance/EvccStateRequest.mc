@@ -13,7 +13,7 @@ import Toybox.PersistedContent;
     private var _timer;
     private var _refreshInterval = 10;
     private var _dataExpiry = 60;
-    private var _reduceResponseSize = true;
+    // private var _reduceResponseSize = true;
 
     private var _hasLoaded = false;
     private var _stateStore as EvccStateStore;
@@ -33,7 +33,7 @@ import Toybox.PersistedContent;
         
         _refreshInterval = Properties.getValue( EvccConstants.PROPERTY_REFRESH_INTERVAL );
         _dataExpiry = Properties.getValue( EvccConstants.PROPERTY_DATA_EXPIRY );
-        _reduceResponseSize = Properties.getValue( EvccConstants.PROPERTY_REDUCE_RESPONSE_SIZE );
+        // _reduceResponseSize = Properties.getValue( EvccConstants.PROPERTY_REDUCE_RESPONSE_SIZE );
 
         _stateStore = new EvccStateStore( siteIndex );
         _siteIndex = siteIndex;
@@ -95,7 +95,7 @@ import Toybox.PersistedContent;
     //! Make the web request
     function makeRequest() as Void {
         // EvccHelperBase.debug("StateRequest: makeRequest");
-        var siteConfig = EvccSiteConfigSingleton.getInstance().getSite( _siteIndex );
+        var siteConfig = new EvccSite( _siteIndex );
 
         var url = siteConfig.getUrl() + "/api/state";
         var parameters = null;
@@ -106,7 +106,8 @@ import Toybox.PersistedContent;
         // Some mobile devices (namely iOS 16, maybe others) return an -202 error
         // when using this long query string, so there is an option in the settings to
         // turn it off.
-        if( _reduceResponseSize ) {
+        // if( _reduceResponseSize ) {
+        // }
             // EvccHelperBase.debug("StateRequest: adding query string for reducing response size ...");
 
             // 2025-04-03
@@ -116,7 +117,6 @@ import Toybox.PersistedContent;
             // The version below is shortend
             parameters = {};
             parameters["jq"] = "{result:{loadpoints:[.loadpoints[]|{chargePower,chargerFeatureHeating,charging,connected,vehicleName,vehicleSoc,title,phasesActive,mode,chargeRemainingDuration}],pvPower,gridPower,grid:{power:.grid.power},homePower,siteTitle,batterySoc,batteryPower,vehicles:.vehicles|map_values({title}),forecast:(if .forecast.solar then {solar:.forecast.solar|{scale,today:{energy:.today.energy},tomorrow:{energy:.tomorrow.energy},dayAfterTomorrow:{energy:.dayAfterTomorrow.energy}}} else {} end)}}";
-        }
 
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_GET,
@@ -155,15 +155,19 @@ import Toybox.PersistedContent;
             if ( responseCode == -104 ) {
                 _error = true; _errorMessage = "No phone"; _errorCode = "";
                 // EvccHelperBase.debug( _errorMessage + " " + _errorCode );
+            /*
             } else if ( responseCode == -202 && _reduceResponseSize ) {
                 // If there is a -202 error and we are using the query string for reducing the response size,
                 // then we'll try without. On some devices (iOS 16, maybe others), the query string leads to
                 // -202 errors
                 _error = true; _errorMessage = "Error -202\nRetrying ...\nWait " + _refreshInterval + " seconds"; _errorCode = "";
                 _reduceResponseSize = false;
+            */
             } else {
                 _error = true; _errorMessage = "Request failed"; _errorCode = responseCode.toString();
-                // EvccHelperBase.debug( _errorMessage + " " + _errorCode );
+                if( EvccApp._isInBackground ) {
+                    EvccHelperBase.debug( _errorMessage + " " + _errorCode );
+                }
             }
         }
         
@@ -176,5 +180,19 @@ import Toybox.PersistedContent;
         } else {
             _stateStore.persist();
         }
+    }
+}
+
+// Exception indicating that an error occured when requesting
+// the evcc state
+(:glance) class StateRequestException extends EvccBaseException {
+    private var _code as String;
+    private var _msg as String;
+    function getErrorCode() as String { return _code; }
+    function getErrorMessage() as String? { return _msg; }
+    function initialize( code as String, msg as String ) {
+        EvccBaseException.initialize();
+        _code = code;
+        _msg = msg;
     }
 }

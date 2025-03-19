@@ -144,7 +144,7 @@ import Toybox.Application;
 }
 
 
-// Helper functions for UI tasks, to be used in glance and widget
+// Helper functions for UI tasks, to be used in widget only
 class EvccHelperWidget {
     
     // Function to format power values for the main view

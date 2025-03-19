@@ -58,8 +58,7 @@ class EvccUIBlock {
         if( option == :vjustifyTextToBottom ) { return false; }
 
         // All other options can be inherited, so we look up the parent
-        var parentRef = _options[:parent] as WeakReference?;
-        var parent = ( parentRef != null ? parentRef.get() : null ) as EvccUIContainer?;
+        var parent = getParent();
         if( parent != null ) {
             var value = parent.getOption( option );
             // If we take over the font form the parent element, we apply any relativeFont definition
@@ -84,6 +83,11 @@ class EvccUIBlock {
     // set an option
     function setOption( option as Symbol, value ) {
         _options[option] = value;
+        if( option == :marginLeft || option == :marginRight ) {
+            resetWidthCache();
+        } else if ( option == :marginTop || option == :marginBottom ) {
+            resetHeightCache();
+        }
     }
 
     // Parent can be passed into an element either in the options structure
@@ -91,6 +95,11 @@ class EvccUIBlock {
     function setParent( parent as EvccUIContainer ) {
         setOption( :parent, parent.weak() );
     }
+    function getParent() as EvccUIContainer? {
+        var parentRef = _options[:parent] as WeakReference?;
+        return ( parentRef != null ? parentRef.get() : null ) as EvccUIContainer?;
+    }
+
 
     // Get the Garmin font definition for the current font
     function getGarminFont() {
@@ -103,10 +112,59 @@ class EvccUIBlock {
         return fonts[getOption( :baseFont )];
     }
 
+    // Functions for getting and caching width/height to reduce
+    // amount of calculations
+    // The cached values are reset if the font size has changed,
+    // or of margins are set (see setOption)
+    private var _width as Number?;
+    private var _height as Number?;
+    private var _lastFont as Number?;
+    function getWidth() as Number {
+        var font = null;
+        try { font = getOption( :font ); } 
+        catch( InvalidValueException ) {}
+        if( _width == null || _lastFont != font ) {
+            _width = getWidthInternal();
+            if( _lastFont != font ) {
+                _height = null;
+                _lastFont = font;
+            }
+        }
+        return _width;
+    }
+    function getHeight() as Number {
+        var font = null;
+        try { font = getOption( :font ); } 
+        catch( InvalidValueException ) {}
+        if( _height == null || _lastFont != font ) {
+            _height = getHeightInternal();
+            if( _lastFont != font ) {
+                _width = null;
+                _lastFont = font;
+            }
+        }
+        return _height;
+    }
+    // Functions for reseting the cache if relevant
+    // parameters change - these need to be called
+    // by implementation of this class if their content
+    // changes!
+    function resetWidthCache() {
+        _width = null;
+        var parent = getParent();
+        if( parent != null ) { parent.resetWidthCache(); }
+    }
+    function resetHeightCache() {
+        _height = null;
+        var parent = getParent();
+        if( parent != null ) { parent.resetHeightCache(); }
+    }
 
-    // Functions to be implemented by implementations of this class
-    function getWidth();
-    function getHeight();
+    // Functions to be implemented by implementations of this class to:
+    // calculate width or height of the element
+    protected function getWidthInternal();
+    protected function getHeightInternal();
+    // draw the element
     function draw( x, y );
 
     // Calculate the available screen width at a given y coordinate
@@ -227,11 +285,14 @@ class EvccUIHorizontal extends EvccUIContainer {
             x += _elements[i].getWidth() / 2;
             _elements[i].draw( x, y );
             x += _elements[i].getWidth() / 2;
+
+            // To save memory, we discard elements after they are drawn!
+            _elements[i] = null;
         }
     }
 
     // Width is the sum of all widths
-    function getWidth()
+    protected function getWidthInternal()
     {
         var width = 0;
         for( var i = 0; i < _elements.size(); i++ ) {
@@ -241,7 +302,7 @@ class EvccUIHorizontal extends EvccUIContainer {
     }
 
     // Height is the maximum of all heights
-    function getHeight()
+    protected function getHeightInternal()
     {
         var height = 0;
         for( var i = 0; i < _elements.size(); i++ ) {
@@ -305,11 +366,14 @@ class EvccUIVertical extends EvccUIContainer {
             
             _elements[i].draw( elX, y );
             y += _elements[i].getHeight() / 2;
+
+            // To save memory, we discard elements after they are drawn!
+            _elements[i] = null;
         }
     }
 
     // Width is max of all widths
-    function getWidth()
+    protected function getWidthInternal()
     {
         var width = 0;
         for( var i = 0; i < _elements.size(); i++ ) {
@@ -319,7 +383,7 @@ class EvccUIVertical extends EvccUIContainer {
     }
 
     // Height is sum of all heights
-    function getHeight()
+    protected function getHeightInternal()
     {
         var height = 0;
         for( var i = 0; i < _elements.size(); i++ ) {
@@ -349,12 +413,19 @@ class EvccUIText extends EvccUIBlock {
     // end of the text
     function truncate( chars as Number ) {
         _text = _text.substring( 0, _text.length() - chars );
+        resetWidthCache();
     }
 
-    function append( text ) { _text += text; return self; }
+    function append( text ) as EvccUIText { 
+        _text += text;
+        resetWidthCache();
+        return self; 
+    }
 
-    function getWidth() { return _dc.getTextDimensions( _text, getGarminFont() )[0] + getOption( :marginLeft ) + getOption( :marginRight ); }
-    function getHeight() { return _dc.getFontHeight( getGarminFont() ) + getOption( :marginTop ) + getOption( :marginBottom ); }
+    protected function getWidthInternal() { return getTextWidth() + getOption( :marginLeft ) + getOption( :marginRight ); }
+    protected function getHeightInternal() { return getTextHeight() + getOption( :marginTop ) + getOption( :marginBottom ); }
+    function getTextWidth() { return _dc.getTextDimensions( _text, getGarminFont() )[0]; }
+    function getTextHeight() { return _dc.getFontHeight( getGarminFont() ); }
 
     // For alignment we just pass the justify parameter on to the drawText
     function draw( x, y ) {
@@ -371,8 +442,27 @@ class EvccUIText extends EvccUIBlock {
         }
 
         _dc.setColor( getOption( :color ), getOption( :backgroundColor ) );
-        _dc.drawText( x + getOption( :marginLeft ), 
-                      y + getOption( :marginTop ), 
+
+        var justify = getOption( :justify );
+        if( justify == Graphics.TEXT_JUSTIFY_LEFT ) {
+            x = x + getOption( :marginLeft );
+        } else if ( justify == Graphics.TEXT_JUSTIFY_RIGHT ) {
+            x = x - getOption( :marginRight );
+        } else {
+            // x += getOption( :marginLeft );
+            x = x - getWidth() / 2 + getOption( :marginLeft ) + getTextWidth() / 2;
+        }
+
+        var marginTop = getOption( :marginTop );
+        if( marginTop != 0 || getOption( :marginBottom ) != 0 )
+        {
+            y = y - getHeight() / 2 + marginTop + getTextHeight() / 2;
+        }
+
+        // System.println( "***** drawing \"" + _text + "\" with height=" + Graphics.getFontHeight( getGarminFont() ) );
+
+        _dc.drawText( x, 
+                      y, 
                       getGarminFont(), 
                       _text, 
                       getOption( :justify ) | Graphics.TEXT_JUSTIFY_VCENTER );
@@ -416,24 +506,10 @@ class EvccUIBitmap extends EvccUIBlock {
     // the actual bitmap resource is loaded only when needed
     // to save memory
     var _bitmapRef; 
-    protected var _width as Number?;
-    protected var _height as Number?;
 
     function initialize( reference as ResourceId?, dc as Dc, options as Dictionary<Symbol,Object> ) {
         EvccUIBlock.initialize( dc, options );
         _bitmapRef = reference;
-    }
-
-    // Load width/height
-    // We don't do this in the constructor because for the EvccUIIcon sub class, the font
-    // size is needed to determine the actual icon used, and that one is not available
-    // at initialization time
-    protected function loadData() {
-        if( _width == null || _height == null ) {
-            var bitmap = bitmap();
-            _width = bitmap.getWidth();
-            _height = bitmap.getHeight();
-        }
     }
 
     // Load the actual bitmap
@@ -449,21 +525,52 @@ class EvccUIBitmap extends EvccUIBlock {
         return _bitmapRef;
     }
 
+    // NOTE: Bitmaps have their own caching since they always load width and height at the same time
+    // For normal bitmaps, data is loaded once and then never again
+    // For icons, a change in font size triggers a reload (see EvccUIIcon.onLoad)
+    // Changes in the margins are covered by the caching mechanism of EvccUIBlock
+    protected var _bitmapWidth as Number?;
+    protected var _bitmapHeight as Number?;
+
     // These function first make sure that the bitmap width/height is loaded and then
     // calculate the total width/height
-    function getWidth() { loadData(); return _width + getOption( :marginLeft ) + getOption( :marginRight ); }
-    function getHeight() { loadData(); return _height + getOption( :marginTop ) + getOption( :marginBottom ); }
+    protected function getWidthInternal() { loadData(); return _bitmapWidth + getOption( :marginLeft ) + getOption( :marginRight ); }
+    protected function getHeightInternal() { loadData(); return _bitmapHeight + getOption( :marginTop ) + getOption( :marginBottom ); }
+    // Load width/height
+    // We don't do this in the constructor because for the EvccUIIcon sub class, the font
+    // size is needed to determine the actual icon used, and that one is not available
+    // at initialization time
+    protected function loadData() {
+        if( _bitmapWidth == null || _bitmapHeight == null ) {
+            var bitmap = bitmap();
+            _bitmapWidth = bitmap.getWidth();
+            _bitmapHeight = bitmap.getHeight();
+        }
+    }
 
     // Draw the bitmap
     function draw( x, y ) {
         var bitmap = bitmap();
-        // System.println( "***** EvccUIBitmap.height=" + getHeight() );
-        // System.println( "***** bitmap.height=" + bitmap.getHeight() );
-        // Depending on alignment we recalculate the x starting point
-        if( getOption( :justify ) == Graphics.TEXT_JUSTIFY_CENTER ) {
-            x -= bitmap.getWidth() / 2;
+        // Note that for drawBitmap, the input x/y is the upper left corner
+        // of the bitmap. The input y is assumed to be the vertical center
+        // of the element, including margins. The x is the left starting
+        // point for left alignment, the center of the whole element including
+        // margins for center alignment, or the right end point for right
+        // alignment.
+        // For drawBitmap we need the upper left corner of the bitmap,
+        // this is calculated here.
+        var justify = getOption( :justify );
+        var marginLeft = getOption( :marginLeft );
+        var marginRight = getOption( :marginRight );
+        if( justify == Graphics.TEXT_JUSTIFY_LEFT ) {
+            x = x + marginLeft;
+        } else if ( justify == Graphics.TEXT_JUSTIFY_RIGHT ) {
+            x = x - marginRight - bitmap.getWidth();
+        } else {
+            x = x - getWidth() / 2 + marginLeft;
         }
-        _dc.drawBitmap( x + getOption( :marginLeft ), y - getHeight() / 2 + getOption( :marginTop ), bitmap );
+
+        _dc.drawBitmap( x, y - getHeight() / 2 + getOption( :marginTop ), bitmap );
     }
 }
 
@@ -568,8 +675,10 @@ class EvccUIIcon extends EvccUIBitmap {
         var font = getOption( :font );
         if( font != _lastFont ) {
             _lastFont = font;
-            _height = null; _width = null;
+            _bitmapHeight = null; _bitmapWidth = null;
             EvccUIBitmap.loadData();
         }
     }
 }
+
+

@@ -3,6 +3,7 @@ import Toybox.Lang;
 import Toybox.WatchUi;
 import Toybox.Timer;
 import Toybox.Application.Properties;
+import Toybox.Application.Storage;
 
 // The view implementing the tiny glance, for usage in devices
 // that make less than 64kB available for glances
@@ -11,14 +12,14 @@ import Toybox.Application.Properties;
 // For this implementation, we do not do the state requests in the glance
 // but instead rely on the data that is put at longer intervals into
 // the storage by the background service
-(:glance :tinyglance :glanceonly) class EvccGlanceView extends WatchUi.GlanceView {
+(:glance :exclForGlanceFull :exclForGlanceNone) class EvccGlanceView extends WatchUi.GlanceView {
     private var _timer = new Timer.Timer();
     private var _stateStore as EvccStateStore;
 
     function initialize( index as Number ) {
         // EvccHelperBase.debug("TinyGlance: initialize");
         GlanceView.initialize();
-        _stateStore = new EvccStateStore( EvccBreadCrumbRootReadOnly.getSelectedChild( EvccSiteConfigSingleton.getInstance().getSiteCount() ) );
+        _stateStore = new EvccStateStore( EvccBreadCrumbRootReadOnly.getSelectedChild( EvccSiteConfigSingleton.getSiteCount() ) );
     }
 
     function onLayout(dc as Dc) as Void {
@@ -50,6 +51,17 @@ import Toybox.Application.Properties;
     function onUpdate( dc as Dc ) as Void {
         try {
             // EvccHelperBase.debug("TinyGlance: onUpdate");
+
+            // Getting the state is memory-intense, so we do it before we
+            // allocate space for other variables
+            var siteData = _stateStore.getStateFromStorage() as EvccState?;
+            var errorMsg = Storage.getValue( EvccConstants.STORAGE_BG_ERROR_MSG );
+
+            if( errorMsg != null && errorMsg != "" ) {
+                var errorCode = Storage.getValue( EvccConstants.STORAGE_BG_ERROR_CODE );
+                throw new StateRequestException( errorCode, errorMsg );
+            }
+
             dc.setColor( EvccConstants.COLOR_FOREGROUND, Graphics.COLOR_TRANSPARENT );
             dc.clear();
             var line1 = "Loading ...";
@@ -59,8 +71,6 @@ import Toybox.Application.Properties;
             var line1Y = ( dc.getHeight() / 2 ) * 0.95 - ( Graphics.getFontHeight( Graphics.FONT_GLANCE ) / 2 );
             var line2Y = ( dc.getHeight() / 2 ) * 0.95 + ( Graphics.getFontHeight( Graphics.FONT_GLANCE ) / 2 );
             
-            var siteData = _stateStore.getStateFromStorage() as EvccState?;
-
             if ( siteData != null ) {
                 line1 = "";
                 if( siteData.hasBattery() ) {

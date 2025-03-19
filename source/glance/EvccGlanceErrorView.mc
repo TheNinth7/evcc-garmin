@@ -7,7 +7,7 @@ import Toybox.WatchUi;
 // It is used for errors that occur before the standard glance view
 // is created. Errors happening in the standard glance view are
 // displayed there
-(:glance) class EvccGlanceErrorView extends WatchUi.GlanceView {
+(:glance :exclForGlanceNone) class EvccGlanceErrorView extends WatchUi.GlanceView {
     private var _ex as Exception;
 
     function initialize( ex as Exception ) {

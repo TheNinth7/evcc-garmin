@@ -6,6 +6,29 @@ import Toybox.Application.Properties;
 // with an index (e.g. site_0_url ). Unfortunately array settings
 // do not work (Garmin bugs), so we had to revert to this solution
 (:glance :background) class EvccSiteConfigSingleton {
+    private static var _siteCount = 0;
+    static function getSiteCount() as Number { 
+        if( _siteCount == 0 ) {
+            for( var i = 0; i < EvccConstants.MAX_SITES; i++ ) {
+               var url = Properties.getValue( EvccConstants.PROPERTY_SITE_PREFIX + i + EvccConstants.PROPERTY_SITE_URL_SUFFIX ) as String;
+                if( ! url.equals( "" ) ) {
+                   _siteCount++;
+                }
+            }
+        }
+        return _siteCount;
+    }
+}
+
+/*
+// Old implementation that stores all sites - to save memory
+// this was changed to the implementation above, which does
+// not save the site configuration
+// This class provides access to the evcc site settings
+// In its current implementation, each site has setting fields
+// with an index (e.g. site_0_url ). Unfortunately array settings
+// do not work (Garmin bugs), so we had to revert to this solution
+(:glance) class EvccSiteConfigSingleton {
     // Array of URLs for the evcc instances
     private var _sites = new Array<EvccSite>[0] as Array<EvccSite>;
 
@@ -41,6 +64,7 @@ import Toybox.Application.Properties;
         }
     }
 }
+*/
 
 // This class represents the configuration of one site
 (:glance :background) class EvccSite {
@@ -56,9 +80,8 @@ import Toybox.Application.Properties;
     function getPassword() as String { return _pass; }
     function scaleForecast() as Boolean { return _scaleForecast; }
     
-    function initialize( url as String, index as Number ) {
-        _url = url;
-        
+    function initialize( index as Number ) {
+        _url = Properties.getValue( EvccConstants.PROPERTY_SITE_PREFIX + index + EvccConstants.PROPERTY_SITE_URL_SUFFIX ) as String;
         _user = Properties.getValue( EvccConstants.PROPERTY_SITE_PREFIX + index + EvccConstants.PROPERTY_SITE_USER_SUFFIX ) as String;
         _pass = Properties.getValue( EvccConstants.PROPERTY_SITE_PREFIX + index + EvccConstants.PROPERTY_SITE_PASS_SUFFIX ) as String;
 

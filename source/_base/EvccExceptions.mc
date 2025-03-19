@@ -27,17 +27,3 @@ import Toybox.Lang;
         _index = index;
     }
 }
-
-// Exception indicating that an error occured when requesting
-// the evcc state
-(:glance) class StateRequestException extends EvccBaseException {
-    private var _code as String;
-    private var _msg as String;
-    function getErrorCode() as String { return _code; }
-    function getErrorMessage() as String? { return _msg; }
-    function initialize( code as String, msg as String ) {
-        EvccBaseException.initialize();
-        _code = code;
-        _msg = msg;
-    }
-}

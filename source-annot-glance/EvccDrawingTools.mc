@@ -453,6 +453,8 @@ import Toybox.WatchUi;
             y = y - getHeight() / 2 + marginTop + getTextHeight() / 2;
         }
 
+        // System.println( "***** drawing \"" + _text + "\" with height=" + Graphics.getFontHeight( getGarminFont() ) );
+
         _dc.drawText( x, 
                       y, 
                       getGarminFont(), 
