@@ -39,7 +39,9 @@ import Toybox.Application.Properties;
         try {
             // EvccHelperBase.debug("Glance: onUpdate");
             var line = new EvccUIHorizontal( dc, { :uiLib => EvccUILibGlanceSingleton.getInstance(), :font => EvccUILibGlanceSingleton.FONT_GLANCE, :justify => Graphics.TEXT_JUSTIFY_LEFT, :backgroundColor => Graphics.COLOR_TRANSPARENT } );
-            
+
+            var spacing = dc.getTextDimensions( " ", Graphics.FONT_GLANCE )[0];
+
             if( ! _stateRequest.hasLoaded() ) {
                 line.addText( "Loading ...", {} );
             } else { 
@@ -65,7 +67,6 @@ import Toybox.Application.Properties;
                     var hasVehicle = false;
                     // We use the height of the font as spacing between the columns
                     // This gives us a space that is suitable for each screen size/resolution
-                    var spacing = dc.getTextDimensions( " ", Graphics.FONT_GLANCE )[0];
 
                     var displayedLPs = new Array<EvccLoadPoint>[0];
                     for (var i = 0; i < loadpoints.size(); i++) {
@@ -102,6 +103,14 @@ import Toybox.Application.Properties;
             }
             dc.clear();
             
+            // We do this in the end, because spacing may be modified based on the number of loadpoints
+            try {
+                var glanceMarginLeft = Properties.getValue( EvccConstants.PROPERTY_GLANCE_MARGIN_LEFT ) as Boolean;
+                if( glanceMarginLeft) {
+                    line.setOption( :marginLeft, spacing );
+                }
+            } catch ( ex ) {}
+
             line.draw( 0, dc.getHeight() / 2 );
 
             // dc.drawRectangle( 0, 0, dc.getWidth(), dc.getHeight() );

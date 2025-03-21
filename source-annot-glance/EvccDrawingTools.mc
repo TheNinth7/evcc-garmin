@@ -116,7 +116,7 @@ import Toybox.WatchUi;
     function getWidth() as Number {
         var font = null;
         try { font = getOption( :font ); } 
-        catch( InvalidValueException ) {}
+        catch( ex ) {}
         if( _width == null || _lastFont != font ) {
             _width = getWidthInternal();
             if( _lastFont != font ) {
@@ -129,7 +129,7 @@ import Toybox.WatchUi;
     function getHeight() as Number {
         var font = null;
         try { font = getOption( :font ); } 
-        catch( InvalidValueException ) {}
+        catch( ex ) {}
         if( _height == null || _lastFont != font ) {
             _height = getHeightInternal();
             if( _lastFont != font ) {

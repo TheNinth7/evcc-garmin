@@ -7,7 +7,6 @@ import Toybox.Math;
 
  // The main view showing the most important aspects of the state of one evcc instance
  class EvccWidgetSiteMainView extends EvccWidgetSiteBaseView {
-    var _vehicleTitleBaseMaxLength = 0;
     
     // Indicates that we act as glance and present only one site
     // If a device does not support glances, then in the initial
@@ -28,7 +27,6 @@ import Toybox.Math;
         // EvccHelperBase.debug("Widget: initialize");
         EvccWidgetSiteBaseView.initialize( views, pageIndex, parentView, siteIndex );
 
-        _vehicleTitleBaseMaxLength = Properties.getValue( EvccConstants.PROPERTY_VEHICLE_TITLE_BASE_MAX_LENGTH );
         _actAsGlance = actAsGlance;
 
         if( _actAsGlance && EvccSiteConfigSingleton.getSiteCount() > 1 ) {

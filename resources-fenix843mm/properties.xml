@@ -1,0 +1,5 @@
+<resources>
+    <properties>
+        <property id="glanceMarginLeft" type="boolean">true</property>
+    </properties>
+</resources>

@@ -17,8 +17,8 @@ import Toybox.Graphics;
     public static const PROPERTY_SITE_SCALE_FORECAST_SUFFIX = "_sfc";
     public static const PROPERTY_REFRESH_INTERVAL = "refreshInterval";
     public static const PROPERTY_DATA_EXPIRY = "dataExpiry";
+    public static const PROPERTY_GLANCE_MARGIN_LEFT = "glanceMarginLeft";
     //public static const PROPERTY_REDUCE_RESPONSE_SIZE = "reduceResponseSize";
-    public static const PROPERTY_VEHICLE_TITLE_BASE_MAX_LENGTH = "vehicleTitleMaxLength";
 
     // Number of sites supported, needs to match the number of settings
     // defined in settings.xml

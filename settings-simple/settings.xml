@@ -6,7 +6,6 @@
         <property id="s0_sfc" type="boolean">true</property>
         <property id="refreshInterval" type="number">10</property>
         <property id="dataExpiry" type="number">600</property>
-        <property id="vehicleTitleMaxLength" type="number">6</property>
     </properties>
 
     <settings>
