@@ -226,10 +226,11 @@ import Toybox.Math;
      * We apply different exclude annotations to decide if
      * an indicator is drawn and at what degree
      */
-    (:exclForSelect30 :exclForSelectNone :exclForSelectSwipe) private static const SELECT_CENTER_ANGLE = 27;
-    (:exclForSelect27 :exclForSelectNone :exclForSelectSwipe) private static const SELECT_CENTER_ANGLE = 30;
+    (:exclForSelect0 :exclForSelect30 :exclForSelectNone) private static const SELECT_CENTER_ANGLE = 27;
+    (:exclForSelect0 :exclForSelect27 :exclForSelectNone) private static const SELECT_CENTER_ANGLE = 30;
+    (:exclForSelect27 :exclForSelect30 :exclForSelectNone) private static const SELECT_CENTER_ANGLE = 0;
     
-    (:exclForSelectNone :exclForSelectSwipe) private function drawSelectIndicator( dc as Dc ) {
+    (:exclForSelectNone) private function drawSelectIndicator( dc as Dc ) {
         var SELECT_RADIUS_FACTOR = 0.49; // factor applied to dc width to calculate the radius of the arc
         var SELECT_LINE_WIDTH_FACTOR = 0.01; // factor applied to dc width to calculate the width of the arc
         var SELECT_LENGTH = 16; // total length of the arc in degree
@@ -246,9 +247,14 @@ import Toybox.Math;
                     SELECT_CENTER_ANGLE - SELECT_LENGTH / 2,
                     SELECT_CENTER_ANGLE + SELECT_LENGTH / 2 );
     }
-    (:exclForSelect30 :exclForSelect27 :exclForSelectSwipe) private function drawSelectIndicator( dc as Dc ) {}
+    (:exclForSelect0 :exclForSelect30 :exclForSelect27) private function drawSelectIndicator( dc as Dc ) {}
 
-    (:exclForSelect30 :exclForSelect27 :exclForSelectNone) private function drawSelectIndicator( dc as Dc ) {
+    // Currently not in use - need to implement layout/spacing adaption to the
+    // swipe indicator, both in onUpdate() in this class, and also in the 
+    // truncate routine in the DrawingTools.
+    // If implemented, this should be applied to Venu and Vivoactive series
+    /*
+    private function drawSelectIndicator( dc as Dc ) {
         
         // Anti-alias is only available in newer SDK versions
         if( dc has :setAntiAlias ) {
@@ -264,6 +270,7 @@ import Toybox.Math;
         dc.drawLine( dc.getWidth() - 10, dc.getHeight() / 2, dc.getWidth(), dc.getHeight() / 2 - 5 );
         dc.drawLine( dc.getWidth() - 10, dc.getHeight() / 2, dc.getWidth(), dc.getHeight() / 2 + 5 );
     }
+    */
 
     // Function to indicate if a page indicator shall be shown
     function showPageIndicator() as Boolean {

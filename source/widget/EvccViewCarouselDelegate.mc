@@ -21,6 +21,22 @@ class EvccViewCarouselDelegate extends EvccViewSimpleDelegate {
         }
     }
 
+    // For enter key and swipe left we trigger the onSelect
+    // behavior. In some gesture-based devices the keys are not
+    // associated with that behavior (Venu, Vivoactive)
+    public function onKey( keyEvent ) {
+        if( keyEvent.getKey() == KEY_ENTER ) {
+            return onSelect();
+        }
+        return false;
+    }
+    public function onSwipe( swipeEvent ) {
+        if( swipeEvent.getDirection() == SWIPE_LEFT ) {
+            return onSelect();
+        }
+        return false;
+    }
+
     // When the select action is triggered, we open the active sub view
     public function onSelect() as Boolean {
         try {

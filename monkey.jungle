@@ -35,25 +35,25 @@ systemInfoNone = exclForSystemInfoNone
 sitesMultiple = exclForSitesMultiple
 sitesOne = exclForSitesOne
 
+select0 = exclForSelect0
 select30 = exclForSelect30
 select27 = exclForSelect27
-selectNone = exclForSelectNone
-# At the moment swipe devices show now select indicator
-selectSwipe = exclForSelectNone
-#selectSwipe = exclForSelectSwipe
+selectNone = exclForSelectNone;exclForHasSelect
+
+hasSelect = exclForHasSelect
 
 # Full glance, complex code and vector fonts is the default
 base.sourcePath = $(sourceGlanceFull)
-base.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select30)
+base.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select30);$(hasSelect)
 base.resourcePath = $(base.resourcePath);settings
 # These watches have static/optimized fonts
-venu2.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple);$(selectSwipe)
-venu2plus.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple);$(selectSwipe)
-venu2s.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple);$(selectSwipe)
+venu2.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple);$(select30)
+venu2plus.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple);$(select30)
+venu2s.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple);$(select30)
 
-fr265.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select27)
-fr265s.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select27)
-fr965.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select27)
+fr265.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select27);$(hasSelect)
+fr265s.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select27);$(hasSelect)
+fr965.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select27);$(hasSelect)
 
 # Tiny glance
 fr745.sourcePath = $(sourceGlanceTiny)
@@ -89,19 +89,19 @@ fenix6xpro.resourcePath = resources;resources-fenix6xpro;settings-simple
 # fenix6.sourcePath = $(sourceGlanceNone)
 # fenix6.excludeAnnotations = $(glanceNone);complex;$(fontsStatic)
 vivoactive3.sourcePath = $(sourceGlanceNone)
-vivoactive3.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(selectSwipe)
+vivoactive3.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(select0)
 vivoactive3.resourcePath = resources;resources-vivoactive3;settings-simple
 vivoactive3m.sourcePath = $(sourceGlanceNone)
-vivoactive3m.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(selectSwipe)
+vivoactive3m.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(select0)
 vivoactive3m.resourcePath = resources;resources-vivoactive3m;settings-simple
 vivoactive3mlte.sourcePath = $(sourceGlanceNone)
-vivoactive3mlte.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(selectSwipe)
+vivoactive3mlte.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(select0)
 vivoactive3mlte.resourcePath = resources;resources-vivoactive3mlte;settings-simple
 
 vivoactive4.sourcePath = $(sourceGlanceNone)
-vivoactive4.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesMultiple);$(selectSwipe)
+vivoactive4.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesMultiple);$(select30)
 vivoactive4s.sourcePath = $(sourceGlanceNone)
-vivoactive4s.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesMultiple);$(selectSwipe)
+vivoactive4s.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesMultiple);$(select30)
 vivoactive5.sourcePath = $(sourceGlanceFull)
-vivoactive5.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple);$(selectSwipe)
+vivoactive5.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple);$(select30)
 
