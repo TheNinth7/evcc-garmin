@@ -1,30 +1,94 @@
 # evcc-garmin
 
-An app for Garmin wearables, for displaying information from evcc (https://evcc.io), an open-source software package for solar charging of electric vehicles.
+An app for Garmin wearables, for displaying information from [evcc](https://evcc.io), an open-source software package for solar charging of electric vehicles.
 
 Click [here](https://apps.garmin.com/apps/2bc2ba9d-b117-4cdf-8fa7-078c1ac90ab0) to visit the app's page in the Garmin Connect IQ Store.
 
 Note: before you install this app, read the Connectivity section below to make sure you have all that's needed for the app to access your evcc instance.
 
-## Connectivity (read this!):
+## Connectivity:
 
 Garmin watches rely on your smartphone to access the local network or the Internet. If you're using a VPN solution, such as Tailscale, on your phone to access evcc, it will also work with the watch. However, due to limitations in the Garmin Connect IQ SDK, the evcc HTTP interface can only be accessed via iOS devices. For Android users, an HTTPS endpoint with a valid certificate is required. To set up such an HTTPS endpoint for evcc, you can use a reverse proxy, like NGINX or the one integrated into Synology DiskStations, and obtain a certificate from Let's Encrypt.
 
 ## Settings
 
-<!--
-In the settings, configure the URL for your local evcc instance and set the data request interval. The app supports multiple URLs and allows you to switch between them in the widget using the up and down keys or touch gestures. The glance will always display data from the last selected site in the widget.
--->
+After installing the app, start with setting up your evcc site.
+
+To access the settings, open evcc in the Connect IQ App:
+
+![CIQ Settings](screenshots/ciq_settings_1_400px.png)
+
+### Sites
+
+Newer devices support multiple sites, while older ones can display only one. Check the [devices section](#supported-devices) to find out about your device's capabilities.
+
+![CIQ Settings](screenshots/ciq_settings_2_400px.png)
+
+For the site, configure the following settings:
+
+| Setting             | Description      |
+|---------------------|------------------|
+| URL                 | URL in format https://host:port.</br>http is supported only when your wearable is connected to an iOS device. See the [Connectivity](#connectivity) section above. |
+| Username            | User name for basic authentication, in case you are using a reverse proxy or similar, for example to access evcc from the Internet. |
+| Password            | Password for basic authentication. |
+| Forecast adjustment | If your site has forecasts configured, this option is the equivalent to the "adjust solar forecast based on real production data" in the evcc UI. If enabled, the forecast widget will show data adjusted by the scale factor provided by evcc. |
+
+### Global settings
+
+The following settings apply to all configured sites.
+
+| Setting             | Description      |
+|---------------------|------------------|
+| Refresh interval    | In seconds, from 5-60</br>The interval in which new data is requested from your evcc site. |
+| Data expiry         | In seconds, from 5-3600</br>When bringing the full-featured glance or widget into view, data not older than the expiry time may be displayed until new data becomes available. |
 
 ## User Interface
 
-<!--
-The full-featured glance displays the combined SoC of all house batteries, the individual SoC of each connected vehicle, and an indicator showing whether each is currently charging or discharging. On devices with limited memory for glances, such as the Fenix 6 series, only the SoCs are shown, and data is updated every five minutes via a background task.
-The widget offers more detailed information. In addition to the SoCs, it displays the power consumption or output of your PV system, home, grid, battery, and connected vehicles. If there’s enough screen space, it also shows the charging mode and remaining charge time. In most cases, this works for up to two charging load points per site.
--->
+### Glance
+
+### Widget
 
 ## Supported Devices
 
+| Watch              | Fonts      | Max Sites | Glance | System Info | Notes                                                                              |
+|--------------------|:----------:|:---------:|:------:|:-----------:|------------------------------------------------------------------------------------|
+| fenix6             | Static     | 1         | -      | No          | May not work with large sites (memory limit) <br> No glance due to memory limits   |
+| fenix6s            | Static     | 1         | -      | No          | May not work with large sites (memory limit) <br> No glance due to memory limits   |
+| fenix6pro          | Static     | 1         | Tiny   | Yes         |                                                                                    |
+| fenix6spro         | Static     | 1         | Tiny   | Yes         |                                                                                    |
+| fenix6xpro         | Static     | 1         | Tiny   | Yes         |                                                                                    |
+| fenix7             | Vector     | 5         | Full   | Yes         |                                                                                    |
+| fenix7s            | Vector     | 5         | Full   | Yes         |                                                                                    |
+| fenix7x            | Vector     | 5         | Full   | Yes         |                                                                                    |
+| epix2pro42mm       | Vector     | 5         | Full   | Yes         |                                                                                    |
+| epix2pro47mm       | Vector     | 5         | Full   | Yes         |                                                                                    |
+| epix2pro51mm       | Vector     | 5         | Full   | Yes         |                                                                                    |
+| fenix7pro          | Vector     | 5         | Full   | Yes         |                                                                                    |
+| fenix7spro         | Vector     | 5         | Full   | Yes         |                                                                                    |
+| fenix7xpro         | Vector     | 5         | Full   | Yes         |                                                                                    |
+| fenix7xpronowifi   | Vector     | 5         | Full   | Yes         |                                                                                    |
+| fenix843mm         | Vector     | 5         | Full   | Yes         |                                                                                    |
+| fenix847mm         | Vector     | 5         | Full   | Yes         |                                                                                    |
+| fenix8solar47mm    | Vector     | 5         | Full   | Yes         |                                                                                    |
+| fenix8solar51mm    | Vector     | 5         | Full   | Yes         |                                                                                    |
+| fr745              | Static     | 1         | Tiny   | Yes         |                                                                                    |
+| fr945              | Static     | 1         | Tiny   | Yes         |                                                                                    |
+| fr945lte           | Static     | 1         | Tiny   | Yes         |                                                                                    |
+| fr955              | Vector     | 5         | Full   | Yes         |                                                                                    |
+| fr265              | Vector     | 5         | Full   | Yes         |                                                                                    |
+| fr265s             | Vector     | 5         | Full   | Yes         |                                                                                    |
+| fr965              | Vector     | 5         | Full   | Yes         |                                                                                    |
+| venu2              | Static-Opt | 5         | Full   | Yes         |                                                                                    |
+| venu2plus          | Static-Opt | 5         | Full   | Yes         |                                                                                    |
+| venu2s             | Static-Opt | 5         | Full   | Yes         |                                                                                    |
+| venu3              | Vector     | 5         | Full   | Yes         |                                                                                    |
+| venu3s             | Vector     | 5         | Full   | Yes         |                                                                                    |
+| vivoactive3        | Static     | 1         | -      | No          | May not work with large sites (memory limit)                                       |
+| vivoactive3m       | Static     | 1         | -      | No          |                                                                                    |
+| vivoactive3mlte    | Static     | 1         | -      | No          | May not work with large sites (cpu limit)                                          |
+| vivoactive4        | Static     | 5         | -      | Yes         |                                                                                    |
+| vivoactive4s       | Static     | 5         | -      | Yes         |                                                                                    |
+| vivoactive5        | Static-Opt | 5         | Full   | Yes         |                                                                                    |
 
 
 ## Troubleshooting:
