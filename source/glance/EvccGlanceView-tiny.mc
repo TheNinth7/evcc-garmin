@@ -68,8 +68,11 @@ import Toybox.Application.Storage;
             var line2 = "";
             var line1X = 0;
             var line2X = 0;
-            var line1Y = ( dc.getHeight() / 2 ) * 0.95 - ( Graphics.getFontHeight( Graphics.FONT_GLANCE ) / 2 );
-            var line2Y = ( dc.getHeight() / 2 ) * 0.95 + ( Graphics.getFontHeight( Graphics.FONT_GLANCE ) / 2 );
+            var fHeight = Graphics.getFontHeight( Graphics.FONT_GLANCE );
+            var yStart = dc.getHeight() / 2;
+            var line1Y = yStart - fHeight / 2;
+            var line2Y = yStart + fHeight / 2;
+            fHeight = null; yStart = null;
             
             if ( siteData != null ) {
                 line1 = "";
@@ -109,6 +112,9 @@ import Toybox.Application.Storage;
 
             dc.drawText( line1X, line1Y, Graphics.FONT_GLANCE, line1, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER );
             dc.drawText( line2X, line2Y, Graphics.FONT_GLANCE, line2, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER );
+            
+            // Alignment lines for debugging
+            //dc.drawRectangle( 0, 0, dc.getWidth(), dc.getHeight() );
 
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );

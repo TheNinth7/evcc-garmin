@@ -12,7 +12,6 @@ class EvccViewCarouselDelegate extends EvccViewSimpleDelegate {
     private var _breadCrumb as EvccBreadCrumb;
 
     function initialize( views as Array<EvccWidgetSiteBaseView>, breadCrumb as EvccBreadCrumb? ) {
-        // EvccHelperBase.debug( "ViewWidgetDelegate: initialize" );
         EvccViewSimpleDelegate.initialize();
         _views = views;
         _breadCrumb = breadCrumb;
@@ -66,8 +65,11 @@ class EvccViewCarouselDelegate extends EvccViewSimpleDelegate {
         }
     }
 
+    // 2025-03-20 this is standard behavior anyway, so we comment this function
+    // out for now to save memory space
     // When the select action is triggered, we pop the current view and go
     // back to the higher level view
+    /*
     public function onBack() as Boolean {
         try {
             // EvccHelperBase.debug("ViewCarouselDelegate: onBack");
@@ -78,6 +80,7 @@ class EvccViewCarouselDelegate extends EvccViewSimpleDelegate {
             return false;
         }
     }
+    */
 
     // For next/previous we switch to the next/previous view
     // on the current level. This methods implement wrapping,

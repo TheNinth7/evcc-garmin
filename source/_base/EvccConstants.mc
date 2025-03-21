@@ -22,7 +22,7 @@ import Toybox.Graphics;
 
     // Number of sites supported, needs to match the number of settings
     // defined in settings.xml
-    (:exclForSitesOnes) public static const MAX_SITES = 5;
+    (:exclForSitesOne) public static const MAX_SITES = 5;
     (:exclForSitesMultiple) public static const MAX_SITES = 1;
 
     // Default foreground and background

@@ -56,11 +56,16 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
         row.addBlock( column1 );
         row.addBlock( column2 );
         row.addBlock( column3 );
+        
         block.addBlock( row );
 
         if( applyScale ) {
             block.addText( "adj. w\\ real data", { :relativeFont => 4, :marginTop => dc.getHeight() * 0.007 } );
         }
+
+        // Add a small margin to the bottom. While the content is centered vertically between title and logo,
+        // the spacing in the fonts make it seem a bit off, and this is to compensate for that.
+        block.setOption( :marginBottom, dc.getHeight() * 0.02 );
     }
 
     // Prepare the content - simple version for devices with less computational power
@@ -74,7 +79,7 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
         var scale = applyScale ? forecast.getScale() : 1;
 
         for( var i = 0; i < energy.size(); i++ ) {
-            var line = new EvccUIHorizontal( dc, { :marginLeft => getPiSpacing( dc ) } );
+            var line = new EvccUIHorizontal( dc, { :justify => Graphics.TEXT_JUSTIFY_LEFT } );
             line.addText( _label[i] + ": " + formatEnergy( energy[i] * scale ) + "kWh", {} );
             if( _indicator[i] != null ) {
                 line.addText( " " + _indicator[i], { :relativeFont => 4, :vjustifyTextToBottom => true } );

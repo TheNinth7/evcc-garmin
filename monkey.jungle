@@ -35,41 +35,52 @@ systemInfoNone = exclForSystemInfoNone
 sitesMultiple = exclForSitesMultiple
 sitesOne = exclForSitesOne
 
-# Full glance, complex code and static fonts is the default
-base.sourcePath = $(sourceGlanceFull)
-base.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple)
-base.resourcePath = $(base.resourcePath);settings
+select30 = exclForSelect30
+select27 = exclForSelect27
+selectNone = exclForSelectNone
+# At the moment swipe devices show now select indicator
+selectSwipe = exclForSelectNone
+#selectSwipe = exclForSelectSwipe
 
-venu2.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple)
-venu2plus.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple)
-venu2s.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple)
+# Full glance, complex code and vector fonts is the default
+base.sourcePath = $(sourceGlanceFull)
+base.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select30)
+base.resourcePath = $(base.resourcePath);settings
+# These watches have static/optimized fonts
+venu2.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple);$(selectSwipe)
+venu2plus.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple);$(selectSwipe)
+venu2s.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple);$(selectSwipe)
+
+fr265.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select27)
+fr265s.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select27)
+fr965.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select27)
 
 # Tiny glance
 fr745.sourcePath = $(sourceGlanceTiny)
-fr745.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(inclsystemInfo);$(systemInfo);$(sitesOne)
+fr745.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne);$(selectNone)
 fr745.resourcePath = resources;resources-fr745;settings-simple
 fr945.sourcePath = $(sourceGlanceTiny)
-fr945.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne)
+fr945.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne);$(selectNone)
 fr945.resourcePath = resources;resources-round-240x240;settings-simple
 fr945lte.sourcePath = $(sourceGlanceTiny)
-fr945lte.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne)
+fr945lte.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne);$(selectNone)
 fr945lte.resourcePath = resources;resources-round-240x240;settings-simple
 #Fenix 6
 fenix6.sourcePath = $(sourceGlanceNone)
-fenix6.excludeAnnotations = $(glanceNone);$(calcSimple);$(fontsStatic);$(systemInfoNone);$(sitesOne)
+fenix6.excludeAnnotations = $(glanceNone);$(calcSimple);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(selectNone)
 fenix6.resourcePath = resources;resources-round-260x260;settings-simple
 fenix6s.sourcePath = $(sourceGlanceNone)
-fenix6s.excludeAnnotations = $(glanceNone);$(calcSimple);$(fontsStatic);$(systemInfoNone);$(sitesOne)
+fenix6s.excludeAnnotations = $(glanceNone);$(calcSimple);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(selectNone)
 fenix6s.resourcePath = resources;resources-round-240x240;settings-simple
 # Fenix 6 Pro
 fenix6pro.sourcePath = $(sourceGlanceTiny)
-fenix6pro.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne)
+fenix6pro.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne);$(selectNone)
 fenix6pro.resourcePath = resources;resources-round-260x260;settings-simple
 fenix6spro.sourcePath = $(sourceGlanceTiny)
-fenix6spro.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne)
+fenix6spro.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne);$(selectNone)
 fenix6spro.resourcePath = resources;resources-round-240x240;settings-simple
 fenix6xpro.sourcePath = $(sourceGlanceTiny)
-fenix6xpro.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne)
+fenix6xpro.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne);$(selectNone)
 fenix6xpro.resourcePath = resources;resources-fenix6xpro;settings-simple
 
 # No glance
@@ -78,19 +89,19 @@ fenix6xpro.resourcePath = resources;resources-fenix6xpro;settings-simple
 # fenix6.sourcePath = $(sourceGlanceNone)
 # fenix6.excludeAnnotations = $(glanceNone);complex;$(fontsStatic)
 vivoactive3.sourcePath = $(sourceGlanceNone)
-vivoactive3.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne)
+vivoactive3.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(selectSwipe)
 vivoactive3.resourcePath = resources;resources-vivoactive3;settings-simple
 vivoactive3m.sourcePath = $(sourceGlanceNone)
-vivoactive3m.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne)
+vivoactive3m.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(selectSwipe)
 vivoactive3m.resourcePath = resources;resources-vivoactive3m;settings-simple
 vivoactive3mlte.sourcePath = $(sourceGlanceNone)
-vivoactive3mlte.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne)
+vivoactive3mlte.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(selectSwipe)
 vivoactive3mlte.resourcePath = resources;resources-vivoactive3mlte;settings-simple
 
 vivoactive4.sourcePath = $(sourceGlanceNone)
-vivoactive4.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesMultiple)
+vivoactive4.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesMultiple);$(selectSwipe)
 vivoactive4s.sourcePath = $(sourceGlanceNone)
-vivoactive4s.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesMultiple)
+vivoactive4s.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesMultiple);$(selectSwipe)
 vivoactive5.sourcePath = $(sourceGlanceFull)
-vivoactive5.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple)
+vivoactive5.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple);$(selectSwipe)
 

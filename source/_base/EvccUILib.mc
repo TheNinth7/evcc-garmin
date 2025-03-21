@@ -39,7 +39,7 @@ import Toybox.Graphics;
         }
         for( var i = 0; i < lfonts.size(); i++ ) {
             var height = Math.round( heights[i] ).toNumber();
-            EvccHelperBase.debug( "Vector font " + i + " => " + height + "px" );
+            // EvccHelperBase.debug( "Vector font " + i + " => " + height + "px" );
             lfonts[i] = Graphics.getVectorFont( { :face => faces, :size => height } );
             if( lfonts[i] == null ) {
                 throw new InvalidValueException( "Font faces not found!" );

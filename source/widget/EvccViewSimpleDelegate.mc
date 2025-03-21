@@ -11,7 +11,7 @@ import Toybox.Application;
 
     public function onMenu() as Boolean {
         // EvccHelperBase.debug( "EvccViewSimpleDelegate: onMenu" );
-        WatchUi.pushView( new EvccWidgetSystemInfoView(), null, WatchUi.SLIDE_LEFT );
+        WatchUi.pushView( new EvccWidgetSystemInfoView(), new EvccViewSystemInfoDelegate(), WatchUi.SLIDE_RIGHT );
         return true;
     }
 

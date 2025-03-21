@@ -101,7 +101,10 @@ import Toybox.Application.Properties;
                 }
             }
             dc.clear();
+            
             line.draw( 0, dc.getHeight() / 2 );
+
+            // dc.drawRectangle( 0, 0, dc.getWidth(), dc.getHeight() );
 
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );

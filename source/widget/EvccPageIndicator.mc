@@ -21,7 +21,7 @@ class EvccPageIndicator {
     
     // How large should dots be in relation to the
     // total screen width
-    private static const DOT_SIZE_FACTOR = 0.02;
+    public static const DOT_SIZE_FACTOR = 0.02;
     
     // How thick should the line drawn around the dots
     // be in relation to the total screen width

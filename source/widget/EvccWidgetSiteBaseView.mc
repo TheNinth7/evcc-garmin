@@ -102,9 +102,6 @@ import Toybox.Math;
                 font++;
             }
 
-            // System.println( "***** Limit by height=" + limitHeight() );
-            // System.println( "***** Limit by width=" + limitWidth() );
-
             // We only scale to the second-smallest font, the smallest font
             // is reserved for explicit declarations (:font or :relativeFont)
             // but will not automatically be choosen for the main content
@@ -117,11 +114,7 @@ import Toybox.Math;
                 }
             }
 
-            EvccHelperBase.debug( "Using font " + block.getOption( :font ) );
-            // System.println( "***** font=" + font );
-            // System.println( "***** block font=" + block.getOption( :font ) );
-            // System.println( "***** block height=" + block.getHeight() );
-            // System.println( "***** ca =" + ca.height );
+            // EvccHelperBase.debug( "Using font " + block.getOption( :font ) );
 
             block.draw( ca.x, ca.y );
         } catch ( ex ) {
@@ -144,6 +137,7 @@ import Toybox.Math;
         var fonts = EvccUILibWidgetSingleton.getInstance().fonts as Array<FontDefinition>;
         var spacing = Graphics.getFontHeight( fonts[font] ) / 3;
 
+        // Header consists of site title and page title (assumed to be an icon)
         var header = new EvccUIVertical( dc, { :font => font, :marginTop => spacing } );
         var hasSiteTitle = siteCount > 1;
 
@@ -152,37 +146,45 @@ import Toybox.Math;
         if( siteCount > 1 ) {
             hasSiteTitle = true;
             if( stateRequest.getState() != null ) {
+                // We display a max of 9 characters
                 header.addText( stateRequest.getState().getSiteTitle().substring(0,9), {}  );
-                //header.addText( "ABCDEFGHIJ", {}  );
             }
         }
+        
+        // page title (icon) is provided by the class' implementation
         var pageTitle = getPageTitle( dc );
         if( pageTitle != null ) {
             if( hasSiteTitle ) {
+                // If we have a site title, we leave the font (=icon size) for the page title the same as
+                // the site title, and add a bit of space
                 pageTitle.setOption( :marginTop, spacing * 2 / 3 );
             } else {
+                // If there is no site title, we set the font (=icon size) to the
+                // largest available
                 pageTitle.setOption( :font, EvccUILibWidgetSingleton.FONT_MEDIUM );
             }
             header.addBlock( pageTitle );
         }
         
-        if( header.getElementCount() > 0 ) {
+        // If there is no header content, we leave 1 x spacing in marginTop to
+        // counterbalance the logo, but the marginBottom stays 0
+        // If there is a sitle title without page title (icon), then we apply the spacing,
+        // but reduce it by the site title's font descent, to align with the baseline of
+        // the font
+        // If there is a page title (icon) we apply the full spacing
+        if( hasSiteTitle && pageTitle == null ) {
+            header.setOption( :marginBottom, spacing - Graphics.getFontDescent( fonts[font] ) );
+        } else if ( pageTitle != null ) {
             header.setOption( :marginBottom, spacing );
         }
+
         var headerHeight = header.getHeight();
         header.draw( xCenter, headerHeight / 2 );
 
         var logo = new EvccUIBitmap( Rez.Drawables.logo_evcc, dc, { :marginTop => spacing, :marginBottom => spacing } );
         
-        //var logo = new EvccUIBitmap( Rez.Drawables.logo_evcc, dc, { :marginTop => spacing * 2, :marginBottom => spacing * 2 } );
         var logoHeight = logo.getHeight();
-        /*
-        System.println( "***** logo.getHeight()=" + logoHeight );
-        System.println( "***** marginTop=" + logo.getOption( :marginTop ) );
-        System.println( "***** marginBottom=" + logo.getOption( :marginBottom ).toNumber() );
-        System.println( "***** dc.getHeight()=" + dc.getHeight() );
-        System.println( "***** y=" + ( dc.getHeight() - logoHeight / 2 ).toNumber() );
-        */
+
         logo.draw( xCenter, dc.getHeight() - logoHeight / 2 );
 
         var ca = new EvccContentArea();
@@ -194,25 +196,74 @@ import Toybox.Math;
         if( showPageIndicator() ) {
             new EvccPageIndicator( dc ).drawPageIndicator( _pageIndex, getTotalPages() );
             var piX = dc.getWidth() * ( 0.5 - EvccPageIndicator.RADIUS_FACTOR );
+            var dotRadius = dc.getWidth() * EvccPageIndicator.DOT_SIZE_FACTOR;
             
             // piX is the x coordinate of the page indicator
-            // On the left side we leave double that space,
-            // on the right side the same space
-            ca.width -= piX * 3;
-            ca.x = piX + ( dc.getWidth() - piX ) / 2;
+            // On the left side we leave double that space + the radius of the dot,
+            // on the right side the same space + the radius of the dot
+            ca.width = ca.width - piX * 3 - dotRadius * 2;
+            // For calculating the center x coordinate of the content area, we
+            // start counting from left, add 2/3 of the piX spacing and
+            // 2/3 of the dotRadius spacing plus half of the width
+            ca.x = piX * 2 + dotRadius * 2 * 2/3 + ca.width / 2;
         }
 
         if( showSelectIndicator() ) {
-            new EvccSelectIndicator( dc ).drawSelectIndicator();
+            drawSelectIndicator( dc );
         }
 
+        /*
+        // Code for drawing visual alignment grid 
         dc.setPenWidth( 1 );
         dc.drawCircle( dc.getWidth() / 2, dc.getHeight() / 2, dc.getWidth() / 2 );
         dc.drawRectangle( ca.x - ca.width / 2, ca.y - ca.height / 2, ca.width, ca.height );
-
+        dc.drawLine( ca.x - ca.width / 2, ca.y, ca.x + ca.width / 2, ca.y );
+        */
         return ca;
     }
     
+    /* Here is the code for drawing the select indicator
+     * We apply different exclude annotations to decide if
+     * an indicator is drawn and at what degree
+     */
+    (:exclForSelect30 :exclForSelectNone :exclForSelectSwipe) private static const SELECT_CENTER_ANGLE = 27;
+    (:exclForSelect27 :exclForSelectNone :exclForSelectSwipe) private static const SELECT_CENTER_ANGLE = 30;
+    
+    (:exclForSelectNone :exclForSelectSwipe) private function drawSelectIndicator( dc as Dc ) {
+        var SELECT_RADIUS_FACTOR = 0.49; // factor applied to dc width to calculate the radius of the arc
+        var SELECT_LINE_WIDTH_FACTOR = 0.01; // factor applied to dc width to calculate the width of the arc
+        var SELECT_LENGTH = 16; // total length of the arc in degree
+        
+        // Anti-alias is only available in newer SDK versions
+        if( dc has :setAntiAlias ) {
+            dc.setAntiAlias( true );
+        }
+        dc.setPenWidth( Math.round( dc.getWidth() * SELECT_LINE_WIDTH_FACTOR ) ); // Line width is set here
+        dc.drawArc( dc.getWidth() / 2, 
+                    dc.getHeight() / 2, 
+                    dc.getWidth() * SELECT_RADIUS_FACTOR,
+                    Graphics.ARC_COUNTER_CLOCKWISE,
+                    SELECT_CENTER_ANGLE - SELECT_LENGTH / 2,
+                    SELECT_CENTER_ANGLE + SELECT_LENGTH / 2 );
+    }
+    (:exclForSelect30 :exclForSelect27 :exclForSelectSwipe) private function drawSelectIndicator( dc as Dc ) {}
+
+    (:exclForSelect30 :exclForSelect27 :exclForSelectNone) private function drawSelectIndicator( dc as Dc ) {
+        
+        // Anti-alias is only available in newer SDK versions
+        if( dc has :setAntiAlias ) {
+            dc.setAntiAlias( true );
+        }
+        dc.setPenWidth( Math.round( dc.getWidth() * 0.01 ) ); // Line width is set here
+        dc.drawArc( dc.getWidth() * 1.125 - 20, 
+                    dc.getHeight() / 2, 
+                    dc.getWidth() / 8,
+                    Graphics.ARC_COUNTER_CLOCKWISE,
+                    140,
+                    220 );
+        dc.drawLine( dc.getWidth() - 10, dc.getHeight() / 2, dc.getWidth(), dc.getHeight() / 2 - 5 );
+        dc.drawLine( dc.getWidth() - 10, dc.getHeight() / 2, dc.getWidth(), dc.getHeight() / 2 + 5 );
+    }
 
     // Function to indicate if a page indicator shall be shown
     function showPageIndicator() as Boolean {

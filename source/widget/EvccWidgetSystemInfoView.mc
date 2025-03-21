@@ -80,3 +80,4 @@ import Toybox.System;
 
     (:release) function checkFonts( block as EvccUIVertical, dc as Dc ) as Void {}
 }
+
