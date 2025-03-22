@@ -100,14 +100,20 @@ On devices with limited memory, the glance displays only battery and vehicle SoC
 
 The widget features a main view displaying key site statistics, along with additional detail views (currently limited to forecasts, with potential for more in the future).
 
-This section covers the following topics:
+This section begins with the following topics:
 
 - [Keys & Gestures](#keys--gestures)
 - [Site Views](#site-views)
+
+It then details navigation between site views based on your settings and device:
+
 - [Navigation Flow: one site, launched from glance](#navigation-flow-one-site-launched-from-glance)
 - [Navigation Flow: multiple sites, launched from glance](#navigation-flow-multiple-sites-launched-from-glance)
 - [Navigation Flow: one site, widget only](#navigation-flow-one-site-widget-only)
 - [Navigation Flow: multiple sites, widget only](#navigation-flow-multiple-sites-widget-only)
+
+Finally, it concludes with an overview of the general system information view:
+
 - [System Info View](#system-info-view-view)
 
 ### Keys & Gestures
@@ -150,8 +156,6 @@ A dedicated forecast view is also available:
 </table>
 
 The forecast displays the remaining energy for today, tomorrow, and partially for the day after tomorrow. Since data is available for a 48-hour period, the forecast for the day after tomorrow includes values up to the current time.
-
-The layout of the widget views varies based on your device and settings:
 
 ### Navigation Flow: one site, launched from glance
 
