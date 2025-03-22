@@ -8,6 +8,16 @@ Click [here](https://apps.garmin.com/apps/2bc2ba9d-b117-4cdf-8fa7-078c1ac90ab0) 
 
 If you still have questions after reading this guide, check the [Support](#support) section for additional assistance.
 
+# Table of Contents
+
+- [Connectivity](#connectivity)
+- [Settings](#settings)
+- [User Interface](#user-interface)
+- [Supported Devices](#supported-devices)
+- [Troubleshooting](#troubleshooting)
+- [Help & Support](#help--support)
+
+
 # Connectivity
 
 Garmin watches rely on your smartphone to connect to the local network or the Internet. If you use a VPN solution like Tailscale on your phone to access evcc, it will also work with the watch. However, due to limitations in the Garmin Connect IQ SDK, the evcc HTTP interface is only accessible on iOS devices. Android users must use an HTTPS endpoint with a valid certificate. To set up an HTTPS endpoint for evcc, you can for example use a reverse proxy such as NGINX or the built-in option on Synology DiskStations, along with a certificate from Let's Encrypt.
@@ -77,11 +87,11 @@ The following inputs are supported within the widget:
 
 The layout of the widget views varies based on your device and settings:
 
-## Devices with Glance
+### Devices with Glance
 
 The following descriptions pertain to devices where the widget launches from a glance.
 
-### One Site (with Glance)
+#### One Site (with Glance)
 
 If you have a single site configured and launch the widget from the glance, you'll enter a carousel featuring the main view and any available detail views, such as the forecast.
 
@@ -96,7 +106,7 @@ If you have a single site configured and launch the widget from the glance, you'
   </tr>
 </table>
 
-### Multiple Sites (with Glance)
+#### Multiple Sites (with Glance)
 
 If you have multiple sites configured and launch the widget from the glance, you'll enter a carousel displaying the sites. The site title appears at the top of each view, limited to the first nine characters due to space constraints.
 
@@ -114,11 +124,11 @@ For sites with detail views, an arc indicates the select button to press for acc
   </tr>
 </table>
 
-## Devices with Widgets Only
+### Devices with Widgets Only
 
 On devices that do not support glances, widgets are arranged in a carousel, with a single initial view representing each widget.
 
-### One Site (Widget Only)
+#### One Site (Widget Only)
 
 If a single site is configured, the main view of your site will appear in the widget carousel, with any available detail views accessible as lower-level views, indicated by an arc.
 
@@ -133,7 +143,7 @@ If a single site is configured, the main view of your site will appear in the wi
   </tr>
 </table>
 
-### Multiple Sites (Widget Only)
+#### Multiple Sites (Widget Only)
 
 If multiple sites are configured, the main view of the last selected site will appear in the widget carousel. On the lower level, a carousel of all main views is available, allowing access to detail views where applicable. The site title is displayed at the top of each view, limited to the first nine characters due to space constraints.
 
@@ -200,7 +210,7 @@ The table below lists supported devices along with their capabilities. Click on 
 | **vivoactive4**        | Static     | 5         | -      | Yes         |                                                                                    |
 | **vivoactive4s**       | Static     | 5         | -      | Yes         |                                                                                    |
 | **vivoactive5**        | Static-Opt | 5         | Full   | Yes         |                                                                                    |
-            
+
 ## Max Sites
 
 On devices with limited memory, the number of supported sites is restricted to one. If you’re using one of these devices and need support for multiple sites, please [contact](#support) the developer.
@@ -224,19 +234,23 @@ If you encounter a "Request Failed" error in the app, the error code can help de
 - **Positive error codes** correspond to HTTP response codes returned by the server.  
 - **Negative error codes** indicate Garmin Connect IQ SDK errors. For a comprehensive documentation of these codes, visit [this page](https://developer.garmin.com/connect-iq/api-docs/Toybox/Communications.html) and scroll to the Constant Summary section.  
 
-Below is an explanation of common "Request Failed" error codes:
+Here is a breakdown of common "Request Failed" error codes:
 
-| Code  | Symbol                            | Description |
-|-------|----------------------------------|-------------|
-| -1001 | SECURE_CONNECTION_REQUIRED       | This error occurs when attempting to use an unencrypted HTTP URL on Android. It may also appear if Garmin does not accept the certificate of your server. |
-| -300  | NETWORK_REQUEST_TIMED_OUT        | While this may indicate the server is unreachable, it can also mean the Garmin Connect app lacks necessary permissions. On iOS, check if the Local Network permission is enabled in the device settings for the Connect app. |
-| -403  | NETWORK_RESPONSE_OUT_OF_MEMORY   | This error suggests that the watch does not have enough memory to process the response from evcc. If you encounter this issue, please [contact](#support) the developer. |
-| -202  | INVALID_HTTP_METHOD_IN_REQUEST   | This error may indicate that your device does not support the query string used in evcc requests to minimize response size. It has been observed on some iOS 16 devices. The issue should be resolved in app version v1.3, but if it persists, please [contact](#support) the developer. |
+| Code      | Symbol                           | Description |
+|-----------|----------------------------------|-------------|
+| **-1001** | SECURE_CONNECTION_REQUIRED       | This error occurs when attempting to use an unencrypted HTTP URL on Android. It may also appear if Garmin does not accept the certificate of your server. |
+| **-300**  | NETWORK_REQUEST_TIMED_OUT        | While this may indicate the server is unreachable, it can also mean the Garmin Connect app lacks necessary permissions. On iOS, check if the Local Network permission is enabled in the device settings for the Connect app. |
+| **-403**  | NETWORK_RESPONSE_OUT_OF_MEMORY   | This error suggests that the watch does not have enough memory to process the response from evcc. If you encounter this issue, please [contact](#support) the developer. |
+| **-202**  | INVALID_HTTP_METHOD_IN_REQUEST   | This error may indicate that your device does not support the query string used in evcc requests to minimize response size. It has been observed on some iOS 16 devices. The issue should be resolved in app version v1.3, but if it persists, please [contact](#support) the developer. |
 
-## expected Number/Float/Long/Double
+## Other Errors
 
-This error may occur if you're using an older version of the app to access an evcc instance running version 0.133.0 or later. Ensure you have the latest version of the app installed. In some cases, the Connect IQ app may install an outdated version despite a newer one being available. If this happens, try uninstalling and reinstalling the app.
+| Error | Description |
+|-------|-------------|
+| **expected Number/Float/Long/Double** | This error may occur if you're using an older version of the app to access an evcc instance running version 0.133.0 or later. Ensure you have the latest version of the app installed. In some cases, the Connect IQ app may install an outdated version despite a newer one being available. If this happens, try uninstalling and reinstalling the app.
 
-# Support
+
+
+# Help & Support
 
 You can get help by posting in [this thread](https://github.com/evcc-io/evcc/discussions/14013) on the evcc forum or by reaching out to the developer via the **Contact Developer** link on the app's [Connect IQ Store page](https://apps.garmin.com/en-US/apps/2bc2ba9d-b117-4cdf-8fa7-078c1ac90ab0).
