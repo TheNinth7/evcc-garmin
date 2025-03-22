@@ -80,22 +80,6 @@ If multiple sites are configured, glances will always display data from the last
   </tr>
 </table>
 
-
-<!--
-### Full-Featured Glance
-
-If sufficient memory is available, the glance will show battery and vehicle SoC along with charging/discharging status, updating at the configured <a href="#global-settings">interval</a>.
-
-![Full-Featured Glance](screenshots/glance_full_300px.png)
-
-### Tiny Glance
-
-On devices with limited memory, the glance displays only battery and vehicle SoC. Due to memory constraints, it cannot process the state from evcc directly. Instead, a background task retrieves the state, which Garmin restricts to every five minutes. As a result, real-time charging/discharging information is not shown, and the glance indicates the data's age in minutes.
-
-![Full-Featured Glance](screenshots/glance_tiny_300px.png)
-
--->
-
 ## Widget
 
 The widget features a main view displaying key site statistics, along with additional detail views (currently limited to forecasts, with potential for more in the future).
@@ -156,6 +140,8 @@ A dedicated forecast view is also available:
 </table>
 
 The forecast displays the remaining energy for today, tomorrow, and partially for the day after tomorrow. Since data is available for a 48-hour period, the forecast for the day after tomorrow includes values up to the current time.
+
+The view includes an option equivalent to the "Adjust solar forecast based on real production data" setting in the evcc user interface. When this option is enabled in the [Site Settings](#sites) of the app, the forecast view will display data adjusted using the scale factor provided by evcc. This adjustment is indicated by the label "adj. w/ real data" in the view.
 
 ### Navigation Flow: one site, launched from glance
 
