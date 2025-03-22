@@ -41,7 +41,7 @@ Configure the following settings for the site:
 | URL                 | Enter the URL in the format: https://host:port.<br>HTTP is only supported when your wearable is connected to an iOS device. Refer to the [Connectivity](#connectivity) section above for details.|
 | Username            | Username for basic authentication, required if using a reverse proxy or similar setup to access evcc from the Internet. |
 | Password            | Password for basic authentication. |
-| Forecast adjustment | If your site has forecasts enabled, this option corresponds to the "Adjust solar forecast based on real production data" setting in the evcc UI. When activated, the forecast widget will display data adjusted by the scale factor provided by evcc. |
+| Forecast&nbsp;adjustment | If your site has forecasts enabled, this option corresponds to the "Adjust solar forecast based on real production data" setting in the evcc UI. When activated, the forecast widget will display data adjusted by the scale factor provided by evcc. |
 
 ## Global Settings
 
@@ -49,8 +49,8 @@ The following settings are applied to all configured sites:
 
 | Setting             | Description      |
 |---------------------|------------------|
-| Refresh interval    | In seconds (5-60)<br>The frequency at which new data is requested from your evcc site.|
-| Data expiry         | In seconds (5-3600)<br>When viewing the [full-featured glance](#glance) or the widget, data within the expiry time may be shown until new data is retrieved. |
+| Refresh&nbsp;interval    | In seconds (5-60)<br>The frequency at which new data is requested from your evcc site.|
+| Data&nbsp;expiry         | In seconds (5-3600)<br>When viewing the [full-featured glance](#glance) or the widget, data within the expiry time may be shown until new data is retrieved. |
 
 # User Interface
 
@@ -62,17 +62,17 @@ Depending on your device’s memory capacity for glances, either the full-featur
 
 If multiple sites are configured, glances will always display data from the last site selected in the widget.
 
-<table>
-  <tr>
-    <td width="300px" valign="top"><h4>Full-Featured Glance</h4>If sufficient memory is available, the glance will show battery and vehicle SoC along with charging/discharging status, updating at the configured <a href="#global-settings">interval</a>.</td>
-    <td><img src="screenshots/glance_full_300px.png" width="300" /></td>
-  </tr>
-</table>
-<table>
-  <tr>
-    <td width="300px" valign="top"><h4>Tiny Glance</h4>On devices with limited memory, the glance displays only battery and vehicle SoC. Due to memory constraints, it cannot process the state from evcc directly. Instead, a background task retrieves the state, which Garmin restricts to every five minutes. As a result, real-time charging/discharging information is not shown, and the glance indicates the data's age in minutes.</td>
-    <td><img src="screenshots/glance_tiny_300px.png" width="300" /></td></tr>
-</table>
+### Full-Featured Glance
+
+If sufficient memory is available, the glance will show battery and vehicle SoC along with charging/discharging status, updating at the configured <a href="#global-settings">interval</a>.
+
+![Full-Featured Glance](screenshots/glance_full_300px.png)
+
+### Tiny Glance
+
+On devices with limited memory, the glance displays only battery and vehicle SoC. Due to memory constraints, it cannot process the state from evcc directly. Instead, a background task retrieves the state, which Garmin restricts to every five minutes. As a result, real-time charging/discharging information is not shown, and the glance indicates the data's age in minutes.
+
+![Full-Featured Glance](screenshots/glance_tiny_300px.png)
 
 ## Widget
 
@@ -82,7 +82,7 @@ The following inputs are supported within the widget:
 
 | Input | Action |
 |-------|--------|
-| **select key**<br>**enter key**<br>**tap** (touchscreen)<br>**swipe left** (touchscreen)| Opens detailed views—see the sections below for more information. An arc next to the corresponding key indicates when a lower-level view is available. |
+| **select key**<br>**enter key**<br>**tap**<br>**swipe left**| Opens detailed views—see the sections below for more information. An arc next to the corresponding key indicates when a lower-level view is available. |
 | **up key**<br>**down key**<br>**swipe up** (touchscreen)<br>**swipe down** (touchscreen)| Cycle through views at the same level in a carousel format. |
 | **back key** | Navigates back to the previous higher-level view. |
 | **menu key** | Pressing the menu key opens the [system info](#system-info) view, if supported by your device. |
@@ -168,6 +168,8 @@ If multiple sites are configured, the main view of the last selected site will a
 On most devices, a system info view is available, though a few lack this feature due to limited memory. Check the [devices section](#supported-devices) to see if your device includes the system info view.  
 
 You can open it from any widget (but not from the glance) by using the **menu key** or the corresponding touch gesture. For example, on Fenix and Epix wearables, the **menu key** is accessed by long-pressing the middle button on the left side.
+
+![Full-Featured Glance](screenshots/widget_system_info_300px.png)
 
 # Supported Devices
 
