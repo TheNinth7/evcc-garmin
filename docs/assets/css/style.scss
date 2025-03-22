@@ -3,6 +3,10 @@
 
 @import "{{ site.theme }}";
 
+section {
+    margin-top: 10px;
+}
+
 h1 {
     margin-top: 60px;
     margin-bottom: 10px;
