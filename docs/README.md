@@ -157,8 +157,8 @@ If multiple sites are configured, the main view of the last selected site will a
     <td width="50%"><img src="screenshots/widget_noglance_2site_initial_300px.png"/></td>
     <td width="50%"><img src="screenshots/widget_no_glance_2site_main_1_300px.png"/></td>
   </tr><tr>
-    <td align="center" valign="top" width="50%">The initial view included in the widget carousel.</td>
-    <td align="center" valign="top" width="50%">Opening it launches a carousel featuring the main views of all sites. Here, the first site...</td>
+    <td style="padding-bottom: 30px" align="center" valign="top" width="50%">The initial view included in the widget carousel.</td>
+    <td style="padding-bottom: 30px" align="center" valign="top" width="50%">Opening it launches a carousel featuring the main views of all sites. Here, the first site...</td>
   </tr>
   <tr>
     <td><img src="screenshots/widget_no_glance_2site_main_2_300px.png"/></td>
