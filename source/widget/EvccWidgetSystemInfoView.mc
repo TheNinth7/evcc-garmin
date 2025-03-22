@@ -16,8 +16,7 @@ import Toybox.System;
             dc.setColor( EvccConstants.COLOR_FOREGROUND, EvccConstants.COLOR_BACKGROUND );
             dc.clear();
             var block = new EvccUIVertical( dc, { :font => EvccUILibWidgetSingleton.FONT_XTINY } );
-            block.addText( "evvc-garmin", {}  );
-            block.addText( EvccHelperUI.getVersion(), {}  );
+            block.addText( "evvc-garmin " + EvccHelperUI.getVersion(), {}  );
 
             _spacing = Graphics.getFontHeight( EvccUILibWidgetSingleton.FONT_XTINY ) / 2;
 
@@ -27,7 +26,7 @@ import Toybox.System;
 
             block.addText( "part # " + System.getDeviceSettings().partNumber, { :marginTop => _spacing } );
 
-            checkFonts( block, dc );
+            //checkFonts( block, dc );
             block.draw( dc.getWidth() / 2, dc.getHeight() / 2 );
     
             /*
