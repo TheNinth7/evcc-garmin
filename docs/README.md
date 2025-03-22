@@ -82,10 +82,10 @@ The following inputs are supported within the widget:
 
 | Input | Action |
 |-------|--------|
-| **select key**<br>**enter key**<br>**tap**<br>**swipe left**| Opens detailed views—see the sections below for more information. An arc next to the corresponding key indicates when a lower-level view is available. |
-| **up key**<br>**down key**<br>**swipe up**<br>**swipe down**| Cycle through views at the same level in a carousel format. |
-| **back key** | Navigates back to the previous higher-level view. |
-| **menu key** | Pressing the menu key opens the [system info](#system-info) view, if supported by your device. |
+| **select&nbsp;key**<br>**enter&nbsp;key**<br>**tap**<br>**swipe&nbsp;left**| Opens detailed views—see the sections below for more information. An arc next to the corresponding key indicates when a lower-level view is available. |
+| **up&nbsp;key**<br>**down&nbsp;key**<br>**swipe&nbsp;up**<br>**swipe&nbsp;down**| Cycle through views at the same level in a carousel format. |
+| **back&nbsp;key** | Navigates back to the previous higher-level view. |
+| **menu&nbsp;key** | Pressing the menu key opens the [system info](#system-info) view, if supported by your device. |
 
 The layout of the widget views varies based on your device and settings:
 
@@ -97,7 +97,7 @@ The following descriptions pertain to devices where the widget launches from a g
 
 If you have a single site configured and launch the widget from the glance, you'll enter a carousel featuring the main view and any available detail views, such as the forecast.
 
-<table>
+<table class="layoutTable">
   <tr>
     <td><img src="screenshots/widget_1site_main_300px.png"/></td>
     <td><img src="screenshots/widget_1site_forecast_300px.png"/></td>
@@ -114,7 +114,7 @@ If you have multiple sites configured and launch the widget from the glance, you
 
 For sites with detail views, an arc indicates the select button to press for access. If supported by the device, a tap or swipe left on the touchscreen can also open these specialized views. Pressing the back button will return to the site's main view.
 
-<table>
+<table class="layoutTable">
   <tr>
     <td><img src="screenshots/widget_2site_main_1_300px.png"/></td>
     <td><img src="screenshots/widget_2site_main_2_300px.png"/></td>
@@ -134,7 +134,7 @@ On devices that do not support glances, widgets are arranged in a carousel, with
 
 If a single site is configured, the main view of your site will appear in the widget carousel, with any available detail views accessible as lower-level views, indicated by an arc.
 
-<table>
+<table class="layoutTable">
   <tr>
     <td><img src="screenshots/widget_no_glance_1site_initial_300px.png"/></td>
     <td><img src="screenshots/widget_no_glance_1site_forecast_300px.png"/></td>
@@ -248,6 +248,8 @@ Here is a breakdown of common "Request Failed" error codes:
 | -202  | INVALID_HTTP_METHOD_IN_REQUEST   | This error may indicate that your device does not support the query string used in evcc requests to minimize response size. It has been observed on some iOS 16 devices. The issue should be resolved in app version v1.3, but if it persists, please [contact](#support) the developer. |
 
 ## Other Errors
+
+Some other common errors are:
 
 | Error | Description |
 |-------|-------------|
