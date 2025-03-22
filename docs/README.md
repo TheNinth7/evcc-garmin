@@ -254,6 +254,8 @@ On most devices, a system info view is available, though a few lack this feature
 
 You can open it from any widget (but not from the glance) by using the menu key or the corresponding touch gesture. For example, on Fenix and Epix wearables, the menu key is accessed by long-pressing the middle button on the left side.
 
+The view shows the evcc-garmin version, the Connect IQ (monkey) version supported by the device, and the device's part number.
+
 <table class="layoutTable">
   <tr>
     <td width="33.33%"><img src="screenshots/widget_system_info_300px.png"/></td>
