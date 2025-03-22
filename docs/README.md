@@ -4,7 +4,7 @@ Click [here](https://apps.garmin.com/apps/2bc2ba9d-b117-4cdf-8fa7-078c1ac90ab0) 
 
 > Note: Before installing the app, refer to the [Connectivity](#connectivity) section below to ensure you have everything required for the app to connect to your evcc instance.
 
-If you still have questions after reading this guide, check the [Support](#support) section for additional assistance.
+If you still have questions after reading this guide, check the [Support](#help--support) section for additional assistance.
 
 # Table of Contents
 
@@ -41,7 +41,7 @@ Configure the following settings for each site:
 
 | Setting             | Description      |
 |---------------------|------------------|
-| URL                 | Enter the URL in the format: https://host:port.<br>HTTP is only supported when your wearable is connected to an iOS device. Refer to the [Connectivity](#connectivity) section above for details.|
+| URL                 | Enter the URL in the format: https://host:port or http://host:port.<br>HTTP is only supported when your wearable is connected to an iOS device. Refer to the [Connectivity](#connectivity) section above for details.|
 | Username            | Username for basic authentication, required if using a reverse proxy or similar setup to access evcc from the Internet. |
 | Password            | Password for basic authentication. |
 | Forecast&nbsp;adjustment | If your site has forecasts enabled, this option corresponds to the "Adjust solar forecast based on real production data" setting in the evcc UI. When activated, the forecast widget will display data adjusted by the scale factor provided by evcc. |
@@ -52,8 +52,8 @@ The following settings are applied to all configured sites:
 
 | Setting             | Description      |
 |---------------------|------------------|
-| Refresh&nbsp;interval    | In seconds (5-60)<br>The frequency at which new data is requested from your evcc site.|
-| Data&nbsp;expiry         | In seconds (5-3600)<br>When viewing the [full-featured glance](#glance) or the widget, data within the expiry time may be shown until new data is retrieved. |
+| Refresh&nbsp;interval    | The frequency at which new data is requested from your evcc site, in seconds (5-60). |
+| Data&nbsp;expiry         | When viewing the [full-featured glance](#glance) or the widget, data within the expiry time may be shown until new data is retrieved. The expiry time can be set between 5 and 3600 seconds. |
 
 # User Interface
 
@@ -108,7 +108,7 @@ This section covers the following topics:
 - [Navigation Flow: Multiple Sites, Launched from Glance](#navigation-flow-multiple-sites-launched-from-glance)
 - [Navigation Flow: One Site, Widget Only](#navigation-flow-one-site-widget-only)
 - [Navigation Flow: Multiple Sites, Widget Only](#navigation-flow-multiple-sites-widget-only)
-- [System Info View](#system-info-view)
+- [System Info View](#system-info-view-view)
 
 ### Keys & Gestures
 
@@ -116,10 +116,10 @@ The following inputs are supported within the widget:
 
 | Input | Action |
 |-------|--------|
-| select&nbsp;key<br>enter&nbsp;key<br>tap<br>swipe&nbsp;left| Opens detailed views—see the sections below for more information. An arc next to the corresponding key indicates when a lower-level view is available. |
-| up&nbsp;key<br>down&nbsp;key<br>swipe&nbsp;up<br>swipe&nbsp;down| Cycle through views at the same level in a carousel format. |
+| select/enter&nbsp;key<br>touchscreen&nbsp;tap/swipe&nbsp;left| Opens lower-level views, see the sections below for details. When a lower-level view is available, an arc next to the corresponding key indicates it. |
+| up/down&nbsp;key<br>touchscreen&nbsp;swipe&nbsp;up/down| Cycle through views at the same level in a carousel format. Page dots represent the total number of views in the carousel and highlight the currently active view. |
 | back&nbsp;key | Navigates back to the previous higher-level view. |
-| menu&nbsp;key | Pressing the menu key opens the [system info](#system-info) view, if supported by your device. |
+| menu&nbsp;key | Pressing the menu key opens the [system info](#system-info-view) view, if supported by your device. |
 
 ### Site Views
 
@@ -248,7 +248,7 @@ If multiple sites are configured, the main view of the last selected site will a
   </tr>
 </table>
 
-## System Info View
+### System Info View
 
 On most devices, a system info view is available, though a few lack this feature due to limited memory. Check the [devices section](#supported-devices) to see if your device includes the system info view.  
 
@@ -268,49 +268,49 @@ The view shows the evcc-garmin version, the Connect IQ (monkey) version supporte
 
 The table below lists supported devices along with their capabilities. Click on a column header to learn more about a specific property.
 
-| Watch                  | [Fonts](#fonts) | [Max Sites](#max-sites) | [Glance](#glance) | [System Info](#system-info) | Notes                                                                              |
-|------------------------|:----------:|:---------:|:------:|:-----------:|------------------------------------------------------------------------------------|
-| fenix6             | Static     | 1         | -      | No          | May not work with large sites (memory limit) <br> No glance due to memory limits   |
-| fenix6s            | Static     | 1         | -      | No          | May not work with large sites (memory limit) <br> No glance due to memory limits   |
-| fenix6pro          | Static     | 1         | Tiny   | Yes         |                                                                                    |
-| fenix6spro         | Static     | 1         | Tiny   | Yes         |                                                                                    |
-| fenix6xpro         | Static     | 1         | Tiny   | Yes         |                                                                                    |
-| fenix7             | Vector     | 5         | Full   | Yes         |                                                                                    |
-| fenix7s            | Vector     | 5         | Full   | Yes         |                                                                                    |
-| fenix7x            | Vector     | 5         | Full   | Yes         |                                                                                    |
-| epix2pro42mm       | Vector     | 5         | Full   | Yes         |                                                                                    |
-| epix2pro47mm       | Vector     | 5         | Full   | Yes         |                                                                                    |
-| epix2pro51mm       | Vector     | 5         | Full   | Yes         |                                                                                    |
-| fenix7pro          | Vector     | 5         | Full   | Yes         |                                                                                    |
-| fenix7spro         | Vector     | 5         | Full   | Yes         |                                                                                    |
-| fenix7xpro         | Vector     | 5         | Full   | Yes         |                                                                                    |
-| fenix7xpronowifi   | Vector     | 5         | Full   | Yes         |                                                                                    |
-| fenix843mm         | Vector     | 5         | Full   | Yes         |                                                                                    |
-| fenix847mm         | Vector     | 5         | Full   | Yes         |                                                                                    |
-| fenix8solar47mm    | Vector     | 5         | Full   | Yes         |                                                                                    |
-| fenix8solar51mm    | Vector     | 5         | Full   | Yes         |                                                                                    |
-| fr745              | Static     | 1         | Tiny   | Yes         |                                                                                    |
-| fr945              | Static     | 1         | Tiny   | Yes         |                                                                                    |
-| fr945lte           | Static     | 1         | Tiny   | Yes         |                                                                                    |
-| fr955              | Vector     | 5         | Full   | Yes         |                                                                                    |
-| fr265              | Vector     | 5         | Full   | Yes         |                                                                                    |
-| fr265s             | Vector     | 5         | Full   | Yes         |                                                                                    |
-| fr965              | Vector     | 5         | Full   | Yes         |                                                                                    |
-| venu2              | Static-Opt | 5         | Full   | Yes         |                                                                                    |
-| venu2plus          | Static-Opt | 5         | Full   | Yes         |                                                                                    |
-| venu2s             | Static-Opt | 5         | Full   | Yes         |                                                                                    |
-| venu3              | Vector     | 5         | Full   | Yes         |                                                                                    |
-| venu3s             | Vector     | 5         | Full   | Yes         |                                                                                    |
-| vivoactive3        | Static     | 1         | -      | No          | May not work with large sites (memory limit)                                       |
-| vivoactive3m       | Static     | 1         | -      | No          |                                                                                    |
-| vivoactive3mlte    | Static     | 1         | -      | No          | May not work with large sites (cpu limit)                                          |
-| vivoactive4        | Static     | 5         | -      | Yes         |                                                                                    |
-| vivoactive4s       | Static     | 5         | -      | Yes         |                                                                                    |
-| vivoactive5        | Static-Opt | 5         | Full   | Yes         |                                                                                    |
+| Watch              | [Glance](#glance) | [Max Sites](#max-sites) | [System Info](#system-info-view) | [Fonts](#fonts) | Notes                                                                              |
+|--------------------|:-----------------:|:-----------------------:|:--------------------------------:|:---------------:|------------------------------------------------------------------------------------|
+| fenix6             | -                 | 1                       | No                               | Static          | May not work with large sites (memory limit) <br> No glance due to memory limits   |
+| fenix6s            | -                 | 1                       | No                               | Static          | May not work with large sites (memory limit) <br> No glance due to memory limits   |
+| fenix6pro          | Tiny              | 1                       | Yes                              | Static          |                                                                                    |
+| fenix6spro         | Tiny              | 1                       | Yes                              | Static          |                                                                                    |
+| fenix6xpro         | Tiny              | 1                       | Yes                              | Static          |                                                                                    |
+| fenix7             | Full              | 5                       | Yes                              | Vector          |                                                                                    |
+| fenix7s            | Full              | 5                       | Yes                              | Vector          |                                                                                    |
+| fenix7x            | Full              | 5                       | Yes                              | Vector          |                                                                                    |
+| epix2pro42mm       | Full              | 5                       | Yes                              | Vector          |                                                                                    |
+| epix2pro47mm       | Full              | 5                       | Yes                              | Vector          |                                                                                    |
+| epix2pro51mm       | Full              | 5                       | Yes                              | Vector          |                                                                                    |
+| fenix7pro          | Full              | 5                       | Yes                              | Vector          |                                                                                    |
+| fenix7spro         | Full              | 5                       | Yes                              | Vector          |                                                                                    |
+| fenix7xpro         | Full              | 5                       | Yes                              | Vector          |                                                                                    |
+| fenix7xpronowifi   | Full              | 5                       | Yes                              | Vector          |                                                                                    |
+| fenix843mm         | Full              | 5                       | Yes                              | Vector          |                                                                                    |
+| fenix847mm         | Full              | 5                       | Yes                              | Vector          |                                                                                    |
+| fenix8solar47mm    | Full              | 5                       | Yes                              | Vector          |                                                                                    |
+| fenix8solar51mm    | Full              | 5                       | Yes                              | Vector          |                                                                                    |
+| fr745              | Tiny              | 1                       | Yes                              | Static          |                                                                                    |
+| fr945              | Tiny              | 1                       | Yes                              | Static          |                                                                                    |
+| fr945lte           | Tiny              | 1                       | Yes                              | Static          |                                                                                    |
+| fr955              | Full              | 5                       | Yes                              | Vector          |                                                                                    |
+| fr265              | Full              | 5                       | Yes                              | Vector          |                                                                                    |
+| fr265s             | Full              | 5                       | Yes                              | Vector          |                                                                                    |
+| fr965              | Full              | 5                       | Yes                              | Vector          |                                                                                    |
+| venu2              | Full              | 5                       | Yes                              | Static-Opt      |                                                                                    |
+| venu2plus          | Full              | 5                       | Yes                              | Static-Opt      |                                                                                    |
+| venu2s             | Full              | 5                       | Yes                              | Static-Opt      |                                                                                    |
+| venu3              | Full              | 5                       | Yes                              | Vector          |                                                                                    |
+| venu3s             | Full              | 5                       | Yes                              | Vector          |                                                                                    |
+| vivoactive3        | -                 | 1                       | No                               | Static          | May not work with large sites (memory limit)                                       |
+| vivoactive3m       | -                 | 1                       | No                               | Static          |                                                                                    |
+| vivoactive3mlte    | -                 | 1                       | No                               | Static          | May not work with large sites (cpu limit)                                          |
+| vivoactive4        | -                 | 5                       | Yes                              | Static          |                                                                                    |
+| vivoactive4s       | -                 | 5                       | Yes                              | Static          |                                                                                    |
+| vivoactive5        | Full              | 5                       | Yes                              | Static-Opt      |                                                                                    |
 
 ## Max Sites
 
-On devices with limited memory, the number of supported sites is restricted to one. If you’re using one of these devices and need support for multiple sites, please [contact](#support) the developer.
+On devices with limited memory, the number of supported sites is restricted to one. If you’re using one of these devices and need support for multiple sites, please [contact](#help--support) the developer.
 
 ## Fonts
 
@@ -324,7 +324,7 @@ The app offers five font sizes and selects the most suitable one based on the co
 
 # Troubleshooting
 
-This section outlines common errors that may occur. If you're unable to resolve an issue, feel free to seek [support](#support).  
+This section outlines common errors that may occur. If you're unable to resolve an issue, feel free to seek [support](#help--support).  
 
 ## Request Failed  
 If you encounter a "Request Failed" error in the app, the error code can help determine the cause:  
@@ -337,8 +337,8 @@ Here is a breakdown of common "Request Failed" error codes:
 |-----------|----------------------------------|-------------|
 | -1001 | SECURE_CONNECTION_REQUIRED       | This error occurs when attempting to use an unencrypted HTTP URL on Android. It may also appear if Garmin does not accept the certificate of your server. |
 | -300  | NETWORK_REQUEST_TIMED_OUT        | While this may indicate the server is unreachable, it can also mean the Garmin Connect app lacks necessary permissions. On iOS, check if the Local Network permission is enabled in the device settings for the Connect app. |
-| -403  | NETWORK_RESPONSE_OUT_OF_MEMORY   | This error suggests that the watch does not have enough memory to process the response from evcc. If you encounter this issue, please [contact](#support) the developer. |
-| -202  | INVALID_HTTP_METHOD_IN_REQUEST   | This error may indicate that your device does not support the query string used in evcc requests to minimize response size. It has been observed on some iOS 16 devices. The issue should be resolved in app version v1.3, but if it persists, please [contact](#support) the developer. |
+| -403  | NETWORK_RESPONSE_OUT_OF_MEMORY   | This error suggests that the watch does not have enough memory to process the response from evcc. If you encounter this issue, please [contact](#help--support) the developer. |
+| -202  | INVALID_HTTP_METHOD_IN_REQUEST   | This error may indicate that your device does not support the query string used in evcc requests to minimize response size. It has been observed on some iOS 16 devices. The issue should be resolved in app version v1.3, but if it persists, please [contact](#help--support) the developer. |
 
 ## Other Errors
 
