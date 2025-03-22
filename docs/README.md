@@ -1,5 +1,3 @@
-# User Manual evcc-garmin
-
 This user manual covers evcc-garmin, a Garmin wearable app that displays data from [evcc](https://evcc.io), an open-source software solution for solar-powered EV charging.
 
 Click [here](https://apps.garmin.com/apps/2bc2ba9d-b117-4cdf-8fa7-078c1ac90ab0) to visit the app’s page in the Garmin Connect IQ Store.
@@ -65,11 +63,15 @@ Depending on your device’s memory capacity for glances, either the full-featur
 If multiple sites are configured, glances will always display data from the last site selected in the widget.
 
 <table>
-  <tr><td width="300px" valign="top"><h4>Full-Featured Glance</h4>If sufficient memory is available, the glance will show battery and vehicle SoC along with charging/discharging status, updating at the configured <a href="#global-settings">interval</a>.</td><td><img src="screenshots/glance_full_300px.png" width="300" /></td></tr>
+  <tr>
+    <td width="300px" valign="top"><h4>Full-Featured Glance</h4>If sufficient memory is available, the glance will show battery and vehicle SoC along with charging/discharging status, updating at the configured <a href="#global-settings">interval</a>.</td>
+    <td><img src="screenshots/glance_full_300px.png" width="300" /></td>
+  </tr>
 </table>
-<br>
 <table>
-  <tr><td width="300px" valign="top"><h4>Tiny Glance</h4>On devices with limited memory, the glance displays only battery and vehicle SoC. Due to memory constraints, it cannot process the state from evcc directly. Instead, a background task retrieves the state, which Garmin restricts to every five minutes. As a result, real-time charging/discharging information is not shown, and the glance indicates the data's age in minutes.</td><td><img src="screenshots/glance_tiny_300px.png" width="300" /></td></tr>
+  <tr>
+    <td width="300px" valign="top"><h4>Tiny Glance</h4>On devices with limited memory, the glance displays only battery and vehicle SoC. Due to memory constraints, it cannot process the state from evcc directly. Instead, a background task retrieves the state, which Garmin restricts to every five minutes. As a result, real-time charging/discharging information is not shown, and the glance indicates the data's age in minutes.</td>
+    <td><img src="screenshots/glance_tiny_300px.png" width="300" /></td></tr>
 </table>
 
 ## Widget
