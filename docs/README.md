@@ -26,15 +26,18 @@ After installing the app, begin by configuring your evcc site.
 
 To access the settings, open evcc in the Connect IQ App:
 
-![CIQ Settings](screenshots/ciq_settings_1_400px.png)
+<table class="layoutTable">
+  <tr>
+    <td width="50%"><img src="screenshots/ciq_settings_1_300px.png"/></td>
+    <td width="50%"><img src="screenshots/ciq_settings_2_300px.png"/></td>
+  </tr>
+</table>
 
 ## Sites
 
 Newer devices support multiple sites, whereas older ones can display only one. Refer to the [devices section](#supported-devices) to check your device's capabilities.
 
-![CIQ Settings](screenshots/ciq_settings_2_400px.png)
-
-Configure the following settings for the site:
+Configure the following settings for each site:
 
 | Setting             | Description      |
 |---------------------|------------------|
@@ -118,12 +121,24 @@ If you have a single site configured and launch the widget from the glance, you'
 
 <table class="layoutTable">
   <tr>
-    <td width="50%"><img src="screenshots/widget_1site_main_300px.png"/></td>
-    <td width="50%"><img src="screenshots/widget_1site_forecast_300px.png"/></td>
+    <td width="33.33%"><img src="screenshots/widget_1site_main_300px.png"/></td>
+    <td></td>
+    <td></td>
   </tr>
   <tr>
-    <td align="center" width="50%">Main View</td>
-    <td align="center" width="50%">Forecast View</td>
+    <td align="center">Main View</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td width="33.33%"><img src="screenshots/widget_1site_forecast_300px.png"/></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td align="center">Forecast View</td>
+    <td></td>
+    <td></td>
   </tr>
 </table>
 
@@ -135,16 +150,19 @@ For sites with detail views, an arc indicates the select button to press for acc
 
 <table class="layoutTable">
   <tr>
-    <td width="50%"><img src="screenshots/widget_2site_main_1_300px.png"/></td>
-    <td width="50%"><img src="screenshots/widget_2site_main_2_300px.png"/></td>
+    <td width="33.33%"><img src="screenshots/widget_2site_main_1_300px.png"/></td>
+    <td width="33.33%"><img src="screenshots/widget_2site_forecast_300px.png"/></td>
+    <td></td>
   </tr><tr>
-    <td style="padding-bottom: 20px" align="center" valign="top" width="50%">First site, with an arc indicating available lower-level views.</td>
-    <td style="padding-bottom: 20px" align="center" valign="top" width="50%">Second site without lower-level views.</td>
+    <td style="padding-bottom: 20px" align="center" valign="top">First site, with an arc indicating available lower-level views.</td>
+    <td style="padding-bottom: 20px" align="center" valign="top">Forecast view for the first site.</td>
+    <td></td>
   </tr>
   <tr>
-    <td colspan="2" align="center"><img src="screenshots/widget_2site_forecast_300px.png"/></td>
+    <td align="center"><img src="screenshots/widget_2site_main_2_300px.png"/></td>
   </tr><tr>
-    <td colspan="2" align="center" valign="top">Forecast view for the first site.</td>
+    <td align="center" valign="top">Second site without lower-level views.</td>
+    <td></td>
   </tr>
 </table>
 
@@ -158,12 +176,14 @@ If a single site is configured, the main view of your site will appear in the wi
 
 <table class="layoutTable">
   <tr>
-    <td width="50%"><img src="screenshots/widget_no_glance_1site_initial_300px.png"/></td>
-    <td width="50%"><img src="screenshots/widget_no_glance_1site_forecast_300px.png"/></td>
+    <td width="33.33%"><img src="screenshots/widget_no_glance_1site_initial_300px.png"/></td>
+    <td width="33.33%"><img src="screenshots/widget_no_glance_1site_forecast_300px.png"/></td>
+    <td></td>
   </tr>
   <tr>
-    <td align="center" width="50%">Main View</td>
-    <td align="center" width="50%">Forecast View</td>
+    <td align="center">Main View</td>
+    <td align="center">Forecast View</td>
+    <td></td>
   </tr>
 </table>
 
@@ -173,18 +193,22 @@ If multiple sites are configured, the main view of the last selected site will a
 
 <table class="layoutTable">
   <tr>
-    <td width="50%"><img src="screenshots/widget_noglance_2site_initial_300px.png"/></td>
-    <td width="50%"><img src="screenshots/widget_no_glance_2site_main_1_300px.png"/></td>
-  </tr><tr>
-    <td style="padding-bottom: 20px" align="center" valign="top" width="50%">The initial view included in the widget carousel.</td>
-    <td style="padding-bottom: 20px" align="center" valign="top" width="50%">Opening it launches a carousel featuring the main views of all sites. Here, the first site...</td>
+    <td width="33.33%"><img src="screenshots/widget_noglance_2site_initial_300px.png"/></td>
+    <td width="33.33%"><img src="screenshots/widget_no_glance_2site_main_1_300px.png"/></td>
+    <td width="33.33%"><img src="screenshots/widget_no_glance_2site_forecast_300px.png"/></td>
   </tr>
   <tr>
+    <td style="padding-bottom: 20px" align="center" valign="top">The initial view included in the widget carousel.</td>
+    <td style="padding-bottom: 20px" align="center" valign="top">Opening it launches a carousel featuring the main views of all sites. Here, the first site...</td>
+    <td style="padding-bottom: 20px" align="center" valign="top">For the first site, the arc indicates that the forecast view is available, as shown here.</td>
+  </tr>
+  <tr>
+    <td></td>
     <td><img src="screenshots/widget_no_glance_2site_main_2_300px.png"/></td>
-    <td><img src="screenshots/widget_no_glance_2site_forecast_300px.png"/></td>
-  </tr><tr>
-    <td align="center" valign="top" width="50%">... and the second site in the carousel.</td>
-    <td align="center" valign="top" width="50%">For the first site, the arc indicates that the forecast view is available, as shown here.</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td align="center" valign="top">... and the second site in the carousel.</td>
   </tr>
 </table>
 
@@ -194,7 +218,8 @@ On most devices, a system info view is available, though a few lack this feature
 
 You can open it from any widget (but not from the glance) by using the **menu key** or the corresponding touch gesture. For example, on Fenix and Epix wearables, the **menu key** is accessed by long-pressing the middle button on the left side.
 
-![Full-Featured Glance](screenshots/widget_system_info_300px.png)
+
+<img width="33.33%" src="screenshots/widget_system_info_300px.png"/>
 
 # Supported Devices
 
