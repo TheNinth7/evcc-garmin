@@ -1,4 +1,4 @@
-xThis user manual covers evcc-garmin, a Garmin wearable app that displays data from [evcc](https://evcc.io), an open-source software solution for solar-powered EV charging.
+This user manual covers evcc-garmin, a Garmin wearable app that displays data from [evcc](https://evcc.io), an open-source software solution for solar-powered EV charging.
 
 Click [here](https://apps.garmin.com/apps/2bc2ba9d-b117-4cdf-8fa7-078c1ac90ab0) to visit the app’s page in the Garmin Connect IQ Store.
 
@@ -149,7 +149,7 @@ If a single site is configured, the main view of your site will appear in the wi
 
 If multiple sites are configured, the main view of the last selected site will appear in the widget carousel. On the lower level, a carousel of all main views is available, allowing access to detail views where applicable. The site title is displayed at the top of each view, limited to the first nine characters due to space constraints.
 
-<table>
+<table class="layoutTable">
   <tr>
     <td><img src="screenshots/widget_noglance_2site_initial_300px.png"/></td>
     <td><img src="screenshots/widget_no_glance_2site_main_1_300px.png"/></td>
