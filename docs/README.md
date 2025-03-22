@@ -71,8 +71,8 @@ If multiple sites are configured, glances will always display data from the last
     <td width="50%"><h3>Tiny Glance</h3></td>
   </tr>
   <tr>
-    <td style="text-align: left"><img width="66.66%" src="screenshots/glance_full_300px.png"/></td>
-    <td style="text-align: left"><img width="66.66%" src="screenshots/glance_tinyv3_300px.png"/></td>
+    <td><img width="66.66%" src="screenshots/glance_full_300px.png"/></td>
+    <td><img width="66.66%" src="screenshots/glance_tinyv3_300px.png"/></td>
   </tr>
   <tr>
     <td style="padding-bottom: 20px; text-align: left" valign="top">If sufficient memory is available, the glance will show battery and vehicle SoC along with charging/discharging status, updating at the configured <a href="#global-settings">interval</a>.</td>
@@ -116,26 +116,38 @@ The following inputs are supported within the widget:
 
 | Input | Action |
 |-------|--------|
-| **select&nbsp;key**<br>**enter&nbsp;key**<br>**tap**<br>**swipe&nbsp;left**| Opens detailed views—see the sections below for more information. An arc next to the corresponding key indicates when a lower-level view is available. |
-| **up&nbsp;key**<br>**down&nbsp;key**<br>**swipe&nbsp;up**<br>**swipe&nbsp;down**| Cycle through views at the same level in a carousel format. |
-| **back&nbsp;key** | Navigates back to the previous higher-level view. |
-| **menu&nbsp;key** | Pressing the menu key opens the [system info](#system-info) view, if supported by your device. |
+| select&nbsp;key<br>enter&nbsp;key<br>tap<br>swipe&nbsp;left| Opens detailed views—see the sections below for more information. An arc next to the corresponding key indicates when a lower-level view is available. |
+| up&nbsp;key<br>down&nbsp;key<br>swipe&nbsp;up<br>swipe&nbsp;down| Cycle through views at the same level in a carousel format. |
+| back&nbsp;key | Navigates back to the previous higher-level view. |
+| menu&nbsp;key | Pressing the menu key opens the [system info](#system-info) view, if supported by your device. |
 
 ### Site Views
 
 The most important view is the main view of the site:
 
-<img width="33.33%" src="screenshots/widget_views_main_300px.png"/>
+<table class="layoutTable">
+  <tr>
+    <td width="33.33%"><img src="screenshots/widget_views_main_300px.png"/></td>
+    <td></td>
+    <td></td>
+  </tr>
+</table>
 
-The **main view** includes fixed elements representing power flows from the PV, grid, and home. Dynamic elements, such as the battery and load points, are limited to a maximum of six.
+The main view includes fixed elements representing power flows from the PV, grid, and home. Dynamic elements, such as the battery and load points, are limited to a maximum of six.
 
 If a battery is present, the house battery is always displayed first. When multiple batteries exist, a single element consolidates the total data from all batteries.
 
 Load points appear only when a vehicle is connected. Each load point displays a main line with the vehicle name, power flow, state of charge (SoC), and charging mode. If the vehicle is charging, a smaller secondary line shows the charging mode and estimated remaining charge time. The layout prioritizes displaying as many load points as possible, with secondary lines shown only if space permits.
 
-A dedicated view displaying forecast data is also available:
+A dedicated forecast view is also available:
 
-<img width="33.33%" src="screenshots/widget_views_forecast_300px.png"/>
+<table class="layoutTable">
+  <tr>
+    <td width="33.33%"><img src="screenshots/widget_views_forecast_300px.png"/></td>
+    <td></td>
+    <td></td>
+  </tr>
+</table>
 
 The forecast displays the remaining energy for today, tomorrow, and partially for the day after tomorrow. Since data is available for a 48-hour period, the forecast for the day after tomorrow includes values up to the current time.
 
@@ -240,9 +252,15 @@ If multiple sites are configured, the main view of the last selected site will a
 
 On most devices, a system info view is available, though a few lack this feature due to limited memory. Check the [devices section](#supported-devices) to see if your device includes the system info view.  
 
-You can open it from any widget (but not from the glance) by using the **menu key** or the corresponding touch gesture. For example, on Fenix and Epix wearables, the **menu key** is accessed by long-pressing the middle button on the left side.
+You can open it from any widget (but not from the glance) by using the menu key or the corresponding touch gesture. For example, on Fenix and Epix wearables, the menu key is accessed by long-pressing the middle button on the left side.
 
-<img width="33.33%" src="screenshots/widget_system_info_300px.png"/>
+<table class="layoutTable">
+  <tr>
+    <td width="33.33%"><img src="screenshots/widget_system_info_300px.png"/></td>
+    <td></td>
+    <td></td>
+  </tr>
+</table>
 
 # Supported Devices
 
