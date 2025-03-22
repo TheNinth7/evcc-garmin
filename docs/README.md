@@ -62,6 +62,23 @@ Depending on your device’s memory capacity for glances, either the full-featur
 
 If multiple sites are configured, glances will always display data from the last site selected in the widget.
 
+<table class="layoutTable">
+  <tr>
+    <td width="50%"><h3>Full-Featured Glance</h3></td>
+    <td width="50%"><h3>Tiny Glance</h3></td>
+  </tr>
+  <tr>
+    <td style="padding-bottom: 20px" align="left" valign="top">If sufficient memory is available, the glance will show battery and vehicle SoC along with charging/discharging status, updating at the configured <a href="#global-settings">interval</a>.</td>
+    <td style="padding-bottom: 20px" align="left" valign="top">On devices with limited memory, the glance displays only battery and vehicle SoC. Due to memory constraints, it cannot process the state from evcc directly. Instead, a background task retrieves the state, which Garmin restricts to every five minutes. As a result, real-time charging/discharging information is not shown, and the glance indicates the data's age in minutes.</td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/glance_full_300px.png"/></td>
+    <td><img src="screenshots/glance_tiny_300px.png"/></td>
+  </tr>
+</table>
+
+
+<!--
 ### Full-Featured Glance
 
 If sufficient memory is available, the glance will show battery and vehicle SoC along with charging/discharging status, updating at the configured <a href="#global-settings">interval</a>.
@@ -73,6 +90,8 @@ If sufficient memory is available, the glance will show battery and vehicle SoC 
 On devices with limited memory, the glance displays only battery and vehicle SoC. Due to memory constraints, it cannot process the state from evcc directly. Instead, a background task retrieves the state, which Garmin restricts to every five minutes. As a result, real-time charging/discharging information is not shown, and the glance indicates the data's age in minutes.
 
 ![Full-Featured Glance](screenshots/glance_tiny_300px.png)
+
+-->
 
 ## Widget
 
@@ -119,8 +138,8 @@ For sites with detail views, an arc indicates the select button to press for acc
     <td width="50%"><img src="screenshots/widget_2site_main_1_300px.png"/></td>
     <td width="50%"><img src="screenshots/widget_2site_main_2_300px.png"/></td>
   </tr><tr>
-    <td align="center" valign="top" width="50%">First site, with an arc indicating available lower-level views.</td>
-    <td align="center" valign="top" width="50%">Second site without lower-level views.</td>
+    <td style="padding-bottom: 20px" align="center" valign="top" width="50%">First site, with an arc indicating available lower-level views.</td>
+    <td style="padding-bottom: 20px" align="center" valign="top" width="50%">Second site without lower-level views.</td>
   </tr>
   <tr>
     <td colspan="2" align="center"><img src="screenshots/widget_2site_forecast_300px.png"/></td>
@@ -157,8 +176,8 @@ If multiple sites are configured, the main view of the last selected site will a
     <td width="50%"><img src="screenshots/widget_noglance_2site_initial_300px.png"/></td>
     <td width="50%"><img src="screenshots/widget_no_glance_2site_main_1_300px.png"/></td>
   </tr><tr>
-    <td style="padding-bottom: 30px" align="center" valign="top" width="50%">The initial view included in the widget carousel.</td>
-    <td style="padding-bottom: 30px" align="center" valign="top" width="50%">Opening it launches a carousel featuring the main views of all sites. Here, the first site...</td>
+    <td style="padding-bottom: 20px" align="center" valign="top" width="50%">The initial view included in the widget carousel.</td>
+    <td style="padding-bottom: 20px" align="center" valign="top" width="50%">Opening it launches a carousel featuring the main views of all sites. Here, the first site...</td>
   </tr>
   <tr>
     <td><img src="screenshots/widget_no_glance_2site_main_2_300px.png"/></td>
