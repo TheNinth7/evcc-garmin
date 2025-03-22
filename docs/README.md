@@ -1,4 +1,4 @@
-This user&nbsp;manual covers evcc-garmin, a Garmin wearable app that displays data from [evcc](https://evcc.io), an open-source software solution for solar-powered EV charging.
+This user manual covers evcc-garmin, a Garmin wearable app that displays data from [evcc](https://evcc.io), an open-source software solution for solar-powered EV charging.
 
 Click [here](https://apps.garmin.com/apps/2bc2ba9d-b117-4cdf-8fa7-078c1ac90ab0) to visit the app’s page in the Garmin Connect IQ Store.
 
@@ -103,8 +103,8 @@ If you have a single site configured and launch the widget from the glance, you'
     <td><img src="screenshots/widget_1site_forecast_300px.png"/></td>
   </tr>
   <tr>
-    <td align="center">Main View</td>
-    <td align="center">Forecast View</td>
+    <td align="center" width="50%">Main View</td>
+    <td align="center" width="50%">Forecast View</td>
   </tr>
 </table>
 
@@ -118,11 +118,14 @@ For sites with detail views, an arc indicates the select button to press for acc
   <tr>
     <td><img src="screenshots/widget_2site_main_1_300px.png"/></td>
     <td><img src="screenshots/widget_2site_main_2_300px.png"/></td>
-    <td><img src="screenshots/widget_2site_forecast_300px.png"/></td>
   </tr><tr>
-    <td align="center" valign="top" width="33.33%">First site, with an arc indicating available lower-level views.</td>
-    <td align="center" valign="top" width="33.33%">Second site without lower-level views.</td>
-    <td align="center" valign="top" width="33.33%">Forecast view for the first site.</td>
+    <td align="center" valign="top" width="50%">First site, with an arc indicating available lower-level views.</td>
+    <td align="center" valign="top" width="50%">Second site without lower-level views.</td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><img src="screenshots/widget_2site_forecast_300px.png"/></td>
+  </tr><tr>
+    <td colspan="2" align="center" valign="top">Forecast view for the first site.</td>
   </tr>
 </table>
 
@@ -140,8 +143,8 @@ If a single site is configured, the main view of your site will appear in the wi
     <td><img src="screenshots/widget_no_glance_1site_forecast_300px.png"/></td>
   </tr>
   <tr>
-    <td align="center">Main View</td>
-    <td align="center">Forecast View</td>
+    <td align="center" width="50%">Main View</td>
+    <td align="center" width="50%">Forecast View</td>
   </tr>
 </table>
 
@@ -153,11 +156,14 @@ If multiple sites are configured, the main view of the last selected site will a
   <tr>
     <td><img src="screenshots/widget_noglance_2site_initial_300px.png"/></td>
     <td><img src="screenshots/widget_no_glance_2site_main_1_300px.png"/></td>
+  </tr><tr>
+    <td align="center" valign="top" width="50%">The initial view included in the widget carousel.</td>
+    <td align="center" valign="top" width="50%">Opening it launches a carousel featuring the main views of all sites. Here, the first site...</td>
+  </tr>
+  <tr>
     <td><img src="screenshots/widget_no_glance_2site_main_2_300px.png"/></td>
     <td><img src="screenshots/widget_no_glance_2site_forecast_300px.png"/></td>
   </tr><tr>
-    <td align="center" valign="top" width="25%">The initial view included in the widget carousel.</td>
-    <td align="center" valign="top" width="25%">Opening it launches a carousel featuring the main views of all sites. Here, the first site...</td>
     <td align="center" valign="top" width="25%">... and the second site in the carousel.</td>
     <td align="center" valign="top" width="25%">For the first site, the arc indicates that the forecast view is available, as shown here.</td>
   </tr>
