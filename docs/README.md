@@ -52,7 +52,7 @@ The following settings are applied to all configured sites:
 
 | Setting             | Description      |
 |---------------------|------------------|
-| Refresh&nbsp;interval    | The frequency at which new data is requested from your evcc site, in seconds (5-60). |
+| Refresh&nbsp;interval    | The frequency at which new data is requested from your evcc site. The refresh interval can be set between 5 and 60 seconds. |
 | Data&nbsp;expiry         | When viewing the [full-featured glance](#glance) or the widget, data within the expiry time may be shown until new data is retrieved. The expiry time can be set between 5 and 3600 seconds. |
 
 # User Interface
@@ -75,8 +75,8 @@ If multiple sites are configured, glances will always display data from the last
     <td><img width="66.66%" src="screenshots/glance_tinyv3_300px.png"/></td>
   </tr>
   <tr>
-    <td style="padding-bottom: 20px; text-align: left" valign="top">If sufficient memory is available, the glance will show battery and vehicle SoC along with charging/discharging status, updating at the configured <a href="#global-settings">interval</a>.</td>
-    <td style="padding-bottom: 20px; text-align: left" valign="top">On devices with limited memory, the glance displays only battery and vehicle SoC. Due to memory constraints, it cannot process the state from evcc directly. Instead, a background task retrieves the state, which Garmin restricts to every five minutes. As a result, real-time charging/discharging information is not shown, and the glance indicates the data's age in minutes.</td>
+    <td style="text-align: left" valign="top">If sufficient memory is available, the glance will show battery and vehicle SoC along with charging/discharging status, updating at the configured <a href="#global-settings">interval</a>.</td>
+    <td style="text-align: left" valign="top">On devices with limited memory, the glance displays only battery and vehicle SoC. Due to memory constraints, it cannot process the state from evcc directly. Instead, a background task retrieves the state, which Garmin restricts to every five minutes. As a result, real-time charging/discharging information is not shown, and the glance indicates the data's age in minutes.</td>
   </tr>
 </table>
 
@@ -104,10 +104,10 @@ This section covers the following topics:
 
 - [Keys & Gestures](#keys--gestures)
 - [Site Views](#site-views)
-- [Navigation Flow: One Site, Launched from Glance](#navigation-flow-one-site-launched-from-glance)
-- [Navigation Flow: Multiple Sites, Launched from Glance](#navigation-flow-multiple-sites-launched-from-glance)
-- [Navigation Flow: One Site, Widget Only](#navigation-flow-one-site-widget-only)
-- [Navigation Flow: Multiple Sites, Widget Only](#navigation-flow-multiple-sites-widget-only)
+- [Navigation Flow: one site, launched from glance](#navigation-flow-one-site-launched-from-glance)
+- [Navigation Flow: multiple sites, launched from glance](#navigation-flow-multiple-sites-launched-from-glance)
+- [Navigation Flow: one site, widget only](#navigation-flow-one-site-widget-only)
+- [Navigation Flow: multiple sites, widget only](#navigation-flow-multiple-sites-widget-only)
 - [System Info View](#system-info-view-view)
 
 ### Keys & Gestures
@@ -153,7 +153,7 @@ The forecast displays the remaining energy for today, tomorrow, and partially fo
 
 The layout of the widget views varies based on your device and settings:
 
-### Navigation Flow: One Site, Launched from Glance
+### Navigation Flow: one site, launched from glance
 
 If you have a single site configured and launch the widget from the glance, you'll enter a carousel featuring the main view and any available detail views, such as the forecast.
 
@@ -164,7 +164,7 @@ If you have a single site configured and launch the widget from the glance, you'
     <td></td>
   </tr>
   <tr>
-    <td align="center">Main View</td>
+    <td style="padding-bottom: 20px;" align="center">Main View</td>
     <td></td>
     <td></td>
   </tr>
@@ -180,7 +180,7 @@ If you have a single site configured and launch the widget from the glance, you'
   </tr>
 </table>
 
-### Navigation Flow: Multiple Sites, Launched from Glance
+### Navigation Flow: multiple sites, launched from glance
 
 If you have multiple sites configured and launch the widget from the glance, you'll enter a carousel displaying the sites. The site title appears at the top of each view, limited to the first nine characters due to space constraints.
 
@@ -204,7 +204,7 @@ For sites with detail views, an arc indicates the select button to press for acc
   </tr>
 </table>
 
-### Navigation Flow: One Site, Widget Only
+### Navigation Flow: one site, widget only
 
 On devices that do not support glances, widgets are arranged in a carousel, with a single initial view representing each widget.
 
@@ -223,7 +223,7 @@ If a single site is configured, the main view of your site will appear in the wi
   </tr>
 </table>
 
-### Navigation Flow: Multiple Sites, Widget Only
+### Navigation Flow: multiple sites, widget only
 
 If multiple sites are configured, the main view of the last selected site will appear in the widget carousel. On the lower level, a carousel of all main views is available, allowing access to detail views where applicable. The site title is displayed at the top of each view, limited to the first nine characters due to space constraints.
 
