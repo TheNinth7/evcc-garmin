@@ -1,20 +1,20 @@
 # User Manual evcc-garmin
 
-This is the user manual of evcc-garmin, an app for Garmin wearables, for displaying information from [evcc](https://evcc.io), an open-source software package for solar charging of electric vehicles.
+This user manual covers evcc-garmin, a Garmin wearable app that displays data from [evcc](https://evcc.io), an open-source software solution for solar-powered EV charging.
 
-Click [here](https://apps.garmin.com/apps/2bc2ba9d-b117-4cdf-8fa7-078c1ac90ab0) to visit the app's page in the Garmin Connect IQ Store.
+Click [here](https://apps.garmin.com/apps/2bc2ba9d-b117-4cdf-8fa7-078c1ac90ab0) to visit the app’s page in the Garmin Connect IQ Store.
 
-Note: before you install this app, read the Connectivity section below to make sure you have all that's needed for the app to access your evcc instance.
+> Note: Before installing the app, refer to the [Connectivity](#connectivity) section below to ensure you have everything required for the app to connect to your evcc instance.
 
-If after reading this documentation you still have questions, check the [Support](#support) section for ways of getting additional help.
+If you still have questions after reading this guide, check the [Support](#support) section for additional assistance.
 
 # Connectivity
 
-Garmin watches rely on your smartphone to access the local network or the Internet. If you're using a VPN solution, such as Tailscale, on your phone to access evcc, it will also work with the watch. However, due to limitations in the Garmin Connect IQ SDK, the evcc HTTP interface can only be accessed via iOS devices. For Android users, an HTTPS endpoint with a valid certificate is required. To set up such an HTTPS endpoint for evcc, you can use a reverse proxy, like NGINX or the one integrated into Synology DiskStations, and obtain a certificate from Let's Encrypt.
+Garmin watches rely on your smartphone to connect to the local network or the Internet. If you use a VPN solution like Tailscale on your phone to access evcc, it will also work with the watch. However, due to limitations in the Garmin Connect IQ SDK, the evcc HTTP interface is only accessible on iOS devices. Android users must use an HTTPS endpoint with a valid certificate. To set up an HTTPS endpoint for evcc, you can for example use a reverse proxy such as NGINX or the built-in option on Synology DiskStations, along with a certificate from Let's Encrypt.
 
 # Settings
 
-After installing the app, start with setting up your evcc site.
+After installing the app, begin by configuring your evcc site.
 
 To access the settings, open evcc in the Connect IQ App:
 
@@ -22,68 +22,68 @@ To access the settings, open evcc in the Connect IQ App:
 
 ## Sites
 
-Newer devices support multiple sites, while older ones can display only one. Check the [devices section](#supported-devices) to find out about your device's capabilities.
+Newer devices support multiple sites, whereas older ones can display only one. Refer to the [devices section](#supported-devices) to check your device's capabilities.
 
 ![CIQ Settings](screenshots/ciq_settings_2_400px.png)
 
-For the site, configure the following settings:
+Configure the following settings for the site:
 
 | Setting             | Description      |
 |---------------------|------------------|
-| URL                 | URL in format https://host:port.</br>http is supported only when your wearable is connected to an iOS device. See the [Connectivity](#connectivity) section above. |
-| Username            | User name for basic authentication, in case you are using a reverse proxy or similar, for example to access evcc from the Internet. |
-| Password            | Password for basic authentication. |
-| Forecast adjustment | If your site has forecasts configured, this option is the equivalent to the "adjust solar forecast based on real production data" in the evcc UI. If enabled, the forecast widget will show data adjusted by the scale factor provided by evcc. |
+| **URL**                 | Enter the URL in the format: https://host:port.</br>HTTP is only supported when your wearable is connected to an iOS device. Refer to the [Connectivity](#connectivity) section above for details.|
+| **Username**            | Username for basic authentication, required if using a reverse proxy or similar setup to access evcc from the Internet. |
+| **Password**            | Password for basic authentication. |
+| **Forecast adjustment** | If your site has forecasts enabled, this option corresponds to the "Adjust solar forecast based on real production data" setting in the evcc UI. When activated, the forecast widget will display data adjusted by the scale factor provided by evcc. |
 
 ## Global Settings
 
-The following settings apply to all configured sites.
+The following settings are applied to all configured sites:
 
 | Setting             | Description      |
 |---------------------|------------------|
-| Refresh interval    | In seconds, from 5-60</br>The interval in which new data is requested from your evcc site. |
-| Data expiry         | In seconds, from 5-3600</br>When bringing the full-featured glance or widget into view, data not older than the expiry time may be displayed until new data becomes available. |
+| **Refresh interval**    | In seconds (5-60)</br>The frequency at which new data is requested from your evcc site.|
+| **Data expiry**         | In seconds (5-3600)</br>When viewing the [full-featured glance](#glance) or the widget, data within the expiry time may be shown until new data is retrieved. |
 
 # User Interface
 
-The user interface is made up of widgets and glances. Widgets are full-screen apps with multiple views. On older devices, you just cycle through widgets directly from your watch face. On newer devices, glances provide a provides quick access to essential information without needing to open a full app.
+The interface consists of widgets and glances. Widgets are full-screen apps with multiple views. On older devices, you cycle through widgets directly from the watch face. On newer devices, glances offer quick access to key information without opening a full app.
 
 ## Glance
 
-Depending on the memory available for glances on your device, either the Full Glance or the Tiny Glance implementation will be used. Check the [devices section](#supported-devices) about the capabilities of your wearable.
+Depending on your device’s memory capacity for glances, either the full-featured or tiny glance implementation will be used. Refer to the [devices section](#supported-devices) section to check your wearable's capabilities.
 
-If you have multiple sites configured, the glances will always show data of the site last selected in the widget.
+If multiple sites are configured, glances will always display data from the last site selected in the widget.
 
 <table>
-  <tr><td width="300px" valign="top"><h4>Full Glance</h4>If enough memory is available, the glance will display battery and vehicle SoC as well as charging/discharging indication, updated in the configured <a href="#global-settings">interval</a>.</td><td><img src="screenshots/glance_full_300px.png" width="300" /></td></tr>
+  <tr><td width="300px" valign="top"><h4>Full-Featured Glance</h4>If sufficient memory is available, the glance will show battery and vehicle SoC along with charging/discharging status, updating at the configured <a href="#global-settings">interval</a>.</td><td><img src="screenshots/glance_full_300px.png" width="300" /></td></tr>
 </table>
 </br>
 <table>
-  <tr><td width="300px" valign="top"><h4>Tiny Glance</h4>On devices with less memory, the glance only displays battery and vehicle SoC. On those devices, there is not enough memory for the glance to process the state from evcc. Instead, the state is requested by a background task, and Garmin limits this to every five minutes. Therefore more time-sensitive information about charging/discharging is not shown and the glance indicates the age of the data in minutes.</td><td><img src="screenshots/glance_tiny_300px.png" width="300" /></td></tr>
+  <tr><td width="300px" valign="top"><h4>Tiny Glance</h4>On devices with limited memory, the glance displays only battery and vehicle SoC. Due to memory constraints, it cannot process the state from evcc directly. Instead, a background task retrieves the state, which Garmin restricts to every five minutes. As a result, real-time charging/discharging information is not shown, and the glance indicates the data's age in minutes.</td><td><img src="screenshots/glance_tiny_300px.png" width="300" /></td></tr>
 </table>
 
 ## Widget
 
-The widget consists of a main view showing the most important stats of your site, and additional, detail views (currently only forecast, more may be added in the future).
+The widget features a main view displaying key site statistics, along with additional detail views (currently limited to forecasts, with potential for more in the future).
 
-Within the widget, the following inputs are accepted.
+The following inputs are supported within the widget:
 
 | Input | Action |
 |-------|--------|
-| **select key**</br>**enter key**</br>**tap** (touchscreen)</br>**swipe left** (touchscreen)| Opens lower-level views, see the sections below for details. The availability of lower-level views is always indicated by an arc next to the key to be pressed to reach them. |
-| **up key**</br>**down key**</br>**swipe up** (touchscreen)</br>**swipe down** (touchscreen)| Switch between same-level views in a carousel.|
-| **back key** | Returns to the higher-level view. |
-| **menu key** | The menu key opens the [system info](#system-info) view, if it is available on your device.|
+| **select key**</br>**enter key**</br>**tap** (touchscreen)</br>**swipe left** (touchscreen)| Opens detailed views—see the sections below for more information. An arc next to the corresponding key indicates when a lower-level view is available. |
+| **up key**</br>**down key**</br>**swipe up** (touchscreen)</br>**swipe down** (touchscreen)| Cycle through views at the same level in a carousel format. |
+| **back key** | Navigates back to the previous higher-level view. |
+| **menu key** | Pressing the menu key opens the [system info](#system-info) view, if supported by your device. |
 
-The structure of the widget views depends on your device and configuration.
+The layout of the widget views varies based on your device and settings:
 
 ## Devices with Glance
 
-The following descriptions apply to devices where the widget is started from a glance.
+The following descriptions pertain to devices where the widget launches from a glance.
 
 ### One Site (with Glance)
 
-If you have one site configured and open the widget from the glance, you'll start into a carousel with the main view and any available detail views such as forecast.
+If you have a single site configured and launch the widget from the glance, you'll enter a carousel featuring the main view and any available detail views, such as the forecast.
 
 <table>
   <tr>
@@ -98,9 +98,9 @@ If you have one site configured and open the widget from the glance, you'll star
 
 ### Multiple Sites (with Glance)
 
-If you have multiple site configured and open the widget from the glance, you'll start into a carousel with the sites. At the top of each view, the widget will display the site title (due to limited space the first nine characters only).
+If you have multiple sites configured and launch the widget from the glance, you'll enter a carousel displaying the sites. The site title appears at the top of each view, limited to the first nine characters due to space constraints.
 
-For sites with detail views, an arc indicates the **select button** to be pressed to reach those. If the devices support it also a **tap** or **swipe left** on the touch screen will open the specialized views. A press of the **back button** will return to the main view of the site.
+For sites with detail views, an arc indicates the select button to press for access. If supported by the device, a tap or swipe left on the touchscreen can also open these specialized views. Pressing the back button will return to the site's main view.
 
 <table>
   <tr>
@@ -108,19 +108,19 @@ For sites with detail views, an arc indicates the **select button** to be presse
     <td><img src="screenshots/widget_2site_main_2_300px.png"/></td>
     <td><img src="screenshots/widget_2site_forecast_300px.png"/></td>
   </tr><tr>
-    <td align="center" valign="top" width="33.33%">First site with arc indicating lower-level views.</td>
-    <td align="center" valign="top" width="33.33%">Second sites without lower-level views.</td>
-    <td align="center" valign="top" width="33.33%">For the first site the arc indicates availability of the forecast view shown here.</td>
+    <td align="center" valign="top" width="33.33%">First site, with an arc indicating available lower-level views.</td>
+    <td align="center" valign="top" width="33.33%">Second site without lower-level views.</td>
+    <td align="center" valign="top" width="33.33%">Forecast view for the first site.</td>
   </tr>
 </table>
 
 ## Devices with Widgets Only
 
-On devices without glances, widgets are directly organized in a carousel and initially the main view of your site is shown.
+On devices that do not support glances, widgets are arranged in a carousel, with a single initial view representing each widget.
 
 ### One Site (Widget Only)
 
-With one site configured, the main view will be shown as part of the widget carousel, and any available detail views will be shown as lower-level views, indicated by the arc.
+If a single site is configured, the main view of your site will appear in the widget carousel, with any available detail views accessible as lower-level views, indicated by an arc.
 
 <table>
   <tr>
@@ -135,7 +135,7 @@ With one site configured, the main view will be shown as part of the widget caro
 
 ### Multiple Sites (Widget Only)
 
-If you have multiple site configured the main view of the last selected site will be shown as part of the widget carousel. On the lower level, you'll then find a carousel of all main views, from each of which you can reach detail views if available. At the top of each view, the widget will display the site title (due to limited space the first nine characters only).
+If multiple sites are configured, the main view of the last selected site will appear in the widget carousel. On the lower level, a carousel of all main views is available, allowing access to detail views where applicable. The site title is displayed at the top of each view, limited to the first nine characters due to space constraints.
 
 <table>
   <tr>
@@ -144,105 +144,99 @@ If you have multiple site configured the main view of the last selected site wil
     <td><img src="screenshots/widget_no_glance_2site_main_2_300px.png"/></td>
     <td><img src="screenshots/widget_no_glance_2site_forecast_300px.png"/></td>
   </tr><tr>
-    <td align="center" valign="top" width="25%">The initial view that is part of the Widget carousel.</td>
-    <td align="center" valign="top" width="25%">Opening it opens a carousel with main views of all sites. Here the first site ...</td>
-    <td align="center" valign="top" width="25%">... and the second site.</td>
-    <td align="center" valign="top" width="25%">For the first site the arc indicates availability of the forecast view shown here.</td>
+    <td align="center" valign="top" width="25%">The initial view included in the widget carousel.</td>
+    <td align="center" valign="top" width="25%">Opening it launches a carousel featuring the main views of all sites. Here, the first site...</td>
+    <td align="center" valign="top" width="25%">... and the second site in the carousel.</td>
+    <td align="center" valign="top" width="25%">For the first site, the arc indicates that the forecast view is available, as shown here.</td>
   </tr>
 </table>
 
-
 ## System Info
 
-On most devices a system info view is available, only on a very few it has been ommitted due to limited memory. Check the [devices section](#supported-devices) to find out if your device has the system info view.
+On most devices, a system info view is available, though a few lack this feature due to limited memory. Check the [devices section](#supported-devices) to see if your device includes the system info view.  
 
-It can be opened from any widget (not the glance), buy using the **menu key** or the corresponding touch behavior. For example on the Fenix and Epix wearables, the **menu key** is a long press on the middle button on the left side.
-
-
+You can open it from any widget (but not from the glance) by using the **menu key** or the corresponding touch gesture. For example, on Fenix and Epix wearables, the **menu key** is accessed by long-pressing the middle button on the left side.
 
 # Supported Devices
 
-In the table below you'll find a list of supported devices and their capabilities. Click on the header of each column to find out more about the specific property.
+The table below lists supported devices along with their capabilities. Click on a column header to learn more about a specific property.
 
-| Watch              | [Fonts](#fonts) | [Max Sites](#max-sites) | [Glance](#glance) | [System Info](#system-info) | Notes                                                                              |
-|--------------------|:----------:|:---------:|:------:|:-----------:|------------------------------------------------------------------------------------|
-| fenix6             | Static     | 1         | -      | No          | May not work with large sites (memory limit) <br> No glance due to memory limits   |
-| fenix6s            | Static     | 1         | -      | No          | May not work with large sites (memory limit) <br> No glance due to memory limits   |
-| fenix6pro          | Static     | 1         | Tiny   | Yes         |                                                                                    |
-| fenix6spro         | Static     | 1         | Tiny   | Yes         |                                                                                    |
-| fenix6xpro         | Static     | 1         | Tiny   | Yes         |                                                                                    |
-| fenix7             | Vector     | 5         | Full   | Yes         |                                                                                    |
-| fenix7s            | Vector     | 5         | Full   | Yes         |                                                                                    |
-| fenix7x            | Vector     | 5         | Full   | Yes         |                                                                                    |
-| epix2pro42mm       | Vector     | 5         | Full   | Yes         |                                                                                    |
-| epix2pro47mm       | Vector     | 5         | Full   | Yes         |                                                                                    |
-| epix2pro51mm       | Vector     | 5         | Full   | Yes         |                                                                                    |
-| fenix7pro          | Vector     | 5         | Full   | Yes         |                                                                                    |
-| fenix7spro         | Vector     | 5         | Full   | Yes         |                                                                                    |
-| fenix7xpro         | Vector     | 5         | Full   | Yes         |                                                                                    |
-| fenix7xpronowifi   | Vector     | 5         | Full   | Yes         |                                                                                    |
-| fenix843mm         | Vector     | 5         | Full   | Yes         |                                                                                    |
-| fenix847mm         | Vector     | 5         | Full   | Yes         |                                                                                    |
-| fenix8solar47mm    | Vector     | 5         | Full   | Yes         |                                                                                    |
-| fenix8solar51mm    | Vector     | 5         | Full   | Yes         |                                                                                    |
-| fr745              | Static     | 1         | Tiny   | Yes         |                                                                                    |
-| fr945              | Static     | 1         | Tiny   | Yes         |                                                                                    |
-| fr945lte           | Static     | 1         | Tiny   | Yes         |                                                                                    |
-| fr955              | Vector     | 5         | Full   | Yes         |                                                                                    |
-| fr265              | Vector     | 5         | Full   | Yes         |                                                                                    |
-| fr265s             | Vector     | 5         | Full   | Yes         |                                                                                    |
-| fr965              | Vector     | 5         | Full   | Yes         |                                                                                    |
-| venu2              | Static-Opt | 5         | Full   | Yes         |                                                                                    |
-| venu2plus          | Static-Opt | 5         | Full   | Yes         |                                                                                    |
-| venu2s             | Static-Opt | 5         | Full   | Yes         |                                                                                    |
-| venu3              | Vector     | 5         | Full   | Yes         |                                                                                    |
-| venu3s             | Vector     | 5         | Full   | Yes         |                                                                                    |
-| vivoactive3        | Static     | 1         | -      | No          | May not work with large sites (memory limit)                                       |
-| vivoactive3m       | Static     | 1         | -      | No          |                                                                                    |
-| vivoactive3mlte    | Static     | 1         | -      | No          | May not work with large sites (cpu limit)                                          |
-| vivoactive4        | Static     | 5         | -      | Yes         |                                                                                    |
-| vivoactive4s       | Static     | 5         | -      | Yes         |                                                                                    |
-| vivoactive5        | Static-Opt | 5         | Full   | Yes         |                                                                                    |
-
+| Watch                  | [Fonts](#fonts) | [Max Sites](#max-sites) | [Glance](#glance) | [System Info](#system-info) | Notes                                                                              |
+|------------------------|:----------:|:---------:|:------:|:-----------:|------------------------------------------------------------------------------------|
+| **fenix6**             | Static     | 1         | -      | No          | May not work with large sites (memory limit) <br> No glance due to memory limits   |
+| **fenix6s**            | Static     | 1         | -      | No          | May not work with large sites (memory limit) <br> No glance due to memory limits   |
+| **fenix6pro**          | Static     | 1         | Tiny   | Yes         |                                                                                    |
+| **fenix6spro**         | Static     | 1         | Tiny   | Yes         |                                                                                    |
+| **fenix6xpro**         | Static     | 1         | Tiny   | Yes         |                                                                                    |
+| **fenix7**             | Vector     | 5         | Full   | Yes         |                                                                                    |
+| **fenix7s**            | Vector     | 5         | Full   | Yes         |                                                                                    |
+| **fenix7x**            | Vector     | 5         | Full   | Yes         |                                                                                    |
+| **epix2pro42mm**       | Vector     | 5         | Full   | Yes         |                                                                                    |
+| **epix2pro47mm**       | Vector     | 5         | Full   | Yes         |                                                                                    |
+| **epix2pro51mm**       | Vector     | 5         | Full   | Yes         |                                                                                    |
+| **fenix7pro**          | Vector     | 5         | Full   | Yes         |                                                                                    |
+| **fenix7spro**         | Vector     | 5         | Full   | Yes         |                                                                                    |
+| **fenix7xpro**         | Vector     | 5         | Full   | Yes         |                                                                                    |
+| **fenix7xpronowifi**   | Vector     | 5         | Full   | Yes         |                                                                                    |
+| **fenix843mm**         | Vector     | 5         | Full   | Yes         |                                                                                    |
+| **fenix847mm**         | Vector     | 5         | Full   | Yes         |                                                                                    |
+| **fenix8solar47mm**    | Vector     | 5         | Full   | Yes         |                                                                                    |
+| **fenix8solar51mm**    | Vector     | 5         | Full   | Yes         |                                                                                    |
+| **fr745**              | Static     | 1         | Tiny   | Yes         |                                                                                    |
+| **fr945**              | Static     | 1         | Tiny   | Yes         |                                                                                    |
+| **fr945lte**           | Static     | 1         | Tiny   | Yes         |                                                                                    |
+| **fr955**              | Vector     | 5         | Full   | Yes         |                                                                                    |
+| **fr265**              | Vector     | 5         | Full   | Yes         |                                                                                    |
+| **fr265s**             | Vector     | 5         | Full   | Yes         |                                                                                    |
+| **fr965**              | Vector     | 5         | Full   | Yes         |                                                                                    |
+| **venu2**              | Static-Opt | 5         | Full   | Yes         |                                                                                    |
+| **venu2plus**          | Static-Opt | 5         | Full   | Yes         |                                                                                    |
+| **venu2s**             | Static-Opt | 5         | Full   | Yes         |                                                                                    |
+| **venu3**              | Vector     | 5         | Full   | Yes         |                                                                                    |
+| **venu3s**             | Vector     | 5         | Full   | Yes         |                                                                                    |
+| **vivoactive3**        | Static     | 1         | -      | No          | May not work with large sites (memory limit)                                       |
+| **vivoactive3m**       | Static     | 1         | -      | No          |                                                                                    |
+| **vivoactive3mlte**    | Static     | 1         | -      | No          | May not work with large sites (cpu limit)                                          |
+| **vivoactive4**        | Static     | 5         | -      | Yes         |                                                                                    |
+| **vivoactive4s**       | Static     | 5         | -      | Yes         |                                                                                    |
+| **vivoactive5**        | Static-Opt | 5         | Full   | Yes         |                                                                                    |
+            
 ## Max Sites
 
-On devices with less memory available, the number of sites has been limited to one. If you use one of those devices and would like to use multiple devices, please [contact](#support) the developer.
+On devices with limited memory, the number of supported sites is restricted to one. If you’re using one of these devices and need support for multiple sites, please [contact](#support) the developer.
 
 ## Fonts
 
-The app has five font sizes available and decides between them based on the amount of content to be displayed. Depending on the device, the five fonts are choosen differently:
+The app offers five font sizes and selects the most suitable one based on the content being displayed. The way these font sizes are determined depends on the device:
 
-| Fonts | Description |
-|-------|-------------|
-| Vector | If the device supports vector fonts, the five sizes are calculated to achieve even distribution from largest to smallest |
-| Static | If no vector fonts are supported, standard font sizes have to be used (medium, small, tiny, glance, xtiny). The jumps between the sizes may be uneven (e.g. jump from largest to second-largest may different than from second-smallest do smallest) |
-| Static&#8209;Opt | Opt stands for optimized. On some devices, adjacent font sizes may actually have the same size (e. g. font size small and tiny may actually be the same). The list of fonts will be optimized to sort out those duplicates, effectively giving the app a wider range of font sizes to effectively display content. |
-
+| Fonts       | Description |
+|------------|-------------|
+| **Vector** | If the device supports vector fonts, the five sizes are evenly distributed from largest to smallest for a balanced appearance. |
+| **Static** | On devices without vector font support, predefined font sizes must be used (medium, small, tiny, glance, xtiny). This can result in uneven size differences, such as a larger gap between the largest and second-largest font than between the smallest ones. |
+| **Static&#8209;Opt** | "Opt" stands for optimized. On some devices, certain adjacent font sizes may be identical (e.g., small and tiny could appear the same). In such cases, duplicate sizes are removed, effectively increasing the range of distinct font sizes available for better content display. |
 
 # Troubleshooting
 
-This sections describes common erros that may occur. If you are not able to resolve an error, don't hesitate to get some [support](#support).
+This section outlines common errors that may occur. If you're unable to resolve an issue, feel free to seek [support](#support).  
 
-## Request Failed
-In case you get a "Request failed" error in the app, positive error codes indicate HTTP response codes returned by the server. Negative codes indicate Garmin Connect IQ SDK errors, to get an explanation open [this page](https://developer.garmin.com/connect-iq/api-docs/Toybox/Communications.html) and scroll down to the Constant Summary section.
+## Request Failed  
+If you encounter a "Request Failed" error in the app, the error code can help determine the cause:  
+- **Positive error codes** correspond to HTTP response codes returned by the server.  
+- **Negative error codes** indicate Garmin Connect IQ SDK errors. For a comprehensive documentation of these codes, visit [this page](https://developer.garmin.com/connect-iq/api-docs/Toybox/Communications.html) and scroll to the Constant Summary section.  
 
-Below you'll find an explanation of common "Request Failed" error codes:
+Below is an explanation of common "Request Failed" error codes:
 
-| Code | Symbol | Description | 
-|------------|--------|-------------|
-| -1001 | SECURE_CONNECTION_REQUIRED | One regularly encountered error is -1001, which you'll get when you try to use an HTTP URL without encryption with Android, but in some cases also when Garmin does not accept the certificate of your server.|
-| -300 | NETWORK_REQUEST_TIMED_OUT | For -300 apart from the obvious reason of the server not being reachable, it could also indicate that the Garmin Connect app on your mobile phone does not have the necessary permissions. For iOS, you can check in Settings for the Connect app if the Local Network permission is enabled.|
-| -403 | NETWORK_RESPONSE_OUT_OF_MEMORY | For -300 apart from the obvious reason of the server not being reachable, it could also indicate that the Garmin Connect app on your mobile phone does not have the necessary permissions. For iOS, you can check in Settings for the Connect app if the Local Network permission is enabled.|
-| -300 | NETWORK_REQUEST_TIMED_OUT | In case you encounter a -403 error, it indicates that the memory the watch makes available for the app is not sufficient for processing the response from evcc. Please [contact](#support) the developer if you encounter such a message. |
-| -202 | INVALID_HTTP_METHOD_IN_REQUEST | A -202 error may indicate that your device does not support the the query string in the request to evcc that reduces the response size. This has been observed on mobile devices with iOS 16, but others may be affected as well. In app version v1.3, this should be resolved, if you encounter it anyway, please [contact](#support) the developer. |
+| Code  | Symbol                            | Description |
+|-------|----------------------------------|-------------|
+| -1001 | SECURE_CONNECTION_REQUIRED       | This error occurs when attempting to use an unencrypted HTTP URL on Android. It may also appear if Garmin does not accept the certificate of your server. |
+| -300  | NETWORK_REQUEST_TIMED_OUT        | While this may indicate the server is unreachable, it can also mean the Garmin Connect app lacks necessary permissions. On iOS, check if the Local Network permission is enabled in the device settings for the Connect app. |
+| -403  | NETWORK_RESPONSE_OUT_OF_MEMORY   | This error suggests that the watch does not have enough memory to process the response from evcc. If you encounter this issue, please [contact](#support) the developer. |
+| -202  | INVALID_HTTP_METHOD_IN_REQUEST   | This error may indicate that your device does not support the query string used in evcc requests to minimize response size. It has been observed on some iOS 16 devices. The issue should be resolved in app version v1.3, but if it persists, please [contact](#support) the developer. |
 
 ## expected Number/Float/Long/Double
 
-You may get this error because you are using an older version of the app to access an evcc instance with version 0.133.0 or newer. Make sure to have installed the latest version of the app. Instances have occured where an older version was installed by the Connect IQ app, despite a newer one being available. In this case uninstalling the app and then installing it again may help.
+This error may occur if you're using an older version of the app to access an evcc instance running version 0.133.0 or later. Ensure you have the latest version of the app installed. In some cases, the Connect IQ app may install an outdated version despite a newer one being available. If this happens, try uninstalling and reinstalling the app.
 
 # Support
 
-You can get help by writing in [this thread](https://github.com/evcc-io/evcc/discussions/14013) in the evcc forum, or by contacting the developer via the Contact Developer link on the [app's page](https://apps.garmin.com/en-US/apps/2bc2ba9d-b117-4cdf-8fa7-078c1ac90ab0) in the Connect IQ Store.
-
-<!--
--->
+You can get help by posting in [this thread](https://github.com/evcc-io/evcc/discussions/14013) on the evcc forum or by reaching out to the developer via the **Contact Developer** link on the app's [Connect IQ Store page](https://apps.garmin.com/en-US/apps/2bc2ba9d-b117-4cdf-8fa7-078c1ac90ab0).
