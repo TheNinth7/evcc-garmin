@@ -71,8 +71,8 @@ If multiple sites are configured, glances will always display data from the last
     <td width="50%"><h3>Tiny Glance</h3></td>
   </tr>
   <tr>
-    <td><img src="screenshots/glance_full_300px.png"/></td>
-    <td><img src="screenshots/glance_tinyv2_300px.png"/></td>
+    <td style="text-align: left"><img width="66.66%" src="screenshots/glance_full_300px.png"/></td>
+    <td style="text-align: left"><img width="66.66%" src="screenshots/glance_tinyv3_300px.png"/></td>
   </tr>
   <tr>
     <td style="padding-bottom: 20px; text-align: left" valign="top">If sufficient memory is available, the glance will show battery and vehicle SoC along with charging/discharging status, updating at the configured <a href="#global-settings">interval</a>.</td>
@@ -100,6 +100,18 @@ On devices with limited memory, the glance displays only battery and vehicle SoC
 
 The widget features a main view displaying key site statistics, along with additional detail views (currently limited to forecasts, with potential for more in the future).
 
+This section covers the following topics:
+
+- [Keys & Gestures](#keys--gestures)
+- [Site Views](#site-views)
+- [Navigation Flow: One Site, Launched from Glance](#navigation-flow-one-site-launched-from-glance)
+- [Navigation Flow: Multiple Sites, Launched from Glance](#navigation-flow-multiple-sites-launched-from-glance)
+- [Navigation Flow: One Site, Widget Only](#navigation-flow-one-site-widget-only)
+- [Navigation Flow: Multiple Sites, Widget Only](#navigation-flow-multiple-sites-widget-only)
+- [System Info View](#system-info-view)
+
+### Keys & Gestures
+
 The following inputs are supported within the widget:
 
 | Input | Action |
@@ -109,13 +121,27 @@ The following inputs are supported within the widget:
 | **back&nbsp;key** | Navigates back to the previous higher-level view. |
 | **menu&nbsp;key** | Pressing the menu key opens the [system info](#system-info) view, if supported by your device. |
 
+### Site Views
+
+The most important view is the main view of the site:
+
+<img width="33.33%" src="screenshots/widget_views_main_300px.png"/>
+
+The **main view** includes fixed elements representing power flows from the PV, grid, and home. Dynamic elements, such as the battery and load points, are limited to a maximum of six.
+
+If a battery is present, the house battery is always displayed first. When multiple batteries exist, a single element consolidates the total data from all batteries.
+
+Load points appear only when a vehicle is connected. Each load point displays a main line with the vehicle name, power flow, state of charge (SoC), and charging mode. If the vehicle is charging, a smaller secondary line shows the charging mode and estimated remaining charge time. The layout prioritizes displaying as many load points as possible, with secondary lines shown only if space permits.
+
+A dedicated view displaying forecast data is also available:
+
+<img width="33.33%" src="screenshots/widget_views_forecast_300px.png"/>
+
+The forecast displays the remaining energy for today, tomorrow, and partially for the day after tomorrow. Since data is available for a 48-hour period, the forecast for the day after tomorrow includes values up to the current time.
+
 The layout of the widget views varies based on your device and settings:
 
-### Devices with Glance
-
-The following descriptions pertain to devices where the widget launches from a glance.
-
-#### One Site (with Glance)
+### Navigation Flow: One Site, Launched from Glance
 
 If you have a single site configured and launch the widget from the glance, you'll enter a carousel featuring the main view and any available detail views, such as the forecast.
 
@@ -142,7 +168,7 @@ If you have a single site configured and launch the widget from the glance, you'
   </tr>
 </table>
 
-#### Multiple Sites (with Glance)
+### Navigation Flow: Multiple Sites, Launched from Glance
 
 If you have multiple sites configured and launch the widget from the glance, you'll enter a carousel displaying the sites. The site title appears at the top of each view, limited to the first nine characters due to space constraints.
 
@@ -166,11 +192,9 @@ For sites with detail views, an arc indicates the select button to press for acc
   </tr>
 </table>
 
-### Devices with Widgets Only
+### Navigation Flow: One Site, Widget Only
 
 On devices that do not support glances, widgets are arranged in a carousel, with a single initial view representing each widget.
-
-#### One Site (Widget Only)
 
 If a single site is configured, the main view of your site will appear in the widget carousel, with any available detail views accessible as lower-level views, indicated by an arc.
 
@@ -187,7 +211,7 @@ If a single site is configured, the main view of your site will appear in the wi
   </tr>
 </table>
 
-#### Multiple Sites (Widget Only)
+### Navigation Flow: Multiple Sites, Widget Only
 
 If multiple sites are configured, the main view of the last selected site will appear in the widget carousel. On the lower level, a carousel of all main views is available, allowing access to detail views where applicable. The site title is displayed at the top of each view, limited to the first nine characters due to space constraints.
 
@@ -212,12 +236,11 @@ If multiple sites are configured, the main view of the last selected site will a
   </tr>
 </table>
 
-## System Info
+## System Info View
 
 On most devices, a system info view is available, though a few lack this feature due to limited memory. Check the [devices section](#supported-devices) to see if your device includes the system info view.  
 
 You can open it from any widget (but not from the glance) by using the **menu key** or the corresponding touch gesture. For example, on Fenix and Epix wearables, the **menu key** is accessed by long-pressing the middle button on the left side.
-
 
 <img width="33.33%" src="screenshots/widget_system_info_300px.png"/>
 
