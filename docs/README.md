@@ -83,7 +83,7 @@ The following inputs are supported within the widget:
 | Input | Action |
 |-------|--------|
 | **select key**<br>**enter key**<br>**tap**<br>**swipe left**| Opens detailed views—see the sections below for more information. An arc next to the corresponding key indicates when a lower-level view is available. |
-| **up key**<br>**down key**<br>**swipe up** (touchscreen)<br>**swipe down** (touchscreen)| Cycle through views at the same level in a carousel format. |
+| **up key**<br>**down key**<br>**swipe up**<br>**swipe down**| Cycle through views at the same level in a carousel format. |
 | **back key** | Navigates back to the previous higher-level view. |
 | **menu key** | Pressing the menu key opens the [system info](#system-info) view, if supported by your device. |
 

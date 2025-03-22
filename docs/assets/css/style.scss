@@ -1,0 +1,21 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+h1 {
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
+
+blockquote {
+    border-left-color: #00AA0F;
+}
+
+a {
+    color: #00AA0F;
+}
+
+a:hover {
+    color: #33CC4A;
+}
