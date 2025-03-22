@@ -99,8 +99,8 @@ If you have a single site configured and launch the widget from the glance, you'
 
 <table class="layoutTable">
   <tr>
-    <td><img src="screenshots/widget_1site_main_300px.png"/></td>
-    <td><img src="screenshots/widget_1site_forecast_300px.png"/></td>
+    <td width="50%"><img src="screenshots/widget_1site_main_300px.png"/></td>
+    <td width="50%"><img src="screenshots/widget_1site_forecast_300px.png"/></td>
   </tr>
   <tr>
     <td align="center" width="50%">Main View</td>
@@ -116,8 +116,8 @@ For sites with detail views, an arc indicates the select button to press for acc
 
 <table class="layoutTable">
   <tr>
-    <td><img src="screenshots/widget_2site_main_1_300px.png"/></td>
-    <td><img src="screenshots/widget_2site_main_2_300px.png"/></td>
+    <td width="50%"><img src="screenshots/widget_2site_main_1_300px.png"/></td>
+    <td width="50%"><img src="screenshots/widget_2site_main_2_300px.png"/></td>
   </tr><tr>
     <td align="center" valign="top" width="50%">First site, with an arc indicating available lower-level views.</td>
     <td align="center" valign="top" width="50%">Second site without lower-level views.</td>
@@ -139,8 +139,8 @@ If a single site is configured, the main view of your site will appear in the wi
 
 <table class="layoutTable">
   <tr>
-    <td><img src="screenshots/widget_no_glance_1site_initial_300px.png"/></td>
-    <td><img src="screenshots/widget_no_glance_1site_forecast_300px.png"/></td>
+    <td width="50%"><img src="screenshots/widget_no_glance_1site_initial_300px.png"/></td>
+    <td width="50%"><img src="screenshots/widget_no_glance_1site_forecast_300px.png"/></td>
   </tr>
   <tr>
     <td align="center" width="50%">Main View</td>
@@ -154,8 +154,8 @@ If multiple sites are configured, the main view of the last selected site will a
 
 <table class="layoutTable">
   <tr>
-    <td><img src="screenshots/widget_noglance_2site_initial_300px.png"/></td>
-    <td><img src="screenshots/widget_no_glance_2site_main_1_300px.png"/></td>
+    <td width="50%"><img src="screenshots/widget_noglance_2site_initial_300px.png"/></td>
+    <td width="50%"><img src="screenshots/widget_no_glance_2site_main_1_300px.png"/></td>
   </tr><tr>
     <td align="center" valign="top" width="50%">The initial view included in the widget carousel.</td>
     <td align="center" valign="top" width="50%">Opening it launches a carousel featuring the main views of all sites. Here, the first site...</td>
@@ -164,8 +164,8 @@ If multiple sites are configured, the main view of the last selected site will a
     <td><img src="screenshots/widget_no_glance_2site_main_2_300px.png"/></td>
     <td><img src="screenshots/widget_no_glance_2site_forecast_300px.png"/></td>
   </tr><tr>
-    <td align="center" valign="top" width="25%">... and the second site in the carousel.</td>
-    <td align="center" valign="top" width="25%">For the first site, the arc indicates that the forecast view is available, as shown here.</td>
+    <td align="center" valign="top" width="50%">... and the second site in the carousel.</td>
+    <td align="center" valign="top" width="50%">For the first site, the arc indicates that the forecast view is available, as shown here.</td>
   </tr>
 </table>
 
