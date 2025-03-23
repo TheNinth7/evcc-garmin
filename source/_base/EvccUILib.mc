@@ -71,7 +71,7 @@ import Toybox.Graphics;
         // and move the remaining fonts up. The vacated positions in the end will
         // be filled with the smallest font.
 
-        var fontsPreset = fonts as Array<FontDefinition>;
+        var fontsPreset = fonts as FontsArr;
 
         // Fill an array with all the heights, to avoid multiple costly 
         // requests to Graphics.getFontHeight
@@ -79,7 +79,7 @@ import Toybox.Graphics;
         for( var i = 0; i< fontsPreset.size(); i++ ) { heightsPreset.add( Graphics.getFontHeight( fontsPreset[i] ) ); }
 
         // Create a new array for the optimized fonts
-        var fontsOptimized = new Array<FontDefinition>[0];
+        var fontsOptimized = new FontsArr[0];
         fontsOptimized.add( fontsPreset[0] ); // the first one stays
         var ipr = 1;
         // loop through all font sizes
@@ -112,12 +112,12 @@ import Toybox.Graphics;
         */
         fonts = fontsOptimized;
         
-        debugFonts();
+        // debugFonts();
     }
 
     (:debug) private function debugFonts()
     {
-        var fontsPreset = fonts as Array<FontDefinition>;
+        var fontsPreset = fonts as FontsArr;
         for( var i = 0; i < fontsPreset.size(); i++ ) {
             var text = "Static font " + i + " => ";
             var font = fontsPreset[i];
@@ -149,7 +149,7 @@ import Toybox.Graphics;
 
 
 class EvccUILibWidgetBase {
-    public var fonts = [ Graphics.FONT_MEDIUM, Graphics.FONT_SMALL, Graphics.FONT_TINY, Graphics.FONT_GLANCE, Graphics.FONT_XTINY ] as Array<FontDefinition>;
+    public var fonts = [ Graphics.FONT_MEDIUM, Graphics.FONT_SMALL, Graphics.FONT_TINY, Graphics.FONT_GLANCE, Graphics.FONT_XTINY ] as FontsArr;
     public static var FONT_MEDIUM = 0;
     public static var FONT_SMALL = 1;
     public static var FONT_TINY = 2;
@@ -183,7 +183,7 @@ class EvccUILibWidgetBase {
         return _instance;
     }
 
-    public var fonts = [Graphics.FONT_GLANCE] as Array<FontDefinition>;
+    public var fonts = [Graphics.FONT_GLANCE] as FontsArr;
     public static var FONT_GLANCE = 0;
     public static var icons = [
         [ Rez.Drawables.battery_empty_glance ],

@@ -1,61 +1,93 @@
 project.manifest = manifest.xml
 
-# Source Directories:
+# This build file sets the rules for building the app for different devices,
+# with different options/functionality for each device.
 #
-# source-base: codes used by all variants
-#
-# source-base-annot-glance/tinyglance: 
-# base source that is used by the full glance and not the tiny glance
-# this source has to be duplicated, once with (:glance) annotiation
-# in source-base-annot-glance and once without in source-base-annot-tinyglance
+# For each device, it defines:
+# - Source directories
+# - Exclude annotiations
+# - Resource directories
 
-# Define source variables for the glance variants
+# Source directories
+# These variables are to be used when defining the source directories of a device
+# Different source directories are currently only used for the three glance
+# variants. The full-featured glance uses more of the same code as the
+# widget, the tiny glance less to save memory. Therefore that code has to be annotated 
+# as part of the glance scope (:glance) for the full-featured glance but not for the tiny glance.
+# Unfortunately the only way to achieve that is to duplicate the code in two directories, same
+# code but different annotation.
 sourceBase = source;source\_base;source\background;source\glance;source\widget
 sourceGlanceFull = $(sourceBase);source-annot-glance
 sourceGlanceTiny = $(sourceBase);source-annot-tinyglance
 sourceGlanceNone = $(sourceBase);source-annot-glance
 
-# Define exclude annotations variables for the glance variants
-# glanceFull to be used as exclude annotation for full glance devices
+# Exclude annotiations
+# The variables below are to be combined into the excludeAnnotations property of each
+# device, to define the functionality of the device
 
+# Different glance types
 glanceFull = exclForGlanceFull
 glanceTiny = exclForGlanceTiny
 glanceNone = exclForGlanceNone
 
+# Different font types
 fontsStatic = exclForFontsStatic
 fontsVector = exclForFontsVector
 fontsStaticOptimized = exclForFontsStaticOptimized
 
+# Devices with less computing power may revert to code with less functionality
+# Currently this is only used in the forecast, to use a less-computing intense layout
 calcComplex = exclForCalcComplex
 calcSimple = exclForCalcSimple
 
+# For low-memory devices, the system info may be excluded. Issue is here not the
+# runtime memory the execution of the system info takes, but the code memory space it occupies.
 systemInfo = exclForSystemInfo
 systemInfoNone = exclForSystemInfoNone
 
+# For low-memory devices, only one site may be supported
+# The configuration properties of multiple sites take up a lot of memory, even if they are not used
 sitesMultiple = exclForSitesMultiple
 sitesOne = exclForSitesOne
 
+# Where to show the select button indicator
+# 30°  = 2 o'clock
+# 27°  = 2 o'clock + 0.5 minutes
+# 0°   = 3 o'clock
+# None = do not show the indicator
 select0 = exclForSelect0
 select30 = exclForSelect30
 select27 = exclForSelect27
 selectNone = exclForSelectNone;exclForHasSelect
 
+# Not all devices natively have a key that triggers the onSelect behavior
+# For those, the enter key will be used
+# That code can be ommitted for devices that natively do have the onSelect behavior,
+# by adding this variable to the exclude annotiations
 hasSelect = exclForHasSelect
 
-# Full glance, complex code and vector fonts is the default
+# Below the device configurations
+
+# Default
+# This is applied to all devices that do not have build instructions
+# Full glance, complex code, vector fonts, multipole sites, select indicator at 30° and having onSelect behavior
 base.sourcePath = $(sourceGlanceFull)
 base.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select30);$(hasSelect)
 base.resourcePath = settings-site5;$(base.resourcePath)
-# These watches have static/optimized fonts
+
+# Full glance devices, but with static/optimized fonts
 venu2.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple);$(select30)
 venu2plus.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple);$(select30)
 venu2s.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple);$(select30)
-
+vivoactive5.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple);$(select30)
+# Full glance devices, but with select button at 27°
 fr265.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select27);$(hasSelect)
 fr265s.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select27);$(hasSelect)
 fr965.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select27);$(hasSelect)
 
-# Tiny glance
+
+# Tiny glance devices
+# One site, static font, no select behavior since there is only one site and never a select action
 fr745.sourcePath = $(sourceGlanceTiny)
 fr745.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne);$(selectNone)
 fr745.resourcePath = settings-site1;resources;resources-fr745
@@ -84,10 +116,7 @@ fenix6xpro.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(sy
 fenix6xpro.resourcePath = settings-site1;resources;resources-fenix6xpro
 
 # No glance
-# Fenix 6 has glances, but our prg file is too large to be
-# run as glance on that watch
-# fenix6.sourcePath = $(sourceGlanceNone)
-# fenix6.excludeAnnotations = $(glanceNone);complex;$(fontsStatic)
+# With one site only
 vivoactive3.sourcePath = $(sourceGlanceNone)
 vivoactive3.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(select0)
 vivoactive3.resourcePath = settings-site1;resources;resources-vivoactive3
@@ -97,11 +126,8 @@ vivoactive3m.resourcePath = settings-site1;resources;resources-vivoactive3m
 vivoactive3mlte.sourcePath = $(sourceGlanceNone)
 vivoactive3mlte.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(select0)
 vivoactive3mlte.resourcePath = settings-site1;resources;resources-vivoactive3mlte
-
+# With multiple sites
 vivoactive4.sourcePath = $(sourceGlanceNone)
 vivoactive4.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesMultiple);$(select30)
 vivoactive4s.sourcePath = $(sourceGlanceNone)
 vivoactive4s.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesMultiple);$(select30)
-vivoactive5.sourcePath = $(sourceGlanceFull)
-vivoactive5.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple);$(select30)
-

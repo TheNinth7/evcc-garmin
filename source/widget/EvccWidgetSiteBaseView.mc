@@ -17,31 +17,32 @@ import Toybox.Math;
     
     function getStateRequest() as EvccStateRequest { return EvccStateRequestSingleton.getStateRequest( _siteIndex ); }
 
-    private var _views as Array<EvccWidgetSiteBaseView>;
-    function getTotalPages() as Number { return _views.size(); }
-    function addView( view as EvccWidgetSiteBaseView ) { _views.add( view ); }
-    function getViews() as Array<EvccWidgetSiteBaseView> { return _views; }
-
+    // Organization of views
+    // Parent view
     private var _parentView as EvccWidgetSiteBaseView?;
     function getParentView() as EvccWidgetSiteBaseView? { return _parentView; }
 
-    function initialize( views as Array<EvccWidgetSiteBaseView>, pageIndex as Number, parentView as EvccWidgetSiteBaseView?, siteIndex as Number ) {
+    // Other views on the same level
+    private var _sameLevelViews as SiteViewsArr;
+    function addSameLevelView( view as EvccWidgetSiteBaseView ) { _sameLevelViews.add( view ); }
+    function getSameLevelViews() as SiteViewsArr { return _sameLevelViews; }
+    function getSameLevelViewCount() as Number { return _sameLevelViews.size(); }
+
+    // Views on the lower level
+    private var _lowerLevelViews = new SiteViewsArr[0];
+    function addLowerLevelView( view as EvccWidgetSiteBaseView ) { _lowerLevelViews.add( view ); }
+    function addLowerLevelViews( views as SiteViewsArr ) { _lowerLevelViews.addAll( views ); }
+    function getLowerLevelViews() as SiteViewsArr { return _lowerLevelViews; }
+    function showSelectIndicator() as Boolean { return _lowerLevelViews.size() > 0; }
+
+    function initialize( views as SiteViewsArr, pageIndex as Number, parentView as EvccWidgetSiteBaseView?, siteIndex as Number ) {
         // EvccHelperBase.debug("Widget: initialize");
         View.initialize();
 
-        _views = views;
+        _sameLevelViews = views;
         _pageIndex = pageIndex;
         _siteIndex = siteIndex;
         _parentView = parentView;
-    }
-
-    // Return the list of views for the carousel to be presented 
-    // when the select behavior is triggered. In other words, when
-    // the site is selected, we will navigate to the subviews
-    // By default there are no subviews, this method
-    // has to be implemented by those sub classes that have sub views
-    function getSubViews() as Array<EvccWidgetSiteBaseView>? {
-        return null;
     }
 
     // Load your resources here
@@ -93,7 +94,7 @@ import Toybox.Math;
             }
 
             // Determine font size
-            var fonts = EvccUILibWidgetSingleton.getInstance().fonts as Array<FontDefinition>;
+            var fonts = EvccUILibWidgetSingleton.getInstance().fonts as FontsArr;
             var font = EvccUILibWidgetSingleton.FONT_MEDIUM; // We start with the largest font
 
             // To save computing resources, if the block 
@@ -134,7 +135,7 @@ import Toybox.Math;
         var font = EvccUILibWidgetSingleton.FONT_XTINY;
         
         var siteCount = EvccSiteConfigSingleton.getSiteCount();
-        var fonts = EvccUILibWidgetSingleton.getInstance().fonts as Array<FontDefinition>;
+        var fonts = EvccUILibWidgetSingleton.getInstance().fonts as FontsArr;
         var spacing = Graphics.getFontHeight( fonts[font] ) / 3;
 
         // Header consists of site title and page title (assumed to be an icon)
@@ -194,7 +195,7 @@ import Toybox.Math;
         ca.y = headerHeight + ca.height / 2;
 
         if( showPageIndicator() ) {
-            new EvccPageIndicator( dc ).drawPageIndicator( _pageIndex, getTotalPages() );
+            new EvccPageIndicator( dc ).drawPageIndicator( _pageIndex, getSameLevelViewCount() );
             var piX = dc.getWidth() * ( 0.5 - EvccPageIndicator.RADIUS_FACTOR );
             var dotRadius = dc.getWidth() * EvccPageIndicator.DOT_SIZE_FACTOR;
             
@@ -274,7 +275,7 @@ import Toybox.Math;
 
     // Function to indicate if a page indicator shall be shown
     function showPageIndicator() as Boolean {
-        return getTotalPages() > 1;
+        return getSameLevelViewCount() > 1;
     }
     // Returns the spacing that elements should keep to 
     // the left side of the screen to accommodate a potential
@@ -294,13 +295,6 @@ import Toybox.Math;
     function limitHeight() as Boolean { return true; }
     function limitWidth() as Boolean { return false; }
 
-    // Function to indicate if a select indicator shall be shown,
-    // indicating that the select button has a function in tis
-    // view
-    function showSelectIndicator() as Boolean {
-        return false;
-    }
-    
     // To be set to true if the view should act as glance,
     // i. e. shows a single site for the widget carousel in
     // watches that do not support glances. See EvccApp for

@@ -8,17 +8,13 @@ import Toybox.Application;
 // buggy and did not have a pretty page indicator, so this app uses a,
 // custom one
 class EvccViewCarouselDelegate extends EvccViewSimpleDelegate {
-    private var _views as Array<EvccWidgetSiteBaseView>;
+    private var _views as SiteViewsArr;
     private var _breadCrumb as EvccBreadCrumb;
 
-    function initialize( views as Array<EvccWidgetSiteBaseView>, breadCrumb as EvccBreadCrumb? ) {
+    function initialize( views as SiteViewsArr, breadCrumb as EvccBreadCrumb ) {
         EvccViewSimpleDelegate.initialize();
         _views = views;
         _breadCrumb = breadCrumb;
-  
-        if( _breadCrumb == null ) {
-            _breadCrumb = new EvccBreadCrumbRoot( _views.size() );
-        }
     }
 
     // For enter key and swipe left we trigger the onSelect
@@ -55,24 +51,24 @@ class EvccViewCarouselDelegate extends EvccViewSimpleDelegate {
             // that was previously selected and obtain the bread
             // crumb for that child
             if( ! _views[0].actsAsGlance() ) {
-                activeView = _breadCrumb.getSelectedChild();
+                activeView = _breadCrumb.getSelectedChild( _views.size() );
             }
 
-            var subViews = _views[activeView].getSubViews();
-            var activeSubView = _breadCrumb.getSelectedChild();
+            var lowerLevelViews = _views[activeView].getLowerLevelViews();
+            var activeSubView = _breadCrumb.getSelectedChild( _views.size() );
 
-            if( subViews != null && subViews.size() > 0 ) {
-                activeSubView = activeSubView < subViews.size() ? activeSubView : 0;
+            if( lowerLevelViews.size() > 0 ) {
+                activeSubView = activeSubView < lowerLevelViews.size() ? activeSubView : 0;
                 var delegate;
-                if( subViews.size() == 1 ) {
+                if( lowerLevelViews.size() == 1 ) {
                     delegate = new EvccViewSimpleDelegate();
                 } else {
                     if( ! _views[0].actsAsGlance() ) {
                         childCrumb = _breadCrumb.getChild( activeView );
                     }
-                    delegate = new EvccViewCarouselDelegate( subViews, childCrumb );
+                    delegate = new EvccViewCarouselDelegate( lowerLevelViews, childCrumb );
                 }
-                WatchUi.pushView( subViews[activeSubView], delegate, WatchUi.SLIDE_LEFT );
+                WatchUi.pushView( lowerLevelViews[activeSubView], delegate, WatchUi.SLIDE_LEFT );
             }
             return true;
         } catch ( ex ) {
@@ -104,7 +100,7 @@ class EvccViewCarouselDelegate extends EvccViewSimpleDelegate {
     public function onNextPage() as Boolean {
         try {
             // EvccHelperBase.debug("ViewCarouselDelegate: onNextPage");
-            var activeView = _breadCrumb.getSelectedChild();
+            var activeView = _breadCrumb.getSelectedChild( _views.size() );
             activeView = activeView == _views.size() - 1 ? 0 : activeView + 1;
             WatchUi.switchToView( _views[activeView], self, WatchUi.SLIDE_UP );
             //Storage.setValue( EvccConstants.STORAGE_ACTIVESITE, _activeView );
@@ -118,7 +114,7 @@ class EvccViewCarouselDelegate extends EvccViewSimpleDelegate {
     public function onPreviousPage() as Boolean {
         try {
             // EvccHelperBase.debug("ViewCarouselDelegate: onPreviousPage");
-            var activeView = _breadCrumb.getSelectedChild();
+            var activeView = _breadCrumb.getSelectedChild( _views.size() );
             activeView = activeView == 0 ? _views.size() - 1 : activeView - 1;
             WatchUi.switchToView( _views[activeView], self, WatchUi.SLIDE_DOWN );
             //Storage.setValue( EvccConstants.STORAGE_ACTIVESITE, _activeView );

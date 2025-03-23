@@ -76,11 +76,8 @@ import Toybox.Math;
             // Read the site count
             var siteCount = EvccSiteConfigSingleton.getSiteCount();
 
-            // We store the active site, so when the widget is reopened, it 
-            // starts with the site displayed last. Also the glance is using
-            // the active site and is only displaying its data.
-            var breadCrumb = new EvccBreadCrumbRoot( siteCount );
-            var activeSite = breadCrumb.getSelectedChild();
+            // The bread crumbs are used to store which sites/pages have been opened last
+            var breadCrumb = new EvccBreadCrumb( null );
 
             // We delete any unused site entries from storage
             // This is for the case when sites get deleted from
@@ -88,26 +85,41 @@ import Toybox.Math;
             // data
             EvccStateStore.clearUnusedSites( siteCount );
 
-            var settings = System.getDeviceSettings();
-
             if( siteCount == 0 ) {
                 throw new NoSiteException();
             } else {
+                var settings = System.getDeviceSettings();
                 // We check if the device supports glances
                 // If not, we initially present a widget view that acts as glance, i.e. displays
                 // only the active site and has all the other sites as sub views
                 if ( ! ( settings has :isGlanceModeEnabled ) || ! settings.isGlanceModeEnabled ) {
                     // EvccHelperBase.debug( "EvccApp: no glance, starting with active site only" );
-                    var views = new Array<EvccWidgetSiteBaseView>[0];
+                    
+                    // Next we determine the active site
+                    // Here we need to deal with the case that there is only one site, but there
+                    // may be multiple detail views. In this case, the root breadcrumb would
+                    // actually identify the detail view.
+                    // The getSelectedChild() is implemented to receive the maximum number of children
+                    // verify that the returned child is within that boundary and if needed reset
+                    // the breadcrumb.
+                    // So in this case we should not request the current site from the breadcrumb
+                    // but just take 0 as current site
+                    var activeSite = siteCount == 1 ? 0 : breadCrumb.getSelectedChild( siteCount );
+                    
+                    var views = new SiteViewsArr[0];
                     views.add( new EvccWidgetSiteMainView( views, 0, null, activeSite, true ) );
                     var delegate = new EvccViewCarouselDelegate( views, breadCrumb );
                     return [views[0], delegate];
                 // If glances are supported, we present the full list of sites or menu entries right away
                 } else {
-                    var views = EvccWidgetSiteMainView.getRootViews();
+                    var views = EvccWidgetSiteMainView.getAllSiteViews();
+                    // We use the number of views to determine the maximum number of children
+                    // since it can be either multiple sites, or one site with detailed views
+                    // (such as forecast) presented on the same level
+                    var activeView = breadCrumb.getSelectedChild( views.size() );
                     var delegate = new EvccViewCarouselDelegate( views, breadCrumb );
-                    // Start with the active site
-                    return [views[activeSite], delegate];
+                    // Start with the active page
+                    return [views[activeView], delegate];
                 }
             }
         } catch ( ex ) {

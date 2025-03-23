@@ -2,7 +2,7 @@ import Toybox.Lang;
 import Toybox.Application.Storage;
 
 // Read-only class for :glance and :background to save memory
-(:glanceonly :glance :background) class EvccBreadCrumbRootReadOnly {
+(:glance :background) class EvccBreadCrumbRootReadOnly {
     static function getSelectedChild( totalSites as Number ) {
         var storedCrumb = Storage.getValue( EvccConstants.STORAGE_BREAD_CRUMBS );
 
@@ -14,6 +14,7 @@ import Toybox.Application.Storage;
     }
 }
 
+/*
 class EvccBreadCrumbRoot extends EvccBreadCrumb {
     // Initialize a new bread crumb
     public function initialize( totalSites as Number ) {
@@ -27,11 +28,12 @@ class EvccBreadCrumbRoot extends EvccBreadCrumb {
         // is one site that is not the last, but still being deleted, the active
         // site would point to a different site, but still be valid, which is acceptable.
         if( storedActiveSite == null || ! ( storedActiveSite instanceof Number ) || storedActiveSite >= totalSites ) {
-            storedActiveSite = 0;
+            //storedActiveSite = 0;
             self.setSelectedChild( 0 );
         }
     }
 }
+*/
 
 // This class is used to manage and persist the selected
 // site and submenus. This allows us to start with the
@@ -58,7 +60,10 @@ class EvccBreadCrumb {
     }
     
     // Return the currently selected child
-    public function getSelectedChild() as Number {
+    public function getSelectedChild( totalChildren as Number ) as Number {
+        if( _selectedChild >= totalChildren) {
+            setSelectedChild( 0 );
+        }
         return _selectedChild;
     }
     // Set the selected child and immediately persist

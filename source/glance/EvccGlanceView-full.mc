@@ -63,12 +63,12 @@ import Toybox.Application.Properties;
                         line.addBlock( column );
                     }
 
-                    var loadpoints = state.getLoadPoints() as Array<EvccLoadPoint>;
+                    var loadpoints = state.getLoadPoints() as LoadPointsArr;
                     var hasVehicle = false;
                     // We use the height of the font as spacing between the columns
                     // This gives us a space that is suitable for each screen size/resolution
 
-                    var displayedLPs = new Array<EvccLoadPoint>[0];
+                    var displayedLPs = new LoadPointsArr[0];
                     for (var i = 0; i < loadpoints.size(); i++) {
                         var loadpoint = loadpoints[i] as EvccLoadPoint;
                         if( loadpoint.getVehicle() != null ) {

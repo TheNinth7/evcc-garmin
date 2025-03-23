@@ -18,82 +18,80 @@ import Toybox.Math;
     
     // When we process the state the first time, we check if a
     // forecast is available and if yes add the forecast view 
-    var _checkedForecast = false;
+    var _hasForecast = false;
     
-    // Holds views to be shown when select is pressed
-    var _subViews as Array<EvccWidgetSiteBaseView>?;
-
-    function initialize( views as Array<EvccWidgetSiteBaseView>, pageIndex as Number, parentView as EvccWidgetSiteBaseView?, siteIndex as Number, actAsGlance as Boolean ) {
+    function initialize( views as SiteViewsArr, pageIndex as Number, parentView as EvccWidgetSiteBaseView?, siteIndex as Number, actAsGlance as Boolean ) {
         // EvccHelperBase.debug("Widget: initialize");
         EvccWidgetSiteBaseView.initialize( views, pageIndex, parentView, siteIndex );
 
         _actAsGlance = actAsGlance;
 
         if( _actAsGlance && EvccSiteConfigSingleton.getSiteCount() > 1 ) {
-            _subViews = getRootViews();
+            // If we are acting as glance and there is more than one site,
+            // we just add all sites as lower level views
+            addLowerLevelViews( getAllSiteViews() );
         } else {
-            _subViews = new Array<EvccWidgetSiteBaseView>[0];
-            _subViews = EvccWidgetSiteMainView.addSubViews( _subViews, self, getSiteIndex() );
+            // In all other cases we add the detail views.
+            // If we act as glance and have only one site, they will be added as lower level views
+            // If we do not act as glance, they will be either added to the lower level if there
+            // are multiple sites, or to the same level
+            addDetailViews();
         }
     }
 
-    // We override the onUpdate to check if forecast is available
-    // and then pass on to the base class
+    // We check if detail views are available and then pass on to the base onUpdate function
     function onUpdate( dc as Dc ) as Void {
-        if( ! _checkedForecast ) {
-            var staterq = getStateRequest();
-            if( staterq != null ) {
-                if( staterq.hasLoaded() && ! staterq.hasError() && staterq.getState().hasForecast() ) {
-                    _checkedForecast = true;
-                    var siteCount = EvccSiteConfigSingleton.getSiteCount();
-                    // If we act as glance and have only one site, the forecast goes into the subviews
-                    // If we have multiple sites, the forecast goes into the subviews
-                    // If we do not act as glance and have only one site, we add it to the views in the current carousel
-                    // If we act as glance and have multiple sites, no forecast is added, this will be done one level down
-                    if( ( _actAsGlance && siteCount == 1 ) || ( ! _actAsGlance && siteCount > 1 ) ) {
-                        _subViews.add( new EvccWidgetSiteForecastView( _subViews, _subViews.size() + 1, self, getSiteIndex() ) );
-                    } else if ( siteCount == 1 ) {
-                        addView( new EvccWidgetSiteForecastView( getViews(), getViews().size(), self.getParentView(), getSiteIndex() ) );
-                    }
-                }
-            }
-        }
+        // With every update we check if there are maybe new detail views to be displayed
+        // This is important when we initially do not have an up-to-date state and therefore 
+        // state-dependent detail views are not added in the addDetailViews() call from the 
+        // constructor
+        addDetailViews();
         EvccWidgetSiteBaseView.onUpdate( dc );
     }
 
-    // Return the list of views for the carousel to be presented 
-    // when the select behavior is triggered. In other words, when
-    // the site is selected, we will navigate to the subviews and
-    // show the active sub view (see next function)
-    function getSubViews() as Array<EvccWidgetSiteBaseView>? {
-        return _subViews.size() > 0 ? _subViews : null;
-    }
-    function showSelectIndicator() as Boolean {
-        return _subViews.size() > 0;
-    }
-
-    // Generate the root views
-    // If the widget view is in glance mode (_actAsGlance) this is called
-    // to return the list of sub views. If there is a dedicated glance 
-    // view, this is called by EvccApp to prepare the list of views presented
-    // initially in widget view
-    static function getRootViews() as Array<EvccWidgetSiteBaseView> {
-        var views = new Array<EvccWidgetSiteBaseView>[0];
+    // This function returns a list of views for all sites
+    static function getAllSiteViews() as SiteViewsArr {
+        var views = new SiteViewsArr[0];
         var siteCount = EvccSiteConfigSingleton.getSiteCount();
         for( var i = 0; i < siteCount; i++ ) {
            views.add( new EvccWidgetSiteMainView( views, i, null, i, false ) );
         }
-        if( siteCount == 1 ) {
-            views = EvccWidgetSiteMainView.addSubViews( views, null, 0 );
-        }
         return views;
     }
 
-    static function addSubViews( views as Array<EvccWidgetSiteBaseView>, parentView as EvccWidgetSiteBaseView?, siteIndex as Number ) as Array<EvccWidgetSiteBaseView> {
-        // Currently not in use, since forecast is added dynamically on the
-        // first update.
-        return views;
+    // Detail views present additional data for a particular site. This function adds 
+    // detail views for this site, either to the lower level or to the same level views, 
+    // depending on the situation.
+    // ATTENTION: this function may be called multiple times, so it has protect itself from 
+    // adding the same view twice. This is because views can be added based on the state, 
+    // which may not be available on initialization or may change over time 
+    function addDetailViews() {
+        if( ! _hasForecast ) {
+            var staterq = getStateRequest();
+            if( staterq != null ) {
+                if( staterq.hasLoaded() && ! staterq.hasError() && staterq.getState().hasForecast() ) {
+                    _hasForecast = true;
+                    addDetailView( EvccWidgetSiteForecastView );
+                }
+            }
+        }
     }
+    // This function is the one actually decides if a detail view is added
+    // on the same or on the lower level. To be able to apply this to 
+    // different detail views, it accepts a class type as input
+    private function addDetailView( viewClass ) {
+        var siteCount = EvccSiteConfigSingleton.getSiteCount();
+        // If we act as glance, and there is only one site, then we add the detail view to the lower level views
+        // Also if we do not act as glance, but there is more than one site, it goes to the lower level views 
+        if( ( _actAsGlance && siteCount == 1 ) || ( ! _actAsGlance && siteCount > 1 ) ) {
+            addLowerLevelView( new viewClass( getLowerLevelViews(), getLowerLevelViews().size() + 1, self, getSiteIndex() ) );
+        // But if we are not acting as glance and there is only one site, we directly add the
+        // detail view to the same level view
+        } else if ( siteCount == 1 ) {
+            addSameLevelView( new viewClass( getSameLevelViews(), getSameLevelViews().size() + 1, self.getParentView(), getSiteIndex() ) );
+        }
+    }
+
 
     // Called when this View is brought to the foreground. Restore
     // the state of this View and prepare it to be shown. This includes
@@ -106,7 +104,7 @@ import Toybox.Math;
             // and we have to switch the glance view to the 
             // site last selected
             if( _actAsGlance ) {
-                setSiteIndex( new EvccBreadCrumbRoot( EvccSiteConfigSingleton.getSiteCount() ).getSelectedChild() );
+                setSiteIndex( EvccBreadCrumbRootReadOnly.getSelectedChild( EvccSiteConfigSingleton.getSiteCount() ) );
             }
             EvccWidgetSiteBaseView.onShow();
         } catch ( ex ) {
@@ -133,7 +131,7 @@ import Toybox.Math;
         }                
 
         // Loadpoints
-        var loadpoints = state.getLoadPoints() as Array<EvccLoadPoint>;
+        var loadpoints = state.getLoadPoints() as LoadPointsArr;
         var hasVehicle = false;
         var showChargingDetails = MAX_VAR_LINES - variableLineCount >= loadpoints.size() + ( state.getNumOfLPsCharging() * SMALL_LINE );
         for (var i = 0; i < loadpoints.size() && variableLineCount < MAX_VAR_LINES; i++) {

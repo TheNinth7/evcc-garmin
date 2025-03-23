@@ -1,6 +1,10 @@
-# evcc garmin
+# evccg
+
+evccg is a Garmin wearable app that displays data from [evcc](https://evcc.io), an open-source software solution for solar-powered EV charging.
 
 You can find the app at <https://apps.garmin.com/apps/2bc2ba9d-b117-4cdf-8fa7-078c1ac90ab0> in the garmin store.
+
+The user manual is published via GitHub Pages at <https://evccg.the-ninth.com>.
 
 ## Introduction
 
@@ -12,9 +16,9 @@ For the glance there are two variants: the full variant (source-glance folder) u
 
 ## Contributing
 
-Steps run this application in the garmin simulator:
+Steps to run this application in the garmin simulator:
 
-1. Get the Garmin Connect IQ SDK and the Visual Studio Code Monkey C Extension, see <https://developer.garmin.com/connect-iq/sdk/> for details.
+1. Get VS Code, the Garmin Connect IQ SDK and the VS Code Monkey C Extension, see <https://developer.garmin.com/connect-iq/sdk/> for details.
 2. Open any file from the source folder
 3. Press F5
 4. Open `File` -> `Edit Application.Properties data` and put `https://demo.evcc.io/` into the URL field.
@@ -29,4 +33,3 @@ To support a new device, follow these steps:
 4. Generate the icons by executing icons/generate.bat.
 5. Test the device in Visual Studio Code in the simulator (F5).
 6. Export project (CTRL+SHIFT+P, Monkey C: Export Project)
-

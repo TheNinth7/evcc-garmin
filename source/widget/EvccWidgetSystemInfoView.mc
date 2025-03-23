@@ -26,7 +26,7 @@ import Toybox.System;
 
             block.addText( "part # " + System.getDeviceSettings().partNumber, { :marginTop => _spacing } );
 
-            //checkFonts( block, dc );
+            checkFonts( block, dc );
             block.draw( dc.getWidth() / 2, dc.getHeight() / 2 );
     
             /*
@@ -49,7 +49,7 @@ import Toybox.System;
     }
 
     (:debug) function checkIcons( uiLib, prefix as String, block as EvccUIVertical, dc as Dc ) as Void {
-        var fonts = uiLib.getInstance().fonts as Array<FontDefinition>;
+        var fonts = uiLib.getInstance().fonts as FontsArr;
         var icons = uiLib.icons as Array<Array>;
         var text = "icons: OK";
         for( var i = 0; i < fonts.size(); i++ ) {

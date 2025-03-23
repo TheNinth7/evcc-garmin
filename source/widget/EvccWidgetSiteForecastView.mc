@@ -7,7 +7,7 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
     private var _label as Array;
     private var _indicator as Array;
 
-    function initialize( views as Array<EvccWidgetSiteBaseView>, pageIndex as Number, parentView as EvccWidgetSiteBaseView?, siteIndex as Number ) {
+    function initialize( views as SiteViewsArr, pageIndex as Number, parentView as EvccWidgetSiteBaseView?, siteIndex as Number ) {
         EvccWidgetSiteBaseView.initialize( views, pageIndex, parentView, siteIndex );
 
         _label = [ "tday", "tmrw" ];
@@ -23,17 +23,43 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
         return new EvccUIIcon( EvccUIIcon.ICON_FORECAST, dc, {} );
     }
 
+    // Add the content
+    function addContent( block as EvccUIVertical, dc as Dc ) {
+
+        var state = getStateRequest().getState();
+
+        if( state.hasForecast() ) {
+            var forecast = getStateRequest().getState().getForecast();
+
+            // Check if scale is available and configured to be applied
+            // Otherwise set scale=1
+            var applyScale = new EvccSite( getSiteIndex() ).scaleForecast() && forecast.getScale() != null;
+            var scale = applyScale ? forecast.getScale() : 1;
+
+            var energy = forecast.getEnergy() as Array<Float?>;
+
+            // The actual forecast is added in a separate function, since
+            // there are two versions used for different devices
+            addForecast( block, dc, energy, scale );
+
+            if( applyScale ) {
+                block.addText( "adj. w\\ real data", { :relativeFont => 4, :marginTop => dc.getHeight() * 0.007 } );
+            }
+        } else {
+            block.addText( "Forecast not available!", {} );
+        }
+
+        // Add a small margin to the bottom. While the content is centered vertically between title and logo,
+        // the spacing in the fonts make it seem a bit off, and this is to compensate for that.
+        block.setOption( :marginBottom, dc.getHeight() * 0.02 );
+    }
+
     
-    // Prepare the content
-    (:exclForCalcSimple) function addContent( block as EvccUIVertical, dc as Dc ) {
-        var forecast = getStateRequest().getState().getForecast();
-
-        // Check if scale is available and configured to be applied
-        // Otherwise set scale=1
-        var applyScale = new EvccSite( getSiteIndex() ).scaleForecast() && forecast.getScale() != null;
-        var scale = applyScale ? forecast.getScale() : 1;
-
-        var energy = forecast.getEnergy() as Array<Float?>;
+    // Complex forecast layout, with multiple columns to have
+    // a nice table structure
+    // The layouting is cpu-intense, so below this there is 
+    // more light-weight variant for older devices
+    (:exclForCalcSimple) function addForecast( block as EvccUIVertical, dc as Dc, energy as Array<Float?>, scale as Float ) {
 
         var row = new EvccUIHorizontal( dc, {} );
         var column1 = new EvccUIVertical( dc, {} );
@@ -58,26 +84,12 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
         row.addBlock( column3 );
         
         block.addBlock( row );
-
-        if( applyScale ) {
-            block.addText( "adj. w\\ real data", { :relativeFont => 4, :marginTop => dc.getHeight() * 0.007 } );
-        }
-
-        // Add a small margin to the bottom. While the content is centered vertically between title and logo,
-        // the spacing in the fonts make it seem a bit off, and this is to compensate for that.
-        block.setOption( :marginBottom, dc.getHeight() * 0.02 );
     }
 
-    // Prepare the content - simple version for devices with less computational power
-    (:exclForCalcComplex) function addContent( block as EvccUIVertical, dc as Dc ) {
-        var forecast = getStateRequest().getState().getForecast();
-        var energy = forecast.getEnergy() as Array<Float?>;
-
-        // Check if scale is available and configured to be applied
-        // Otherwise set scale=1
-        var applyScale = new EvccSite( getSiteIndex() ).scaleForecast() && forecast.getScale() != null;
-        var scale = applyScale ? forecast.getScale() : 1;
-
+    // Simple forecast layout, with just single lines
+    // Content of the lines will not be aligned, but this is
+    // much simpler to layout
+    (:exclForCalcComplex) function addForecast( block as EvccUIVertical, dc as Dc, energy as Array<Float?>, scale as Float ) {
         for( var i = 0; i < energy.size(); i++ ) {
             var line = new EvccUIHorizontal( dc, { :justify => Graphics.TEXT_JUSTIFY_LEFT } );
             line.addText( _label[i] + ": " + formatEnergy( energy[i] * scale ) + "kWh", {} );
@@ -85,10 +97,6 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
                 line.addText( " " + _indicator[i], { :relativeFont => 4, :vjustifyTextToBottom => true } );
             }
             block.addBlock( line );
-        }
-
-        if( applyScale ) {
-            block.addText( "adj. w\\ real data", { :relativeFont => 4, :marginTop => dc.getHeight() * 0.007 } );
         }
     }
 

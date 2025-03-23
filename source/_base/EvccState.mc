@@ -37,9 +37,9 @@ import Toybox.Time;
     public function getPvPowerRounded() as Number { return EvccHelperBase.roundPower( _pvPower ); }
     public function getSiteTitle() as String { return _siteTitle; }
 
-    private var _loadPoints = new Array<EvccLoadPoint>[0];
+    private var _loadPoints = new LoadPointsArr[0];
     private var _numOfLPsCharging = 0;
-    public function getLoadPoints() as Array<EvccLoadPoint> { return _loadPoints; }
+    public function getLoadPoints() as LoadPointsArr { return _loadPoints; }
     public function getNumOfLPsCharging() as Number { return _numOfLPsCharging; }
 
     private var _forecast as EvccSolarForecast?;
@@ -76,7 +76,7 @@ import Toybox.Time;
         _pvPower = result[PVPOWER];
         _siteTitle = result[SITETITLE];
 
-        _loadPoints = new Array<EvccLoadPoint>[0];
+        _loadPoints = new LoadPointsArr[0];
         var loadPoints = result[LOADPOINTS] as Array;
         for (var i = 0; i < loadPoints.size(); i++) {
             var loadPointData = loadPoints[i] as Dictionary;
@@ -111,7 +111,7 @@ import Toybox.Time;
         var serializedLoadPoints = new Array<Dictionary>[0];
 
         for (var i = 0; i < _loadPoints.size(); i++) {
-            var loadPoints = _loadPoints as Array<EvccLoadPoint>;
+            var loadPoints = _loadPoints as LoadPointsArr;
             var serializedLoadPoint = loadPoints[i] as EvccLoadPoint;
             serializedLoadPoints.add( serializedLoadPoint.serialize() );
         }

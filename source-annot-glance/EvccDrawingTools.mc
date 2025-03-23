@@ -97,12 +97,12 @@ import Toybox.WatchUi;
 
     // Get the Garmin font definition for the current font
     function getGarminFont() {
-        var fonts = getOption( :uiLib ).fonts as Array<FontDefinition>;
+        var fonts = getOption( :uiLib ).fonts as FontsArr;
         return fonts[getOption( :font )];
     }
 
     function getBaseGarminFont() {
-        var fonts = getOption( :uiLib ).fonts as Array<FontDefinition>;
+        var fonts = getOption( :uiLib ).fonts as FontsArr;
         return fonts[getOption( :baseFont )];
     }
 
