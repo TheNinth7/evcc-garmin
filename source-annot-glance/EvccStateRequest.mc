@@ -110,13 +110,18 @@ import Toybox.PersistedContent;
         // }
             // EvccHelperBase.debug("StateRequest: adding query string for reducing response size ...");
 
-            // 2025-04-03
-            // The original long version below worked in the simulator but not
-            // on the actual device, it seems the URL was getting to long.
-            // url += "?jq={result:{loadpoints:[.loadpoints[]|{chargePower:.chargePower,chargerFeatureHeating:.chargerFeatureHeating,charging:.charging,connected:.connected,vehicleName:.vehicleName,vehicleSoc:.vehicleSoc,title:.title,phasesActive:.phasesActive,mode:.mode,chargeRemainingDuration:.chargeRemainingDuration}],pvPower:.pvPower,gridPower:.gridPower,grid:.grid|{power:.power},homePower:.homePower,siteTitle:.siteTitle,batterySoc:.batterySoc,batteryPower:.batteryPower,vehicles:.vehicles|map_values({title:.title}),forecast:(if%20.forecast.solar%20then%20{solar:{scale:.forecast.solar.scale,today:{energy:.forecast.solar.today.energy},tomorrow:{energy:.forecast.solar.tomorrow.energy},dayAfterTomorrow:{energy:.forecast.solar.dayAfterTomorrow.energy}}}%20else%20{}%20end)}}";
-            // The version below is shortend
+            // jq filter of app v1.3
+            // Keep this at least until new filter tested on watch!!
+            // var jq = "{result:{loadpoints:[.loadpoints[]|{chargePower,chargerFeatureHeating,charging,connected,vehicleName,vehicleSoc,title,phasesActive,mode,chargeRemainingDuration}],pvPower,gridPower,grid:{power:.grid.power},homePower,siteTitle,batterySoc,batteryPower,vehicles:.vehicles|map_values({title}),forecast:(if .forecast.solar then {solar:.forecast.solar|{scale,today:{energy:.today.energy},tomorrow:{energy:.tomorrow.energy},dayAfterTomorrow:{energy:.dayAfterTomorrow.energy}}} else {} end)}}";
+            
+            // Forecast simplified, no if then else because additional filter will take out any nulls
+            var jq = "{result:{loadpoints:[.loadpoints[]|{chargePower,chargerFeatureHeating,charging,connected,vehicleName,vehicleSoc,title,phasesActive,mode,chargeRemainingDuration}],pvPower,gridPower,grid:{power:.grid.power},homePower,siteTitle,batterySoc,batteryPower,vehicles:.vehicles|map_values({title}),forecast:{solar:.forecast.solar|{scale,today:{energy:.today.energy},tomorrow:{energy:.tomorrow.energy},dayAfterTomorrow:{energy:.dayAfterTomorrow.energy}}}}}";
+            
+            // Remove all null values and empty objects or arrays
+            jq = jq + "|walk(if type==\"object\"then with_entries(select(.value!=null and .value!={} and .value!=[]))elif type==\"array\"then map(select(.!=null and .!={} and .!=[]))else . end)";
+            
             parameters = {};
-            parameters["jq"] = "{result:{loadpoints:[.loadpoints[]|{chargePower,chargerFeatureHeating,charging,connected,vehicleName,vehicleSoc,title,phasesActive,mode,chargeRemainingDuration}],pvPower,gridPower,grid:{power:.grid.power},homePower,siteTitle,batterySoc,batteryPower,vehicles:.vehicles|map_values({title}),forecast:(if .forecast.solar then {solar:.forecast.solar|{scale,today:{energy:.today.energy},tomorrow:{energy:.tomorrow.energy},dayAfterTomorrow:{energy:.dayAfterTomorrow.energy}}} else {} end)}}";
+            parameters["jq"] = jq;
 
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_GET,

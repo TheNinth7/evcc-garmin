@@ -1,0 +1,19 @@
+<resources>
+    <properties>
+        <property id="refreshInterval" type="number">10</property>
+        <property id="dataExpiry" type="number">600</property>
+        <!-- <property id="reduceResponseSize" type="boolean">true</property> -->
+    </properties>
+
+    <settings>
+        <setting propertyKey="@Properties.refreshInterval" title="Refresh interval in seconds (5-60): interval in which new data is requested from your evcc instance.">
+            <settingConfig type="numeric" required="true" min="5" max="60"/>
+        </setting>
+        <setting propertyKey="@Properties.dataExpiry" title="Data expiry in seconds (5-3600): when bringing the glance or widget into view, data not older than the expiry time may be displayed until new data becomes available.">
+            <settingConfig type="numeric" required="true" min="5" max="3600"/>
+        </setting>
+        <!-- <setting propertyKey="@Properties.reduceResponseSize" title="Save memory by limiting the data requested from evcc. However, some mobile devices (iOS 16, maybe others) do not support that kind of request. If the app at first shows an -202 error and then actual data on the next refresh, you can disable this setting to avoid the initial -202 error.">
+            <settingConfig type="boolean" required="true"/>
+        </setting> -->
+    </settings>
+</resources>

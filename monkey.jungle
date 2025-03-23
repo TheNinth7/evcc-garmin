@@ -45,7 +45,7 @@ hasSelect = exclForHasSelect
 # Full glance, complex code and vector fonts is the default
 base.sourcePath = $(sourceGlanceFull)
 base.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select30);$(hasSelect)
-base.resourcePath = $(base.resourcePath);settings
+base.resourcePath = settings-site5;$(base.resourcePath)
 # These watches have static/optimized fonts
 venu2.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple);$(select30)
 venu2plus.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple);$(select30)
@@ -58,30 +58,30 @@ fr965.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemI
 # Tiny glance
 fr745.sourcePath = $(sourceGlanceTiny)
 fr745.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne);$(selectNone)
-fr745.resourcePath = resources;resources-fr745;settings-simple
+fr745.resourcePath = settings-site1;resources;resources-fr745
 fr945.sourcePath = $(sourceGlanceTiny)
 fr945.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne);$(selectNone)
-fr945.resourcePath = resources;resources-round-240x240;settings-simple
+fr945.resourcePath = settings-site1;resources;resources-round-240x240
 fr945lte.sourcePath = $(sourceGlanceTiny)
 fr945lte.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne);$(selectNone)
-fr945lte.resourcePath = resources;resources-round-240x240;settings-simple
+fr945lte.resourcePath = settings-site1;resources;resources-round-240x240
 #Fenix 6
 fenix6.sourcePath = $(sourceGlanceNone)
 fenix6.excludeAnnotations = $(glanceNone);$(calcSimple);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(selectNone)
-fenix6.resourcePath = resources;resources-round-260x260;settings-simple
+fenix6.resourcePath = settings-site1;resources;resources-round-260x260
 fenix6s.sourcePath = $(sourceGlanceNone)
 fenix6s.excludeAnnotations = $(glanceNone);$(calcSimple);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(selectNone)
-fenix6s.resourcePath = resources;resources-round-240x240;settings-simple
+fenix6s.resourcePath = settings-site1;resources;resources-round-240x240
 # Fenix 6 Pro
 fenix6pro.sourcePath = $(sourceGlanceTiny)
 fenix6pro.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne);$(selectNone)
-fenix6pro.resourcePath = resources;resources-round-260x260;settings-simple
+fenix6pro.resourcePath = settings-site1;resources;resources-round-260x260
 fenix6spro.sourcePath = $(sourceGlanceTiny)
 fenix6spro.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne);$(selectNone)
-fenix6spro.resourcePath = resources;resources-round-240x240;settings-simple
+fenix6spro.resourcePath = settings-site1;resources;resources-round-240x240
 fenix6xpro.sourcePath = $(sourceGlanceTiny)
 fenix6xpro.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne);$(selectNone)
-fenix6xpro.resourcePath = resources;resources-fenix6xpro;settings-simple
+fenix6xpro.resourcePath = settings-site1;resources;resources-fenix6xpro
 
 # No glance
 # Fenix 6 has glances, but our prg file is too large to be
@@ -90,13 +90,13 @@ fenix6xpro.resourcePath = resources;resources-fenix6xpro;settings-simple
 # fenix6.excludeAnnotations = $(glanceNone);complex;$(fontsStatic)
 vivoactive3.sourcePath = $(sourceGlanceNone)
 vivoactive3.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(select0)
-vivoactive3.resourcePath = resources;resources-vivoactive3;settings-simple
+vivoactive3.resourcePath = settings-site1;resources;resources-vivoactive3
 vivoactive3m.sourcePath = $(sourceGlanceNone)
 vivoactive3m.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(select0)
-vivoactive3m.resourcePath = resources;resources-vivoactive3m;settings-simple
+vivoactive3m.resourcePath = settings-site1;resources;resources-vivoactive3m
 vivoactive3mlte.sourcePath = $(sourceGlanceNone)
 vivoactive3mlte.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(select0)
-vivoactive3mlte.resourcePath = resources;resources-vivoactive3mlte;settings-simple
+vivoactive3mlte.resourcePath = settings-site1;resources;resources-vivoactive3mlte
 
 vivoactive4.sourcePath = $(sourceGlanceNone)
 vivoactive4.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesMultiple);$(select30)

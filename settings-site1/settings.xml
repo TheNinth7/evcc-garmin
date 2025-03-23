@@ -4,8 +4,6 @@
         <property id="s0_usr" type="string"></property>
         <property id="s0_pss" type="string"></property>
         <property id="s0_sfc" type="boolean">true</property>
-        <property id="refreshInterval" type="number">10</property>
-        <property id="dataExpiry" type="number">600</property>
     </properties>
 
     <settings>
@@ -20,12 +18,6 @@
         </setting>
         <setting propertyKey="@Properties.s0_sfc" title="Adjust forecast based on real data?">
             <settingConfig type="boolean" required="true"/>
-        </setting>
-        <setting propertyKey="@Properties.refreshInterval" title="Refresh interval in seconds (5-60): interval in which new data is requested from your evcc instance.">
-            <settingConfig type="numeric" required="true" min="5" max="60"/>
-        </setting>
-        <setting propertyKey="@Properties.dataExpiry" title="Data expiry in seconds (5-3600): when bringing the glance or widget into view, data not older than the expiry time may be displayed until new data becomes available.">
-            <settingConfig type="numeric" required="true" min="5" max="3600"/>
         </setting>
     </settings>
 </resources>
