@@ -3,10 +3,9 @@
 evccg is a Garmin wearable app that displays real-time data from evcc, an open-source platform for solar-optimized EV charging.
 
 You can find the app in the Garmin Connect IQ store:
-https://apps.garmin.com/apps/2bc2ba9d-b117-4cdf-8fa7-078c1ac90ab0
+<br>https://apps.garmin.com/apps/2bc2ba9d-b117-4cdf-8fa7-078c1ac90ab0
 
-The user manual is published via GitHub Pages at:
-https://evccg.the-ninth.com
+The user manual is published via GitHub Pages at:<br>https://evccg.the-ninth.com
 
 <br>
 
