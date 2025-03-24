@@ -1,9 +1,16 @@
 import Toybox.Lang;
 import Toybox.Application.Storage;
 
-// Read-only class for :glance and :background to save memory
-(:glance :background) class EvccBreadCrumbRootReadOnly {
-    static function getSelectedChild( totalSites as Number ) {
+// These classes are used to manage and persist the selected
+// site and lower level views. This allows us to start with the
+// previously used site, and always open lower level views with the last
+// selected view. The classes and data structures are recursive and
+// support nested menu structures
+
+// Read-only class for only the site (root) level
+// For :glance and :background to save memory
+(:glance :background) class EvccBreadCrumbSiteReadOnly {
+    static function getSelectedSite( totalSites as Number ) {
         var storedCrumb = Storage.getValue( EvccConstants.STORAGE_BREAD_CRUMBS );
 
         if( storedCrumb != null && storedCrumb instanceof Array && storedCrumb[0] < totalSites ) {
@@ -14,32 +21,8 @@ import Toybox.Application.Storage;
     }
 }
 
-/*
-class EvccBreadCrumbRoot extends EvccBreadCrumb {
-    // Initialize a new bread crumb
-    public function initialize( totalSites as Number ) {
-        EvccBreadCrumb.initialize( null );
-
-        var storedActiveSite = self.getSelectedChild();
-
-        // Active site from storage is used only if it is a valid number and within the
-        // range of configured sites. If the active site is the last site, and that one
-        // is deleted, the active site would be invalid. Note that if the active site
-        // is one site that is not the last, but still being deleted, the active
-        // site would point to a different site, but still be valid, which is acceptable.
-        if( storedActiveSite == null || ! ( storedActiveSite instanceof Number ) || storedActiveSite >= totalSites ) {
-            //storedActiveSite = 0;
-            self.setSelectedChild( 0 );
-        }
-    }
-}
-*/
-
-// This class is used to manage and persist the selected
-// site and submenus. This allows us to start with the
-// previously used site, and always open submenus with the last
-// selected menu item. This class supports a recursive nested structure
-// for this. 
+// Main recursive class, that also can be used to 
+// update breadcrumbs
 class EvccBreadCrumb {
     private var _parent as EvccBreadCrumb?;
     private var _selectedChild = 0;
@@ -78,10 +61,12 @@ class EvccBreadCrumb {
     public function getChild( key as Number ) as EvccBreadCrumb {
         var children = _children as Array<EvccBreadCrumb?>;
         
+        // Extend the array, if it does not yet extend to the child key
         while ( children.size() <= key ) {
             children.add( null );
         }
 
+        // Create the child if it does not yet exist
         if( children[key] == null ) {
             children[key] = new EvccBreadCrumb( self );
         }
@@ -98,6 +83,9 @@ class EvccBreadCrumb {
     }
 
     // Store the content of the class in persistable data structures
+    // Data is stored in an array, with index
+    // 0 = selected child for the current level
+    // 1 = any lower level breadcrumbs
     function serialize() as Array {
         var children = _children as Array<EvccBreadCrumb>;
         var serializedChildren = new Array<Array>[children.size()];
@@ -108,6 +96,9 @@ class EvccBreadCrumb {
     }
 
     // Restore the content of persistable data structure into this class
+    // Data is stored in an array, with index
+    // 0 = selected child for the current level
+    // 1 = any lower level breadcrumbs
     function deserialize( serializedCrumb as Array ) {
         _selectedChild = serializedCrumb[0];
         var serializedChildren = serializedCrumb[1] as Array<Array>;

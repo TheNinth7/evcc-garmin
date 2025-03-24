@@ -4,6 +4,10 @@ import Toybox.System;
 import Toybox.Application.Properties;
 
 // The background service 
+// Used for the tiny glance only
+// Devices that use the tiny glance do not make enough memory available to the glance
+// for processing the request. Therefore the request to evcc is made in this background
+// task, and the result passed to the glance via storage
 (:background :exclForGlanceFull :exclForGlanceNone) class EvccBackground extends Toybox.System.ServiceDelegate {
 	var _index as Number;
 
@@ -14,9 +18,7 @@ import Toybox.Application.Properties;
 	}
 	
     // When the background timer triggers, we initiate the
-    // web request to evcc. After the web request is executed,
-    // AppBase.onStop is called and persists the result, so
-    // nothing else to do here!
+    // web request to evcc.
     function onTemporalEvent() {
         try {
             // EvccHelperBase.debug("EvccBackground: onTemporalEvent");
@@ -25,6 +27,7 @@ import Toybox.Application.Properties;
             // but only do a single request.
             var stateRequest = new EvccStateRequest( _index );
             stateRequest.makeRequest();
+            // If in background, makeRequest() automatically persists the result
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
         }

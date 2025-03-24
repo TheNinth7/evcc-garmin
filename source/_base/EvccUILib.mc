@@ -1,9 +1,17 @@
 import Toybox.Lang;
 import Toybox.Graphics;
 
-// Fonts and icons for widgets
-// For devices that support vector fonts we use them,
-// to get a more even distribution of the font sizes
+// The UI Libs contain info on fonts and icons available
+// To save memory, there is a reduced set for glances
+
+// For widgets, there are three different implementations
+// Vector: devices with scalable fonts use an evenly distributed set of font sizes
+// Static: for devices without scalable fonts a set of standard fonts is used
+// StaticOptimized: sometimes different standard fonts have the same size, in this 
+//                  case this optimized version weeds out the duplicate
+
+
+// Widget/Vector
 (:exclForFontsStatic :exclForFontsStaticOptimized) class EvccUILibWidgetSingleton extends EvccUILibWidgetBase {
     private static var _instance as EvccUILibWidgetSingleton?;
     static function getInstance() as EvccUILibWidgetSingleton {
@@ -48,10 +56,22 @@ import Toybox.Graphics;
     }
 }
 
-// Fonts and icons for widgets
-// For some devices that do not support vector fonts we use
-// an optimized combination of static fonts to get a better
-// result
+// Widget/Static
+// This is the most-memory friendly version
+(:exclForFontsVector :exclForFontsStaticOptimized) class EvccUILibWidgetSingleton extends EvccUILibWidgetBase {
+    private static var _instance as EvccUILibWidgetSingleton?;
+    static function getInstance() as EvccUILibWidgetSingleton {
+        if( _instance == null ) {
+            _instance = new EvccUILibWidgetSingleton();
+        }
+        return _instance;
+    }
+    private function initialize() {
+        EvccUILibWidgetBase.initialize();
+    }
+}
+
+// Widget/StaticOptimized
 (:exclForFontsVector :exclForFontsStatic) class EvccUILibWidgetSingleton extends EvccUILibWidgetBase {
     private static var _instance as EvccUILibWidgetSingleton?;
     static function getInstance() as EvccUILibWidgetSingleton {
@@ -70,7 +90,6 @@ import Toybox.Graphics;
         // As first step, we skip any font that is the same size as its predecessor
         // and move the remaining fonts up. The vacated positions in the end will
         // be filled with the smallest font.
-
         var fontsPreset = fonts as FontsArr;
 
         // Fill an array with all the heights, to avoid multiple costly 
@@ -132,22 +151,8 @@ import Toybox.Graphics;
     }
 }
 
-// In the simplest version we just take the fonts defined in the
-// base as they are. This is the most memory-friendly version
-(:exclForFontsVector :exclForFontsStaticOptimized) class EvccUILibWidgetSingleton extends EvccUILibWidgetBase {
-    private static var _instance as EvccUILibWidgetSingleton?;
-    static function getInstance() as EvccUILibWidgetSingleton {
-        if( _instance == null ) {
-            _instance = new EvccUILibWidgetSingleton();
-        }
-        return _instance;
-    }
-    private function initialize() {
-        EvccUILibWidgetBase.initialize();
-    }
-}
-
-
+// Widget
+// Base class for all three implementations
 class EvccUILibWidgetBase {
     public var fonts = [ Graphics.FONT_MEDIUM, Graphics.FONT_SMALL, Graphics.FONT_TINY, Graphics.FONT_GLANCE, Graphics.FONT_XTINY ] as FontsArr;
     public static var FONT_MEDIUM = 0;
@@ -173,7 +178,8 @@ class EvccUILibWidgetBase {
     (:release) protected function debugFonts();
 }
 
-// Fonts and icons for glance
+// Glance
+// Only available for full-featured glance
 (:glance :exclForGlanceTiny :exclForGlanceNone) class EvccUILibGlanceSingleton {
     private static var _instance as EvccUILibGlanceSingleton?;
     static function getInstance() as EvccUILibGlanceSingleton {

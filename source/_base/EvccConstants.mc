@@ -6,6 +6,9 @@ import Toybox.Graphics;
     public static const STORAGE_ACTIVESITE = "activeSite";
     public static const STORAGE_SITE_PREFIX = "site_";
     public static const STORAGE_BREAD_CRUMBS = "breadCrumbs";
+    
+    // Error messages to be passed on from the background to
+    // foreground tasks
     public static const STORAGE_BG_ERROR_MSG = "bgErrorMsg";
     public static const STORAGE_BG_ERROR_CODE = "bgErrorCode";
 

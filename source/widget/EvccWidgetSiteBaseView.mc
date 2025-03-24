@@ -5,8 +5,10 @@ import Toybox.Timer;
 import Toybox.Application.Properties;
 import Toybox.Math;
 
- // Base view for all views using and showing
+ // This is the base view for all views using and showing
  // data from the state of a site
+ // It provides handling of the site, state request and
+ // same level and lower level views
  class EvccWidgetSiteBaseView extends WatchUi.View {
     
     private var _pageIndex as Number;
@@ -50,9 +52,8 @@ import Toybox.Math;
         // EvccHelperBase.debug( "Widget: onLayout" );
     }
 
-    // Called when this View is brought to the foreground. Restore
-    // the state of this View and prepare it to be shown. This includes
-    // loading resources into memory.
+    // Called when the view is brought to the foreground.
+    // Activates the state request for this view
     function onShow() as Void {
         try {
             // EvccHelperBase.debug( "Widget: onShow" );
@@ -71,16 +72,9 @@ import Toybox.Math;
             dc.setColor( EvccConstants.COLOR_FOREGROUND, EvccConstants.COLOR_BACKGROUND );
             dc.clear();
 
-            // EvccUILibWidgetSingleton.getInstance().fonts[3] = Graphics.FONT_GLANCE;
-
+            // Draw the header, footer, page indicator and select indicator
             var ca = drawShell( dc );
-            /*
-            var ca = new EvccContentArea();
-            ca.width = dc.getWidth();
-            ca.height = dc.getHeight();
-            ca.x = ca.width / 2;
-            ca.y = ca.height / 2;
-            */
+
             var block = new EvccUIVertical( dc, {} );
             
             if( ! stateRequest.hasLoaded() ) {
@@ -91,6 +85,7 @@ import Toybox.Math;
                 if( stateRequest.hasError() ) {
                     throw new StateRequestException( stateRequest.getErrorCode(), stateRequest.getErrorMessage() );
                 } else { 
+                    // The actual content comes from implementations of this class
                     addContent( block, dc );
                 }
             }
@@ -110,6 +105,11 @@ import Toybox.Math;
             // but will not automatically be choosen for the main content
             for( ; font < fonts.size() - 1; font++ ) {
                 block.setOption( :font, font );
+                // The implementation of this class determines if the sizing should
+                // happen based on height or width
+                // Generally applying both would be to cpu-intense
+                // Note: the main view is sized by height, but uses the truncate
+                // feature of the EvccDrawingTools to cut content to width
                 if( limitHeight() && block.getHeight() <= ca.height ) {
                     break;
                 } else if ( limitWidth() && block.getWidth() <= ca.width ) {
@@ -127,13 +127,12 @@ import Toybox.Math;
     }
 
     // Function to be overriden to add content to the view
-    function addContent( block as EvccUIVertical, dc as Dc ) {
-        block.addText( "Hello World!", {} );
-    }
+    function addContent( block as EvccUIVertical, dc as Dc ) {}
 
     function drawShell( dc as Dc ) as EvccContentArea {
         var stateRequest = getStateRequest();
 
+        // The font size of the hader is fixed to the second-smallest
         var font = EvccUILibWidgetSingleton.FONT_XTINY;
         
         var siteCount = EvccSiteConfigSingleton.getSiteCount();
@@ -146,6 +145,7 @@ import Toybox.Math;
 
         var xCenter = dc.getWidth() / 2;
 
+        // If there is more than one site, we display the site title
         if( siteCount > 1 ) {
             hasSiteTitle = true;
             if( stateRequest.getState() != null ) {
@@ -154,12 +154,12 @@ import Toybox.Math;
             }
         }
         
-        // page title (icon) is provided by the class' implementation
+        // Page title (icon) is provided by the class' implementation
         var pageTitle = getPageTitle( dc );
         if( pageTitle != null ) {
             if( hasSiteTitle ) {
-                // If we have a site title, we leave the font (=icon size) for the page title the same as
-                // the site title, and add a bit of space
+                // If we have a site title, we leave the font (=icon size) for the 
+                // page title the same as the site title, and add a bit of space
                 pageTitle.setOption( :marginTop, spacing * 2 / 3 );
             } else {
                 // If there is no site title, we set the font (=icon size) to the
@@ -181,21 +181,24 @@ import Toybox.Math;
             header.setOption( :marginBottom, spacing );
         }
 
+        // Draw the header
         var headerHeight = header.getHeight();
         header.draw( xCenter, headerHeight / 2 );
-
-        var logo = new EvccUIBitmap( Rez.Drawables.logo_evcc, dc, { :marginTop => spacing, :marginBottom => spacing } );
         
+        // Draw the logo
+        var logo = new EvccUIBitmap( Rez.Drawables.logo_evcc, dc, { :marginTop => spacing, :marginBottom => spacing } );
         var logoHeight = logo.getHeight();
-
         logo.draw( xCenter, dc.getHeight() - logoHeight / 2 );
 
+        // Define the content area
         var ca = new EvccContentArea();
         ca.x = xCenter;
         ca.width = dc.getWidth();
         ca.height = dc.getHeight() - headerHeight - logoHeight;
         ca.y = headerHeight + ca.height / 2;
 
+        // If applicable, draw the page indicator and adjust the
+        // content area
         if( showPageIndicator() ) {
             new EvccPageIndicator( dc ).drawPageIndicator( _pageIndex, getSameLevelViewCount() );
             var piX = dc.getWidth() * ( 0.5 - EvccPageIndicator.RADIUS_FACTOR );
@@ -211,6 +214,7 @@ import Toybox.Math;
             ca.x = piX * 2 + dotRadius * 2 * 2/3 + ca.width / 2;
         }
 
+        // Draw the select indicator
         if( showSelectIndicator() ) {
             drawSelectIndicator( dc );
         }
@@ -223,6 +227,8 @@ import Toybox.Math;
         dc.drawRectangle( ca.x - ca.width / 2, ca.y - ca.height / 2, ca.width, ca.height );
         dc.drawLine( ca.x - ca.width / 2, ca.y, ca.x + ca.width / 2, ca.y );
         */
+        
+        // Return the content area dimensions
         return ca;
     }
     
@@ -288,9 +294,7 @@ import Toybox.Math;
     }
 
     // Function to be overriden to add a page title to the view
-    function getPageTitle( dc as Dc ) as EvccUIBlock? {
-        return null;
-    }
+    function getPageTitle( dc as Dc ) as EvccUIBlock? { return null; }
 
     // Decide whether the content shall be limited by
     // height and/or width. Default is height only
@@ -303,9 +307,11 @@ import Toybox.Math;
     // watches that do not support glances. See EvccApp for
     // details
     public function actsAsGlance() as Boolean { return false; }
-
 }
 
+// Used to pass the dimensions of the content area from drawShell
+// to addContent. x/y define where on the screen the center of the
+// content area shall be located
 class EvccContentArea {
     var x = 0;
     var y = 0;

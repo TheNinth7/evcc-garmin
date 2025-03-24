@@ -4,7 +4,7 @@ import Toybox.WatchUi;
 import Toybox.Timer;
 import Toybox.Application.Properties;
 
-// The view implementing the standard glance
+// The view implementing the full-featured glance
 // This implementation is intended to be used for glances with
 // 64kB or more memory for the glance
 (:glance :exclForGlanceTiny :exclForGlanceNone) class EvccGlanceView extends WatchUi.GlanceView {

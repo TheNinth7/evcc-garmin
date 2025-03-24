@@ -7,6 +7,16 @@ import Toybox.Math;
 
  // The main view showing the most important aspects of the state of one evcc instance
  class EvccWidgetSiteMainView extends EvccWidgetSiteBaseView {
+
+    // This function returns a list of views for all sites
+    static function getAllSiteViews() as SiteViewsArr {
+        var views = new SiteViewsArr[0];
+        var siteCount = EvccSiteConfigSingleton.getSiteCount();
+        for( var i = 0; i < siteCount; i++ ) {
+           views.add( new EvccWidgetSiteMainView( views, i, null, i, false ) );
+        }
+        return views;
+    }
     
     // Indicates that we act as glance and present only one site
     // If a device does not support glances, then in the initial
@@ -19,7 +29,7 @@ import Toybox.Math;
     // When we process the state the first time, we check if a
     // forecast is available and if yes add the forecast view 
     var _hasForecast = false;
-    
+
     function initialize( views as SiteViewsArr, pageIndex as Number, parentView as EvccWidgetSiteBaseView?, siteIndex as Number, actAsGlance as Boolean ) {
         // EvccHelperBase.debug("Widget: initialize");
         EvccWidgetSiteBaseView.initialize( views, pageIndex, parentView, siteIndex );
@@ -37,26 +47,6 @@ import Toybox.Math;
             // are multiple sites, or to the same level
             addDetailViews();
         }
-    }
-
-    // We check if detail views are available and then pass on to the base onUpdate function
-    function onUpdate( dc as Dc ) as Void {
-        // With every update we check if there are maybe new detail views to be displayed
-        // This is important when we initially do not have an up-to-date state and therefore 
-        // state-dependent detail views are not added in the addDetailViews() call from the 
-        // constructor
-        addDetailViews();
-        EvccWidgetSiteBaseView.onUpdate( dc );
-    }
-
-    // This function returns a list of views for all sites
-    static function getAllSiteViews() as SiteViewsArr {
-        var views = new SiteViewsArr[0];
-        var siteCount = EvccSiteConfigSingleton.getSiteCount();
-        for( var i = 0; i < siteCount; i++ ) {
-           views.add( new EvccWidgetSiteMainView( views, i, null, i, false ) );
-        }
-        return views;
     }
 
     // Detail views present additional data for a particular site. This function adds 
@@ -94,9 +84,7 @@ import Toybox.Math;
     }
 
 
-    // Called when this View is brought to the foreground. Restore
-    // the state of this View and prepare it to be shown. This includes
-    // loading resources into memory.
+    // If we act as glance, we update the current site
     function onShow() as Void {
         try {
             // EvccHelperBase.debug( "Widget: onShow" );
@@ -105,13 +93,25 @@ import Toybox.Math;
             // and we have to switch the glance view to the 
             // site last selected
             if( _actAsGlance ) {
-                setSiteIndex( EvccBreadCrumbRootReadOnly.getSelectedChild( EvccSiteConfigSingleton.getSiteCount() ) );
+                setSiteIndex( EvccBreadCrumbSiteReadOnly.getSelectedSite( EvccSiteConfigSingleton.getSiteCount() ) );
             }
             EvccWidgetSiteBaseView.onShow();
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
         }
     }
+
+
+    // We check if detail views are available and then pass on to the base onUpdate function
+    function onUpdate( dc as Dc ) as Void {
+        // With every update we check if there are maybe new detail views to be displayed
+        // This is important when we initially do not have an up-to-date state and therefore 
+        // state-dependent detail views are not added in the addDetailViews() call from the 
+        // constructor
+        addDetailViews();
+        EvccWidgetSiteBaseView.onUpdate( dc );
+    }
+
 
     private static var SMALL_LINE = 0.6; // site title, charging details and logo count only as the fraction of a line specified here
     private static var MAX_VAR_LINES = 6; // 1 x site title, 1 x battery, 2 x loadpoints with 2 lines each

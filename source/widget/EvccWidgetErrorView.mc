@@ -18,12 +18,7 @@ class EvccWidgetErrorView extends WatchUi.View {
 
     // Update the view
     function onUpdate(dc as Dc) as Void {
-        
         EvccHelperUI.drawError( dc, _ex );
-
-        // NEW ERROR HANDLING
-        //var drawElement = new EvccUIText( errorMsg, dc, { :font => Graphics.FONT_GLANCE, :color => EvccConstants.COLOR_ERROR } );
-        //drawElement.draw( dc.getWidth() / 2, dc.getHeight() / 2 );
     }
 
 }

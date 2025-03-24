@@ -19,7 +19,7 @@ import Toybox.Application.Storage;
     function initialize( index as Number ) {
         // EvccHelperBase.debug("TinyGlance: initialize");
         GlanceView.initialize();
-        _stateStore = new EvccStateStore( EvccBreadCrumbRootReadOnly.getSelectedChild( EvccSiteConfigSingleton.getSiteCount() ) );
+        _stateStore = new EvccStateStore( EvccBreadCrumbSiteReadOnly.getSelectedSite( EvccSiteConfigSingleton.getSiteCount() ) );
     }
 
     function onLayout(dc as Dc) as Void {
@@ -57,6 +57,7 @@ import Toybox.Application.Storage;
             var siteData = _stateStore.getStateFromStorage() as EvccState?;
             var errorMsg = Storage.getValue( EvccConstants.STORAGE_BG_ERROR_MSG );
 
+            // Check the storage for error messages
             if( errorMsg != null && errorMsg != "" ) {
                 var errorCode = Storage.getValue( EvccConstants.STORAGE_BG_ERROR_CODE );
                 throw new StateRequestException( errorCode, errorMsg );
@@ -119,11 +120,6 @@ import Toybox.Application.Storage;
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
             EvccHelperUI.drawError( dc, ex );
-
-            // NEW ERROR HANDLING
-            //dc.setColor( EvccConstants.COLOR_ERROR, Graphics.COLOR_TRANSPARENT );
-            //var errorMsg = "Error:\n" + ex.getErrorMessage();
-            //dc.drawText( 0, dc.getHeight() / 2, Graphics.FONT_GLANCE, errorMsg, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER );
         }
     }
 

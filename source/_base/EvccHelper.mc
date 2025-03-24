@@ -7,6 +7,7 @@ import Toybox.Graphics;
 import Toybox.WatchUi;
 import Toybox.Application;
 
+// Base helper is available in all scopes
 (:background :glance) class EvccHelperBase {
 
     // For power values, the round and format is separated,
@@ -53,7 +54,7 @@ import Toybox.Application;
     (:release) public static function debugException( ex as Exception ) {}
 }
 
-// Helper functions for UI tasks, to be used in glance and widget
+// UI helper is available in glance and foreground scope
 (:glance) class EvccHelperUI {
     
     static function getVersion() {
@@ -144,7 +145,7 @@ import Toybox.Application;
 }
 
 
-// Helper functions for UI tasks, to be used in widget only
+// Widget helper is available in foreground (widget) scope only
 class EvccHelperWidget {
     
     // Function to format power values for the main view

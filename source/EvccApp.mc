@@ -43,7 +43,7 @@ import Toybox.Math;
             // We store the active site, so when the widget is reopened, it 
             // starts with the site displayed last. Also the glance is using
             // the active site and is only displaying its data.
-            var activeSite = EvccBreadCrumbRootReadOnly.getSelectedChild( siteCount );
+            var activeSite = EvccBreadCrumbSiteReadOnly.getSelectedSite( siteCount );
 
             // We delete any unused site entries from storage
             // This is for the case when sites get deleted from
@@ -149,7 +149,7 @@ import Toybox.Math;
         // We store the active site, so when the widget is reopened, it 
         // starts with the site displayed last. Also the glance is using
         // the active site and is only displaying its data.
-        var activeSite = EvccBreadCrumbRootReadOnly.getSelectedChild( EvccSiteConfigSingleton.getSiteCount() );
+        var activeSite = EvccBreadCrumbSiteReadOnly.getSelectedSite( EvccSiteConfigSingleton.getSiteCount() );
 
         return [new EvccBackground( activeSite )];
     }    

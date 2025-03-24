@@ -14,6 +14,7 @@ If you still have questions after reading this guide, check the [Support](#help-
 - [Supported Devices](#supported-devices)
 - [Troubleshooting](#troubleshooting)
 - [Help & Support](#help--support)
+- [Changelog](#changelog)
 
 
 # Connectivity
@@ -343,3 +344,11 @@ Some other common errors are:
 # Help & Support
 
 You can get help by posting in [this thread](https://github.com/evcc-io/evcc/discussions/14013) on the evcc forum or by reaching out to the developer via the **Contact Developer** link on the app's [Connect IQ Store page](https://apps.garmin.com/en-US/apps/2bc2ba9d-b117-4cdf-8fa7-078c1ac90ab0).
+
+# Changelog
+
+| Version | Description |
+|--------:|-------------|
+| **v1.3** | **ATTENTION:** This update requires you to re-enter your settings. Please ensure you have them noted down beforehand.<br><br>**Changes:**<ul><li>Added forecast view</li><li>Introduced support for additional views, enabling future extensions</li><li>Optimized memory usage</li><li>Enhanced graphics engine, including improved font selection</li></ul>
+
+ |

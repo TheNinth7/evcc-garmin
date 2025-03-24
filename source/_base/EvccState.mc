@@ -302,10 +302,6 @@ import Toybox.Time;
 }
 
 // Class to represent the forecast
-// Optimization potential: dictionary with the three days
-// less code, but dictionary??
-// Optimization potential: remove complete
-
 (:glance :background) class EvccSolarForecast {
     private var _hasForecast = false;
     function hasForecast() as Boolean { return _hasForecast; }

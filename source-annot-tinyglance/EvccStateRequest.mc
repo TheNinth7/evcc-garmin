@@ -12,6 +12,9 @@ import Toybox.Application.Storage;
 import Toybox.Time;
 import Toybox.PersistedContent;
 
+// The state request manages the HTTP request to the evcc instance
+// If available and within the data expiry time, a stored state
+// is made available till new data arrives
 (:background) class EvccStateRequest {
     
     private var _siteIndex as Number;
@@ -194,19 +197,5 @@ import Toybox.PersistedContent;
                 _stateStore.persist();
             }
         }
-    }
-}
-
-// Exception indicating that an error occured when requesting
-// the evcc state
-(:glance) class StateRequestException extends EvccBaseException {
-    private var _code as String;
-    private var _msg as String;
-    function getErrorCode() as String { return _code; }
-    function getErrorMessage() as String? { return _msg; }
-    function initialize( code as String, msg as String ) {
-        EvccBaseException.initialize();
-        _code = code;
-        _msg = msg;
     }
 }

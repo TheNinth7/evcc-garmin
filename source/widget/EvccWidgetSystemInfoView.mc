@@ -4,14 +4,15 @@ import Toybox.Application;
 import Toybox.Lang;
 import Toybox.System;
 
-// Simple view for showing version of the app
+// Simple view for showing version of the app and some other device settings
 (:exclForSystemInfoNone) class EvccWidgetSystemInfoView extends WatchUi.View {
     private var _spacing = 0;
 
     function initialize() {
         View.initialize();
     }
-    // Update the view
+
+    // Draw the content
     function onUpdate(dc as Dc) as Void {
             dc.setColor( EvccConstants.COLOR_FOREGROUND, EvccConstants.COLOR_BACKGROUND );
             dc.clear();
@@ -26,16 +27,15 @@ import Toybox.System;
 
             block.addText( "part # " + System.getDeviceSettings().partNumber, { :marginTop => _spacing } );
 
+            // Show font mode and if icons are the correct size
             checkFonts( block, dc );
+            
             block.draw( dc.getWidth() / 2, dc.getHeight() / 2 );
     
-            /*
-            var height = Graphics.getFontHeight( Graphics.FONT_SMALL );
-            dc.drawText( dc.getWidth() / 2, dc.getWidth() / 2 - height, Graphics.FONT_SMALL, "HUHU", Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER );
-            var vfont = Graphics.getVectorFont( { :face => "RobotoCondensedBold", :size => height - 3 } );
-            dc.drawText( dc.getWidth() / 2, dc.getWidth() / 2 + height, vfont, "HUHU", Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER );
-            */
     }
+
+    // checkFonts() is only implemented for :debug scope
+    (:release) function checkFonts( block as EvccUIVertical, dc as Dc ) as Void {}
 
     (:debug :exclForGlanceTiny :exclForGlanceNone ) function checkFonts( block as EvccUIVertical, dc as Dc ) as Void {
         block.addText( "fonts: " + fontMode(), { :marginTop => _spacing } );
@@ -77,6 +77,4 @@ import Toybox.System;
     (:debug :exclForFontsVector :exclForFontsStatic) function fontMode() as String { return "static-opt"; }
     (:debug :exclForFontsVector :exclForFontsStaticOptimized) function fontMode() as String { return "static"; }
 
-    (:release) function checkFonts( block as EvccUIVertical, dc as Dc ) as Void {}
 }
-
