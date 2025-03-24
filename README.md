@@ -12,7 +12,7 @@ https://evccg.the-ninth.com
 
 # Table of Contents
 
-This document covers the following topics:
+This README covers the following topics:
 
 - [Introduction](#introduction)
 - [Project Structure](#project-structure)
