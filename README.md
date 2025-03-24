@@ -10,6 +10,30 @@ https://evccg.the-ninth.com
 
 <br>
 
+# Table of Contents
+
+This document covers the following topics:
+
+- [Introduction](#introduction)
+- [Project Structure](#project-structure)
+  - [Root Folder `/`](#root-folder-)
+  - [Folder `/docs`](#folder-docs)
+  - [Folder `/icons`](#folder-icons)
+    - [How the App Selects Font Sizes](#how-the-app-selects-font-sizes)
+      - [1. Vector Font Mode (Modern Devices)](#1-vector-font-mode-modern-devices)
+      - [2. Static Mode](#2-static-mode)
+      - [3. Static Optimized Mode](#3-static-optimized-mode)
+    - [How to Add a Device to generate.json](#how-to-add-a-device-to-generatejson)
+  - [Folders `/resources*` and `/settings*`](#folders-resources-and-settings)
+  - [Folders `/source*`](#folders-source)
+- [Build Instructions](#build-instructions)
+  - [To run the app in the Garmin simulator](#to-run-the-app-in-the-garmin-simulator)
+  - [To compile for a single device](#to-compile-for-a-single-device)
+  - [To compile for all devices and export `.iq` file for upload](#to-compile-for-all-devices-and-export-iq-file-for-upload)
+  - [To Add a New Device](#to-add-a-new-device)
+
+<br>
+
 # Introduction
 
 Built using the Garmin Connect IQ SDK, evccg includes the following application types:
@@ -31,8 +55,6 @@ Built using the Garmin Connect IQ SDK, evccg includes the following application 
 # Project Structure
 
 The project is organized into the following directories:
-
-<br>
 
 ## Root Folder `/`
 
@@ -222,9 +244,12 @@ The app is written in **Monkey C**, Garmin's programming language, using the Con
 
 <br>
 
-## Contributing
+# Build Instructions
 
-To run the app in the Garmin simulator:
+Follow the steps below to build, run, and test the app using the Connect IQ SDK and Garmin simulator.
+<br>
+
+## To run the app in the Garmin simulator
 
 1. Install:
    - Visual Studio Code
@@ -239,17 +264,21 @@ To run the app in the Garmin simulator:
    - Use `https://demo.evcc.io/` for testing if you don’t have a local instance  
    - To allow HTTP URLs, uncheck `Settings > Use Device HTTPS Requirements`
 
-To compile for a single device:
+<br>
+
+## To compile for a single device
 
 - Press `CTRL+SHIFT+P` → `Monkey C: Build Current Project`
 
-To compile for all devices and export `.iq` files for upload:
+<br>
+
+## To compile for all devices and export `.iq` file for upload
 
 - Press `CTRL+SHIFT+P` → `Monkey C: Export Project`
 
 <br>
 
-## Adding New Devices
+## To Add a New Device
 
 To support a new device:
 
