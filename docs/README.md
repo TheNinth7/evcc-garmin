@@ -15,6 +15,7 @@ If you still have questions after reading this guide, check the [Support](#help-
 - [Troubleshooting](#troubleshooting)
 - [Help & Support](#help--support)
 - [Changelog](#changelog)
+- [GitHub]
 
 
 # Connectivity
@@ -347,8 +348,12 @@ You can get help by posting in [this thread](https://github.com/evcc-io/evcc/dis
 
 # Changelog
 
-| Version | Description |
+| Version | Changes |
 |--------:|-------------|
-| **v1.3** | **ATTENTION:** This update requires you to re-enter your settings. Please ensure you have them noted down beforehand.<br><br>**Changes:**<ul><li>Added forecast view</li><li>Introduced support for additional views, enabling future extensions</li><li>Optimized memory usage</li><li>Enhanced graphics engine, including improved font selection</li></ul>
-
- |
+| **v1.3** | Added forecast view<br>Introduced support for additional views, enabling future extensions<br>Optimized memory usage<br>Enhanced UI engine, including improved font selection<br>**ATTENTION:** This update requires you to re-enter your settings. Please ensure you have them noted down beforehand.
+| **v1.2.2** | added system info view (opened by menu key)
+| **v1.2.1** | improved error handling
+| **v1.2** | added support for new REST API structure (grid data) of upcoming evcc versions. Upgraded to Garmin Connect IQ SDK 7.4.3
+| **v1.1.1** | Refinement of UI engine
+| **v1.1** | Added support for heater loadpoints in widget mode, with display of temperature and power consumption
+| **v1.0** | First stable version
