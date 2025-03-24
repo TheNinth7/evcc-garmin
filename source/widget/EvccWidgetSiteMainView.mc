@@ -68,11 +68,12 @@ import Toybox.Math;
     function addDetailViews() {
         if( ! _hasForecast ) {
             var staterq = getStateRequest();
-            if( staterq != null ) {
-                if( staterq.hasLoaded() && ! staterq.hasError() && staterq.getState().hasForecast() ) {
-                    _hasForecast = true;
-                    addDetailView( EvccWidgetSiteForecastView );
-                }
+            // Note that we DO NOT check fore staterq.hasLoaded(). In this instance we are not interested
+            // whether the stored state is current or not. Regardless of age, if the previous state had a 
+            // forecast we assume that there is still a forecast
+            if( ! staterq.hasError() && staterq.getState() != null && staterq.getState().hasForecast() ) {
+                _hasForecast = true;
+                addDetailView( EvccWidgetSiteForecastView );
             }
         }
     }

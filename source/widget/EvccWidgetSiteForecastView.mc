@@ -46,7 +46,8 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
                 block.addText( "adj. w\\ real data", { :relativeFont => 4, :marginTop => dc.getHeight() * 0.007 } );
             }
         } else {
-            block.addText( "Forecast not available!", {} );
+            block.addText( "Site has no forecast!", {} );
+            block.addText( "Restart app to remove view", { :relativeFont => 4, :marginTop => dc.getHeight() * 0.007 } );
         }
 
         // Add a small margin to the bottom. While the content is centered vertically between title and logo,

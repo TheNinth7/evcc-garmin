@@ -85,6 +85,8 @@ import Toybox.Math;
             
             if( ! stateRequest.hasLoaded() ) {
                 block.addText( "Loading ...", {} );
+                // Always vertically center the Loading message
+                ca.y = dc.getHeight() / 2;
             } else { 
                 if( stateRequest.hasError() ) {
                     throw new StateRequestException( stateRequest.getErrorCode(), stateRequest.getErrorMessage() );
@@ -213,8 +215,9 @@ import Toybox.Math;
             drawSelectIndicator( dc );
         }
 
-        /*
+        
         // Code for drawing visual alignment grid 
+        /*
         dc.setPenWidth( 1 );
         dc.drawCircle( dc.getWidth() / 2, dc.getHeight() / 2, dc.getWidth() / 2 );
         dc.drawRectangle( ca.x - ca.width / 2, ca.y - ca.height / 2, ca.width, ca.height );

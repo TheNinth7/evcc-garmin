@@ -4,30 +4,32 @@ import Toybox.Time;
 
 // This class provides access to the site states in persistant storage
 (:glance :background) class EvccStateStore {
-    private var _index as Number;
+    private var _siteIndex as Number;
     private var _state as EvccState?;
 
     private const NAME_DATA = "data";
     private const NAME_DATATIMESTAMP = "dataTimestamp";
 
-    function initialize( index as Number ) {
+    function initialize( siteIndex as Number ) {
         // EvccHelperBase.debug("EvccStateStore: initialize");
-        _index = index;
+        _siteIndex = siteIndex;
     }
 
     static function clearUnusedSites( totalSites as Number ) {
         for( var i = totalSites; i < EvccConstants.MAX_SITES; i++ ) {
-            Storage.deleteValue( EvccConstants.STORAGE_SITE_PREFIX + i );
             // EvccHelperBase.debug( "EvccStateStore: clearing site " + i );
+            Storage.deleteValue( EvccConstants.STORAGE_SITE_PREFIX + i );
         }
     }
 
     function setState( result as Dictionary<String,Object?> ) {
-        // EvccHelperBase.debug( "EvccStateStore: storing site " + _index );
+        // EvccHelperBase.debug( "EvccStateStore: storing site " + _siteIndex );
         _state = new EvccState( result, Time.now() );
     }
 
     // The standard getState returns buffered states if available ...
+    // Note that this function returns the state regardless of timestamp
+    // If you want state only if it is current, check StateRequest.hasLoaded
     function getState() as EvccState? {
         if( _state == null ) {
             _state = getStateFromStorage();
@@ -39,8 +41,8 @@ import Toybox.Time;
     // this is used in situations where the data is put in storage by
     // the background service (e.g. the tiny glance)
     function getStateFromStorage() as EvccState? {
-        // EvccHelperBase.debug( "EvccStateStore: reading site " + _index );
-        var siteData = Storage.getValue( EvccConstants.STORAGE_SITE_PREFIX + _index ) as Dictionary<String,Object>;
+        // EvccHelperBase.debug( "EvccStateStore: reading site " + _siteIndex );
+        var siteData = Storage.getValue( EvccConstants.STORAGE_SITE_PREFIX + _siteIndex ) as Dictionary<String,Object>;
         var state = null;
 
         if( siteData != null ) {
@@ -64,11 +66,11 @@ import Toybox.Time;
     // JSON data in dictionary form in memory anymore.
     function persist() {
         if( _state != null ) {
-            // EvccHelperBase.debug( "EvccStateStore: persisting site " + _index );
+            // EvccHelperBase.debug( "EvccStateStore: persisting site " + _siteIndex );
             var siteData = {} as Dictionary<String,Object?>;
             siteData[NAME_DATA] = _state.serialize();
             siteData[NAME_DATATIMESTAMP] = _state.getTimestamp().value();
-            Storage.setValue( EvccConstants.STORAGE_SITE_PREFIX + _index, siteData );
+            Storage.setValue( EvccConstants.STORAGE_SITE_PREFIX + _siteIndex, siteData );
             _state = null;
         } else {
             // EvccHelperBase.debug( "EvccStateStore: state is null!" );
