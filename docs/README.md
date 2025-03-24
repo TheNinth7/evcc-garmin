@@ -15,7 +15,7 @@ If you still have questions after reading this guide, check the [Support](#help-
 - [Troubleshooting](#troubleshooting)
 - [Help & Support](#help--support)
 - [Changelog](#changelog)
-- [GitHub]
+- [GitHub](#github)
 
 
 # Connectivity
@@ -357,3 +357,9 @@ You can get help by posting in [this thread](https://github.com/evcc-io/evcc/dis
 | **v1.1.1** | Refinement of UI engine
 | **v1.1** | Added support for heater loadpoints in widget mode, with display of temperature and power consumption
 | **v1.0** | First stable version
+
+# GitHub
+
+You can find the GitHub repository here: [TheNinth7/evcc-garmin](https://github.com/TheNinth7/evcc-garmin).  
+
+The project’s `README.md` provides an overview of the structure and includes additional information to help you better understand the codebase.

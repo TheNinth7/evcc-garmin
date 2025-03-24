@@ -87,7 +87,7 @@ At runtime, the app dynamically selects the appropriate font size based on the d
   - `drawables.xml` as parameter: only copies `drawables.xml` to all device resource folders
 - `generate.js`: JavaScript script, run by `generate.bat` using Windows Scripting Host
 
-**How the App Selects Font Sizes**
+### How the App Selects Font Sizes
 
 For glances, a single font size is defined:
 
@@ -139,9 +139,38 @@ You can enable debugging in `EvccUILibWidgetSingleton` to print the actual font 
 - `icon_xtiny` → `FONT_XTINY`
 - `icon_micro` → `FONT_XTINY`
 
-**Further reading:**
 
-- [Connect IQ SDK Device Reference](https://developer.garmin.com/connect-iq/reference-guides/devices-reference/#devicereference)
+### How to Add a Device to `generate.json`
+
+Once you've determined the correct font sizes, you can add a corresponding entry to `generate.json`. There are two types of entries:
+
+- **Resolution-based entries** (e.g., `resources-round-416x416`) apply to all devices with the specified screen resolution.
+- **Device-specific entries** (e.g., `resources-fenix847mm`) use the device ID from Garmin’s [Device Reference](https://developer.garmin.com/connect-iq/reference-guides/devices-reference).
+
+> **Note:** Device-specific entries take precedence over general resolution-based entries. While the app initially relied on resolution-based mappings, differences in font rendering across devices with identical resolutions have led to an increasing use of ID-based entries.
+
+**Example entry:**
+```json
+"resources-fenix847mm": {
+  "mode": "vector",
+  "logo_flash": "65",
+  "logo_evcc": "26",
+  "icon_glance": "42",
+  "icon_micro": "33",
+  "icon_xtiny": "40",
+  "icon_tiny": "46",
+  "icon_small": "53",
+  "icon_medium": "59"
+}
+```
+
+**Explanation of fields:**
+
+- `icon_*`: These values correspond to the font sizes selected by the app, based on the method described [above](#how-the-app-selects-font-sizes).
+- `logo_flash`: Must match the **Launcher Icon Size** as listed in Garmin’s [Device Reference](https://developer.garmin.com/connect-iq/reference-guides/devices-reference).
+- `logo_evcc`: The logo shown at the bottom of the screen. Typically set to 65% of `icon_xtiny`.
+- `mode`: A comment indicating the font sizing mode used by the app for this device (e.g., `"vector"`, `"static"`, or `"static-optimized"`).
+- `devices`: (Only in resolution-based entries) A comment listing the devices this resolution mapping applies to.
 
 <br>
 
@@ -230,11 +259,7 @@ To support a new device:
 
 3. Configure device-specific features in the app (full-featured glance, vector fonts, etc.).
 
-4. In `icons/generate.json`, define the icon/font sizes for the new device:
-   - Reuse an existing entry (e.g. `"resources-round-416x416"`) if the resolution and font sizes match
-   - Or, create a new entry (e.g. `"resources-fenix843mm"`) based on the device ID
-   - Entries using a device ID will take precedence over general resolution-based entries
-   - Check the `/icons` section on how to make entries in `generate.json`
+4. In `icons/generate.json`, enter the icon/font sizes for the new device. See the [Folder `icon/`](#folder-icons) for more information.
 
 5. Run `/icons/generate.bat` to generate the icons
 
