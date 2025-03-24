@@ -277,7 +277,7 @@ Follow the steps below to build, run, and test the app using the Connect IQ SDK 
 
 <br>
 
-## To add a new Device
+## To add a new device
 
 To support a new device:
 
