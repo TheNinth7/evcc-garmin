@@ -288,9 +288,9 @@ The table below lists supported devices along with their capabilities. Click on 
 | fr265              | Full              | 5                       | Yes                              | Vector          |                                                                                    |
 | fr265s             | Full              | 5                       | Yes                              | Vector          |                                                                                    |
 | fr965              | Full              | 5                       | Yes                              | Vector          |                                                                                    |
-| venu2              | Full              | 5                       | Yes                              | Static-Opt      |                                                                                    |
-| venu2plus          | Full              | 5                       | Yes                              | Static-Opt      |                                                                                    |
-| venu2s             | Full              | 5                       | Yes                              | Static-Opt      |                                                                                    |
+| venu2              | Full              | 5                       | Yes                              | Static&#8209;Opt      |                                                                                    |
+| venu2plus          | Full              | 5                       | Yes                              | Static&#8209;Opt      |                                                                                    |
+| venu2s             | Full              | 5                       | Yes                              | Static&#8209;Opt      |                                                                                    |
 | venu3              | Full              | 5                       | Yes                              | Vector          |                                                                                    |
 | venu3s             | Full              | 5                       | Yes                              | Vector          |                                                                                    |
 | vivoactive3        | -                 | 1                       | No                               | Static          | May not work with large sites (memory limit)                                       |
@@ -298,7 +298,7 @@ The table below lists supported devices along with their capabilities. Click on 
 | vivoactive3mlte    | -                 | 1                       | No                               | Static          | May not work with large sites (cpu limit)                                          |
 | vivoactive4        | -                 | 5                       | Yes                              | Static          |                                                                                    |
 | vivoactive4s       | -                 | 5                       | Yes                              | Static          |                                                                                    |
-| vivoactive5        | Full              | 5                       | Yes                              | Static-Opt      |                                                                                    |
+| vivoactive5        | Full              | 5                       | Yes                              | Static&#8209;Opt      |                                                                                    |
 
 ## Max Sites
 
