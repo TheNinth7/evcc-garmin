@@ -80,11 +80,11 @@ At runtime, the app dynamically selects the appropriate font size based on the d
 **Key files:**
 
 - `generate.json`: Defines font/icon sizes per device and which icons to generate
-- `drawables.xml`: Garmin resource definition, which is copied to each device's resource folder
+- `drawables.xml`: Garmin resource definition file that maps icon files to resource identifiers used in the source code. It is identical for all devices and is copied—along with the generated PNGs—into each device-specific resource folder.
 - `generate.bat`: Generates icons. Usage:
   - No parameters: generates icons for all devices
   - Device folder as parameter (e.g. `resources-fenix7`): generates icons only for that device
-  - `drawables.xml` as parameter: only copies `drawables.xml` to all device resource folders
+  - `drawables.xml` as parameter: only copies `drawables.xml` to all device resource folders, without generating icons
 - `generate.js`: JavaScript script, run by `generate.bat` using Windows Scripting Host
 
 ### How the App Selects Font Sizes

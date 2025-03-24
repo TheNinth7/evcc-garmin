@@ -1,3 +1,7 @@
+<!-- 
+The master of this file is /icons/drawables.xml
+It is automatically copied by generate.js into each device resource folder, since it needs to reside in the same folder as the image files it refers to.
+-->
 <drawables>
     <bitmap id="logo_flash" filename="logo_flash_crushed.png" packingFormat="png"/>
     <bitmap scope="foreground" id="logo_evcc" filename="logo_evcc_crushed.png" packingFormat="png"/>
@@ -14,7 +18,8 @@
     <bitmap scope="glance" id="arrow_left_three_glance" filename="icon_glance_arrow_left_three_crushed.png" packingFormat="png"/>
 
     <!-- micro font size -->
-    <!-- exceptions - icons not available in all font sizes -->
+    <!-- only the clock icon (indicating remaining charging time) is needed here
+         all other icons are not used in the smallest size -->
     <bitmap scope="foreground" id="clock_micro" filename="icon_micro_clock_crushed.png" packingFormat="png"/>
 
     <!-- xtiny font size -->
