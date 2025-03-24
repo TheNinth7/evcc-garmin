@@ -29,7 +29,7 @@ This README covers the following topics:
   - [To run the app in the Garmin simulator](#to-run-the-app-in-the-garmin-simulator)
   - [To compile for a single device](#to-compile-for-a-single-device)
   - [To compile for all devices and export `.iq` file for upload](#to-compile-for-all-devices-and-export-iq-file-for-upload)
-  - [To Add a New Device](#to-add-a-new-device)
+  - [To add a new device](#to-add-a-new-device)
 
 <br>
 
