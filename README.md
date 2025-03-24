@@ -267,13 +267,13 @@ Follow the steps below to build, run, and test the app using the Connect IQ SDK 
 
 ## To compile for a single device
 
-- Press `CTRL+SHIFT+P` → `Monkey C: Build Current Project`
+1. Press `CTRL+SHIFT+P` → `Monkey C: Build Current Project`
 
 <br>
 
 ## To compile for all devices and export `.iq` file for upload
 
-- Press `CTRL+SHIFT+P` → `Monkey C: Export Project`
+1. Press `CTRL+SHIFT+P` → `Monkey C: Export Project`
 
 <br>
 
