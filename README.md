@@ -124,7 +124,7 @@ For the widget, five icon/font sizes are defined per device. In `generate.json`,
 
 > **Note:** These entries do not set the font sizes themselves. Instead, they must **match the font sizes the app selects at runtime**, based on one of the three methods below:
 
-**1. Vector Font Mode (Modern Devices)**
+#### 1. Vector Font Mode (Modern Devices)
 
 Modern devices support scalable vector fonts, allowing the app to evenly distribute font sizes as needed.
 
@@ -134,7 +134,7 @@ Modern devices support scalable vector fonts, allowing the app to evenly distrib
 
 You can enable debugging in `EvccUILibWidgetSingleton` to print the actual font sizes used at runtime.
 
-**2. Static Mode**
+#### 2. Static Mode
 
 In static mode, the app uses the device’s built-in font sizes without modification. You can refer to Garmin’s [Device Reference](https://developer.garmin.com/connect-iq/reference-guides/devices-reference) for exact font dimensions per device.
 
@@ -146,7 +146,7 @@ The mapping is as follows:
 - `icon_xtiny` → `FONT_GLANCE`
 - `icon_micro` → `FONT_XTINY`
 
-**3. Static Optimized Mode**
+#### 3. Static Optimized Mode
 
 In this mode, the app still relies on the device's standard fonts, but improves distribution by filtering out duplicate sizes, resulting in a more balanced range.
 
