@@ -161,9 +161,28 @@ You can enable debugging in `EvccUILibWidgetSingleton` to print the actual font 
 - `icon_micro` → `FONT_XTINY`
 
 
-### How to Add a Device to `generate.json`
+### How to Generate Icons for a New Device
 
-Once you've determined the correct font sizes, you can add a corresponding entry to `generate.json`. There are two types of entries:
+To determine the actual font sizes used by the app, follow these steps:
+
+1. **Add an entry** to `generate.json` for the target device. You can use placeholder values for the icon sizes—copying from a similar existing device works fine. This step is only required to get the app running so you can retrieve the font sizes.
+
+2. **Generate the icons** by running:  
+   ```cmd
+   generate.bat [device-family]
+   ```  
+   Replace `[device-family]` with the name of the entry you just added to `generate.json`.
+
+3. **Run the app in the simulator**, open the widget, and press the `m` key twice to open the system info view. The app will print the actual font sizes to the debug console.
+
+4. **Update the `generate.json` entry** with the correct font sizes based on the output.
+
+5. **Re-generate the icons** with the updated sizes:  
+   ```cmd
+   generate.bat [device-family]
+   ```
+
+There are two types of entries for devices in `generate.json`:
 
 - **Resolution-based entries** (e.g., `resources-round-416x416`) apply to all devices with the specified screen resolution.
 - **Device-specific entries** (e.g., `resources-fenix847mm`) use the device ID from Garmin’s [Device Reference](https://developer.garmin.com/connect-iq/reference-guides/devices-reference).
@@ -285,12 +304,15 @@ To support a new device:
 
 2. In `manifest.xml`, check the new device in the supported device list.
 
-3. Configure device-specific features in the app (full-featured glance, vector fonts, etc.).
+3. Configure device-specific features in the `monkey.jungle` build file (see [Root Folder `/`](#root-folder-)). The default feature set is a good starting point. You can launch the app in the simulator to evaluate whether any adjustments are needed. For example:
 
-4. In `icons/generate.json`, enter the icon/font sizes for the new device. See the [Folder `icon/`](#folder-icons) for more information.
+   - If the app reports that vector fonts are not supported, switch to static fonts—or to static optimized fonts if standard sizes overlap.
+   - If out-of-memory errors occur during testing, consider switching to Tiny Glance mode, limiting support to a single site, and removing the system info view.
+   - If watchdog errors occur (indicating that execution is taking too long), simplify complex calculations.
+   - If the select/enter button is in an unexpected position, change the rotation angle from 30° to another supported option.
 
-5. Run `/icons/generate.bat` to generate the icons
+4. Generate the icons for the new device following the steps described in [How to Generate Icons for a New Device](#how-to-generate-icons-for-a-new-device).
 
-6. Test in the simulator (see [Contributing](#contributing))
+6. Test in the simulator (see [above](#to-run-the-app-in-the-garmin-simulator))
 
 7. Export the project (`CTRL+SHIFT+P` → `Monkey C: Export Project`) and upload the `.iq` file to the Connect IQ Store

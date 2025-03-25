@@ -47,7 +47,6 @@ import Toybox.Graphics;
         }
         for( var i = 0; i < lfonts.size(); i++ ) {
             var height = Math.round( heights[i] ).toNumber();
-            // EvccHelperBase.debug( "Vector font " + i + " => " + height + "px" );
             lfonts[i] = Graphics.getVectorFont( { :face => faces, :size => height } );
             if( lfonts[i] == null ) {
                 throw new InvalidValueException( "Font faces not found!" );
@@ -130,24 +129,6 @@ import Toybox.Graphics;
         }
         */
         fonts = fontsOptimized;
-        
-        // debugFonts();
-    }
-
-    (:debug) private function debugFonts()
-    {
-        var fontsPreset = fonts as FontsArr;
-        for( var i = 0; i < fontsPreset.size(); i++ ) {
-            var text = "Static font " + i + " => ";
-            var font = fontsPreset[i];
-            if( font == Graphics.FONT_MEDIUM ) { text += "garmin-medium"; }
-            else if( font == Graphics.FONT_SMALL ) { text += "garmin-small"; }
-            else if( font == Graphics.FONT_TINY ) { text += "garmin-tiny"; }
-            else if( font == Graphics.FONT_GLANCE ) { text += "garmin-glance"; }
-            else if( font == Graphics.FONT_XTINY ) { text += "garmin-xtiny"; }
-            else { text += "unknown?!?"; }
-            EvccHelperBase.debug( text );
-        }
     }
 }
 

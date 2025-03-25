@@ -34,25 +34,61 @@ import Toybox.System;
     
     }
 
-    // checkFonts() is only implemented for :debug scope
+    // The checkFonts functions checks if the icon sizes match the
+    // font sizes choosen by the app, and in any case outputs the 
+    // correct icon sizes on the debug console
+    
+    // in :release scope, checkFonts is only a dummy
     (:release) function checkFonts( block as EvccUIVertical, dc as Dc ) as Void {}
 
+    (:debug) private var _debugDone = false;
+
+    // For full-glance devices we also check the glance icons
     (:debug :exclForGlanceTiny :exclForGlanceNone ) function checkFonts( block as EvccUIVertical, dc as Dc ) as Void {
+        if( ! _debugDone ) { EvccHelperBase.debug( "Icon sizes:" ); }
         block.addText( "fonts: " + fontMode(), { :marginTop => _spacing } );
-        checkIcons( EvccUILibWidgetSingleton.getInstance(), "w", block, dc );
-        checkIcons( EvccUILibGlanceSingleton.getInstance(), "g", block, dc );
+        checkIcons( EvccUILibWidgetSingleton.getInstance(), block, dc );
+        checkIcons( EvccUILibGlanceSingleton.getInstance(), block, dc );
+        _debugDone = true;
     }
 
+    // For devices with tiny or no glance we check only the widget icons
     (:debug :exclForGlanceFull ) function checkFonts( block as EvccUIVertical, dc as Dc ) as Void {
+        EvccHelperBase.debug( "Icon sizes:" );
         block.addText( "fonts: " + fontMode(), { :marginTop => _spacing } );
-        checkIcons( EvccUILibWidgetSingleton.getInstance(), "w", block, dc );
+        checkIcons( EvccUILibWidgetSingleton.getInstance(), block, dc );
+        _debugDone = true;
     }
 
-    (:debug) function checkIcons( uiLib, prefix as String, block as EvccUIVertical, dc as Dc ) as Void {
+    // Checking the icons for a given UI lib (glance or widget)
+    (:debug) function checkIcons( uiLib, block as EvccUIVertical, dc as Dc ) as Void {
         var fonts = uiLib.getInstance().fonts as FontsArr;
         var icons = uiLib.icons as Array<Array>;
         var text = "icons: OK";
+        var fontSizeNames = new Array<String>[0];
+        var prefix = "";
+
+        // Define font names and prefix for debug output for
+        // widget and glance
+        if( uiLib instanceof EvccUILibWidgetSingleton ) {
+            fontSizeNames = [ "medium", "small", "tiny", "xtiny", "micro" ];
+            prefix = "w";
+            // For widget, we also derive a recommendation for the logo size from the xtiny font size
+            if( ! _debugDone ) { 
+                EvccHelperBase.debug( "logo_evcc=" + Math.round( dc.getFontHeight( fonts[3]) * 0.60 ).toNumber() + " (recommendation only)" );
+            }
+        } else if ( uiLib instanceof EvccUILibGlanceSingleton ) {
+            fontSizeNames = [ "glance" ];
+            prefix = "g";
+        } else {
+            throw new InvalidValueException( "checkIcons: unknown UI lib class!" );
+        }
+        
+        // Cycle through all font sizes and compare them with
+        // an icon of that size
         for( var i = 0; i < fonts.size(); i++ ) {
+            var fontHeight = dc.getFontHeight( fonts[i]);
+            var debug = "icon_" + fontSizeNames[i] + "=" + fontHeight;
             
             var bitmap = null;
             for( var j = 0; j < icons.size(); j++ ) {
@@ -62,13 +98,15 @@ import Toybox.System;
             }
         
             if( bitmap != null ) {
-                if( bitmap.getHeight() != dc.getFontHeight( fonts[i]) ) {
-                    EvccHelperBase.debug( "font/icon mismatch: lib=" + prefix + ", f=" + i + ", fh=" + dc.getFontHeight( fonts[i]) + ", bh=" + bitmap.getHeight() + ")" );
+                var bmHeight = bitmap.getHeight();
+                if( bmHeight != fontHeight ) {
+                    debug += " (mismatch! icon size= " + bmHeight + ")";
                     text = "icons: mismatch";
                 }
             } else {
                 text = "icons: icon missing";
             }
+            if( ! _debugDone ) { EvccHelperBase.debug( debug ); }
         } 
         block.addText( prefix + "-" + text, {} );
     }
