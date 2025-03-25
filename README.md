@@ -22,7 +22,7 @@ This README covers the following topics:
       - [1. Vector Font Mode (Modern Devices)](#1-vector-font-mode-modern-devices)
       - [2. Static Mode](#2-static-mode)
       - [3. Static Optimized Mode](#3-static-optimized-mode)
-    - [How to Add a Device to generate.json](#how-to-add-a-device-to-generatejson)
+    - [How to Generate Icons for a New Device](#how-to-generate-icons-for-a-new-device)
   - [Folders `/resources*` and `/settings*`](#folders-resources-and-settings)
   - [Folders `/source*`](#folders-source)
 - [Build Instructions](#build-instructions)
