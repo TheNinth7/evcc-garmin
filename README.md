@@ -218,7 +218,7 @@ There are two types of entries for devices in `generate.json`:
 
 In the Connect IQ SDK, resources define:
 
-- **Properties**: Hidden values stored outside the app
+- **Properties**: Parameters stored outside the app, hidden to the user
 - **Settings**: User-facing configurations
 - **Drawables**: Image assets used by the app
 - **Strings**: Text values like app name and version
@@ -307,9 +307,9 @@ To support a new device:
 3. Configure device-specific features in the `monkey.jungle` build file (see [Root Folder `/`](#root-folder-)). The default feature set is a good starting point. You can launch the app in the simulator to evaluate whether any adjustments are needed. For example:
 
    - If the app reports that vector fonts are not supported, switch to static fonts—or to static optimized fonts if standard sizes overlap.
-   - If out-of-memory errors occur during testing, consider switching to Tiny Glance mode, limiting support to a single site, and removing the system info view.
-   - If watchdog errors occur (indicating that execution is taking too long), simplify complex calculations.
-   - If the select/enter button is in an unexpected position, change the rotation angle from 30° to another supported option.
+   - If out-of-memory errors occur during testing, consider switching to the tiny glance, limiting support to a single site, and removing the system info view.
+   - If watchdog errors occur (indicating that execution is taking too long), switch from complex to simple calculations.
+   - If the select/enter button is not in the standard 30° position, switch to the appropriate option.
 
 4. Generate the icons for the new device following the steps described in [How to Generate Icons for a New Device](#how-to-generate-icons-for-a-new-device).
 
