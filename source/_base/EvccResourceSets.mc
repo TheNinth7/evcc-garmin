@@ -1,5 +1,6 @@
 import Toybox.Lang;
 import Toybox.Graphics;
+import Toybox.Application.Properties;
 
 // The ResourceSets contain information on fonts and icons to be used
 // To save memory, there is a reduced set for glances
@@ -32,16 +33,24 @@ import Toybox.Graphics;
         for( var i = 1; i < heights.size()-1; i++ ) {
             heights[i] = heights[i-1] - step;
         }
-        // RobotoRegular: system font on Fenix 8
-        // RobotoCondensedBold: system font on Fenix 8 Solar
-        var faces = [ "RobotoRegular", "RobotoCondensedBold" ];
-        if( System.getDeviceSettings().partNumber.equals( "006-B4024-00" ) ) {
-            // FR955
-            faces = [ "RobotoCondensedRegular" ];
+        
+        // We check the properties for a font face, if none is found we use the default
+        var fontFaces;
+        try {
+            var fontFace = Properties.getValue( EvccConstants.PROPERTY_VECTOR_FONT_FACE ) as String;
+            fontFaces = [ fontFace ];
+        } catch ( ex ) {
+            // Default:
+            // RobotoRegular: system font on Fenix 8
+            // RobotoCondensedBold: system font on Fenix 8 Solar and older versions
+            // The devices where RobotoCondensedBold is system font do not have
+            // RobotoRegular, so this one array works for both types
+             fontFaces = [ "RobotoRegular", "RobotoCondensedBold" ];
         }
+
         for( var i = 0; i < fonts.size(); i++ ) {
             var height = Math.round( heights[i] ).toNumber();
-            fonts[i] = Graphics.getVectorFont( { :face => faces, :size => height } );
+            fonts[i] = Graphics.getVectorFont( { :face => fontFaces, :size => height } );
             if( fonts[i] == null ) {
                 throw new InvalidValueException( "Font faces not found!" );
             }

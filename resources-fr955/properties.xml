@@ -1,0 +1,5 @@
+<resources>
+    <properties>
+        <property id="vectorFontFace" type="string">RobotoCondensedRegular</property>
+    </properties>
+</resources>

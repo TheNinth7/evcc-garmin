@@ -21,6 +21,7 @@ import Toybox.Graphics;
     public static const PROPERTY_REFRESH_INTERVAL = "refreshInterval";
     public static const PROPERTY_DATA_EXPIRY = "dataExpiry";
     public static const PROPERTY_GLANCE_MARGIN_LEFT = "glanceMarginLeft";
+    public static const PROPERTY_VECTOR_FONT_FACE = "vectorFontFace";
     //public static const PROPERTY_REDUCE_RESPONSE_SIZE = "reduceResponseSize";
 
     // Number of sites supported, needs to match the number of settings
