@@ -194,7 +194,7 @@ import Toybox.WatchUi;
         return self;
     }
     
-    function addIcon( icon as EvccIconBlock.BaseIcon or EvccIconBlock.ConditionalIcon, options as Dictionary<Symbol,Object> ) {
+    function addIcon( icon as EvccIconBlock.Icon, options as Dictionary<Symbol,Object> ) {
         options[:parent] = self;
         
         // Special handling for the power flow and active phases icons
@@ -544,6 +544,8 @@ import Toybox.WatchUi;
  class EvccIconBlock extends EvccBitmapBlock {
     var _icon as BaseIcon;
 
+    typedef Icon as BaseIcon or ConditionalIcon;
+
     // Constants for the base icons
     // The number needs to relate to an entry in the static
     enum BaseIcon {
@@ -578,7 +580,7 @@ import Toybox.WatchUi;
         ICON_ACTIVE_PHASES = -3
     }
 
-    function initialize( icon as BaseIcon or ConditionalIcon, dc as Dc, options as Dictionary<Symbol,Object> ) {
+    function initialize( icon as Icon, dc as Dc, options as Dictionary<Symbol,Object> ) {
         EvccBitmapBlock.initialize( null, dc, options );
 
         // We analyse the icon and passed in data and from that
@@ -647,3 +649,5 @@ import Toybox.WatchUi;
         }
     }
 }
+
+

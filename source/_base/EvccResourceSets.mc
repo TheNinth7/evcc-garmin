@@ -4,6 +4,9 @@ import Toybox.Application.Properties;
 
 // The ResourceSets contain information on fonts and icons to be used
 // To save memory, there is a reduced set for glances
+// Access to the resource set by other parts of the application always goes via
+// EvccResources, which is defined in /source-annot-glance and /source-annot-tinyglance,
+// because it has a different scope depending on glance type
 
 // For glance, there is one static resource set
 // For widgets, there are three different implementations
@@ -101,23 +104,19 @@ import Toybox.Application.Properties;
             ipr += ( ipr + 1 < fontsPreset.size() ) ? 1 : 0;
         }
 
-        // As second optimization, we remove the largest font if it is too
-        // large, and the smallest is smaller then the second-smallest (otherwise there'd be no point)
-        // The maximum of 13.5% of screen height was determined by analysing different font sizes in
-        // the simulator
-        /*
-        var heightFirst = heightsPreset[0];
-        var heightLast = Graphics.getFontHeight( fontsOptimized[fontsOptimized.size()-1] );
-        var heightSecondLast = Graphics.getFontHeight( fontsOptimized[fontsOptimized.size()-2] );
-        if( heightFirst > System.getDeviceSettings().screenHeight * 0.135 && heightLast < heightSecondLast ) {
-            for( var iop = 0; iop < fontsOptimized.size()-1; iop++ ) {
-                fontsOptimized[iop] = fontsOptimized[iop+1];
-            }
-        }
-        */
         _fonts = fontsOptimized;
     }
 }
+
+
+// Below the two classes actually holding fonts and icon resources
+// Each has 
+// - an enum "Font", defining the font types to be used by the app
+// - a member "_fonts", mapping the font types from the enum to Garmin fonts
+// - a member "_icons", a two dimensional array, with the first dimension being the icons (as defined in EvccIconBlock),
+//                      and the second dimension being the fonts. 
+//                      The following will return the sun icon in size medium from the widget set:
+//                      EvccWidgetResourceSet._icons[EvccIconBlock.ICON_SUN][EvccWidgetResourceSet.FONT_MEDIUM]
 
 // Widget
 // Base class for all three implementations
@@ -149,6 +148,7 @@ class EvccWidgetResourceSetBase {
 
 // Glance
 // Only available for full-featured glance
+// The glance needs only one font size, and a smaller set of icons
 (:glance :exclForGlanceTiny :exclForGlanceNone) class EvccGlanceResourceSet {
     enum Font {
         FONT_GLANCE

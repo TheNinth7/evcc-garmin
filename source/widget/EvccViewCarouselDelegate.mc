@@ -2,17 +2,16 @@ import Toybox.Lang;
 import Toybox.WatchUi;
 import Toybox.Application;
 
-/*
-class EvccViewCarouselDelegate extends EvccViewCarouselDelegateInternal {
+(:exclForSwipeLeftOverride) class EvccViewCarouselDelegate extends EvccViewCarouselDelegateBase {
     private var _onNextPage = false;
     function initialize( views as SiteViewsArr, breadCrumb as EvccBreadCrumb ) {
-        EvccViewCarouselDelegate.initialize( views, breadCrumb );
+        EvccViewCarouselDelegateBase.initialize( views, breadCrumb );
     }
     public function onKey( keyEvent ) {
         if( _onNextPage ) {
             return onNextPage();
         } else {
-            return EvccViewCarouselDelegateInternal.onKey( keyEvent );
+            return EvccViewCarouselDelegateBase.onKey( keyEvent );
         }
     }
     public function onSwipe( swipeEvent ) {
@@ -22,26 +21,37 @@ class EvccViewCarouselDelegate extends EvccViewCarouselDelegateInternal {
         } else if( _onNextPage ) {
             return onNextPage();
         } else {
-            return EvccViewCarouselDelegateInternal.onSwipe( swipeEvent );
+            return EvccViewCarouselDelegateBase.onSwipe( swipeEvent );
         }
     }
     public function onNextPage() {
         if( _onNextPage ) {
             _onNextPage = false;
-            EvccViewCarouselDelegateInternal.onNextPage();
+            EvccViewCarouselDelegateBase.onNextPage();
         } else {
             _onNextPage = true;
         }
     }
 }
-*/
+
+(:exclForSwipeLeftDefault) class EvccViewCarouselDelegate extends EvccViewCarouselDelegateBase {
+    function initialize( views as SiteViewsArr, breadCrumb as EvccBreadCrumb ) {
+        EvccViewCarouselDelegateBase.initialize( views, breadCrumb );
+    }
+    public function onSwipe( swipeEvent ) {
+        if( swipeEvent.getDirection() == SWIPE_LEFT ) {
+            return onSelect();
+        }
+        return false;
+    }
+}
 
 // Delegate processing user input for view carousels, i.e. when the 
 // user can switch between different views
 // In Garmin SDK this is called a view loop, but that implementation was
 // buggy and did not have a pretty page indicator, so this app uses a,
 // custom one
-class EvccViewCarouselDelegate extends EvccViewSimpleDelegate {
+class EvccViewCarouselDelegateBase extends EvccViewSimpleDelegate {
     private var _views as SiteViewsArr;
     private var _breadCrumb as EvccBreadCrumb;
 
@@ -54,14 +64,8 @@ class EvccViewCarouselDelegate extends EvccViewSimpleDelegate {
     // For enter key and swipe left we trigger the onSelect
     // behavior. In some gesture-based devices the keys are not
     // associated with that behavior (Venu, Vivoactive)
-    public function onKey( keyEvent ) {
+    (:exclForHasSelect) public function onKey( keyEvent ) {
         if( keyEvent.getKey() == KEY_ENTER ) {
-            return onSelect();
-        }
-        return false;
-    }
-    public function onSwipe( swipeEvent ) {
-        if( swipeEvent.getDirection() == SWIPE_LEFT ) {
             return onSelect();
         }
         return false;
