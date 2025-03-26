@@ -2,39 +2,18 @@ import Toybox.Lang;
 import Toybox.WatchUi;
 import Toybox.Application;
 
-(:exclForSwipeLeftOverride) class EvccViewCarouselDelegate extends EvccViewCarouselDelegateBase {
-    private var _onNextPage = false;
-    function initialize( views as SiteViewsArr, breadCrumb as EvccBreadCrumb ) {
-        EvccViewCarouselDelegateBase.initialize( views, breadCrumb );
-    }
-    public function onKey( keyEvent ) {
-        if( _onNextPage ) {
-            return onNextPage();
-        } else {
-            return EvccViewCarouselDelegateBase.onKey( keyEvent );
-        }
-    }
-    public function onSwipe( swipeEvent ) {
-        if( _onNextPage && swipeEvent.getDirection() == SWIPE_LEFT ) {
-            _onNextPage = false;
-            return onSelect();
-        } else if( _onNextPage ) {
-            return onNextPage();
-        } else {
-            return EvccViewCarouselDelegateBase.onSwipe( swipeEvent );
-        }
-    }
-    public function onNextPage() {
-        if( _onNextPage ) {
-            _onNextPage = false;
-            EvccViewCarouselDelegateBase.onNextPage();
-        } else {
-            _onNextPage = true;
-        }
-    }
-}
+// Delegate processing user input for view carousels, i.e. when the 
+// user can switch between different views
+// In Garmin SDK this is called a view loop, but that implementation was
+// buggy and did not have a pretty page indicator, so this app uses a,
+// custom one
 
-(:exclForSwipeLeftDefault) class EvccViewCarouselDelegate extends EvccViewCarouselDelegateBase {
+// The main delegate functionality is implemented in EvccViewCarouselDelegateBase
+// There is two derivates, with one implementing a workaround necessary to
+// get swipe left to work as expected on some devices.
+
+// Standard derivate, that just implements onSwipe for swipe left
+(:exclForSwipeLeftOverride) class EvccViewCarouselDelegate extends EvccViewCarouselDelegateBase {
     function initialize( views as SiteViewsArr, breadCrumb as EvccBreadCrumb ) {
         EvccViewCarouselDelegateBase.initialize( views, breadCrumb );
     }
@@ -46,11 +25,58 @@ import Toybox.Application;
     }
 }
 
-// Delegate processing user input for view carousels, i.e. when the 
-// user can switch between different views
-// In Garmin SDK this is called a view loop, but that implementation was
-// buggy and did not have a pretty page indicator, so this app uses a,
-// custom one
+// it seems on some devices swipe left is associated with the onNextPage 
+// behavior, which is probably a bug. For these devices the delegate can
+// be replaced by this class and trigger the onSelect behavior instead.
+// The reason for this rather complicated workaround is that behavior delegate
+// functions take precedence. So on the affected devices onSwipe() will never 
+// be called, because onNextPage() is called first.
+// To circumvent this, excplicitly does not handle onNextPage(), and instead
+// uses onKey() and onSwipe()
+(:exclForSwipeLeftDefault) class EvccViewCarouselDelegate extends EvccViewCarouselDelegateBase {
+    private var _onNextPage = false;
+    function initialize( views as SiteViewsArr, breadCrumb as EvccBreadCrumb ) {
+        EvccViewCarouselDelegateBase.initialize( views, breadCrumb );
+    }
+    // We call onNextPage again if it was the original behavior,
+    // or hand over to our base class
+    public function onKey( keyEvent ) {
+        if( _onNextPage ) {
+            return onNextPage();
+        } else {
+            return EvccViewCarouselDelegateBase.onKey( keyEvent );
+        }
+    }
+    // If swipe left, we redirect to onSelect
+    // For any other input, we call onNextPage
+    // again if it was the original behavior,
+    // or hand over to our base class
+    public function onSwipe( swipeEvent ) {
+        if( swipeEvent.getDirection() == SWIPE_LEFT ) {
+            _onNextPage = false;
+            return onSelect();
+        } else if( _onNextPage ) {
+            return onNextPage();
+        } else {
+            return EvccViewCarouselDelegateBase.onSwipe( swipeEvent );
+        }
+    }
+    // If onNextPage is called the first time, we remember the call 
+    // and return false
+    // The event is then processed by either onKey or onSwipe, which will
+    // call onNextPage again if the input was not swipe left
+    public function onNextPage() {
+        if( _onNextPage ) {
+            _onNextPage = false;
+            return EvccViewCarouselDelegateBase.onNextPage();
+        } else {
+            _onNextPage = true;
+            return false;
+        }
+    }
+}
+
+// Main class implementing most of the delegate functionality
 class EvccViewCarouselDelegateBase extends EvccViewSimpleDelegate {
     private var _views as SiteViewsArr;
     private var _breadCrumb as EvccBreadCrumb;
