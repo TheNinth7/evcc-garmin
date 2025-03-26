@@ -1,3 +1,9 @@
+// ATTENTION: This is a duplication of /source-glance/EvccDrawingBlocks.mc
+// For normal devices this class is required for both glance and widget
+// For devices that use the tinyglance, it is required only for the widget
+// To save valuable code space this file is not in the main source folder,
+// but once in each of the glance folders, in source-glance with :glance 
+// annotation and in source-tinyglance without.
 import Toybox.Lang;
 import Toybox.Graphics;
 import Toybox.WatchUi;
@@ -14,8 +20,7 @@ import Toybox.WatchUi;
 // :parent - parent drawing element. :color, :backgroundColor and :font may be inherited from a parent
 // :batterySoc, :power, :activePhases - for icons that change bases on these inputs
 // :vjustifyTextToBottom - by default, text is center aligned to the passed coordinate. If :vjustifyTextToBottom of a text element within a horizontal container is set to true, it will be aligned to the bottom instead.
-// :uiLib - determines if widget or glance UI library is to be used - defaults to widget
-(:glance) class EvccUIBlock {
+ class EvccBlock {
     var _dc as Dc; 
     
     private var _options as Dictionary<Symbol,Object>;
@@ -56,15 +61,14 @@ import Toybox.WatchUi;
         if( parent != null ) {
             var value = parent.getOption( option );
             // If we take over the font form the parent element, we apply any relativeFont definition
-            // and shift the font accordingly. Ee.g. parent font UILIB_FONT_MEDIUM (=0) and :relativeFont=3
-            // results in using UILIB_FONT_XTINY (=3)
+            // and shift the font accordingly. Ee.g. parent font EvccWidgetResourceSet.FONT_MEDIUM (=0) and :relativeFont=3
+            // results in using EvccWidgetResourceSet.FONT_XTINY (=3)
             if( option == :font && applyRelativeFont ) {
-                value = EvccHelperUI.min( ( value as Number ) + ( _options[:relativeFont] as Number ), EvccUILibWidgetSingleton.getInstance().fonts.size() - 1 );
+                value = EvccHelperUI.min( ( value as Number ) + ( _options[:relativeFont] as Number ), EvccResources.getGarminFonts().size() - 1 );
             }
             return value;
         } else {
             // If no more parent is present, we apply the following default behavior
-            if( option == :uiLib ) { return EvccUILibWidgetSingleton.getInstance(); }
             if( option == :backgroundColor ) { return EvccConstants.COLOR_BACKGROUND; }
             if( option == :color ) { return EvccConstants.COLOR_FOREGROUND; }
             if( option == :font ) { throw new InvalidValueException( "Font not set!"); }
@@ -73,7 +77,7 @@ import Toybox.WatchUi;
         // Value is not present
         return null;
     }
-
+    
     // set an option
     function setOption( option as Symbol, value ) {
         _options[option] = value;
@@ -86,24 +90,12 @@ import Toybox.WatchUi;
 
     // Parent can be passed into an element either in the options structure
     // or later via this function
-    function setParent( parent as EvccUIContainer ) {
+    function setParent( parent as EvccContainerBlock ) {
         setOption( :parent, parent.weak() );
     }
-    function getParent() as EvccUIContainer? {
+    function getParent() as EvccContainerBlock? {
         var parentRef = _options[:parent] as WeakReference?;
-        return ( parentRef != null ? parentRef.get() : null ) as EvccUIContainer?;
-    }
-
-
-    // Get the Garmin font definition for the current font
-    function getGarminFont() {
-        var fonts = getOption( :uiLib ).fonts as FontsArr;
-        return fonts[getOption( :font )];
-    }
-
-    function getBaseGarminFont() {
-        var fonts = getOption( :uiLib ).fonts as FontsArr;
-        return fonts[getOption( :baseFont )];
+        return ( parentRef != null ? parentRef.get() : null ) as EvccContainerBlock?;
     }
 
     // Functions for getting and caching width/height to reduce
@@ -174,11 +166,11 @@ import Toybox.WatchUi;
 }
 
 // Base class for all drawing elements that consists of other drawing elements
-(:glance) class EvccUIContainer extends EvccUIBlock {
+ class EvccContainerBlock extends EvccBlock {
     protected var _elements as Array;
 
     function initialize( dc, options as Dictionary<Symbol,Object> ) {
-        EvccUIBlock.initialize( dc, options );
+        EvccBlock.initialize( dc, options );
         _elements = new Array[0];
     }
 
@@ -193,31 +185,31 @@ import Toybox.WatchUi;
     function addError( text, options as Dictionary<Symbol,Object> ) {
         options[:color] = EvccConstants.COLOR_ERROR;
         options[:parent] = self;
-        _elements.add( new EvccUIText( text, _dc, options ) );
+        _elements.add( new EvccTextBlock( text, _dc, options ) );
         return self;
     }
     function addBitmap( reference, options as Dictionary<Symbol,Object> ) {
         options[:parent] = self;
-        _elements.add( new EvccUIBitmap( reference, _dc, options ) );
+        _elements.add( new EvccBitmapBlock( reference, _dc, options ) );
         return self;
     }
     
-    function addIcon( icon as EvccUIIcon.BaseIcon or EvccUIIcon.ConditionalIcon, options as Dictionary<Symbol,Object> ) {
+    function addIcon( icon as EvccIconBlock.BaseIcon or EvccIconBlock.ConditionalIcon, options as Dictionary<Symbol,Object> ) {
         options[:parent] = self;
         
         // Special handling for the power flow and active phases icons
         // power flow is only shown if power is not equal 0, and
         // active phases is only shown if the loadpoint is charging
-        if( ( icon != EvccUIIcon.ICON_POWER_FLOW || options[:power] != 0 ) &&
-            ( icon != EvccUIIcon.ICON_ACTIVE_PHASES || options[:charging] == true ) )  
+        if( ( icon != EvccIconBlock.ICON_POWER_FLOW || options[:power] != 0 ) &&
+            ( icon != EvccIconBlock.ICON_ACTIVE_PHASES || options[:charging] == true ) )  
         {
-            _elements.add( new EvccUIIcon( icon, _dc, options ) );
+            _elements.add( new EvccIconBlock( icon, _dc, options ) );
         }
         
         return self;
     }
 
-    function addBlock( container as EvccUIBlock ) {
+    function addBlock( container as EvccBlock ) {
         container.setParent( self );
         _elements.add( container );
         return self;
@@ -225,12 +217,12 @@ import Toybox.WatchUi;
 }
 
 // An element containing other elements that shall stacked horizontally
-(:glance) class EvccUIHorizontal extends EvccUIContainer {
+ class EvccHorizontalBlock extends EvccContainerBlock {
     
-    var _truncatableElement as EvccUIText?;
+    var _truncatableElement as EvccTextBlock?;
 
     function initialize( dc, options as Dictionary<Symbol,Object> ) {
-        EvccUIContainer.initialize( dc, options );
+        EvccContainerBlock.initialize( dc, options );
     }
     
     // Draw all elements
@@ -271,9 +263,9 @@ import Toybox.WatchUi;
             // They should center at the x passed on to them
             // Therefore justify should not be specified and defaults to center
             if( _elements[i].getOption(:justify) != Graphics.TEXT_JUSTIFY_CENTER 
-                && ! ( _elements[i] instanceof EvccUIVertical ) ) 
+                && ! ( _elements[i] instanceof EvccVerticalBlock ) ) 
             {
-                throw new InvalidValueException( "EvccUIHorizontal does not support justify for elements." );
+                throw new InvalidValueException( "EvccHorizontalBlock does not support justify for elements." );
             }
             
             x += _elements[i].getWidth() / 2;
@@ -315,14 +307,14 @@ import Toybox.WatchUi;
         // - it is not truncatable
         // - and we do not have any options set for the new text
         if( elements.size() > 0 && 
-            elements[elements.size() - 1] instanceof EvccUIText && 
+            elements[elements.size() - 1] instanceof EvccTextBlock && 
             elements[elements.size() - 1].getOption( :isTruncatable ) != true && 
             options.isEmpty() ) 
         {
             elements[elements.size() - 1].append( text );
         } else { 
             options[:parent] = self;
-            _elements.add( new EvccUIText( text, _dc, options ) );
+            _elements.add( new EvccTextBlock( text, _dc, options ) );
             if( options[:isTruncatable] == true ) {
                 _truncatableElement = _elements[_elements.size() - 1];
             }
@@ -332,9 +324,9 @@ import Toybox.WatchUi;
 }
 
 // An element containing other elements that shall be stacked vertically
-(:glance) class EvccUIVertical extends EvccUIContainer {
+ class EvccVerticalBlock extends EvccContainerBlock {
     function initialize( dc, options as Dictionary<Symbol,Object> ) {
-        EvccUIContainer.initialize( dc, options );
+        EvccContainerBlock.initialize( dc, options );
     }
 
     // Draw all elements
@@ -343,7 +335,7 @@ import Toybox.WatchUi;
     function draw( x, y )
     {
         if( getOption( :justify ) != Graphics.TEXT_JUSTIFY_CENTER ) {
-            throw new InvalidValueException( "EvccUIVertical supports only justify center." );
+            throw new InvalidValueException( "EvccVerticalBlock supports only justify center." );
         }
 
         x += getOption( :marginLeft ); 
@@ -389,17 +381,17 @@ import Toybox.WatchUi;
     // For the vertical container, new text is always added as new element
     function addText( text, options as Dictionary<Symbol,Object> ) {
         options[:parent] = self;
-        _elements.add( new EvccUIText( text, _dc, options as Dictionary<Symbol,Object> ) );
+        _elements.add( new EvccTextBlock( text, _dc, options as Dictionary<Symbol,Object> ) );
         return self;
     }
 }
 
 // Text element
-(:glance) class EvccUIText extends EvccUIBlock {
+ class EvccTextBlock extends EvccBlock {
     var _text;
 
     function initialize( text, dc as Dc, options as Dictionary<Symbol,Object> ) {
-        EvccUIBlock.initialize( dc, options );
+        EvccBlock.initialize( dc, options );
         _text = text;
     }
 
@@ -410,7 +402,7 @@ import Toybox.WatchUi;
         resetWidthCache();
     }
 
-    function append( text ) as EvccUIText { 
+    function append( text ) as EvccTextBlock { 
         _text += text;
         resetWidthCache();
         return self; 
@@ -418,18 +410,18 @@ import Toybox.WatchUi;
 
     protected function getWidthInternal() { return getTextWidth() + getOption( :marginLeft ) + getOption( :marginRight ); }
     protected function getHeightInternal() { return getTextHeight() + getOption( :marginTop ) + getOption( :marginBottom ); }
-    function getTextWidth() { return _dc.getTextDimensions( _text, getGarminFont() )[0]; }
-    function getTextHeight() { return _dc.getFontHeight( getGarminFont() ); }
+    function getTextWidth() { return _dc.getTextDimensions( _text, EvccResources.getGarminFont( getOption( :font ) ) )[0]; }
+    function getTextHeight() { return EvccResources.getFontHeight( getOption( :font ) ); }
 
     // For alignment we just pass the justify parameter on to the drawText
     function draw( x, y ) {
         // Align text to have the same baseline as the base font would have
         // this is for aligning two different font sizes in one line of text
         if( getOption( :vjustifyTextToBottom ) ) {
-            var fontHeight = Graphics.getFontHeight( getGarminFont() );
-            var baseFontHeight = Graphics.getFontHeight( getBaseGarminFont() );
-            var fontDescent = Graphics.getFontDescent( getGarminFont() );
-            var baseFontDescent = Graphics.getFontDescent( getBaseGarminFont() );
+            var fontHeight = EvccResources.getFontHeight( getOption( :font ) );
+            var baseFontHeight = EvccResources.getFontHeight( getOption( :baseFont ) );
+            var fontDescent = EvccResources.getFontDescent( getOption( :font ) );
+            var baseFontDescent = EvccResources.getFontDescent( getOption( :baseFont ) );
             if( fontHeight < baseFontHeight ) {
                 y += baseFontHeight/2 - baseFontDescent - ( fontHeight/2 - fontDescent );
             }
@@ -443,7 +435,6 @@ import Toybox.WatchUi;
         } else if ( justify == Graphics.TEXT_JUSTIFY_RIGHT ) {
             x = x - getOption( :marginRight );
         } else {
-            // x += getOption( :marginLeft );
             x = x - getWidth() / 2 + getOption( :marginLeft ) + getTextWidth() / 2;
         }
 
@@ -453,33 +444,11 @@ import Toybox.WatchUi;
             y = y - getHeight() / 2 + marginTop + getTextHeight() / 2;
         }
 
-        // System.println( "***** drawing \"" + _text + "\" with height=" + Graphics.getFontHeight( getGarminFont() ) );
-
         _dc.drawText( x, 
                       y, 
-                      getGarminFont(), 
+                      EvccResources.getGarminFont( getOption( :font ) ), 
                       _text, 
                       getOption( :justify ) | Graphics.TEXT_JUSTIFY_VCENTER );
-
-        /* Debug code for getting info on fonts
-        var h = Graphics.getFontHeight( getGarminFont() );
-        var a = Graphics.getFontAscent( getGarminFont() );
-        var d = Graphics.getFontDescent( getGarminFont() );
-        System.println ( "***** Font statistics: height=" + h
-                                              + " ascent=" + a
-                                              + " a%=" + ( Math.round( a.toFloat() / h.toFloat()  * 100 ) ).toNumber()
-                                              + " descent=" + d
-                                              + " d%=" + ( Math.round( d.toFloat() / h.toFloat()  * 100 ) ).toNumber()
-        );
-        var t = 0.23;
-        var adj = ( h * t ) - d;
-        System.println( "***** Adjust to " + ( t * 100 ).toNumber() + "% = " + adj + "px" );
-        System.println( "***** MEDIUM " + Graphics.getFontHeight( Graphics.FONT_MEDIUM ) + "px" );
-        System.println( "***** SMALL  " + Graphics.getFontHeight( Graphics.FONT_SMALL ) + "px" );
-        System.println( "***** TINY   " + Graphics.getFontHeight( Graphics.FONT_TINY ) + "px" );
-        System.println( "***** XTINY  " + Graphics.getFontHeight( Graphics.FONT_XTINY ) + "px" );
-        System.println( "***** GLANCE  " + Graphics.getFontHeight( Graphics.FONT_GLANCE ) + "px" );
-        */
 
         /* Debug code for drawing a line above and below the text 
         var topY = y + getOption( :marginTop ) - getHeight() / 2;
@@ -494,7 +463,7 @@ import Toybox.WatchUi;
 // This class is written with the goal of keeping memory usage low
 // The actual bitmap is therefore only loaded when needed and then
 // immediatly discarded again
-(:glance) class EvccUIBitmap extends EvccUIBlock {
+ class EvccBitmapBlock extends EvccBlock {
 
     // We store only the reference and width and height,
     // the actual bitmap resource is loaded only when needed
@@ -502,7 +471,7 @@ import Toybox.WatchUi;
     var _bitmapRef; 
 
     function initialize( reference as ResourceId?, dc as Dc, options as Dictionary<Symbol,Object> ) {
-        EvccUIBlock.initialize( dc, options );
+        EvccBlock.initialize( dc, options );
         _bitmapRef = reference;
     }
 
@@ -521,8 +490,8 @@ import Toybox.WatchUi;
 
     // NOTE: Bitmaps have their own caching since they always load width and height at the same time
     // For normal bitmaps, data is loaded once and then never again
-    // For icons, a change in font size triggers a reload (see EvccUIIcon.onLoad)
-    // Changes in the margins are covered by the caching mechanism of EvccUIBlock
+    // For icons, a change in font size triggers a reload (see EvccIconBlock.onLoad)
+    // Changes in the margins are covered by the caching mechanism of EvccBlock
     protected var _bitmapWidth as Number?;
     protected var _bitmapHeight as Number?;
 
@@ -531,7 +500,7 @@ import Toybox.WatchUi;
     protected function getWidthInternal() { loadData(); return _bitmapWidth + getOption( :marginLeft ) + getOption( :marginRight ); }
     protected function getHeightInternal() { loadData(); return _bitmapHeight + getOption( :marginTop ) + getOption( :marginBottom ); }
     // Load width/height
-    // We don't do this in the constructor because for the EvccUIIcon sub class, the font
+    // We don't do this in the constructor because for the EvccIconBlock sub class, the font
     // size is needed to determine the actual icon used, and that one is not available
     // at initialization time
     protected function loadData() {
@@ -572,7 +541,7 @@ import Toybox.WatchUi;
 // Class representing an icon. The difference between an icon and the bitmap above
 // is that for icons multiple sizes are supported and this element shows the icon
 // based on the font that is passed in the options or used by its parent element
-(:glance) class EvccUIIcon extends EvccUIBitmap {
+ class EvccIconBlock extends EvccBitmapBlock {
     var _icon as BaseIcon;
 
     // Constants for the base icons
@@ -610,7 +579,7 @@ import Toybox.WatchUi;
     }
 
     function initialize( icon as BaseIcon or ConditionalIcon, dc as Dc, options as Dictionary<Symbol,Object> ) {
-        EvccUIBitmap.initialize( null, dc, options );
+        EvccBitmapBlock.initialize( null, dc, options );
 
         // We analyse the icon and passed in data and from that
         // store the interpreted icon
@@ -651,13 +620,13 @@ import Toybox.WatchUi;
         }
     }
 
-    // Override the function from EvccUIBitmap and
+    // Override the function from EvccBitmapBlock and
     // determine the reference based on the icon constant and font size
     // This is not done in the constructor, because we need to adapt
     // to changing font size
     protected function bitmapRef() as ResourceId {
         var font = getOption( :font );
-        var icons = getOption( :uiLib ).icons as Array<Array>;
+        var icons = EvccResources.getIcons() as EvccIcons;
         var ref = icons[_icon][font];
         // Throw an exception if we could not find the icon
         if( ref == null ) {
@@ -674,112 +643,7 @@ import Toybox.WatchUi;
         if( font != _lastFont ) {
             _lastFont = font;
             _bitmapHeight = null; _bitmapWidth = null;
-            EvccUIBitmap.loadData();
+            EvccBitmapBlock.loadData();
         }
     }
 }
-
-/*
-(:glance) class EvccUIIcon extends EvccUIBitmap {
-    var _icon as Number;
-
-    // Constants for the base icons
-    // The number needs to relate to an entry in the static
-    public static var ICON_BATTERY_EMPTY = 0;
-    public static var ICON_BATTERY_ONEQUARTER = 1;
-    public static var ICON_BATTERY_HALF = 2;
-    public static var ICON_BATTERY_THREEQUARTERS = 3;
-    public static var ICON_BATTERY_FULL = 4;
-    public static var ICON_ARROW_RIGHT = 5;
-    public static var ICON_ARROW_LEFT = 6;
-    public static var ICON_ARROW_LEFT_THREE = 7;
-    public static var ICON_SUN = 8;
-    public static var ICON_HOME = 9;
-    public static var ICON_GRID = 10;
-    public static var ICON_DURATION = 11;
-    public static var ICON_FORECAST = 12;
-
-    // For the battery we have special handling, if this
-    // constant is based in, we choose ony of the battery
-    // icons based on the batterySoc
-    public static var ICON_BATTERY = -1;
-
-    // Another special icon, based on power flow we
-    // are showing a left (in) or right (out) arrow
-    public static var ICON_POWER_FLOW = -2;
-
-    // Another special icon, based on active phases we
-    // are showing one left arrow (one phase) or three
-    // left arrows (three phases)
-    public static var ICON_ACTIVE_PHASES = -3;
-
-    function initialize( icon as Number, dc as Dc, options as Dictionary<Symbol,Object> ) {
-        EvccUIBitmap.initialize( null, dc, options );
-
-        // We analyse the icon and passed in data and from that
-        // store the interpreted icon
-        // For the battery we determine the icon based on SoC
-        if( icon == ICON_BATTERY ) {
-            var batterySoc = getOption( :batterySoc );
-            if( batterySoc == null ) {
-                throw new InvalidValueException( ":batterySoc is missing!");
-            }
-            if( batterySoc >= 90 ) {
-                _icon = ICON_BATTERY_FULL;
-            } else if( batterySoc >= 63 ) {
-                _icon = ICON_BATTERY_THREEQUARTERS;
-            } else if( batterySoc >= 37 ) {
-                _icon = ICON_BATTERY_HALF;
-            } else if( batterySoc >= 10 ) {
-                _icon = ICON_BATTERY_ONEQUARTER;
-            } else {
-                _icon = ICON_BATTERY_EMPTY;
-            }
-        // For power flow we determine the icon (in/out)
-        // based on the power
-        } else if( icon == ICON_POWER_FLOW ) {
-            var power = getOption( :power );
-            if( power == null ) {
-                throw new InvalidValueException( ":power is missing!");
-            }
-            _icon = power < 0 ? ICON_ARROW_LEFT : ICON_ARROW_RIGHT;
-        // And for active phases it is based on the active phases
-        } else if( icon == ICON_ACTIVE_PHASES ) {
-            var activePhases = getOption( :activePhases );
-            if( activePhases == null ) {
-                throw new InvalidValueException( ":activePhases is missing!");
-            }
-            _icon = activePhases == 3 ? ICON_ARROW_LEFT_THREE : ICON_ARROW_LEFT;
-        } else {
-            _icon = icon;
-        }
-    }
-
-    // Override the function from EvccUIBitmap and
-    // determine the reference based on the icon constant and font size
-    // This is not done in the constructor, because we need to adapt
-    // to changing font size
-    protected function bitmapRef() as ResourceId {
-        var font = getOption( :font );
-        var icons = getOption( :uiLib ).icons as Array<Array>;
-        var ref = icons[_icon][font];
-        // Throw an exception if we could not find the icon
-        if( ref == null ) {
-            throw new InvalidValueException( "Icon " + _icon + " not found for font " + font );
-        }
-        return ref;
-    }
-
-    // Overrides the parent function to consider
-    // changes in font size
-    private var _lastFont as Number?;
-    protected function loadData() {
-        var font = getOption( :font );
-        if( font != _lastFont ) {
-            _lastFont = font;
-            _bitmapHeight = null; _bitmapWidth = null;
-            EvccUIBitmap.loadData();
-        }
-    }
-}
-*/

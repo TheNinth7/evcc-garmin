@@ -69,9 +69,9 @@ import Toybox.Math;
             // EvccHelperBase.debug( "EvccApp: getInitialView" );
             _isInBackground = false;
 
-            // Initialize the singleton here, to save computing time
+            // Initialize the resources here, to save computing time
             // in the view (reduce chance to trip the watchdog)
-            EvccUILibWidgetSingleton.getInstance();
+            EvccResources.load();
 
             // Read the site count
             var siteCount = EvccSiteConfigSingleton.getSiteCount();
@@ -107,7 +107,7 @@ import Toybox.Math;
                     var activeSite = siteCount == 1 ? 0 : breadCrumb.getSelectedChild( siteCount );
                     
                     var views = new SiteViewsArr[0];
-                    views.add( new EvccWidgetSiteMainView( views, 0, null, activeSite, true ) );
+                    new EvccWidgetSiteMainView( views, 0, null, activeSite, true ); // The view adds itself to views
                     var delegate = new EvccViewCarouselDelegate( views, breadCrumb );
                     return [views[0], delegate];
                 // If glances are supported, we present the full list of sites or menu entries right away

@@ -41,6 +41,7 @@ import Toybox.Math;
         // EvccHelperBase.debug("Widget: initialize");
         View.initialize();
 
+        views.add( self );
         _sameLevelViews = views;
         _pageIndex = pageIndex;
         _siteIndex = siteIndex;
@@ -75,7 +76,7 @@ import Toybox.Math;
             // Draw the header, footer, page indicator and select indicator
             var ca = drawShell( dc );
 
-            var block = new EvccUIVertical( dc, {} );
+            var block = new EvccVerticalBlock( dc, {} );
             
             if( ! stateRequest.hasLoaded() ) {
                 block.addText( "Loading ...", {} );
@@ -91,8 +92,8 @@ import Toybox.Math;
             }
 
             // Determine font size
-            var fonts = EvccUILibWidgetSingleton.getInstance().fonts as FontsArr;
-            var font = EvccUILibWidgetSingleton.UILIB_FONT_MEDIUM; // We start with the largest font
+            var fonts = EvccResources.getGarminFonts();
+            var font = EvccWidgetResourceSet.FONT_MEDIUM; // We start with the largest font
 
             // To save computing resources, if the block 
             // has more than 6 elements, we do not even try the largest font
@@ -127,20 +128,19 @@ import Toybox.Math;
     }
 
     // Function to be overriden to add content to the view
-    function addContent( block as EvccUIVertical, dc as Dc ) {}
+    function addContent( block as EvccVerticalBlock, dc as Dc ) {}
 
     function drawShell( dc as Dc ) as EvccContentArea {
         var stateRequest = getStateRequest();
 
         // The font size of the hader is fixed to the second-smallest
-        var font = EvccUILibWidgetSingleton.UILIB_FONT_XTINY;
+        var font = EvccWidgetResourceSet.FONT_XTINY;
         
         var siteCount = EvccSiteConfigSingleton.getSiteCount();
-        var fonts = EvccUILibWidgetSingleton.getInstance().fonts as FontsArr;
-        var spacing = Graphics.getFontHeight( fonts[font] ) / 3;
+        var spacing = EvccResources.getFontHeight( font ) / 3;
 
         // Header consists of site title and page title (assumed to be an icon)
-        var header = new EvccUIVertical( dc, { :font => font, :marginTop => spacing } );
+        var header = new EvccVerticalBlock( dc, { :font => font, :marginTop => spacing } );
         var hasSiteTitle = siteCount > 1;
 
         var xCenter = dc.getWidth() / 2;
@@ -164,7 +164,7 @@ import Toybox.Math;
             } else {
                 // If there is no site title, we set the font (=icon size) to the
                 // largest available
-                pageTitle.setOption( :font, EvccUILibWidgetSingleton.UILIB_FONT_MEDIUM );
+                pageTitle.setOption( :font, EvccWidgetResourceSet.FONT_MEDIUM );
             }
             header.addBlock( pageTitle );
         }
@@ -176,7 +176,7 @@ import Toybox.Math;
         // the font
         // If there is a page title (icon) we apply the full spacing
         if( hasSiteTitle && pageTitle == null ) {
-            header.setOption( :marginBottom, spacing - Graphics.getFontDescent( fonts[font] ) );
+            header.setOption( :marginBottom, spacing - EvccResources.getFontDescent( font ) );
         } else if ( pageTitle != null ) {
             header.setOption( :marginBottom, spacing );
         }
@@ -186,7 +186,7 @@ import Toybox.Math;
         header.draw( xCenter, headerHeight / 2 );
         
         // Draw the logo
-        var logo = new EvccUIBitmap( Rez.Drawables.logo_evcc, dc, { :marginTop => spacing, :marginBottom => spacing } );
+        var logo = new EvccBitmapBlock( Rez.Drawables.logo_evcc, dc, { :marginTop => spacing, :marginBottom => spacing } );
         var logoHeight = logo.getHeight();
         logo.draw( xCenter, dc.getHeight() - logoHeight / 2 );
 
@@ -220,13 +220,13 @@ import Toybox.Math;
         }
 
         
+        /*         
         // Code for drawing visual alignment grid 
-        /*
         dc.setPenWidth( 1 );
         dc.drawCircle( dc.getWidth() / 2, dc.getHeight() / 2, dc.getWidth() / 2 );
         dc.drawRectangle( ca.x - ca.width / 2, ca.y - ca.height / 2, ca.width, ca.height );
         dc.drawLine( ca.x - ca.width / 2, ca.y, ca.x + ca.width / 2, ca.y );
-        */
+        */        
         
         // Return the content area dimensions
         return ca;
@@ -294,7 +294,7 @@ import Toybox.Math;
     }
 
     // Function to be overriden to add a page title to the view
-    function getPageTitle( dc as Dc ) as EvccUIBlock? { return null; }
+    function getPageTitle( dc as Dc ) as EvccBlock? { return null; }
 
     // Decide whether the content shall be limited by
     // height and/or width. Default is height only

@@ -21,12 +21,12 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
     }
 
     // Show the forecast icon as page title
-    function getPageTitle( dc as Dc ) as EvccUIBlock? {
-        return new EvccUIIcon( EvccUIIcon.ICON_FORECAST, dc, {} );
+    function getPageTitle( dc as Dc ) as EvccBlock? {
+        return new EvccIconBlock( EvccIconBlock.ICON_FORECAST, dc, {} );
     }
 
     // Add the content
-    function addContent( block as EvccUIVertical, dc as Dc ) {
+    function addContent( block as EvccVerticalBlock, dc as Dc ) {
 
         var state = getStateRequest().getState();
 
@@ -62,19 +62,19 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
     // a nice table structure
     // The layouting is cpu-intense, so below this there is 
     // more light-weight variant for older devices
-    (:exclForCalcSimple) function addForecast( block as EvccUIVertical, dc as Dc, energy as Array<Float?>, scale as Float ) {
+    (:exclForCalcSimple) function addForecast( block as EvccVerticalBlock, dc as Dc, energy as Array<Float?>, scale as Float ) {
 
-        var row = new EvccUIHorizontal( dc, {} );
-        var column1 = new EvccUIVertical( dc, {} );
-        var column3 = new EvccUIVertical( dc, {} );
-        var column2 = new EvccUIVertical( dc, {} );
+        var row = new EvccHorizontalBlock( dc, {} );
+        var column1 = new EvccVerticalBlock( dc, {} );
+        var column3 = new EvccVerticalBlock( dc, {} );
+        var column2 = new EvccVerticalBlock( dc, {} );
 
         for( var i = 0; i < energy.size(); i++ ) {
             column1.addText( _label[i] + ": ", {:justify => Graphics.TEXT_JUSTIFY_RIGHT} );
-            var value = new EvccUIHorizontal( dc, {:justify => Graphics.TEXT_JUSTIFY_RIGHT} );
+            var value = new EvccHorizontalBlock( dc, {:justify => Graphics.TEXT_JUSTIFY_RIGHT} );
             value.addText( formatEnergy( energy[i] * scale ), {} );
             column2.addBlock( value );
-            var unit = new EvccUIHorizontal( dc, {:justify => Graphics.TEXT_JUSTIFY_LEFT} );
+            var unit = new EvccHorizontalBlock( dc, {:justify => Graphics.TEXT_JUSTIFY_LEFT} );
             unit.addText( " kWh", {} );
             if( _indicator[i] != null ) {
                 unit.addText( " " + _indicator[i], { :relativeFont => 4, :vjustifyTextToBottom => true } );
@@ -92,9 +92,9 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
     // Simple forecast layout, with just single lines
     // Content of the lines will not be aligned, but this is
     // much simpler to layout
-    (:exclForCalcComplex) function addForecast( block as EvccUIVertical, dc as Dc, energy as Array<Float?>, scale as Float ) {
+    (:exclForCalcComplex) function addForecast( block as EvccVerticalBlock, dc as Dc, energy as Array<Float?>, scale as Float ) {
         for( var i = 0; i < energy.size(); i++ ) {
-            var line = new EvccUIHorizontal( dc, { :justify => Graphics.TEXT_JUSTIFY_LEFT } );
+            var line = new EvccHorizontalBlock( dc, { :justify => Graphics.TEXT_JUSTIFY_LEFT } );
             line.addText( _label[i] + ": " + formatEnergy( energy[i] * scale ) + "kWh", {} );
             if( _indicator[i] != null ) {
                 line.addText( " " + _indicator[i], { :relativeFont => 4, :vjustifyTextToBottom => true } );

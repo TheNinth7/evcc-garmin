@@ -1,4 +1,4 @@
-// ATTENTION: This is a duplication of source-glance/EvccStateRequest
+// ATTENTION: This is a duplication of /source-glance/EvccStateRequest.mc
 // For normal devices this class is required for both glance and widget
 // For devices that use the tinyglance, it is required only for the widget
 // To save valuable code space this file is not in the main source folder,
