@@ -26,24 +26,23 @@ import Toybox.Math;
 
     // Other views on the same level
     private var _sameLevelViews as SiteViewsArr;
-    function addSameLevelView( view as EvccWidgetSiteBaseView ) { _sameLevelViews.add( view ); }
     function getSameLevelViews() as SiteViewsArr { return _sameLevelViews; }
     function getSameLevelViewCount() as Number { return _sameLevelViews.size(); }
 
     // Views on the lower level
     private var _lowerLevelViews = new SiteViewsArr[0];
-    function addLowerLevelView( view as EvccWidgetSiteBaseView ) { _lowerLevelViews.add( view ); }
     function addLowerLevelViews( views as SiteViewsArr ) { _lowerLevelViews.addAll( views ); }
     function getLowerLevelViews() as SiteViewsArr { return _lowerLevelViews; }
     function showSelectIndicator() as Boolean { return _lowerLevelViews.size() > 0; }
 
-    function initialize( views as SiteViewsArr, pageIndex as Number, parentView as EvccWidgetSiteBaseView?, siteIndex as Number ) {
+    function initialize( views as SiteViewsArr, parentView as EvccWidgetSiteBaseView?, siteIndex as Number ) {
         // EvccHelperBase.debug("Widget: initialize");
         View.initialize();
 
         views.add( self );
+        _pageIndex = views.size() - 1;
+
         _sameLevelViews = views;
-        _pageIndex = pageIndex;
         _siteIndex = siteIndex;
         _parentView = parentView;
     }

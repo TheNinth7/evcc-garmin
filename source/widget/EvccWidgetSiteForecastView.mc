@@ -7,8 +7,8 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
     private var _label as Array;
     private var _indicator as Array;
 
-    function initialize( views as SiteViewsArr, pageIndex as Number, parentView as EvccWidgetSiteBaseView?, siteIndex as Number ) {
-        EvccWidgetSiteBaseView.initialize( views, pageIndex, parentView, siteIndex );
+    function initialize( views as SiteViewsArr, parentView as EvccWidgetSiteBaseView?, siteIndex as Number ) {
+        EvccWidgetSiteBaseView.initialize( views, parentView, siteIndex );
 
         // Define the labels for the rows
         // Third label is the three-character short code for the weekday

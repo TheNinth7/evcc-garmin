@@ -107,7 +107,7 @@ import Toybox.Math;
                     var activeSite = siteCount == 1 ? 0 : breadCrumb.getSelectedChild( siteCount );
                     
                     var views = new SiteViewsArr[0];
-                    new EvccWidgetSiteMainView( views, 0, null, activeSite, true ); // The view adds itself to views
+                    new EvccWidgetSiteMainView( views, null, activeSite, true ); // The view adds itself to views
                     var delegate = new EvccViewCarouselDelegate( views, breadCrumb );
                     return [views[0], delegate];
                 // If glances are supported, we present the full list of sites or menu entries right away

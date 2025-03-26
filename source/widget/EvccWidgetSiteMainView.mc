@@ -14,7 +14,7 @@ import Toybox.Math;
         var siteCount = EvccSiteConfigSingleton.getSiteCount();
         for( var i = 0; i < siteCount; i++ ) {
            // The view adds itself to views
-           new EvccWidgetSiteMainView( views, i, null, i, false );
+           new EvccWidgetSiteMainView( views, null, i, false );
         }
         return views;
     }
@@ -31,9 +31,9 @@ import Toybox.Math;
     // forecast is available and if yes add the forecast view 
     var _hasForecast = false;
 
-    function initialize( views as SiteViewsArr, pageIndex as Number, parentView as EvccWidgetSiteBaseView?, siteIndex as Number, actAsGlance as Boolean ) {
+    function initialize( views as SiteViewsArr, parentView as EvccWidgetSiteBaseView?, siteIndex as Number, actAsGlance as Boolean ) {
         // EvccHelperBase.debug("Widget: initialize");
-        EvccWidgetSiteBaseView.initialize( views, pageIndex, parentView, siteIndex );
+        EvccWidgetSiteBaseView.initialize( views, parentView, siteIndex );
 
         _actAsGlance = actAsGlance;
 
@@ -76,11 +76,11 @@ import Toybox.Math;
         // If we act as glance, and there is only one site, then we add the detail view to the lower level views
         // Also if we do not act as glance, but there is more than one site, it goes to the lower level views 
         if( ( _actAsGlance && siteCount == 1 ) || ( ! _actAsGlance && siteCount > 1 ) ) {
-            new viewClass( getLowerLevelViews(), getLowerLevelViews().size(), self, getSiteIndex() );
+            new viewClass( getLowerLevelViews(), self, getSiteIndex() );
         // But if we are not acting as glance and there is only one site, we directly add the
         // detail view to the same level view
         } else if ( siteCount == 1 ) {
-            new viewClass( getSameLevelViews(), getSameLevelViews().size(), self.getParentView(), getSiteIndex() );
+            new viewClass( getSameLevelViews(), self.getParentView(), getSiteIndex() );
         }
     }
 
