@@ -56,8 +56,8 @@ import Toybox.WatchUi;
         if( parent != null ) {
             var value = parent.getOption( option );
             // If we take over the font form the parent element, we apply any relativeFont definition
-            // and shift the font accordingly. Ee.g. parent font EvccUILibWidgetSingleton.FONT_MEDIUM (=0) and :relativeFont=3
-            // results in using EvccUILibWidgetSingleton.FONT_XTINY (=3)
+            // and shift the font accordingly. Ee.g. parent font UILIB_FONT_MEDIUM (=0) and :relativeFont=3
+            // results in using UILIB_FONT_XTINY (=3)
             if( option == :font && applyRelativeFont ) {
                 value = EvccHelperUI.min( ( value as Number ) + ( _options[:relativeFont] as Number ), EvccUILibWidgetSingleton.getInstance().fonts.size() - 1 );
             }

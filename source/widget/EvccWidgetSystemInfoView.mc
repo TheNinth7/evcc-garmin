@@ -16,10 +16,10 @@ import Toybox.System;
     function onUpdate(dc as Dc) as Void {
             dc.setColor( EvccConstants.COLOR_FOREGROUND, EvccConstants.COLOR_BACKGROUND );
             dc.clear();
-            var block = new EvccUIVertical( dc, { :font => EvccUILibWidgetSingleton.FONT_XTINY } );
+            var block = new EvccUIVertical( dc, { :font => UILIB_FONT_XTINY } );
             block.addText( "evvc-garmin " + EvccHelperUI.getVersion(), {}  );
 
-            _spacing = Graphics.getFontHeight( EvccUILibWidgetSingleton.FONT_XTINY ) / 2;
+            _spacing = Graphics.getFontHeight( block.getGarminFont() ) / 2;
 
             var monkeyVersion = Lang.format("$1$.$2$.$3$", System.getDeviceSettings().monkeyVersion );
 

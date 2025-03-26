@@ -1,6 +1,18 @@
 import Toybox.Lang;
 import Toybox.Graphics;
 
+enum {
+    UILIB_FONT_MEDIUM,
+    UILIB_FONT_SMALL,
+    UILIB_FONT_TINY,
+    UILIB_FONT_XTINY,
+    UILIB_FONT_MICRO
+}
+
+enum {
+    UILIB_FONT_GLANCE
+}
+
 // The UI Libs contain info on fonts and icons available
 // To save memory, there is a reduced set for glances
 
@@ -136,11 +148,7 @@ import Toybox.Graphics;
 // Base class for all three implementations
 class EvccUILibWidgetBase {
     public var fonts = [ Graphics.FONT_MEDIUM, Graphics.FONT_SMALL, Graphics.FONT_TINY, Graphics.FONT_GLANCE, Graphics.FONT_XTINY ] as FontsArr;
-    public static var FONT_MEDIUM = 0;
-    public static var FONT_SMALL = 1;
-    public static var FONT_TINY = 2;
-    public static var FONT_XTINY = 3;
-    public static var FONT_MICRO = 4;
+    
     public static var icons = [
         [ Rez.Drawables.battery_empty_medium, Rez.Drawables.battery_empty_small, Rez.Drawables.battery_empty_tiny, Rez.Drawables.battery_empty_xtiny, null ],
         [ Rez.Drawables.battery_onequarter_medium, Rez.Drawables.battery_onequarter_small, Rez.Drawables.battery_onequarter_tiny, Rez.Drawables.battery_onequarter_xtiny, null ],
@@ -156,7 +164,6 @@ class EvccUILibWidgetBase {
         [ null, null, null, Rez.Drawables.clock_xtiny, Rez.Drawables.clock_micro ],
         [ Rez.Drawables.forecast_medium, null, null, Rez.Drawables.forecast_xtiny, null ]
     ];
-    (:release) protected function debugFonts();
 }
 
 // Glance
@@ -171,7 +178,7 @@ class EvccUILibWidgetBase {
     }
 
     public var fonts = [Graphics.FONT_GLANCE] as FontsArr;
-    public static var FONT_GLANCE = 0;
+    //public static var FONT_GLANCE = 0;
     public static var icons = [
         [ Rez.Drawables.battery_empty_glance ],
         [ Rez.Drawables.battery_onequarter_glance ],

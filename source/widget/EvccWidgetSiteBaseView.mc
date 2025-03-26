@@ -92,7 +92,7 @@ import Toybox.Math;
 
             // Determine font size
             var fonts = EvccUILibWidgetSingleton.getInstance().fonts as FontsArr;
-            var font = EvccUILibWidgetSingleton.FONT_MEDIUM; // We start with the largest font
+            var font = UILIB_FONT_MEDIUM; // We start with the largest font
 
             // To save computing resources, if the block 
             // has more than 6 elements, we do not even try the largest font
@@ -133,7 +133,7 @@ import Toybox.Math;
         var stateRequest = getStateRequest();
 
         // The font size of the hader is fixed to the second-smallest
-        var font = EvccUILibWidgetSingleton.FONT_XTINY;
+        var font = UILIB_FONT_XTINY;
         
         var siteCount = EvccSiteConfigSingleton.getSiteCount();
         var fonts = EvccUILibWidgetSingleton.getInstance().fonts as FontsArr;
@@ -164,7 +164,7 @@ import Toybox.Math;
             } else {
                 // If there is no site title, we set the font (=icon size) to the
                 // largest available
-                pageTitle.setOption( :font, EvccUILibWidgetSingleton.FONT_MEDIUM );
+                pageTitle.setOption( :font, UILIB_FONT_MEDIUM );
             }
             header.addBlock( pageTitle );
         }

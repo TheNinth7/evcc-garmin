@@ -2,6 +2,40 @@ import Toybox.Lang;
 import Toybox.WatchUi;
 import Toybox.Application;
 
+/*
+class EvccViewCarouselDelegate extends EvccViewCarouselDelegateInternal {
+    private var _onNextPage = false;
+    function initialize( views as SiteViewsArr, breadCrumb as EvccBreadCrumb ) {
+        EvccViewCarouselDelegate.initialize( views, breadCrumb );
+    }
+    public function onKey( keyEvent ) {
+        if( _onNextPage ) {
+            return onNextPage();
+        } else {
+            return EvccViewCarouselDelegateInternal.onKey( keyEvent );
+        }
+    }
+    public function onSwipe( swipeEvent ) {
+        if( _onNextPage && swipeEvent.getDirection() == SWIPE_LEFT ) {
+            _onNextPage = false;
+            return onSelect();
+        } else if( _onNextPage ) {
+            return onNextPage();
+        } else {
+            return EvccViewCarouselDelegateInternal.onSwipe( swipeEvent );
+        }
+    }
+    public function onNextPage() {
+        if( _onNextPage ) {
+            _onNextPage = false;
+            EvccViewCarouselDelegateInternal.onNextPage();
+        } else {
+            _onNextPage = true;
+        }
+    }
+}
+*/
+
 // Delegate processing user input for view carousels, i.e. when the 
 // user can switch between different views
 // In Garmin SDK this is called a view loop, but that implementation was
@@ -77,23 +111,6 @@ class EvccViewCarouselDelegate extends EvccViewSimpleDelegate {
         }
     }
 
-    // 2025-03-20 this is standard behavior anyway, so we comment this function
-    // out for now to save memory space
-    // When the select action is triggered, we pop the current view and go
-    // back to the higher level view
-    /*
-    public function onBack() as Boolean {
-        try {
-            // EvccHelperBase.debug("ViewCarouselDelegate: onBack");
-            WatchUi.popView( WatchUi.SLIDE_RIGHT );
-            return true;
-        } catch ( ex ) {
-            EvccHelperBase.debugException( ex );
-            return false;
-        }
-    }
-    */
-
     // For next/previous we switch to the next/previous view
     // on the current level. This methods implement wrapping,
     // i.e. the last view goes to the first and vice versa.
@@ -103,7 +120,6 @@ class EvccViewCarouselDelegate extends EvccViewSimpleDelegate {
             var activeView = _breadCrumb.getSelectedChild( _views.size() );
             activeView = activeView == _views.size() - 1 ? 0 : activeView + 1;
             WatchUi.switchToView( _views[activeView], self, WatchUi.SLIDE_UP );
-            //Storage.setValue( EvccConstants.STORAGE_ACTIVESITE, _activeView );
             _breadCrumb.setSelectedChild( activeView );
             return true;
         } catch ( ex ) {
@@ -117,7 +133,6 @@ class EvccViewCarouselDelegate extends EvccViewSimpleDelegate {
             var activeView = _breadCrumb.getSelectedChild( _views.size() );
             activeView = activeView == 0 ? _views.size() - 1 : activeView - 1;
             WatchUi.switchToView( _views[activeView], self, WatchUi.SLIDE_DOWN );
-            //Storage.setValue( EvccConstants.STORAGE_ACTIVESITE, _activeView );
             _breadCrumb.setSelectedChild( activeView );
             return true;
         } catch ( ex ) {
