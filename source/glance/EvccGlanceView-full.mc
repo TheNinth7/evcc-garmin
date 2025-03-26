@@ -38,7 +38,7 @@ import Toybox.Application.Properties;
 
         try {
             // EvccHelperBase.debug("Glance: onUpdate");
-            var line = new EvccUIHorizontal( dc, { :uiLib => EvccUILibGlanceSingleton.getInstance(), :font => UILIB_FONT_GLANCE, :justify => Graphics.TEXT_JUSTIFY_LEFT, :backgroundColor => Graphics.COLOR_TRANSPARENT } );
+            var line = new EvccUIHorizontal( dc, { :uiLib => EvccUILibGlanceSingleton.getInstance(), :font => EvccUILibGlanceSingleton.UILIB_FONT_GLANCE, :justify => Graphics.TEXT_JUSTIFY_LEFT, :backgroundColor => Graphics.COLOR_TRANSPARENT } );
 
             var spacing = dc.getTextDimensions( " ", Graphics.FONT_GLANCE )[0];
 
@@ -51,10 +51,10 @@ import Toybox.Application.Properties;
                     var state=_stateRequest.getState();
                     
                     if( state.hasBattery() ) {
-                        var column = new EvccUIVertical( dc, { :font => UILIB_FONT_GLANCE } );
+                        var column = new EvccUIVertical( dc, { :font => EvccUILibGlanceSingleton.UILIB_FONT_GLANCE } );
                         column.addIcon( EvccUIIcon.ICON_BATTERY, { :batterySoc => state.getBatterySoc() } );
 
-                        var batteryState = new EvccUIHorizontal( dc, { :font => UILIB_FONT_GLANCE } );
+                        var batteryState = new EvccUIHorizontal( dc, { :font => EvccUILibGlanceSingleton.UILIB_FONT_GLANCE } );
                         batteryState.addText( EvccHelperUI.formatSoc( state.getBatterySoc() ), {} );
                         
                         batteryState.addIcon( EvccUIIcon.ICON_POWER_FLOW, { :power => state.getBatteryPowerRounded() } );
@@ -81,9 +81,9 @@ import Toybox.Application.Properties;
                         var loadpoint = displayedLPs[i] as EvccLoadPoint;
                         var vehicle = loadpoint.getVehicle();
                         if( vehicle != null ) {
-                            var column = new EvccUIVertical( dc, { :font => UILIB_FONT_GLANCE, :marginLeft => spacing } );
+                            var column = new EvccUIVertical( dc, { :font => EvccUILibGlanceSingleton.UILIB_FONT_GLANCE, :marginLeft => spacing } );
                             column.addText( vehicle.getTitle().substring( 0, 8 ), {} );
-                            var vehicleState = new EvccUIHorizontal( dc, { :font => UILIB_FONT_GLANCE } );
+                            var vehicleState = new EvccUIHorizontal( dc, { :font => EvccUILibGlanceSingleton.UILIB_FONT_GLANCE } );
                             if( vehicle.isGuest() ) {
                                 vehicleState.addBitmap( Rez.Drawables.car_glance, {} );
                             } else {

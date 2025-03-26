@@ -202,14 +202,14 @@ import Toybox.WatchUi;
         return self;
     }
     
-    function addIcon( icon as Number, options as Dictionary<Symbol,Object> ) {
+    function addIcon( icon as EvccUIIcon.BaseIcon or EvccUIIcon.ConditionalIcon, options as Dictionary<Symbol,Object> ) {
         options[:parent] = self;
         
         // Special handling for the power flow and active phases icons
         // power flow is only shown if power is not equal 0, and
         // active phases is only shown if the loadpoint is charging
         if( ( icon != EvccUIIcon.ICON_POWER_FLOW || options[:power] != 0 ) &&
-            ( icon != EvccUIIcon.ICON_ACTIVE_PHASES || options[:charging] ) )  
+            ( icon != EvccUIIcon.ICON_ACTIVE_PHASES || options[:charging] == true ) )  
         {
             _elements.add( new EvccUIIcon( icon, _dc, options ) );
         }
@@ -573,6 +573,114 @@ import Toybox.WatchUi;
 // is that for icons multiple sizes are supported and this element shows the icon
 // based on the font that is passed in the options or used by its parent element
 (:glance) class EvccUIIcon extends EvccUIBitmap {
+    var _icon as BaseIcon;
+
+    // Constants for the base icons
+    // The number needs to relate to an entry in the static
+    enum BaseIcon {
+        ICON_BATTERY_EMPTY,
+        ICON_BATTERY_ONEQUARTER,
+        ICON_BATTERY_HALF,
+        ICON_BATTERY_THREEQUARTERS,
+        ICON_BATTERY_FULL,
+        ICON_ARROW_RIGHT,
+        ICON_ARROW_LEFT,
+        ICON_ARROW_LEFT_THREE,
+        ICON_SUN,
+        ICON_HOME,
+        ICON_GRID,
+        ICON_DURATION,
+        ICON_FORECAST
+    }
+
+    enum ConditionalIcon {
+        // For the battery we have special handling, if this
+        // constant is based in, we choose ony of the battery
+        // icons based on the batterySoc
+        ICON_BATTERY = -1,
+
+        // Another special icon, based on power flow we
+        // are showing a left (in) or right (out) arrow
+        ICON_POWER_FLOW = -2,
+
+        // Another special icon, based on active phases we
+        // are showing one left arrow (one phase) or three
+        // left arrows (three phases)
+        ICON_ACTIVE_PHASES = -3
+    }
+
+    function initialize( icon as BaseIcon or ConditionalIcon, dc as Dc, options as Dictionary<Symbol,Object> ) {
+        EvccUIBitmap.initialize( null, dc, options );
+
+        // We analyse the icon and passed in data and from that
+        // store the interpreted icon
+        // For the battery we determine the icon based on SoC
+        if( icon == ICON_BATTERY ) {
+            var batterySoc = getOption( :batterySoc );
+            if( batterySoc == null ) {
+                throw new InvalidValueException( ":batterySoc is missing!");
+            }
+            if( batterySoc >= 90 ) {
+                _icon = ICON_BATTERY_FULL;
+            } else if( batterySoc >= 63 ) {
+                _icon = ICON_BATTERY_THREEQUARTERS;
+            } else if( batterySoc >= 37 ) {
+                _icon = ICON_BATTERY_HALF;
+            } else if( batterySoc >= 10 ) {
+                _icon = ICON_BATTERY_ONEQUARTER;
+            } else {
+                _icon = ICON_BATTERY_EMPTY;
+            }
+        // For power flow we determine the icon (in/out)
+        // based on the power
+        } else if( icon == ICON_POWER_FLOW ) {
+            var power = getOption( :power );
+            if( power == null ) {
+                throw new InvalidValueException( ":power is missing!");
+            }
+            _icon = power < 0 ? ICON_ARROW_LEFT : ICON_ARROW_RIGHT;
+        // And for active phases it is based on the active phases
+        } else if( icon == ICON_ACTIVE_PHASES ) {
+            var activePhases = getOption( :activePhases );
+            if( activePhases == null ) {
+                throw new InvalidValueException( ":activePhases is missing!");
+            }
+            _icon = activePhases == 3 ? ICON_ARROW_LEFT_THREE : ICON_ARROW_LEFT;
+        } else {
+            _icon = icon;
+        }
+    }
+
+    // Override the function from EvccUIBitmap and
+    // determine the reference based on the icon constant and font size
+    // This is not done in the constructor, because we need to adapt
+    // to changing font size
+    protected function bitmapRef() as ResourceId {
+        var font = getOption( :font );
+        var icons = getOption( :uiLib ).icons as Array<Array>;
+        var ref = icons[_icon][font];
+        // Throw an exception if we could not find the icon
+        if( ref == null ) {
+            throw new InvalidValueException( "Icon " + _icon + " not found for font " + font );
+        }
+        return ref;
+    }
+
+    // Overrides the parent function to consider
+    // changes in font size
+    private var _lastFont as Number?;
+    protected function loadData() {
+        var font = getOption( :font );
+        if( font != _lastFont ) {
+            _lastFont = font;
+            _bitmapHeight = null; _bitmapWidth = null;
+            EvccUIBitmap.loadData();
+        }
+    }
+}
+
+/*
+(:glance) class EvccUIIcon extends EvccUIBitmap {
     var _icon as Number;
 
     // Constants for the base icons
@@ -674,5 +782,4 @@ import Toybox.WatchUi;
         }
     }
 }
-
-
+*/

@@ -163,7 +163,7 @@ import Toybox.Math;
 
 
     // Function to generate line for PV, grid, battery and home
-    private function getBasicElement( icon as Number, power as Number, flowIcon as Number, dc as Dc ) as EvccUIHorizontal {
+    private function getBasicElement( icon as EvccUIIcon.BaseIcon or EvccUIIcon.ConditionalIcon, power as Number, flowIcon as EvccUIIcon.BaseIcon or EvccUIIcon.ConditionalIcon, dc as Dc ) as EvccUIHorizontal {
         var state = getStateRequest().getState();
         var lineOptions = {};
         var iconOptions = {};
