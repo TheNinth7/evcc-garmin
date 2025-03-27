@@ -42,26 +42,33 @@ import Toybox.System;
     (:release) function checkFonts( block as EvccVerticalBlock, dc as Dc ) as Void {}
 
     (:debug) private var _debugDone = false;
-
     // For full-glance devices we also check the glance icons
-    (:debug :exclForGlanceTiny :exclForGlanceNone ) function checkFonts( block as EvccVerticalBlock, dc as Dc ) as Void {
+    (:debug) function checkFonts( block as EvccVerticalBlock, dc as Dc ) as Void {
         if( ! _debugDone ) { EvccHelperBase.debug( "Icon sizes:" ); }
         block.addText( "fonts: " + fontMode(), { :marginTop => _spacing } );
-        checkIcons( new EvccWidgetResourceSet(), block, dc );
-        checkIcons( new EvccGlanceResourceSet(), block, dc );
+        checkFontsDeviceSpecific( block, dc );
         _debugDone = true;
     }
 
-    // For devices with tiny or no glance we check only the widget icons
-    (:debug :exclForGlanceFull ) function checkFonts( block as EvccVerticalBlock, dc as Dc ) as Void {
-        EvccHelperBase.debug( "Icon sizes:" );
-        block.addText( "fonts: " + fontMode(), { :marginTop => _spacing } );
+    // For glance devices we also check the glance icons
+    // Note that EvccGlanceResourceSet does not exist for tiny glance devices
+    // Therefore it is added at the end of this class, only for tiny glance and in
+    // debug scope
+    (:debug :exclForGlanceNone) function checkFontsDeviceSpecific( block as EvccVerticalBlock, dc as Dc ) as Void {
         checkIcons( new EvccWidgetResourceSet(), block, dc );
-        _debugDone = true;
+        checkIcons( new EvccGlanceResourceSet(), block, dc );
+    }
+
+    // For no glance we check only the widget icons
+    (:debug :exclForGlanceFull :exclForGlanceTiny) function checkFontsDeviceSpecific( block as EvccVerticalBlock, dc as Dc ) as Void {
+        checkIcons( new EvccWidgetResourceSet(), block, dc );
     }
 
     // Checking the icons for a given UI lib (glance or widget)
-    (:debug) function checkIcons( uiLib as EvccResourceSet, block as EvccVerticalBlock, dc as Dc ) as Void {
+    // We don't use the standard type EvccResourceSet, because we
+    // for tiny glances we create our own debug resource set, which
+    // is not included in that type
+    (:debug) function checkIcons( uiLib as EvccWidgetResourceSet or EvccGlanceResourceSet, block as EvccVerticalBlock, dc as Dc ) as Void {
         var fonts = uiLib._fonts as GarminFontsArr;
         var icons = uiLib._icons as EvccIcons;
         var text = "icons: OK";
@@ -98,7 +105,7 @@ import Toybox.System;
             if( bitmap != null ) {
                 var bmHeight = bitmap.getHeight();
                 if( bmHeight != fontHeight ) {
-                    debug += " (mismatch! icon size= " + bmHeight + ")";
+                    debug += " (mismatch! icon size=" + bmHeight + ")";
                     text = "icons: mismatch";
                 }
             } else {
@@ -113,4 +120,17 @@ import Toybox.System;
     (:debug :exclForFontsVector :exclForFontsStatic) function fontMode() as String { return "static-opt"; }
     (:debug :exclForFontsVector :exclForFontsStaticOptimized) function fontMode() as String { return "static"; }
 
+}
+
+// For tiny glance this class does not exist, so we create a small
+// test version here, to be available only in debug scope and
+// in the foreground, for testing
+(:debug :exclForGlanceFull :exclForGlanceNone) class EvccGlanceResourceSet {
+    enum Font {
+        FONT_GLANCE
+    }
+    public var _fonts = [Graphics.FONT_GLANCE] as GarminFontsArr;
+    public var _icons = [
+        [ Rez.Drawables.battery_empty_glance ]
+    ] as EvccIcons;
 }

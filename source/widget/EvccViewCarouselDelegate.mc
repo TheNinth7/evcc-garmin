@@ -18,6 +18,7 @@ import Toybox.Application;
         EvccViewCarouselDelegateBase.initialize( views, breadCrumb );
     }
     public function onSwipe( swipeEvent ) {
+        // EvccHelperBase.debug("ViewCarouselDelegate: onSwipe");
         if( swipeEvent.getDirection() == SWIPE_LEFT ) {
             return onSelect();
         }
@@ -41,6 +42,7 @@ import Toybox.Application;
     // We call onNextPage again if it was the original behavior,
     // or hand over to our base class
     public function onKey( keyEvent ) {
+        // EvccHelperBase.debug("ViewCarouselDelegate (override): onKey");
         if( _onNextPage ) {
             return onNextPage();
         } else {
@@ -52,6 +54,7 @@ import Toybox.Application;
     // again if it was the original behavior,
     // or hand over to our base class
     public function onSwipe( swipeEvent ) {
+        // EvccHelperBase.debug("ViewCarouselDelegate (override): onSwipe");
         if( swipeEvent.getDirection() == SWIPE_LEFT ) {
             _onNextPage = false;
             return onSelect();
@@ -91,6 +94,7 @@ class EvccViewCarouselDelegateBase extends EvccViewSimpleDelegate {
     // behavior. In some gesture-based devices the keys are not
     // associated with that behavior (Venu, Vivoactive)
     (:exclForHasSelect) public function onKey( keyEvent ) {
+        // EvccHelperBase.debug("ViewCarouselDelegate: onKey");
         if( keyEvent.getKey() == KEY_ENTER ) {
             return onSelect();
         }

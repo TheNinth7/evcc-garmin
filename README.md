@@ -173,7 +173,7 @@ To determine the actual font sizes used by the app, follow these steps:
    ```  
    Replace `[device-family]` with the name of the entry you just added to `generate.json`.
 
-3. **Run the app in the simulator**, open the widget, and press the `m` key twice to open the system info view. The app will print the actual font sizes to the debug console. If the device uses the tiny glance layout, `icon_glance` will not appear in the debug output. In that case, use the `FONT_GLANCE` size listed in Garmin's [Device Reference](https://developer.garmin.com/connect-iq/reference-guides/devices-reference).
+3. **Run the app in the simulator**, open the widget, and press the `m` key twice to open the system info view. The app will print the actual font sizes to the debug console.
 
 4. **Update the `generate.json` entry** with the correct font sizes based on the output.
 

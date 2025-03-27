@@ -350,6 +350,7 @@ You can get help by posting in [this thread](https://github.com/evcc-io/evcc/dis
 
 | Version | Changes |
 |--------:|-------------|
+| **v1.3.1** | Fixed issue with swipe left triggering page down on some devices<br>Fixed issue with page indicator not showing correctly when forecast is shown for the first time<br>Added jq filter for removing all empty fields, to save memory<br>Added property for vector font face to allow setting it per device<br>Refactored resource handling
 | **v1.3** | Added forecast view<br>Introduced support for additional views, enabling future extensions<br>Optimized memory usage<br>Enhanced UI engine, including improved font selection<br>**ATTENTION:** This update requires you to re-enter your settings. Please ensure you have them noted down beforehand.
 | **v1.2.2** | added system info view (opened by menu key)
 | **v1.2.1** | improved error handling
