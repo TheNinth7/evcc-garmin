@@ -53,12 +53,12 @@ sitesOne = exclForSitesOne
 # Where to show the select button indicator
 # 30°  = 2 o'clock
 # 27°  = 2 o'clock + 0.5 minutes
-# 0°   = 3 o'clock
 # None = do not show the indicator
-select0 = exclForSelect0
+# Touch = show a tap (touch) indicator at 2 o'clock
 select30 = exclForSelect30
 select27 = exclForSelect27
 selectNone = exclForSelectNone;exclForHasSelect
+selectTouch = exclForSelectTouch;exclForHasSelect
 
 # Not all devices natively have a key that triggers the onSelect behavior
 # For those, the enter key will be used
@@ -134,16 +134,16 @@ fenix6xpro.resourcePath = settings-site1;resources;resources-fenix6xpro
 # No glance
 # With one site only
 vivoactive3.sourcePath = $(sourceGlanceNone)
-vivoactive3.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(select0);$(swipeLeftDefault)
+vivoactive3.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(selectTouch);$(swipeLeftDefault)
 vivoactive3.resourcePath = settings-site1;resources;resources-vivoactive3
 vivoactive3m.sourcePath = $(sourceGlanceNone)
-vivoactive3m.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(select0);$(swipeLeftDefault)
+vivoactive3m.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(selectTouch);$(swipeLeftDefault)
 vivoactive3m.resourcePath = settings-site1;resources;resources-vivoactive3m
 vivoactive3mlte.sourcePath = $(sourceGlanceNone)
-vivoactive3mlte.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(select0);$(swipeLeftDefault)
+vivoactive3mlte.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(selectTouch);$(swipeLeftDefault)
 vivoactive3mlte.resourcePath = settings-site1;resources;resources-vivoactive3mlte
 # With multiple sites
 vivoactive4.sourcePath = $(sourceGlanceNone)
-vivoactive4.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesMultiple);$(select30);$(swipeLeftDefault)
+vivoactive4.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesMultiple);$(selectTouch);$(swipeLeftDefault)
 vivoactive4s.sourcePath = $(sourceGlanceNone)
-vivoactive4s.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesMultiple);$(select30);$(swipeLeftDefault)
+vivoactive4s.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesMultiple);$(selectTouch);$(swipeLeftDefault)

@@ -21,7 +21,7 @@ class EvccPageIndicator {
     
     // How large should dots be in relation to the
     // total screen width
-    public static const DOT_SIZE_FACTOR = 0.02;
+    private static const DOT_SIZE_FACTOR = 0.02;
     
     // How thick should the line drawn around the dots
     // be in relation to the total screen width
@@ -29,7 +29,7 @@ class EvccPageIndicator {
 
     // How large should the orbit radius be in relation to the
     // total width of the screen
-    public static const RADIUS_FACTOR = 0.45;
+    private static const RADIUS_FACTOR = 0.47;
 
     public function initialize( dc as Dc ) {
         setCenterAngle( CENTER_ANGLE );
@@ -37,6 +37,13 @@ class EvccPageIndicator {
         _dotSize = Math.round( dc.getWidth() * DOT_SIZE_FACTOR );
         _lineWidth = Math.round( dc.getWidth() * LINE_WIDTH_FACTOR );
         _dc = dc;
+    }
+
+    // Returns the distance between the left side of the screen and the right-most point of 
+    // a page indicator dot. This works for all dots, counting from the edge of the screen
+    // in their position.
+    public function getSpacing() as Number {
+        return Math.round( _dc.getWidth() * ( 0.5 - RADIUS_FACTOR + DOT_SIZE_FACTOR + LINE_WIDTH_FACTOR / 2 ) );
     }
 
     public function setCenterAngle( angle as Number ) {

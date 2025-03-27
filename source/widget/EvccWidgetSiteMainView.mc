@@ -171,8 +171,6 @@ import Toybox.Math;
         if( icon == EvccIconBlock.ICON_BATTERY ) { 
             // For battery the SoC is used to choose on of the icons with different fill
             iconOptions[:batterySoc] = state.getBatterySoc(); 
-            // If there is a page indicator, we shift the battery symbol
-            lineOptions[:piSpacing] = getPiSpacing( dc );
         }
         var line = new EvccHorizontalBlock( dc, lineOptions );
         line.addIcon( icon, iconOptions );
@@ -197,7 +195,7 @@ import Toybox.Math;
     private function getLoadPointElement( loadpoint as EvccLoadPoint, dc as Dc, showChargingDetails as Boolean ) {
         var vehicle = loadpoint.getVehicle();
         
-        var lineVehicle = new EvccHorizontalBlock( dc, { :piSpacing => getPiSpacing( dc ) } );
+        var lineVehicle = new EvccHorizontalBlock( dc, { :truncateSpacing => getContentArea().truncateSpacing } );
         
         lineVehicle.addText( vehicle.getTitle(), { :isTruncatable => true } );
         
@@ -237,7 +235,7 @@ import Toybox.Math;
     // Function to generate the line for heater loadpoints
     private function getHeaterElement( loadpoint as EvccLoadPoint, dc as Dc ) {
         var heater = loadpoint.getHeater();
-        var lineHeater = new EvccHorizontalBlock( dc, { :piSpacing => getPiSpacing( dc ) } );
+        var lineHeater = new EvccHorizontalBlock( dc, { :truncateSpacing => getContentArea().truncateSpacing } );
         
         lineHeater.addText( heater.getTitle(), { :isTruncatable => true } );
         lineHeater.addText( " " + EvccHelperWidget.formatTemp( heater.getTemperature() ), {} );

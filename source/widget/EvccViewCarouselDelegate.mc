@@ -106,24 +106,23 @@ class EvccViewCarouselDelegateBase extends EvccViewSimpleDelegate {
         try {
             // EvccHelperBase.debug("ViewCarouselDelegate: onSelect");
 
-            // The view that is active within the current carousel
-            var activeView = 0;
-            // Bread crumb for the sub view that we are going to open
-            var childCrumb = _breadCrumb;
 
             // For devices that do not have glances, this view
             // acts as glance, displaying only the selected site
             // In this case, we reuse the bread crumb and
             // keep the activeView at 0
+            var activeView = 0;
+            var childCrumb = _breadCrumb;
             // If we are not in glance mode, we determine the child
             // that was previously selected and obtain the bread
             // crumb for that child
             if( ! _views[0].actsAsGlance() ) {
                 activeView = _breadCrumb.getSelectedChild( _views.size() );
+                childCrumb = _breadCrumb.getChild( activeView );
             }
 
             var lowerLevelViews = _views[activeView].getLowerLevelViews();
-            var activeSubView = _breadCrumb.getSelectedChild( _views.size() );
+            var activeSubView = childCrumb.getSelectedChild( lowerLevelViews.size() );
 
             if( lowerLevelViews.size() > 0 ) {
                 activeSubView = activeSubView < lowerLevelViews.size() ? activeSubView : 0;

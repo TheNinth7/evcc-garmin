@@ -33,7 +33,6 @@ import Toybox.Math;
     private var _lowerLevelViews = new SiteViewsArr[0];
     function addLowerLevelViews( views as SiteViewsArr ) { _lowerLevelViews.addAll( views ); }
     function getLowerLevelViews() as SiteViewsArr { return _lowerLevelViews; }
-    function showSelectIndicator() as Boolean { return _lowerLevelViews.size() > 0; }
 
     function initialize( views as SiteViewsArr, parentView as EvccWidgetSiteBaseView?, siteIndex as Number ) {
         // EvccHelperBase.debug("Widget: initialize");
@@ -63,6 +62,9 @@ import Toybox.Math;
         }
     }
 
+    private var _ca as EvccContentArea?;
+    protected function getContentArea() as EvccContentArea { return _ca; }
+
     // Update the view
     function onUpdate(dc as Dc) as Void {
         try {
@@ -73,14 +75,14 @@ import Toybox.Math;
             dc.clear();
 
             // Draw the header, footer, page indicator and select indicator
-            var ca = drawShell( dc );
+            _ca = drawShell( dc );
 
             var block = new EvccVerticalBlock( dc, {} );
             
             if( ! stateRequest.hasLoaded() ) {
                 block.addText( "Loading ...", {} );
                 // Always vertically center the Loading message
-                ca.y = dc.getHeight() / 2;
+                _ca.y = dc.getHeight() / 2;
             } else { 
                 if( stateRequest.hasError() ) {
                     throw new StateRequestException( stateRequest.getErrorCode(), stateRequest.getErrorMessage() );
@@ -110,16 +112,16 @@ import Toybox.Math;
                 // Generally applying both would be to cpu-intense
                 // Note: the main view is sized by height, but uses the truncate
                 // feature of the EvccDrawingTools to cut content to width
-                if( limitHeight() && block.getHeight() <= ca.height ) {
+                if( limitHeight() && block.getHeight() <= _ca.height ) {
                     break;
-                } else if ( limitWidth() && block.getWidth() <= ca.width ) {
+                } else if ( limitWidth() && block.getWidth() <= _ca.width ) {
                     break;
                 }
             }
 
             // EvccHelperBase.debug( "Using font " + block.getOption( :font ) );
 
-            block.draw( ca.x, ca.y );
+            block.draw( _ca.x, _ca.y );
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
             EvccHelperUI.drawError( dc, ex );
@@ -198,99 +200,39 @@ import Toybox.Math;
 
         // If applicable, draw the page indicator and adjust the
         // content area
-        if( showPageIndicator() ) {
-            new EvccPageIndicator( dc ).drawPageIndicator( _pageIndex, getSameLevelViewCount() );
-            var piX = dc.getWidth() * ( 0.5 - EvccPageIndicator.RADIUS_FACTOR );
-            var dotRadius = dc.getWidth() * EvccPageIndicator.DOT_SIZE_FACTOR;
-            
-            // piX is the x coordinate of the page indicator
-            // On the left side we leave double that space + the radius of the dot,
-            // on the right side the same space + the radius of the dot
-            ca.width = ca.width - piX * 3 - dotRadius * 2;
-            // For calculating the center x coordinate of the content area, we
-            // start counting from left, add 2/3 of the piX spacing and
-            // 2/3 of the dotRadius spacing plus half of the width
-            ca.x = piX * 2 + dotRadius * 2 * 2/3 + ca.width / 2;
+        var piSpacing = 0;
+
+        if( getSameLevelViewCount() > 1 ) {
+            var pi = new EvccPageIndicator( dc );
+            pi.drawPageIndicator( _pageIndex, getSameLevelViewCount() );
+            piSpacing = pi.getSpacing();
         }
 
         // Draw the select indicator
-        if( showSelectIndicator() ) {
-            drawSelectIndicator( dc );
+        var siSpacing = 0;        
+        if( _lowerLevelViews.size() > 0 ) {
+            var si = new EvccSelectIndicator();
+            si.draw( dc );
+            siSpacing = si.getSpacing();
         }
 
-        
-        /*         
+
+        ca.width = ca.width - piSpacing - siSpacing;
+        ca.x = piSpacing + ca.width / 2;
+        ca.width *= 0.95;
+        ca.truncateSpacing = dc.getWidth() - ca.width;
+
+        /*
         // Code for drawing visual alignment grid 
         dc.setPenWidth( 1 );
         dc.drawCircle( dc.getWidth() / 2, dc.getHeight() / 2, dc.getWidth() / 2 );
         dc.drawRectangle( ca.x - ca.width / 2, ca.y - ca.height / 2, ca.width, ca.height );
         dc.drawLine( ca.x - ca.width / 2, ca.y, ca.x + ca.width / 2, ca.y );
-        */        
-        
+        */
         // Return the content area dimensions
         return ca;
     }
     
-    /* Here is the code for drawing the select indicator
-     * We apply different exclude annotations to decide if
-     * an indicator is drawn and at what degree
-     */
-    (:exclForSelect0 :exclForSelect30 :exclForSelectNone) private static const SELECT_CENTER_ANGLE = 27;
-    (:exclForSelect0 :exclForSelect27 :exclForSelectNone) private static const SELECT_CENTER_ANGLE = 30;
-    (:exclForSelect27 :exclForSelect30 :exclForSelectNone) private static const SELECT_CENTER_ANGLE = 0;
-    
-    (:exclForSelectNone) private function drawSelectIndicator( dc as Dc ) {
-        var SELECT_RADIUS_FACTOR = 0.49; // factor applied to dc width to calculate the radius of the arc
-        var SELECT_LINE_WIDTH_FACTOR = 0.01; // factor applied to dc width to calculate the width of the arc
-        var SELECT_LENGTH = 16; // total length of the arc in degree
-        
-        // Anti-alias is only available in newer SDK versions
-        if( dc has :setAntiAlias ) {
-            dc.setAntiAlias( true );
-        }
-        dc.setPenWidth( Math.round( dc.getWidth() * SELECT_LINE_WIDTH_FACTOR ) ); // Line width is set here
-        dc.drawArc( dc.getWidth() / 2, 
-                    dc.getHeight() / 2, 
-                    dc.getWidth() * SELECT_RADIUS_FACTOR,
-                    Graphics.ARC_COUNTER_CLOCKWISE,
-                    SELECT_CENTER_ANGLE - SELECT_LENGTH / 2,
-                    SELECT_CENTER_ANGLE + SELECT_LENGTH / 2 );
-    }
-    (:exclForSelect0 :exclForSelect30 :exclForSelect27) private function drawSelectIndicator( dc as Dc ) {}
-
-    // Currently not in use - need to implement layout/spacing adaption to the
-    // swipe indicator, both in onUpdate() in this class, and also in the 
-    // truncate routine in the DrawingTools.
-    // If implemented, this should be applied to Venu and Vivoactive series
-    /*
-    private function drawSelectIndicator( dc as Dc ) {
-        
-        // Anti-alias is only available in newer SDK versions
-        if( dc has :setAntiAlias ) {
-            dc.setAntiAlias( true );
-        }
-        dc.setPenWidth( Math.round( dc.getWidth() * 0.01 ) ); // Line width is set here
-        dc.drawArc( dc.getWidth() * 1.125 - 20, 
-                    dc.getHeight() / 2, 
-                    dc.getWidth() / 8,
-                    Graphics.ARC_COUNTER_CLOCKWISE,
-                    140,
-                    220 );
-        dc.drawLine( dc.getWidth() - 10, dc.getHeight() / 2, dc.getWidth(), dc.getHeight() / 2 - 5 );
-        dc.drawLine( dc.getWidth() - 10, dc.getHeight() / 2, dc.getWidth(), dc.getHeight() / 2 + 5 );
-    }
-    */
-
-    // Function to indicate if a page indicator shall be shown
-    function showPageIndicator() as Boolean {
-        return getSameLevelViewCount() > 1;
-    }
-    // Returns the spacing that elements should keep to 
-    // the left side of the screen to accommodate a potential
-    // page indicator
-    function getPiSpacing( dc as Dc ) as Number {
-        return showPageIndicator() ? dc.getWidth() * ( 0.5 - EvccPageIndicator.RADIUS_FACTOR ) * 2 : 0;
-    }
 
     // Function to be overriden to add a page title to the view
     function getPageTitle( dc as Dc ) as EvccBlock? { return null; }
@@ -315,5 +257,6 @@ class EvccContentArea {
     var x = 0;
     var y = 0;
     var width = 0;
-    var height = 0;    
+    var height = 0;
+    var truncateSpacing = 0;
 }

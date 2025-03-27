@@ -16,7 +16,7 @@ import Toybox.WatchUi;
 // :font - font for text
 // :relativeFont - for specificy font size in relation to the parent. Value of 1 for example means shift to one font size smaller
 // :isTruncatable - indicates if a text element can be truncated to make the line fit to the screen
-// :piSpacing - indicates spacing that needs to be left for the page indicator when truncating
+// :truncateSpacing - indicates spacing that needs to be left for the page indicator when truncating
 // :parent - parent drawing element. :color, :backgroundColor and :font may be inherited from a parent
 // :batterySoc, :power, :activePhases - for icons that change bases on these inputs
 // :vjustifyTextToBottom - by default, text is center aligned to the passed coordinate. If :vjustifyTextToBottom of a text element within a horizontal container is set to true, it will be aligned to the bottom instead.
@@ -52,7 +52,7 @@ import Toybox.WatchUi;
 
         // The following options are not inherited, and are immediately
         // set to default values
-        if( option == :marginLeft || option == :marginRight || option == :marginTop || option == :marginBottom || option == :piSpacing ) { return 0; }
+        if( option == :marginLeft || option == :marginRight || option == :marginTop || option == :marginBottom || option == :truncateSpacing ) { return 0; }
         if( option == :justify ) { return Graphics.TEXT_JUSTIFY_CENTER; }
         if( option == :vjustifyTextToBottom ) { return false; }
 
@@ -235,7 +235,7 @@ import Toybox.WatchUi;
         // System.println( "***** Horizontal height=" + getHeight() );
 
         y += getOption( :marginTop );
-        var availableWidth = getDcWidthAtY( y ) - getOption( :piSpacing ) * 1.5;
+        var availableWidth = getDcWidthAtY( y ) - getOption( :truncateSpacing );
         if( _truncatableElement != null ) {
             while( availableWidth < getWidth() && _truncatableElement._text.length() > 1 ) {
                 //System.println( "**** before truncate " + _truncatableElement._text );
@@ -247,9 +247,9 @@ import Toybox.WatchUi;
         // If there is a page indicator, we center between the edge of the dot
         // and the right side of the screen
         // the dots are curved, so it would be hard to calculate the exact place
-        // where the dot is here, but a third of the :piSpacing gives us a reasonable
+        // where the dot is here, but a third of the :truncateSpacing gives us a reasonable
         // approximation
-//        x += getOption( :piSpacing ) / 3;
+//        x += getOption( :truncateSpacing ) / 3;
         x += getOption( :marginLeft ); 
 
         // For justify left, we start at the current x position
