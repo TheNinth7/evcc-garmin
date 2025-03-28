@@ -109,7 +109,7 @@ The following inputs are supported within the widget:
 | Input | Action |
 |-------|--------|
 | up/down&nbsp;key<br>touchscreen&nbsp;swipe&nbsp;up/down| Cycle through views at the same level in a carousel format. Page dots represent the total number of views in the carousel and highlight the currently active view. |
-| select/enter&nbsp;key<br>touchscreen&nbsp;tap/swipe&nbsp;left| Opens lower-level views, see the sections below for details. When a lower-level view is available, an arc next to the corresponding key indicates it. |
+| select/enter&nbsp;key<br>touchscreen&nbsp;tap/swipe&nbsp;left| Opens lower-level views—see the sections below for details. When a lower-level view is available, an arc next to the corresponding key indicates it:<br><img src="screenshots/input_arc_44px.png"/><br>This arc is shown on both touch and non-touch devices. On touch devices, you can also use tap input. If a touch device has no physical key at all, a tap indicator is shown instead:<br><img src="screenshots/input_tap_44px.png"/> |
 | back&nbsp;key | Navigates back to the previous higher-level view. |
 | menu&nbsp;key | Pressing the menu key opens the [system info](#system-info-view) view, if supported by your device. |
 
@@ -350,6 +350,7 @@ You can get help by posting in [this thread](https://github.com/evcc-io/evcc/dis
 
 | Version | Changes |
 |--------:|-------------|
+| **v1.3.2** | Fixed issue on Vivoactive 4 where the wrong site opened in multi-site setups ([Issue #4](https://github.com/TheNinth7/evcc-garmin/issues/4)).<br>Added tap hint for Vivoactive 3 and 4 ([Issue #2](https://github.com/TheNinth7/evcc-garmin/issues/2))<br>Improved content centering between the page indicator and button or tap hints<br>Enhanced vertical spacing for better screen balance with excess whitespace([Issue #3](https://github.com/TheNinth7/evcc-garmin/issues/3))
 | **v1.3.1** | Fixed an issue where swiping left triggered a page down on some devices<br>Fixed incorrect display of the page indicator when showing the forecast for the first time<br>Added a jq filter to remove all empty fields, reducing memory usage<br>Added a property for vector font face selection, allowing per-device customization<br>Refactored resource management for improved maintainability
 | **v1.3** | Added forecast view<br>Introduced support for additional views, enabling future extensions<br>Optimized memory usage<br>Enhanced UI engine, including improved font selection<br>**ATTENTION:** This update requires you to re-enter your settings. Please ensure you have them noted down beforehand.
 | **v1.2.2** | added system info view (opened by menu key)

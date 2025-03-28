@@ -84,6 +84,7 @@ class EvccPageIndicator {
     // Function to draw a single dot at a certain X/Y location
     function drawDotXY( dotX as Number, dotY as Number, active as Boolean ) {
         _dc.setColor( EvccConstants.COLOR_FOREGROUND, Graphics.COLOR_BLACK );
+        
         // Anti-alias is only available in newer SDK versions
         if( _dc has :setAntiAlias ) {
             _dc.setAntiAlias( true );

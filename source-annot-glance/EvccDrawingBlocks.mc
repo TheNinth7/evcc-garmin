@@ -339,14 +339,15 @@ import Toybox.WatchUi;
         }
 
         // If spreadToHeight is set, we will check if there is more
-        // space than one text line above and below the content
+        // space than 1/2 text line above and below the content
         // and if yes, spread out the elements vertically
         var spreadToHeight = getOption( :spreadToHeight );
         if( spreadToHeight > 0 ) {
-            var heightWithSpace = getHeight() + getFontHeight() * 2;
+            var heightWithSpace = getHeight() + getFontHeight();
             if( spreadToHeight > heightWithSpace ) {
                 // Last element will also get spacing in the bottom, therefore we
                 // spread the space to number of elements + 1
+                // EvccHelperBase.debug( "Spreading content!");
                 var spacing = ( spreadToHeight - heightWithSpace ) / _elements.size() + 1;
                 for( var i = 0; i < _elements.size(); i++ ) {
                     _elements[i].setOption( :marginTop, spacing );
