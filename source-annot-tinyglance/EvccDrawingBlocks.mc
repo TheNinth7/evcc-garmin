@@ -21,7 +21,7 @@ import Toybox.WatchUi;
 // :batterySoc, :power, :activePhases - for icons that change bases on these inputs
 // :vjustifyTextToBottom - by default, text is center aligned to the passed coordinate. If :vjustifyTextToBottom of a text element within a horizontal container is set to true, it will be aligned to the bottom instead.
 // :spreadToHeight - if set for a vertical block, it will spread out the content to the specified height in pixel
-(:glance) class EvccBlock {
+class EvccBlock {
     var _dc as Dc; 
     
     private var _options as Dictionary<Symbol,Object>;
@@ -108,8 +108,7 @@ import Toybox.WatchUi;
     private var _lastFont as Number?;
     function getWidth() as Number {
         var font = null;
-        try { font = getOption( :font ); } 
-        catch( ex ) {}
+        try { font = getOption( :font ); } catch( ex ) {}
         if( _width == null || _lastFont != font ) {
             _width = getWidthInternal();
             if( _lastFont != font ) {
@@ -121,8 +120,7 @@ import Toybox.WatchUi;
     }
     function getHeight() as Number {
         var font = null;
-        try { font = getOption( :font ); } 
-        catch( ex ) {}
+        try { font = getOption( :font ); } catch( ex ) {}
         if( _height == null || _lastFont != font ) {
             _height = getHeightInternal();
             if( _lastFont != font ) {
@@ -132,6 +130,7 @@ import Toybox.WatchUi;
         }
         return _height;
     }
+
     // Functions for reseting the cache if relevant
     // parameters change - these need to be called
     // by implementation of this class if their content
@@ -167,7 +166,7 @@ import Toybox.WatchUi;
 }
 
 // Base class for all drawing elements that consists of other drawing elements
-(:glance) class EvccContainerBlock extends EvccBlock {
+class EvccContainerBlock extends EvccBlock {
     protected var _elements as Array;
 
     function initialize( dc, options as Dictionary<Symbol,Object> ) {
@@ -218,7 +217,7 @@ import Toybox.WatchUi;
 }
 
 // An element containing other elements that shall stacked horizontally
-(:glance) class EvccHorizontalBlock extends EvccContainerBlock {
+class EvccHorizontalBlock extends EvccContainerBlock {
     
     var _truncatableElement as EvccTextBlock?;
 
@@ -325,7 +324,7 @@ import Toybox.WatchUi;
 }
 
 // An element containing other elements that shall be stacked vertically
-(:glance) class EvccVerticalBlock extends EvccContainerBlock {
+class EvccVerticalBlock extends EvccContainerBlock {
     function initialize( dc, options as Dictionary<Symbol,Object> ) {
         EvccContainerBlock.initialize( dc, options );
     }
@@ -405,7 +404,7 @@ import Toybox.WatchUi;
 }
 
 // Text element
-(:glance) class EvccTextBlock extends EvccBlock {
+class EvccTextBlock extends EvccBlock {
     var _text;
 
     function initialize( text, dc as Dc, options as Dictionary<Symbol,Object> ) {
@@ -481,7 +480,7 @@ import Toybox.WatchUi;
 // This class is written with the goal of keeping memory usage low
 // The actual bitmap is therefore only loaded when needed and then
 // immediatly discarded again
-(:glance) class EvccBitmapBlock extends EvccBlock {
+class EvccBitmapBlock extends EvccBlock {
 
     // We store only the reference and width and height,
     // the actual bitmap resource is loaded only when needed
@@ -559,7 +558,7 @@ import Toybox.WatchUi;
 // Class representing an icon. The difference between an icon and the bitmap above
 // is that for icons multiple sizes are supported and this element shows the icon
 // based on the font that is passed in the options or used by its parent element
-(:glance) class EvccIconBlock extends EvccBitmapBlock {
+class EvccIconBlock extends EvccBitmapBlock {
     var _icon as BaseIcon;
 
     typedef Icon as BaseIcon or ConditionalIcon;

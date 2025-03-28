@@ -21,9 +21,13 @@ import Toybox.Application.Storage;
     }
 }
 
+
 // Main recursive class, that also can be used to 
 // update breadcrumbs
-class EvccBreadCrumb {
+// This implementation is needed only if the device supports more
+// than one site. If it supports less, there is a simpler 
+// implementation below this one
+(:exclForSitesOne) class EvccBreadCrumb {
     private var _parent as EvccBreadCrumb?;
     private var _selectedChild = 0;
     private var _children as Array<EvccBreadCrumb?>;
@@ -108,4 +112,36 @@ class EvccBreadCrumb {
             _children.add( child );
         }
     }
+}
+
+// Non-recursive implementation, for devices that support only
+// one site
+(:exclForSitesMultiple) class EvccBreadCrumb {
+    private var _selectedChild = 0;
+
+    // Initialize a new bread crumb
+    public function initialize( parentCrumb as EvccBreadCrumb? ) {
+        _selectedChild = Storage.getValue( EvccConstants.STORAGE_BREAD_CRUMBS )[0];
+    }
+    
+    // Return the currently selected child
+    public function getSelectedChild( totalChildren as Number ) as Number {
+        if( _selectedChild >= totalChildren) {
+            setSelectedChild( 0 );
+        }
+        return _selectedChild;
+    }
+    // Set the selected child and immediately persist
+    public function setSelectedChild( activeChild as Number ) {
+        if( _selectedChild != activeChild ) {
+            _selectedChild = activeChild;
+            Storage.setValue( EvccConstants.STORAGE_BREAD_CRUMBS, [ _selectedChild, new Array<Array>[0] ] );
+        }
+    }
+    
+    // get the crumb for a child, and create it if it does not exist 
+    public function getChild( key as Number ) as EvccBreadCrumb {
+        return self;
+    }
+
 }

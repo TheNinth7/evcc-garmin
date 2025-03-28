@@ -72,7 +72,12 @@ import Toybox.WatchUi;
         // Value is not present
         return null;
     }
-    
+
+    // Get the font height
+    protected function getFontHeight() as Number {
+        return EvccResources.getFontHeight( getOption( :font ) );
+    }
+
     // set an option
     function setOption( option as Symbol, value ) {
         _options[option] = value;
@@ -96,7 +101,7 @@ import Toybox.WatchUi;
     // Functions for getting and caching width/height to reduce
     // amount of calculations
     // The cached values are reset if the font size has changed,
-    // or of margins are set (see setOption)
+    // or if margins are set (see setOption)
     private var _width as Number?;
     private var _height as Number?;
     private var _lastFont as Number?;
@@ -338,7 +343,7 @@ import Toybox.WatchUi;
         // and if yes, spread out the elements vertically
         var spreadToHeight = getOption( :spreadToHeight );
         if( spreadToHeight > 0 ) {
-            var heightWithSpace = getHeight() + EvccResources.getFontHeight( getOption( :font ) ) * 2;
+            var heightWithSpace = getHeight() + getFontHeight() * 2;
             if( spreadToHeight > heightWithSpace ) {
                 // Last element will also get spacing in the bottom, therefore we
                 // spread the space to number of elements + 1
@@ -423,14 +428,14 @@ import Toybox.WatchUi;
     protected function getWidthInternal() { return getTextWidth() + getOption( :marginLeft ) + getOption( :marginRight ); }
     protected function getHeightInternal() { return getTextHeight() + getOption( :marginTop ) + getOption( :marginBottom ); }
     function getTextWidth() { return _dc.getTextDimensions( _text, EvccResources.getGarminFont( getOption( :font ) ) )[0]; }
-    function getTextHeight() { return EvccResources.getFontHeight( getOption( :font ) ); }
+    function getTextHeight() { return getFontHeight(); }
 
     // For alignment we just pass the justify parameter on to the drawText
     function draw( x, y ) {
         // Align text to have the same baseline as the base font would have
         // this is for aligning two different font sizes in one line of text
         if( getOption( :vjustifyTextToBottom ) ) {
-            var fontHeight = EvccResources.getFontHeight( getOption( :font ) );
+            var fontHeight = getFontHeight();
             var baseFontHeight = EvccResources.getFontHeight( getOption( :baseFont ) );
             var fontDescent = EvccResources.getFontDescent( getOption( :font ) );
             var baseFontDescent = EvccResources.getFontDescent( getOption( :baseFont ) );

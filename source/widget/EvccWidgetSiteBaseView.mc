@@ -219,11 +219,12 @@ import Toybox.Math;
 
         ca.width = ca.width - piSpacing - siSpacing;
         ca.x = piSpacing + ca.width / 2;
-        ca.width *= 0.95;
+        ca.width *= 0.93; // Fine-tuned during regression testing on different devices
         ca.truncateSpacing = dc.getWidth() - ca.width;
 
-        /*
+        
         // Code for drawing visual alignment grid 
+        /*
         dc.setPenWidth( 1 );
         dc.drawCircle( dc.getWidth() / 2, dc.getHeight() / 2, dc.getWidth() / 2 );
         dc.drawRectangle( ca.x - ca.width / 2, ca.y - ca.height / 2, ca.width, ca.height );
