@@ -112,17 +112,13 @@ import Toybox.PersistedContent;
         // if( _reduceResponseSize ) {
         // }
             // EvccHelperBase.debug("StateRequest: adding query string for reducing response size ...");
-
-            // jq filter of app v1.3
-            // Keep this at least until new filter tested on watch!!
-            // var jq = "{result:{loadpoints:[.loadpoints[]|{chargePower,chargerFeatureHeating,charging,connected,vehicleName,vehicleSoc,title,phasesActive,mode,chargeRemainingDuration}],pvPower,gridPower,grid:{power:.grid.power},homePower,siteTitle,batterySoc,batteryPower,vehicles:.vehicles|map_values({title}),forecast:(if .forecast.solar then {solar:.forecast.solar|{scale,today:{energy:.today.energy},tomorrow:{energy:.tomorrow.energy},dayAfterTomorrow:{energy:.dayAfterTomorrow.energy}}} else {} end)}}";
-            
             // Forecast simplified, no if then else because additional filter will take out any nulls
+
             var jq = "{result:{loadpoints:[.loadpoints[]|{chargePower,chargerFeatureHeating,charging,connected,vehicleName,vehicleSoc,title,phasesActive,mode,chargeRemainingDuration}],pvPower,gridPower,grid:{power:.grid.power},homePower,siteTitle,batterySoc,batteryPower,vehicles:.vehicles|map_values({title}),forecast:{solar:.forecast.solar|{scale,today:{energy:.today.energy},tomorrow:{energy:.tomorrow.energy},dayAfterTomorrow:{energy:.dayAfterTomorrow.energy}}}}}";
             
             // Remove all null values and empty objects or arrays
             jq = jq + "|walk(if type==\"object\"then with_entries(select(.value!=null and .value!={} and .value!=[]))elif type==\"array\"then map(select(.!=null and .!={} and .!=[]))else . end)";
-            
+
             parameters = {};
             parameters["jq"] = jq;
 
@@ -186,7 +182,14 @@ import Toybox.PersistedContent;
         if( ! EvccApp._isInBackground ) {
             WatchUi.requestUpdate();
         } else {
-            _stateStore.persist();
+            if( _error == true ) {
+                Storage.setValue( EvccConstants.STORAGE_BG_ERROR_MSG, _errorMessage );
+                Storage.setValue( EvccConstants.STORAGE_BG_ERROR_CODE, _errorCode );
+            } else {
+                Storage.deleteValue( EvccConstants.STORAGE_BG_ERROR_MSG );
+                Storage.deleteValue( EvccConstants.STORAGE_BG_ERROR_CODE );
+                _stateStore.persist();
+            }
         }
     }
 }

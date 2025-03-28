@@ -86,7 +86,10 @@ import Toybox.Application;
         } else if ( ex instanceof NoPasswordException ) {
             errorMsg = "Password for site " + ex.getSite() + " is missing"; 
         } else if ( ex instanceof StateRequestException ) {
-            errorMsg = ex.getErrorMessage() + ( ex.getErrorCode().equals( "" ) ? "" : "\n" + ex.getErrorCode() );
+            errorMsg = ex.getErrorMessage();
+            if( ex.getErrorCode() != null && ! ex.getErrorCode().toString().equals( "" ) ) {
+                errorMsg += "\n" + ex.getErrorCode();
+            }
         } else {
             // For unknown errors we show the evcc version, to help supporting
             // users on the forum. Also unknown errors are displayed in a text
