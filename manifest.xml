@@ -9,7 +9,7 @@
         stable id="c9cf1c72-64e5-4644-a55b-5f2a70e6c6d7"
         beta id="cbbbf5d4-849e-4453-92a8-8036e80ce2e0"
     -->
-    <iq:application id="c9cf1c72-64e5-4644-a55b-5f2a70e6c6d7" type="widget" name="@Strings.AppName" entry="EvccApp" launcherIcon="@Drawables.logo_flash" minApiLevel="3.0.0">
+    <iq:application id="cbbbf5d4-849e-4453-92a8-8036e80ce2e0" type="widget" name="@Strings.AppName" entry="EvccApp" launcherIcon="@Drawables.logo_flash" minApiLevel="3.0.0">
         <!--
             Use the following from the Visual Studio Code comand palette to edit
             the build targets:
