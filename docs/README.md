@@ -109,7 +109,7 @@ The following inputs are supported within the widget:
 | Input | Action |
 |-------|--------|
 | up/down&nbsp;key<br>touchscreen&nbsp;swipe&nbsp;up/down| Cycle through views at the same level in a carousel format. Page dots represent the total number of views in the carousel and highlight the currently active view. |
-| select/enter&nbsp;key<br>touchscreen&nbsp;tap/swipe&nbsp;left| Opens lower-level views—see the sections below for details. When a lower-level view is available, an arc next to the corresponding key indicates it:<br><img src="screenshots/input_arc_44px.png"/><br>This arc is shown on both touch and non-touch devices. On touch devices, you can also use tap input. If a touch device has no physical key at all, a tap indicator is shown instead:<br><img src="screenshots/input_tap_44px.png"/> |
+| select/enter&nbsp;key<br>touchscreen&nbsp;tap/swipe&nbsp;left| Opens lower-level views—see the sections below for details. When a lower-level view is available, an arc next to the corresponding key indicates it:<br><img src="screenshots/input_arc_44px.png"/><br>This arc is shown on both touch and non-touch devices. On touch devices, you can also use tap input or swipe left. If a touch device has no physical key for this action, a tap indicator is shown instead of the arc:<br><img src="screenshots/input_tap_44px.png"/><br>On Vivoactive 3 and 4, when in the widget carousel, lower-level views can only be opened by tapping—swiping left or using the keys will not work. |
 | back&nbsp;key | Navigates back to the previous higher-level view. |
 | menu&nbsp;key | Pressing the menu key opens the [system info](#system-info-view) view, if supported by your device. |
 
