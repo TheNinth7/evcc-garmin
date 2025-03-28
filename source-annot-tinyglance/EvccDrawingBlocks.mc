@@ -20,7 +20,8 @@ import Toybox.WatchUi;
 // :parent - parent drawing element. :color, :backgroundColor and :font may be inherited from a parent
 // :batterySoc, :power, :activePhases - for icons that change bases on these inputs
 // :vjustifyTextToBottom - by default, text is center aligned to the passed coordinate. If :vjustifyTextToBottom of a text element within a horizontal container is set to true, it will be aligned to the bottom instead.
- class EvccBlock {
+// :spreadToHeight - if set for a vertical block, it will spread out the content to the specified height in pixel
+(:glance) class EvccBlock {
     var _dc as Dc; 
     
     private var _options as Dictionary<Symbol,Object>;
@@ -52,7 +53,7 @@ import Toybox.WatchUi;
 
         // The following options are not inherited, and are immediately
         // set to default values
-        if( option == :marginLeft || option == :marginRight || option == :marginTop || option == :marginBottom || option == :truncateSpacing ) { return 0; }
+        if( option == :marginLeft || option == :marginRight || option == :marginTop || option == :marginBottom || option == :truncateSpacing || option == :spreadToHeight ) { return 0; }
         if( option == :justify ) { return Graphics.TEXT_JUSTIFY_CENTER; }
         if( option == :vjustifyTextToBottom ) { return false; }
 
@@ -166,7 +167,7 @@ import Toybox.WatchUi;
 }
 
 // Base class for all drawing elements that consists of other drawing elements
- class EvccContainerBlock extends EvccBlock {
+(:glance) class EvccContainerBlock extends EvccBlock {
     protected var _elements as Array;
 
     function initialize( dc, options as Dictionary<Symbol,Object> ) {
@@ -217,7 +218,7 @@ import Toybox.WatchUi;
 }
 
 // An element containing other elements that shall stacked horizontally
- class EvccHorizontalBlock extends EvccContainerBlock {
+(:glance) class EvccHorizontalBlock extends EvccContainerBlock {
     
     var _truncatableElement as EvccTextBlock?;
 
@@ -232,9 +233,15 @@ import Toybox.WatchUi;
     // the starting point by half of the total width
     function draw( x, y )
     {
-        // System.println( "***** Horizontal height=" + getHeight() );
+        // The y passed in is the center
+        // To calculate the y for the elements, we have to adjust it
+        // by marginTop and marginBottom
+        y = y + getOption( :marginTop ) / 2 - getOption( :marginBottom ) / 2;
+        // derivated from
+        // var marginTop = getOption( :marginTop );
+        // var elementHeights = getHeight() - marginTop - getOption( :marginBottom );
+        // y = y - getHeight() / 2 + marginTop + elementHeights / 2;
 
-        y += getOption( :marginTop );
         var availableWidth = getDcWidthAtY( y ) - getOption( :truncateSpacing );
         if( _truncatableElement != null ) {
             while( availableWidth < getWidth() && _truncatableElement._text.length() > 1 ) {
@@ -244,12 +251,6 @@ import Toybox.WatchUi;
             }
         }
         
-        // If there is a page indicator, we center between the edge of the dot
-        // and the right side of the screen
-        // the dots are curved, so it would be hard to calculate the exact place
-        // where the dot is here, but a third of the :truncateSpacing gives us a reasonable
-        // approximation
-//        x += getOption( :truncateSpacing ) / 3;
         x += getOption( :marginLeft ); 
 
         // For justify left, we start at the current x position
@@ -324,7 +325,7 @@ import Toybox.WatchUi;
 }
 
 // An element containing other elements that shall be stacked vertically
- class EvccVerticalBlock extends EvccContainerBlock {
+(:glance) class EvccVerticalBlock extends EvccContainerBlock {
     function initialize( dc, options as Dictionary<Symbol,Object> ) {
         EvccContainerBlock.initialize( dc, options );
     }
@@ -336,6 +337,23 @@ import Toybox.WatchUi;
     {
         if( getOption( :justify ) != Graphics.TEXT_JUSTIFY_CENTER ) {
             throw new InvalidValueException( "EvccVerticalBlock supports only justify center." );
+        }
+
+        // If spreadToHeight is set, we will check if there is more
+        // space than one text line above and below the content
+        // and if yes, spread out the elements vertically
+        var spreadToHeight = getOption( :spreadToHeight );
+        if( spreadToHeight > 0 ) {
+            var heightWithSpace = getHeight() + EvccResources.getFontHeight( getOption( :font ) ) * 2;
+            if( spreadToHeight > heightWithSpace ) {
+                // Last element will also get spacing in the bottom, therefore we
+                // spread the space to number of elements + 1
+                var spacing = ( spreadToHeight - heightWithSpace ) / _elements.size() + 1;
+                for( var i = 0; i < _elements.size(); i++ ) {
+                    _elements[i].setOption( :marginTop, spacing );
+                }
+                _elements[_elements.size()-1].setOption( :marginBottom, spacing );
+            }
         }
 
         x += getOption( :marginLeft ); 
@@ -387,7 +405,7 @@ import Toybox.WatchUi;
 }
 
 // Text element
- class EvccTextBlock extends EvccBlock {
+(:glance) class EvccTextBlock extends EvccBlock {
     var _text;
 
     function initialize( text, dc as Dc, options as Dictionary<Symbol,Object> ) {
@@ -463,7 +481,7 @@ import Toybox.WatchUi;
 // This class is written with the goal of keeping memory usage low
 // The actual bitmap is therefore only loaded when needed and then
 // immediatly discarded again
- class EvccBitmapBlock extends EvccBlock {
+(:glance) class EvccBitmapBlock extends EvccBlock {
 
     // We store only the reference and width and height,
     // the actual bitmap resource is loaded only when needed
@@ -541,7 +559,7 @@ import Toybox.WatchUi;
 // Class representing an icon. The difference between an icon and the bitmap above
 // is that for icons multiple sizes are supported and this element shows the icon
 // based on the font that is passed in the options or used by its parent element
- class EvccIconBlock extends EvccBitmapBlock {
+(:glance) class EvccIconBlock extends EvccBitmapBlock {
     var _icon as BaseIcon;
 
     typedef Icon as BaseIcon or ConditionalIcon;
