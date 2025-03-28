@@ -122,7 +122,11 @@ import Toybox.Application.Storage;
     // Initialize a new bread crumb
     public function initialize( parentCrumb as EvccBreadCrumb? ) {
         var storedCrumb = Storage.getValue( EvccConstants.STORAGE_BREAD_CRUMBS ) as Array;
-        _selectedChild = storedCrumb[0];
+        if( storedCrumb != null && storedCrumb instanceof Array && storedCrumb.size() > 0 ) {
+            _selectedChild = storedCrumb[0];
+        } else {
+            _selectedChild = 0;
+        }
     }
     
     // Return the currently selected child

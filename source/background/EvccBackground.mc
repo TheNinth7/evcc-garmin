@@ -31,6 +31,5 @@ import Toybox.Application.Properties;
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
         }
-
     }
 }

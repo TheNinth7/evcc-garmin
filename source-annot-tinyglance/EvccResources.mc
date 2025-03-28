@@ -27,7 +27,8 @@ class EvccResources {
  
     public var _resources as EvccResourceSet; // needs to be public for static member functions to access it
     
-    // We initialize the resources, depending on the mode we are in
+    // For full glance, we initialize the resources depending on the
+    // mode we are in
     (:exclForGlanceTiny :exclForGlanceNone) private function initialize() {
         if( EvccApp.isGlance() ) {
             _resources = new EvccGlanceResourceSet();
@@ -35,6 +36,9 @@ class EvccResources {
             _resources = new EvccWidgetResourceSet();
         }
     }
+    // For tiny glance or devices without glance we
+    // always work with widget resources, since the tiny
+    // glance does not use this class
     (:exclForGlanceFull) private function initialize() {
         _resources = new EvccWidgetResourceSet();
     }

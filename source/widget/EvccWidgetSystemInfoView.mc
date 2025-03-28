@@ -17,7 +17,7 @@ import Toybox.System;
             dc.setColor( EvccConstants.COLOR_FOREGROUND, EvccConstants.COLOR_BACKGROUND );
             dc.clear();
             var block = new EvccVerticalBlock( dc, { :font => EvccWidgetResourceSet.FONT_XTINY } );
-            block.addText( "evvc-garmin " + EvccHelperUI.getVersion(), {}  );
+            block.addText( "evccg " + EvccHelperUI.getVersion(), {}  );
 
             _spacing = EvccResources.getFontHeight( EvccWidgetResourceSet.FONT_XTINY ) / 2;
 

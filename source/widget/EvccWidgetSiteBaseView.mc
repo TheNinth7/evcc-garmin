@@ -122,6 +122,7 @@ import Toybox.Math;
             // EvccHelperBase.debug( "Using font " + block.getOption( :font ) );
 
             block.draw( _ca.x, _ca.y );
+
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
             EvccHelperUI.drawError( dc, ex );
