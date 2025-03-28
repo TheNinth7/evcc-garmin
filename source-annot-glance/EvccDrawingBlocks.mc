@@ -14,6 +14,7 @@ import Toybox.WatchUi;
 // :parent - parent drawing element. :color, :backgroundColor and :font may be inherited from a parent
 // :batterySoc, :power, :activePhases - for icons that change bases on these inputs
 // :vjustifyTextToBottom - by default, text is center aligned to the passed coordinate. If :vjustifyTextToBottom of a text element within a horizontal container is set to true, it will be aligned to the bottom instead.
+// :spreadToHeight - if set for a vertical block, it will spread out the content to the specified height in pixel
 (:glance) class EvccBlock {
     var _dc as Dc; 
     
@@ -46,7 +47,7 @@ import Toybox.WatchUi;
 
         // The following options are not inherited, and are immediately
         // set to default values
-        if( option == :marginLeft || option == :marginRight || option == :marginTop || option == :marginBottom || option == :truncateSpacing ) { return 0; }
+        if( option == :marginLeft || option == :marginRight || option == :marginTop || option == :marginBottom || option == :truncateSpacing || option == :spreadToHeight ) { return 0; }
         if( option == :justify ) { return Graphics.TEXT_JUSTIFY_CENTER; }
         if( option == :vjustifyTextToBottom ) { return false; }
 
@@ -226,9 +227,15 @@ import Toybox.WatchUi;
     // the starting point by half of the total width
     function draw( x, y )
     {
-        // System.println( "***** Horizontal height=" + getHeight() );
+        // The y passed in is the center
+        // To calculate the y for the elements, we have to adjust it
+        // by marginTop and marginBottom
+        y = y + getOption( :marginTop ) / 2 - getOption( :marginBottom ) / 2;
+        // derivated from
+        // var marginTop = getOption( :marginTop );
+        // var elementHeights = getHeight() - marginTop - getOption( :marginBottom );
+        // y = y - getHeight() / 2 + marginTop + elementHeights / 2;
 
-        y += getOption( :marginTop );
         var availableWidth = getDcWidthAtY( y ) - getOption( :truncateSpacing );
         if( _truncatableElement != null ) {
             while( availableWidth < getWidth() && _truncatableElement._text.length() > 1 ) {
@@ -324,6 +331,23 @@ import Toybox.WatchUi;
     {
         if( getOption( :justify ) != Graphics.TEXT_JUSTIFY_CENTER ) {
             throw new InvalidValueException( "EvccVerticalBlock supports only justify center." );
+        }
+
+        // If spreadToHeight is set, we will check if there is more
+        // space than one text line above and below the content
+        // and if yes, spread out the elements vertically
+        var spreadToHeight = getOption( :spreadToHeight );
+        if( spreadToHeight > 0 ) {
+            var heightWithSpace = getHeight() + EvccResources.getFontHeight( getOption( :font ) ) * 2;
+            if( spreadToHeight > heightWithSpace ) {
+                // Last element will also get spacing in the bottom, therefore we
+                // spread the space to number of elements + 1
+                var spacing = ( spreadToHeight - heightWithSpace ) / _elements.size() + 1;
+                for( var i = 0; i < _elements.size(); i++ ) {
+                    _elements[i].setOption( :marginTop, spacing );
+                }
+                _elements[_elements.size()-1].setOption( :marginBottom, spacing );
+            }
         }
 
         x += getOption( :marginLeft ); 

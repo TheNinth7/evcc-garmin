@@ -160,6 +160,10 @@ import Toybox.Math;
 
         // Home
         block.addBlock( getBasicElement( EvccIconBlock.ICON_HOME, state.getHomePowerRounded(), EvccIconBlock.ICON_ARROW_LEFT, dc ) );
+
+        // If there is too much space above and below the content,
+        // the lines will be spread out vertically
+        block.setOption( :spreadToHeight, getContentArea().height );
     }
 
 

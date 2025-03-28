@@ -1,4 +1,4 @@
 <strings>
-    <string id="AppName" scope="background">evcc</string>
-    <string id="AppVersion" scope="background">v1.3.1</string>
+    <string id="AppName" scope="background">evcc-beta</string>
+    <string id="AppVersion" scope="background">v1.3.2-b1</string>
 </strings>
