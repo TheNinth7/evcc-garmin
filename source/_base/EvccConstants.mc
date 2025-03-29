@@ -3,7 +3,6 @@ import Toybox.Graphics;
 // Various constants used in the implementation
 (:glance) class EvccConstants {
     // Names of elements in persistant storage
-    public static const STORAGE_ACTIVESITE = "activeSite";
     public static const STORAGE_SITE_PREFIX = "site_";
     public static const STORAGE_BREAD_CRUMBS = "breadCrumbs";
     
