@@ -15,9 +15,11 @@ import Toybox.WatchUi;
 // :batterySoc, :power, :activePhases - for icons that change bases on these inputs
 // :vjustifyTextToBottom - by default, text is center aligned to the passed coordinate. If :vjustifyTextToBottom of a text element within a horizontal container is set to true, it will be aligned to the bottom instead.
 // :spreadToHeight - if set for a vertical block, it will spread out the content to the specified height in pixel
+// :baseFont - not to be set but calculated only, showing the applicable :font, without considering :relativeFont
 (:glance) class EvccBlock {
     var _dc as Dc; 
     
+    // The options for this block (see documentation above)
     private var _options as Dictionary<Symbol,Object>;
 
     // Constructor
@@ -32,17 +34,15 @@ import Toybox.WatchUi;
         _options = options;
     }
 
+    // draw this block, to be overriden by implementations of this class
+    public function draw( x, y );
+
     // Returning the value of a certain option
+    // Is also responsible for defining default values
     public function getOption( option as Symbol ) {
         // If the option is present, we return it right away
         if( _options[option] != null ) {
             return _options[option];
-        }
-
-        var applyRelativeFont = _options[:relativeFont] != null;
-        if( option == :baseFont ) {
-            option = :font;
-            applyRelativeFont = false;
         }
 
         // The following options are not inherited, and are immediately
@@ -50,15 +50,22 @@ import Toybox.WatchUi;
         if( option == :marginLeft || option == :marginRight || option == :marginTop || option == :marginBottom || option == :truncateSpacing || option == :spreadToHeight ) { return 0; }
         if( option == :justify ) { return Graphics.TEXT_JUSTIFY_CENTER; }
         if( option == :vjustifyTextToBottom ) { return false; }
-
+        
         // All other options can be inherited, so we look up the parent
         var parent = getParent();
+
+        // Special handling for :baseFont
+        // If the base font is requested, we return the parent font, or if that is not present our current font
+        if( option == :baseFont ) {
+            return parent != null ? parent.getOption( :font ) : _options[:font];
+        }
+
         if( parent != null ) {
             var value = parent.getOption( option );
             // If we take over the font form the parent element, we apply any relativeFont definition
-            // and shift the font accordingly. Ee.g. parent font EvccWidgetResourceSet.FONT_MEDIUM (=0) and :relativeFont=3
+            // and shift the font accordingly. E.g. parent font EvccWidgetResourceSet.FONT_MEDIUM (=0) and :relativeFont=3
             // results in using EvccWidgetResourceSet.FONT_XTINY (=3)
-            if( option == :font && applyRelativeFont ) {
+            if( option == :font && _options[:relativeFont] != null ) {
                 value = EvccHelperUI.min( ( value as Number ) + ( _options[:relativeFont] as Number ), EvccResources.getGarminFonts().size() - 1 );
             }
             return value;
@@ -73,24 +80,23 @@ import Toybox.WatchUi;
         return null;
     }
 
-    // Get the font height
-    protected function getFontHeight() as Number {
-        return EvccResources.getFontHeight( getOption( :font ) );
-    }
-
     // set an option
+    // for certain options, we reset the cached width/height
     public function setOption( option as Symbol, value ) {
         _options[option] = value;
         if( option == :marginLeft || option == :marginRight ) {
             resetWidthCache();
         } else if ( option == :marginTop || option == :marginBottom ) {
             resetHeightCache();
+        } else if( option == :font ) {
+            resetWidthCache();
+            resetHeightCache();
         }
     }
 
     // Parent can be passed into an element either in the options structure
     // or later via this function
-    protected function setParent( parent as EvccContainerBlock ) {
+    public function setParent( parent as EvccContainerBlock ) {
         setOption( :parent, parent.weak() );
     }
     protected function getParent() as EvccContainerBlock? {
@@ -104,30 +110,15 @@ import Toybox.WatchUi;
     // or if margins are set (see setOption)
     private var _width as Number?;
     private var _height as Number?;
-    private var _lastFont as Number?;
     public function getWidth() as Number {
-        var font = null;
-        try { font = getOption( :font ); } 
-        catch( ex ) {}
-        if( _width == null || _lastFont != font ) {
-            _width = getWidthInternal();
-            if( _lastFont != font ) {
-                _height = null;
-                _lastFont = font;
-            }
+        if( _width == null ) {
+            _width = calculateWidth();
         }
         return _width;
     }
     public function getHeight() as Number {
-        var font = null;
-        try { font = getOption( :font ); } 
-        catch( ex ) {}
-        if( _height == null || _lastFont != font ) {
-            _height = getHeightInternal();
-            if( _lastFont != font ) {
-                _width = null;
-                _lastFont = font;
-            }
+        if( _height == null ) {
+            _height = calculateHeight();
         }
         return _height;
     }
@@ -148,10 +139,8 @@ import Toybox.WatchUi;
 
     // Functions to be implemented by implementations of this class to:
     // calculate width or height of the element
-    protected function getWidthInternal();
-    protected function getHeightInternal();
-    // draw the element
-    public function draw( x, y );
+    protected function calculateWidth();
+    protected function calculateHeight();
 
     // Calculate the available screen width at a given y coordinate
     protected function getDcWidthAtY( y as Number ) as Number {
@@ -162,6 +151,13 @@ import Toybox.WatchUi;
         var c = _dc.getWidth() / 2;
         var a = ( y - _dc.getHeight() / 2 ).abs();
         return ( Math.sqrt( c*c - a*a ) * 2 ) as Number;
+    }
+
+    // Get the font height
+    // This is used on several places, and having it in a function
+    // saves code space memory
+    protected function getFontHeight() as Number {
+        return EvccResources.getFontHeight( getOption( :font ) );
     }
 }
 
@@ -209,9 +205,9 @@ import Toybox.WatchUi;
         return self;
     }
 
-    function addBlock( container as EvccBlock ) {
-        container.setParent( self );
-        _elements.add( container );
+    function addBlock( block as EvccBlock ) {
+        block.setParent( self );
+        _elements.add( block );
         return self;
     }
 }
@@ -278,7 +274,7 @@ import Toybox.WatchUi;
     }
 
     // Width is the sum of all widths
-    protected function getWidthInternal()
+    protected function calculateWidth()
     {
         var width = 0;
         for( var i = 0; i < _elements.size(); i++ ) {
@@ -288,7 +284,7 @@ import Toybox.WatchUi;
     }
 
     // Height is the maximum of all heights
-    protected function getHeightInternal()
+    protected function calculateHeight()
     {
         var height = 0;
         for( var i = 0; i < _elements.size(); i++ ) {
@@ -377,7 +373,7 @@ import Toybox.WatchUi;
     }
 
     // Width is max of all widths
-    protected function getWidthInternal()
+    protected function calculateWidth()
     {
         var width = 0;
         for( var i = 0; i < _elements.size(); i++ ) {
@@ -387,7 +383,7 @@ import Toybox.WatchUi;
     }
 
     // Height is sum of all heights
-    protected function getHeightInternal()
+    protected function calculateHeight()
     {
         var height = 0;
         for( var i = 0; i < _elements.size(); i++ ) {
@@ -426,8 +422,8 @@ import Toybox.WatchUi;
         return self; 
     }
 
-    protected function getWidthInternal() { return getTextWidth() + getOption( :marginLeft ) + getOption( :marginRight ); }
-    protected function getHeightInternal() { return getTextHeight() + getOption( :marginTop ) + getOption( :marginBottom ); }
+    protected function calculateWidth() { return getTextWidth() + getOption( :marginLeft ) + getOption( :marginRight ); }
+    protected function calculateHeight() { return getTextHeight() + getOption( :marginTop ) + getOption( :marginBottom ); }
     function getTextWidth() { return _dc.getTextDimensions( _text, EvccResources.getGarminFont( getOption( :font ) ) )[0]; }
     function getTextHeight() { return getFontHeight(); }
 
@@ -515,8 +511,8 @@ import Toybox.WatchUi;
 
     // These function first make sure that the bitmap width/height is loaded and then
     // calculate the total width/height
-    protected function getWidthInternal() { loadData(); return _bitmapWidth + getOption( :marginLeft ) + getOption( :marginRight ); }
-    protected function getHeightInternal() { loadData(); return _bitmapHeight + getOption( :marginTop ) + getOption( :marginBottom ); }
+    protected function calculateWidth() { loadData(); return _bitmapWidth + getOption( :marginLeft ) + getOption( :marginRight ); }
+    protected function calculateHeight() { loadData(); return _bitmapHeight + getOption( :marginTop ) + getOption( :marginBottom ); }
     // Load width/height
     // We don't do this in the constructor because for the EvccIconBlock sub class, the font
     // size is needed to determine the actual icon used, and that one is not available
