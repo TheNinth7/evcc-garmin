@@ -91,11 +91,11 @@ class EvccBlock {
     public function setOption( option as Symbol, value ) {
         _options[option] = value;
         if( option == :marginLeft || option == :marginRight ) {
-            resetCache( :resetDimensionWidth, :resetDirectionUp );
+            resetCache( :resetWidth, :resetDirectionUp );
         } else if ( option == :marginTop || option == :marginBottom ) {
-            resetCache( :resetDimensionHeight, :resetDirectionUp );
+            resetCache( :resetHeight, :resetDirectionUp );
         } else if( option == :font ) {
-            resetCache( :resetDimensionBoth, :resetDirectionBoth );
+            resetCache( :resetFont, :resetDirectionBoth );
         }
     }
 
@@ -127,16 +127,22 @@ class EvccBlock {
         }
         return _height;
     }
-    // Functions for reseting the cache if relevant
-    // parameters change - these need to be called
-    // by implementation of this class if their content
-    // changes!
-    public function resetCache( dimension as Symbol, direction as Symbol ) {
-        if( dimension == :resetDimensionHeight || dimension == :resetDimensionBoth ) { _height = null; }
-        if( dimension == :resetDimensionWidth || dimension == :resetDimensionBoth ) { _width = null; }
-        if( direction == :resetDirectionUp || direction == :dirBoth ) {
+    
+    // Functions for reseting the cache if relevant parameters change - these need to be called
+    // by implementation of this class if their content changes!
+    // resetType:   :resetHeight to reset only the height
+    //              :resetWidth to reset only the width
+    //              :resetFont for font size changes. Both dimensions will be invalidated, and 
+    //              also the bitmap dimension, by EvccIconBlock.resetCache overriding this function
+    // direction:   :resetDirectionUp to recursively reset all parents
+    //              :resetDirectionDown to recursively reset all children
+    //              :resetDirectionBoth to recursively reset both parents and children
+    public function resetCache( resetType as Symbol, direction as Symbol ) {
+        if( resetType == :resetHeight || resetType == :resetFont ) { _height = null; }
+        if( resetType == :resetWidth || resetType == :resetFont ) { _width = null; }
+        if( direction == :resetDirectionUp || direction == :resetDirectionBoth ) {
             var parent = getParent();
-            if( parent != null ) { parent.resetCache( dimension, :resetDirectionUp ); }
+            if( parent != null ) { parent.resetCache( resetType, :resetDirectionUp ); }
         }
     }
 
@@ -177,16 +183,6 @@ class EvccContainerBlock extends EvccBlock {
         return _elements.size();
     }
 
-    public function resetCache( dimension as Symbol, direction as Symbol ) {
-        EvccBlock.resetCache( dimension, direction );
-        if( direction == :resetDirectionDown || direction == :resetDirectionBoth ) {
-            for( var i = 0; i < _elements.size(); i++ ) {
-                _elements[i].resetCache( dimension, :resetDirectionDown );
-            }
-        }
-    }
-
-
     // Add text is implemented differently for vertical and horizontal containers
     function addText( text, options as Dictionary<Symbol,Object> ) {}
 
@@ -222,6 +218,16 @@ class EvccContainerBlock extends EvccBlock {
         block.setParent( self );
         _elements.add( block );
         return self;
+    }
+
+    // For containers, the resetCache function additionally resets all elements
+    public function resetCache( resetType as Symbol, direction as Symbol ) {
+        EvccBlock.resetCache( resetType, direction );
+        if( direction == :resetDirectionDown || direction == :resetDirectionBoth ) {
+            for( var i = 0; i < _elements.size(); i++ ) {
+                _elements[i].resetCache( resetType, :resetDirectionDown );
+            }
+        }
     }
 }
 
@@ -426,12 +432,12 @@ class EvccTextBlock extends EvccBlock {
     // end of the text
     function truncate( chars as Number ) {
         _text = _text.substring( 0, _text.length() - chars );
-        resetCache( :resetDimensionWidth, :resetDirectionUp );
+        resetCache( :resetWidth, :resetDirectionUp );
     }
 
     function append( text ) as EvccTextBlock { 
         _text += text;
-        resetCache( :resetDimensionWidth, :resetDirectionUp );
+        resetCache( :resetWidth, :resetDirectionUp );
         return self; 
     }
 
@@ -515,10 +521,10 @@ class EvccBitmapBlock extends EvccBlock {
         return _bitmapRef;
     }
 
-    // NOTE: Bitmaps have their own caching since they always load width and height at the same time
-    // For normal bitmaps, data is loaded once and then never again
-    // For icons, a change in font size triggers a reload (see EvccIconBlock.onLoad)
-    // Changes in the margins are covered by the caching mechanism of EvccBlock
+    // NOTE: in addition to the standard caching, bitmaps additionally cache the bitmap
+    // height and width, to avoid having to load the bitmap too often.
+    // For normal EvccBitmapBlock, the size will never change and is unaffected by
+    // cache resets. For EvccIconBlock, we reset these values when the font size changes (see EvccIconBlock.resetCache)
     protected var _bitmapWidth as Number?;
     protected var _bitmapHeight as Number?;
 
@@ -664,17 +670,13 @@ class EvccIconBlock extends EvccBitmapBlock {
         return ref;
     }
 
-    // Overrides the parent function to consider
-    // changes in font size
-    private var _lastFont as Number?;
-    protected function loadData() {
-        var font = getOption( :font );
-        if( font != _lastFont ) {
-            _lastFont = font;
-            _bitmapHeight = null; _bitmapWidth = null;
-            EvccBitmapBlock.loadData();
+    // Special handling of the cache reset - if the font is changed,
+    // we also invalidate the cache for the bitmap dimensions
+    public function resetCache( resetType as Symbol, direction as Symbol ) {
+        EvccBlock.resetCache( resetType, direction );
+        if( resetType == :resetFont ) {
+            _bitmapWidth = null;
+            _bitmapHeight = null;
         }
     }
 }
-
-
