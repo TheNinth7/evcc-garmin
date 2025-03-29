@@ -426,12 +426,12 @@ class EvccTextBlock extends EvccBlock {
     // end of the text
     function truncate( chars as Number ) {
         _text = _text.substring( 0, _text.length() - chars );
-        resetCache( :width, :resetDirectionUp );
+        resetCache( :resetDimensionWidth, :resetDirectionUp );
     }
 
     function append( text ) as EvccTextBlock { 
         _text += text;
-        resetCache( :width, :resetDirectionUp );
+        resetCache( :resetDimensionWidth, :resetDirectionUp );
         return self; 
     }
 
@@ -565,7 +565,7 @@ class EvccBitmapBlock extends EvccBlock {
 }
 
 
-// Class representing an icon. The difference between an icon and the bitmap above
+// class representing an icon. The difference between an icon and the bitmap above
 // is that for icons multiple sizes are supported and this element shows the icon
 // based on the font that is passed in the options or used by its parent element
 class EvccIconBlock extends EvccBitmapBlock {
