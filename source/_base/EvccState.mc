@@ -18,16 +18,16 @@ import Toybox.Time;
     private var _pvPower = 0;
     private var _siteTitle = "";
 
-    private static const BATTERYSOC = "batterySoc";
-    private static const BATTERYPOWER = "batteryPower";
-    private static const GRIDPOWER = "gridPower";
-    private static const GRID = "grid";
-    private static const POWER = "power";
-    private static const HOMEPOWER = "homePower";
-    private static const PVPOWER = "pvPower";
+    private const BATTERYSOC = "batterySoc";
+    private const BATTERYPOWER = "batteryPower";
+    private const GRIDPOWER = "gridPower";
+    private const GRID = "grid";
+    private const POWER = "power";
+    private const HOMEPOWER = "homePower";
+    private const PVPOWER = "pvPower";
     public static const SITETITLE = "siteTitle";
-    private static const LOADPOINTS = "loadpoints";
-    private static const FORECAST = "forecast";
+    private const LOADPOINTS = "loadpoints";
+    private const FORECAST = "forecast";
 
     public function hasBattery() as Boolean { return _hasBattery; }
     public function getBatterySoc() as Number { return _batterySoc; }
@@ -140,13 +140,13 @@ import Toybox.Time;
     private var _chargeRemainingDuration = 0;
 
 
-    private static const CHARGING = "charging";
-    private static const PHASESACTIVE = "phasesActive";
-    private static const CONNECTED = "connected";
-    private static const MODE = "mode";
-    private static const CHARGEPOWER = "chargePower";
-    private static const CHARGEREMAININGDURATION = "chargeRemainingDuration";
-    private static const CHARGERFEATUREHEATING = "chargerFeatureHeating";
+    private const CHARGING = "charging";
+    private const PHASESACTIVE = "phasesActive";
+    private const CONNECTED = "connected";
+    private const MODE = "mode";
+    private const CHARGEPOWER = "chargePower";
+    private const CHARGEREMAININGDURATION = "chargeRemainingDuration";
+    private const CHARGERFEATUREHEATING = "chargerFeatureHeating";
     
     function initialize( dataLp as Dictionary<String, Object?>, dataResult as Dictionary<String, Object?> ) {
         _isCharging = dataLp[CHARGING];
@@ -218,12 +218,12 @@ import Toybox.Time;
     private var _soc = 0;
     private var _isGuest = false;
     
-    private static const VEHICLENAME = "vehicleName";
-    private static const VEHICLETITLE = "vehicleTitle";
-    private static const LP_TITLE = "title";
-    private static const VEHICLES = "vehicles";
-    private static const VH_TITLE = "title";
-    private static const VEHICLESOC = "vehicleSoc";
+    private const VEHICLENAME = "vehicleName";
+    private const VEHICLETITLE = "vehicleTitle";
+    private const LP_TITLE = "title";
+    private const VEHICLES = "vehicles";
+    private const VH_TITLE = "title";
+    private const VEHICLESOC = "vehicleSoc";
 
     function initialize( dataLp as Dictionary<String, Object?>, dataResult as Dictionary<String, Object?> ) {
         _name = dataLp[VEHICLENAME] as String;
@@ -283,8 +283,8 @@ import Toybox.Time;
     private var _title = "";
     private var _temp = 0;
     
-    private static const LP_TITLE = "title";
-    private static const VEHICLESOC = "vehicleSoc";
+    private const LP_TITLE = "title";
+    private const VEHICLESOC = "vehicleSoc";
 
     function initialize( dataLp as Dictionary<String, Object?> ) {
         _title = dataLp[LP_TITLE] as String;
@@ -311,10 +311,10 @@ import Toybox.Time;
     private var _energy = new Array<Float?>[3];
     function getEnergy() as Array<Float?> { return _energy; }
 
-    private static const FORECAST_SOLAR = "solar";
-    private static const FORECAST_DAYS = [ "today", "tomorrow", "dayAfterTomorrow" ];
-    private static const FORECAST_ENERGY = "energy";
-    private static const FORECAST_SCALE = "scale";
+    private const FORECAST_SOLAR = "solar";
+    private const FORECAST_DAYS = [ "today", "tomorrow", "dayAfterTomorrow" ];
+    private const FORECAST_ENERGY = "energy";
+    private const FORECAST_SCALE = "scale";
 
     function initialize( forecast as Dictionary<String, Object?> ) {
         var solar = forecast[FORECAST_SOLAR] as Dictionary;

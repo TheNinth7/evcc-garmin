@@ -13,23 +13,23 @@ class EvccPageIndicator {
     // Dots are drawn in a circle around the center
     // of the screen ("orbit"), this constant indicates the
     // default angle that should be between 2 dots
-    private static const DOT_DISTANCE_ANGLE = 8;
+    private const DOT_DISTANCE_ANGLE = 8;
     
     // Default angle around which the dots shall be
     // drawn. 270 is the left side of the screen
-    private static const CENTER_ANGLE = 270;
+    private const CENTER_ANGLE = 270;
     
     // How large should dots be in relation to the
     // total screen width
-    private static const DOT_SIZE_FACTOR = 0.02;
+    private const DOT_SIZE_FACTOR = 0.02;
     
     // How thick should the line drawn around the dots
     // be in relation to the total screen width
-    private static const LINE_WIDTH_FACTOR = 0.005;
+    private const LINE_WIDTH_FACTOR = 0.005;
 
     // How large should the orbit radius be in relation to the
     // total width of the screen
-    private static const RADIUS_FACTOR = 0.47;
+    private const RADIUS_FACTOR = 0.47;
 
     public function initialize( dc as Dc ) {
         setCenterAngle( CENTER_ANGLE );
