@@ -94,7 +94,7 @@ import Toybox.Application;
             // For unknown errors we show the evcc version, to help supporting
             // users on the forum. Also unknown errors are displayed in a text
             // area to be able to show their full text
-            errorMsg = ex.getErrorMessage() + "\nevvc-garmin " + getVersion();
+            errorMsg = ex.getErrorMessage() + "\nevvcg " + getVersion();
             useTxtArea = true;
         }
 

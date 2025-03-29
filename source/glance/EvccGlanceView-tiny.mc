@@ -22,10 +22,6 @@ import Toybox.Application.Storage;
         _stateStore = new EvccStateStore( EvccBreadCrumbSiteReadOnly.getSelectedSite( EvccSiteConfigSingleton.getSiteCount() ) );
     }
 
-    function onLayout(dc as Dc) as Void {
-        // EvccHelperBase.debug("TinyGlance: onLayout");
-    }
-
     // Start the timer for the background service
     // Start a local timer for updating the view regularly
     function onShow() as Void {

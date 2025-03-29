@@ -31,8 +31,8 @@ import Toybox.Graphics;
         }
     }
     // For tiny glance or devices without glance we
-    // always work with widget resources, since the tiny
-    // glance does not use this class
+    // always work with widget resources, since they
+    // do not use this class
     (:exclForGlanceFull) private function initialize() {
         _resources = new EvccWidgetResourceSet();
     }

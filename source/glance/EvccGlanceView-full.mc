@@ -18,10 +18,6 @@ import Toybox.Application.Properties;
         _stateRequest = new EvccStateRequest( index );
     }
 
-    function onLayout(dc as Dc) as Void {
-        // EvccHelperBase.debug("Glance: onLayout");
-    }
-
     function onShow() as Void {
         try {
             // EvccHelperBase.debug("Glance: onShow");

@@ -31,7 +31,7 @@ import Toybox.Math;
     }
 
     // Called if the app runs in glance mode
-    (:exclForGlanceNone) function getGlanceView() {
+    (:exclForGlanceNone) function getGlanceView() as [ GlanceView ] or [ GlanceView, GlanceViewDelegate ] or Null {
         try {
             // EvccHelperBase.debug( "EvccApp: getGlanceView" );
             _isInBackground = false;
@@ -177,21 +177,4 @@ import Toybox.Math;
         }
     }
     (:exclForGlanceFull :exclForGlanceTiny) private function hideGlance() {}
-
-    // For the tiny glance we take the data updates from the 
-    // background service and just update the UI
-    // onStorageChanged is also called in the background service,
-    // where WatchUi is not available, so we have to check for
-    // that before calling requestUpdate().
-    (:exclForGlanceFull :exclForGlanceNone) function onStorageChanged() {  
-        try {
-            // EvccHelperBase.debug( "EvccApp: onStorageChanged" );
-            if( ! _isInBackground ) {
-                // EvccHelperBase.debug( "EvccApp: requesting update" );
-                WatchUi.requestUpdate();
-            }
-        } catch ( ex ) {
-            EvccHelperBase.debugException( ex );
-       }
-    }    
 }

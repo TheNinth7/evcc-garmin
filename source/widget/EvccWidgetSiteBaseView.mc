@@ -5,21 +5,36 @@ import Toybox.Timer;
 import Toybox.Application.Properties;
 import Toybox.Math;
 
- // This is the base view for all views using and showing
- // data from the state of a site
- // It provides handling of the site, state request and
- // same level and lower level views
+// This is the base view for all views using and showing
+// data from the state of a site
+// It provides handling of the site, state request and
+// same level and lower level views
+
+// Defines the area that the content shall be drawn on
+// x/y:             define the center of the content area
+// width/height:    define the dimensions of the content area
+// truncateSpacing: The main content can be truncated based on the available width at each line's y-position.
+//                  This width is calculated individually for every y-coordinate where a content line appears.
+//                  The truncateSpacing defines the horizontal margins to leave on both sides during this calculation.
+//                  It is derived from the spacing at the center y-position.
+class EvccContentArea {
+    var x = 0;
+    var y = 0;
+    var width = 0;
+    var height = 0;
+    var truncateSpacing = 0;
+}
+
  class EvccWidgetSiteBaseView extends WatchUi.View {
     
-    private var _pageIndex as Number;
-    function getPageIndex() as Number { return _pageIndex; }
+    // Functions to access the index and state request for the site of this view
     private var _siteIndex as Number;
-    function getSiteIndex() as Number { return _siteIndex; }
-    function setSiteIndex( siteIndex as Number ) { _siteIndex = siteIndex; }
-    
-    function getStateRequest() as EvccStateRequest { return EvccStateRequestSingleton.getStateRequest( _siteIndex ); }
+    protected function getSiteIndex() as Number { return _siteIndex; }
+    protected function setSiteIndex( siteIndex as Number ) { _siteIndex = siteIndex; }
+    protected function getStateRequest() as EvccStateRequest { return EvccStateRequestSingleton.getStateRequest( _siteIndex ); }
 
     // Organization of views
+
     // Parent view
     private var _parentView as EvccWidgetSiteBaseView?;
     function getParentView() as EvccWidgetSiteBaseView? { return _parentView; }
@@ -28,27 +43,51 @@ import Toybox.Math;
     private var _sameLevelViews as SiteViewsArr;
     function getSameLevelViews() as SiteViewsArr { return _sameLevelViews; }
     function getSameLevelViewCount() as Number { return _sameLevelViews.size(); }
+    private var _pageIndex as Number; // index of this view in the array
+    function getPageIndex() as Number { return _pageIndex; }
 
     // Views on the lower level
     private var _lowerLevelViews = new SiteViewsArr[0];
     function addLowerLevelViews( views as SiteViewsArr ) { _lowerLevelViews.addAll( views ); }
     function getLowerLevelViews() as SiteViewsArr { return _lowerLevelViews; }
 
+    // Definition of the content area, see EvccContentArea further above for details
+    private var _ca = new EvccContentArea();
+    protected function getContentArea() as EvccContentArea { return _ca; }
+
+    // Below some functions to be overriden by the implementations of this class,
+    // to define the behavior and provide content
+
+    // Function to be overriden to add a page title to the view
+    function getPageTitle( dc as Dc ) as EvccBlock? { return null; }
+
+    // Decide whether the content shall be limited by
+    // height and/or width. Default is height only
+    // Implementations can decide based on their content
+    function limitHeight() as Boolean { return true; }
+    function limitWidth() as Boolean { return false; }
+
+    // To be set to true if the view should act as glance,
+    // i. e. shows a single site for the widget carousel in
+    // watches that do not support glances. See EvccApp for
+    // details
+    public function actsAsGlance() as Boolean { return false; }
+
+    // Function to be overriden to add content to the view
+    function addContent( block as EvccVerticalBlock, dc as Dc ) {}
+
+    // Constructor
     function initialize( views as SiteViewsArr, parentView as EvccWidgetSiteBaseView?, siteIndex as Number ) {
         // EvccHelperBase.debug("Widget: initialize");
         View.initialize();
 
-        views.add( self );
-        _pageIndex = views.size() - 1;
-
-        _sameLevelViews = views;
         _siteIndex = siteIndex;
         _parentView = parentView;
-    }
 
-    // Load your resources here
-    function onLayout(dc as Dc) as Void {
-        // EvccHelperBase.debug( "Widget: onLayout" );
+        // Add ourself to the list of same level views
+        views.add( self );
+        _pageIndex = views.size() - 1;
+        _sameLevelViews = views;
     }
 
     // Called when the view is brought to the foreground.
@@ -62,9 +101,6 @@ import Toybox.Math;
         }
     }
 
-    private var _ca as EvccContentArea?;
-    protected function getContentArea() as EvccContentArea { return _ca; }
-
     // Update the view
     function onUpdate(dc as Dc) as Void {
         try {
@@ -75,7 +111,7 @@ import Toybox.Math;
             dc.clear();
 
             // Draw the header, footer, page indicator and select indicator
-            _ca = drawShell( dc );
+            drawShell( dc );
 
             var block = new EvccVerticalBlock( dc, {} );
             
@@ -129,10 +165,33 @@ import Toybox.Math;
         }
     }
 
-    // Function to be overriden to add content to the view
-    function addContent( block as EvccVerticalBlock, dc as Dc ) {}
-
-    function drawShell( dc as Dc ) as EvccContentArea {
+    /* 
+    // Wrapper to test putting the shell on its own layer
+    // This has the advantage that the shell could be drawn first
+    // but still could stay on top of the content
+    // The wrapper worked, however at a great memory penalty (+0.7kB peak)
+    private var _navLayer as Layer?;
+    private function drawShell( dc as Dc ) as EvccContentArea {
+        if( _navLayer == null ) {
+            _navLayer = new Layer( { :locX => 0, :locY => 0, :width => dc.getWidth(), :height => dc.getHeight() } );
+            addLayer( _navLayer );
+        }
+        var navDc = _navLayer.getDc();
+        navDc.setColor( EvccConstants.COLOR_FOREGROUND, Graphics.COLOR_TRANSPARENT );
+        return drawShellInt( navDc );
+    }
+    private function drawShell( dc as Dc ) as EvccContentArea {
+        return drawShellInt( dc );
+    }
+    */
+    
+    // Draws the "shell", containing:
+    // - Site/page title
+    // - Logo
+    // - Page indicator
+    // - Select indicator
+    // This function also sets the content area
+    private function drawShell( dc as Dc ) {
         var stateRequest = getStateRequest();
 
         // The font size of the hader is fixed to the second-smallest
@@ -192,24 +251,15 @@ import Toybox.Math;
         var logoHeight = logo.getHeight();
         logo.draw( xCenter, dc.getHeight() - logoHeight / 2 );
 
-        // Define the content area
-        var ca = new EvccContentArea();
-        ca.x = xCenter;
-        ca.width = dc.getWidth();
-        ca.height = dc.getHeight() - headerHeight - logoHeight;
-        ca.y = headerHeight + ca.height / 2;
-
-        // If applicable, draw the page indicator and adjust the
-        // content area
+        // If there is more than one view on the same level, draw the page indicator
         var piSpacing = 0;
-
         if( getSameLevelViewCount() > 1 ) {
             var pi = new EvccPageIndicator( dc );
             pi.drawPageIndicator( _pageIndex, getSameLevelViewCount() );
             piSpacing = pi.getSpacing();
         }
 
-        // Draw the select indicator
+        // If there are lower level views, draw the select indicator
         var siSpacing = 0;        
         if( _lowerLevelViews.size() > 0 ) {
             var si = new EvccSelectIndicator();
@@ -218,47 +268,31 @@ import Toybox.Math;
         }
 
 
-        ca.width = ca.width - piSpacing - siSpacing;
-        ca.x = piSpacing + ca.width / 2;
-        ca.width *= 0.93; // Fine-tuned during regression testing on different devices
-        ca.truncateSpacing = dc.getWidth() - ca.width;
+        // Calculate the dimensions of the content area
+
+        // Height any y are calculated based on header/logo height
+        _ca.height = dc.getHeight() - headerHeight - logoHeight;
+        _ca.y = headerHeight + _ca.height / 2; // y is vertically centered between header and logo
+
+        // Width is calculated based on page indicator and select indicator spacing
+        _ca.width = dc.getWidth() - piSpacing - siSpacing;
+        _ca.x = piSpacing + _ca.width / 2; // x is horizontally centered between pi and si
+
+        // AFTER x is calculated, we add some horizontal spacing to the content area
+        // Value was fine-tuned during regression testing on different devices
+        _ca.width *= 0.93; 
+
+        _ca.truncateSpacing = dc.getWidth() - _ca.width;
 
         
         // Code for drawing visual alignment grid 
         /*
         dc.setPenWidth( 1 );
         dc.drawCircle( dc.getWidth() / 2, dc.getHeight() / 2, dc.getWidth() / 2 );
-        dc.drawRectangle( ca.x - ca.width / 2, ca.y - ca.height / 2, ca.width, ca.height );
-        dc.drawLine( ca.x - ca.width / 2, ca.y, ca.x + ca.width / 2, ca.y );
+        dc.drawRectangle( _ca.x - _ca.width / 2, _ca.y - _ca.height / 2, _ca.width, _ca.height );
+        dc.drawLine( _ca.x - _ca.width / 2, _ca.y, _ca.x + _ca.width / 2, _ca.y );
         */
         // Return the content area dimensions
-        return ca;
     }
-    
-
-    // Function to be overriden to add a page title to the view
-    function getPageTitle( dc as Dc ) as EvccBlock? { return null; }
-
-    // Decide whether the content shall be limited by
-    // height and/or width. Default is height only
-    // Implementations can decide based on their content
-    function limitHeight() as Boolean { return true; }
-    function limitWidth() as Boolean { return false; }
-
-    // To be set to true if the view should act as glance,
-    // i. e. shows a single site for the widget carousel in
-    // watches that do not support glances. See EvccApp for
-    // details
-    public function actsAsGlance() as Boolean { return false; }
 }
 
-// Used to pass the dimensions of the content area from drawShell
-// to addContent. x/y define where on the screen the center of the
-// content area shall be located
-class EvccContentArea {
-    var x = 0;
-    var y = 0;
-    var width = 0;
-    var height = 0;
-    var truncateSpacing = 0;
-}
