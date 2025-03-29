@@ -41,15 +41,15 @@ class EvccContentArea {
 
     // Other views on the same level
     private var _sameLevelViews as SiteViewsArr;
-    function getSameLevelViews() as SiteViewsArr { return _sameLevelViews; }
-    function getSameLevelViewCount() as Number { return _sameLevelViews.size(); }
     private var _pageIndex as Number; // index of this view in the array
-    function getPageIndex() as Number { return _pageIndex; }
+    protected function getSameLevelViews() as SiteViewsArr { return _sameLevelViews; }
+    protected function getSameLevelViewCount() as Number { return _sameLevelViews.size(); }
+    protected function getPageIndex() as Number { return _pageIndex; }
 
     // Views on the lower level
     private var _lowerLevelViews = new SiteViewsArr[0];
-    function addLowerLevelViews( views as SiteViewsArr ) { _lowerLevelViews.addAll( views ); }
-    function getLowerLevelViews() as SiteViewsArr { return _lowerLevelViews; }
+    protected function addLowerLevelViews( views as SiteViewsArr ) { _lowerLevelViews.addAll( views ); }
+    public function getLowerLevelViews() as SiteViewsArr { return _lowerLevelViews; }
 
     // Definition of the content area, see EvccContentArea further above for details
     private var _ca = new EvccContentArea();
@@ -59,13 +59,13 @@ class EvccContentArea {
     // to define the behavior and provide content
 
     // Function to be overriden to add a page title to the view
-    function getPageTitle( dc as Dc ) as EvccBlock? { return null; }
+    protected function getPageTitle( dc as Dc ) as EvccBlock? { return null; }
 
     // Decide whether the content shall be limited by
     // height and/or width. Default is height only
     // Implementations can decide based on their content
-    function limitHeight() as Boolean { return true; }
-    function limitWidth() as Boolean { return false; }
+    protected function limitHeight() as Boolean { return true; }
+    protected function limitWidth() as Boolean { return false; }
 
     // To be set to true if the view should act as glance,
     // i. e. shows a single site for the widget carousel in
@@ -74,10 +74,10 @@ class EvccContentArea {
     public function actsAsGlance() as Boolean { return false; }
 
     // Function to be overriden to add content to the view
-    function addContent( block as EvccVerticalBlock, dc as Dc ) {}
+    protected function addContent( block as EvccVerticalBlock, dc as Dc ) {}
 
     // Constructor
-    function initialize( views as SiteViewsArr, parentView as EvccWidgetSiteBaseView?, siteIndex as Number ) {
+    protected function initialize( views as SiteViewsArr, parentView as EvccWidgetSiteBaseView?, siteIndex as Number ) {
         // EvccHelperBase.debug("Widget: initialize");
         View.initialize();
 

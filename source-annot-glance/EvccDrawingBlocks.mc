@@ -21,7 +21,7 @@ import Toybox.WatchUi;
     private var _options as Dictionary<Symbol,Object>;
 
     // Constructor
-    function initialize( dc as Dc, options as Dictionary<Symbol,Object> ) {
+    protected function initialize( dc as Dc, options as Dictionary<Symbol,Object> ) {
         _dc = dc;
 
         // If a parent is passed in, we convert it to a WeakReference,
@@ -33,7 +33,7 @@ import Toybox.WatchUi;
     }
 
     // Returning the value of a certain option
-    function getOption( option as Symbol ) {
+    public function getOption( option as Symbol ) {
         // If the option is present, we return it right away
         if( _options[option] != null ) {
             return _options[option];
@@ -79,7 +79,7 @@ import Toybox.WatchUi;
     }
 
     // set an option
-    function setOption( option as Symbol, value ) {
+    public function setOption( option as Symbol, value ) {
         _options[option] = value;
         if( option == :marginLeft || option == :marginRight ) {
             resetWidthCache();
@@ -90,10 +90,10 @@ import Toybox.WatchUi;
 
     // Parent can be passed into an element either in the options structure
     // or later via this function
-    function setParent( parent as EvccContainerBlock ) {
+    protected function setParent( parent as EvccContainerBlock ) {
         setOption( :parent, parent.weak() );
     }
-    function getParent() as EvccContainerBlock? {
+    protected function getParent() as EvccContainerBlock? {
         var parentRef = _options[:parent] as WeakReference?;
         return ( parentRef != null ? parentRef.get() : null ) as EvccContainerBlock?;
     }
@@ -105,7 +105,7 @@ import Toybox.WatchUi;
     private var _width as Number?;
     private var _height as Number?;
     private var _lastFont as Number?;
-    function getWidth() as Number {
+    public function getWidth() as Number {
         var font = null;
         try { font = getOption( :font ); } 
         catch( ex ) {}
@@ -118,7 +118,7 @@ import Toybox.WatchUi;
         }
         return _width;
     }
-    function getHeight() as Number {
+    public function getHeight() as Number {
         var font = null;
         try { font = getOption( :font ); } 
         catch( ex ) {}
@@ -135,12 +135,12 @@ import Toybox.WatchUi;
     // parameters change - these need to be called
     // by implementation of this class if their content
     // changes!
-    function resetWidthCache() {
+    public function resetWidthCache() {
         _width = null;
         var parent = getParent();
         if( parent != null ) { parent.resetWidthCache(); }
     }
-    function resetHeightCache() {
+    public function resetHeightCache() {
         _height = null;
         var parent = getParent();
         if( parent != null ) { parent.resetHeightCache(); }
@@ -151,10 +151,10 @@ import Toybox.WatchUi;
     protected function getWidthInternal();
     protected function getHeightInternal();
     // draw the element
-    function draw( x, y );
+    public function draw( x, y );
 
     // Calculate the available screen width at a given y coordinate
-    function getDcWidthAtY( y as Number ) as Number {
+    protected function getDcWidthAtY( y as Number ) as Number {
         // Pythagoras: b = sqrt( c*c - a*a )
         // b: distance of screen edge from center
         // c: radius
