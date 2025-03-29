@@ -2,7 +2,7 @@ import Toybox.Lang;
 import Toybox.Graphics;
 import Toybox.WatchUi;
 
-// Base class for all drawing elements
+// Base (:glance) class for all drawing elements
 // In the options dictionary, the following entries are used:
 // :marginLeft, :marginRight, :marginTop, :marginBottom - margins in pixels to be put around the element
 // :justify - one of the Graphics.TEXT_JUSTIFY_xxx constants, horizontal alignment
@@ -34,7 +34,7 @@ import Toybox.WatchUi;
         _options = options;
     }
 
-    // draw this block, to be overriden by implementations of this class
+    // draw this block, to be overriden by implementations of this (:glance) class
     public function draw( x, y );
 
     // Returning the value of a certain option
@@ -85,12 +85,11 @@ import Toybox.WatchUi;
     public function setOption( option as Symbol, value ) {
         _options[option] = value;
         if( option == :marginLeft || option == :marginRight ) {
-            resetWidthCache();
+            resetCache( :resetDimensionWidth, :resetDirectionUp );
         } else if ( option == :marginTop || option == :marginBottom ) {
-            resetHeightCache();
+            resetCache( :resetDimensionHeight, :resetDirectionUp );
         } else if( option == :font ) {
-            resetWidthCache();
-            resetHeightCache();
+            resetCache( :resetDimensionBoth, :resetDirectionBoth );
         }
     }
 
@@ -124,20 +123,18 @@ import Toybox.WatchUi;
     }
     // Functions for reseting the cache if relevant
     // parameters change - these need to be called
-    // by implementation of this class if their content
+    // by implementation of this (:glance) class if their content
     // changes!
-    public function resetWidthCache() {
-        _width = null;
-        var parent = getParent();
-        if( parent != null ) { parent.resetWidthCache(); }
-    }
-    public function resetHeightCache() {
-        _height = null;
-        var parent = getParent();
-        if( parent != null ) { parent.resetHeightCache(); }
+    public function resetCache( dimension as Symbol, direction as Symbol ) {
+        if( dimension == :resetDimensionHeight || dimension == :resetDimensionBoth ) { _height = null; }
+        if( dimension == :resetDimensionWidth || dimension == :resetDimensionBoth ) { _width = null; }
+        if( direction == :resetDirectionUp || direction == :dirBoth ) {
+            var parent = getParent();
+            if( parent != null ) { parent.resetCache( dimension, :resetDirectionUp ); }
+        }
     }
 
-    // Functions to be implemented by implementations of this class to:
+    // Functions to be implemented by implementations of this (:glance) class to:
     // calculate width or height of the element
     protected function calculateWidth();
     protected function calculateHeight();
@@ -161,7 +158,7 @@ import Toybox.WatchUi;
     }
 }
 
-// Base class for all drawing elements that consists of other drawing elements
+// Base (:glance) class for all drawing elements that consists of other drawing elements
 (:glance) class EvccContainerBlock extends EvccBlock {
     protected var _elements as Array;
 
@@ -173,6 +170,16 @@ import Toybox.WatchUi;
     function getElementCount() {
         return _elements.size();
     }
+
+    public function resetCache( dimension as Symbol, direction as Symbol ) {
+        EvccBlock.resetCache( dimension, direction );
+        if( direction == :resetDirectionDown || direction == :resetDirectionBoth ) {
+            for( var i = 0; i < _elements.size(); i++ ) {
+                _elements[i].resetCache( dimension, :resetDirectionDown );
+            }
+        }
+    }
+
 
     // Add text is implemented differently for vertical and horizontal containers
     function addText( text, options as Dictionary<Symbol,Object> ) {}
@@ -413,12 +420,12 @@ import Toybox.WatchUi;
     // end of the text
     function truncate( chars as Number ) {
         _text = _text.substring( 0, _text.length() - chars );
-        resetWidthCache();
+        resetCache( :resetDimensionWidth, :resetDirectionUp );
     }
 
     function append( text ) as EvccTextBlock { 
         _text += text;
-        resetWidthCache();
+        resetCache( :resetDimensionWidth, :resetDirectionUp );
         return self; 
     }
 
@@ -474,7 +481,7 @@ import Toybox.WatchUi;
 }
 
 // Bitmap element
-// This class is written with the goal of keeping memory usage low
+// This (:glance) class is written with the goal of keeping memory usage low
 // The actual bitmap is therefore only loaded when needed and then
 // immediatly discarded again
 (:glance) class EvccBitmapBlock extends EvccBlock {
@@ -494,7 +501,7 @@ import Toybox.WatchUi;
         return WatchUi.loadResource( bitmapRef() );
     }
 
-    // Accessing the reference via this function enables the derived class
+    // Accessing the reference via this function enables the derived (:glance) class
     // icon to override it and have different logic how the reference is
     // determined
     protected function bitmapRef() as ResourceId {
@@ -514,7 +521,7 @@ import Toybox.WatchUi;
     protected function calculateWidth() { loadData(); return _bitmapWidth + getOption( :marginLeft ) + getOption( :marginRight ); }
     protected function calculateHeight() { loadData(); return _bitmapHeight + getOption( :marginTop ) + getOption( :marginBottom ); }
     // Load width/height
-    // We don't do this in the constructor because for the EvccIconBlock sub class, the font
+    // We don't do this in the constructor because for the EvccIconBlock sub (:glance) class, the font
     // size is needed to determine the actual icon used, and that one is not available
     // at initialization time
     protected function loadData() {
@@ -552,7 +559,7 @@ import Toybox.WatchUi;
 }
 
 
-// Class representing an icon. The difference between an icon and the bitmap above
+// (:glance) class representing an icon. The difference between an icon and the bitmap above
 // is that for icons multiple sizes are supported and this element shows the icon
 // based on the font that is passed in the options or used by its parent element
 (:glance) class EvccIconBlock extends EvccBitmapBlock {

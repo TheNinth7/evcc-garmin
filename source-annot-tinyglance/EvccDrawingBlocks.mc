@@ -91,12 +91,11 @@ class EvccBlock {
     public function setOption( option as Symbol, value ) {
         _options[option] = value;
         if( option == :marginLeft || option == :marginRight ) {
-            resetWidthCache();
+            resetCache( :resetDimensionWidth, :resetDirectionUp );
         } else if ( option == :marginTop || option == :marginBottom ) {
-            resetHeightCache();
+            resetCache( :resetDimensionHeight, :resetDirectionUp );
         } else if( option == :font ) {
-            resetWidthCache();
-            resetHeightCache();
+            resetCache( :resetDimensionBoth, :resetDirectionBoth );
         }
     }
 
@@ -132,15 +131,13 @@ class EvccBlock {
     // parameters change - these need to be called
     // by implementation of this class if their content
     // changes!
-    public function resetWidthCache() {
-        _width = null;
-        var parent = getParent();
-        if( parent != null ) { parent.resetWidthCache(); }
-    }
-    public function resetHeightCache() {
-        _height = null;
-        var parent = getParent();
-        if( parent != null ) { parent.resetHeightCache(); }
+    public function resetCache( dimension as Symbol, direction as Symbol ) {
+        if( dimension == :resetDimensionHeight || dimension == :resetDimensionBoth ) { _height = null; }
+        if( dimension == :resetDimensionWidth || dimension == :resetDimensionBoth ) { _width = null; }
+        if( direction == :resetDirectionUp || direction == :dirBoth ) {
+            var parent = getParent();
+            if( parent != null ) { parent.resetCache( dimension, :resetDirectionUp ); }
+        }
     }
 
     // Functions to be implemented by implementations of this class to:
@@ -179,6 +176,16 @@ class EvccContainerBlock extends EvccBlock {
     function getElementCount() {
         return _elements.size();
     }
+
+    public function resetCache( dimension as Symbol, direction as Symbol ) {
+        EvccBlock.resetCache( dimension, direction );
+        if( direction == :resetDirectionDown || direction == :resetDirectionBoth ) {
+            for( var i = 0; i < _elements.size(); i++ ) {
+                _elements[i].resetCache( dimension, :resetDirectionDown );
+            }
+        }
+    }
+
 
     // Add text is implemented differently for vertical and horizontal containers
     function addText( text, options as Dictionary<Symbol,Object> ) {}
@@ -419,12 +426,12 @@ class EvccTextBlock extends EvccBlock {
     // end of the text
     function truncate( chars as Number ) {
         _text = _text.substring( 0, _text.length() - chars );
-        resetWidthCache();
+        resetCache( :width, :resetDirectionUp );
     }
 
     function append( text ) as EvccTextBlock { 
         _text += text;
-        resetWidthCache();
+        resetCache( :width, :resetDirectionUp );
         return self; 
     }
 
