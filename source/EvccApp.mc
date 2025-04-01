@@ -182,4 +182,25 @@ import Toybox.Math;
         }
     }
     (:exclForGlanceFull :exclForGlanceTiny) private function hideGlance() as Void {}
+    
+    // For the tiny glance we take the data updates from the 
+    // background service and just update the UI
+    // onStorageChanged is also called in the background service,
+    // where WatchUi is not available, so we have to check for
+    // that before calling requestUpdate().
+    // While this may seem redundant to the onTimer check in the tiny glance,
+    // that timer only triggers every 10 seconds, and we don't want to wait that long
+    // before updating the screen after the response is received initially
+    (:exclForGlanceFull :exclForGlanceNone :typecheck(disableBackgroundCheck))
+    function onStorageChanged() {  
+        try {
+            // EvccHelperBase.debug( "EvccApp: onStorageChanged" );
+            if( ! _isInBackground ) {
+                // EvccHelperBase.debug( "EvccApp: requesting update" );
+                WatchUi.requestUpdate();
+            }
+        } catch ( ex ) {
+            EvccHelperBase.debugException( ex );
+       }
+    }    
 }
