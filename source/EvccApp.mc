@@ -14,7 +14,7 @@ import Toybox.Math;
     // to detect that these executions are in background, especially in the
     // onStop() method, we therefore set the _isInBackground to true and 
     // only set it to false when getGlanceView() or getInitialView() are called.
-    public static var _isInBackground = true;
+    public static var _isInBackground as Boolean = true;
     (:exclForGlanceNone) private static var _glanceView as EvccGlanceView?;
     private static var _isGlance as Boolean = false;
     public static function isGlance() as Boolean {
@@ -31,7 +31,8 @@ import Toybox.Math;
     }
 
     // Called if the app runs in glance mode
-    (:exclForGlanceNone) function getGlanceView() as [ GlanceView ] or [ GlanceView, GlanceViewDelegate ] or Null {
+    (:exclForGlanceNone :typecheck(disableBackgroundCheck)) 
+    function getGlanceView() as [ GlanceView ] or [ GlanceView, GlanceViewDelegate ] or Null {
         try {
             // EvccHelperBase.debug( "EvccApp: getGlanceView" );
             _isInBackground = false;
@@ -64,6 +65,7 @@ import Toybox.Math;
     }
 
     // Called if the app runs in widget mode
+    (:typecheck([disableBackgroundCheck, disableGlanceCheck]))
     function getInitialView() as [Views] or [Views, InputDelegates] {
         try {
             // EvccHelperBase.debug( "EvccApp: getInitialView" );
@@ -106,7 +108,7 @@ import Toybox.Math;
                     // but just take 0 as current site
                     var activeSite = siteCount == 1 ? 0 : breadCrumb.getSelectedChild( siteCount );
                     
-                    var views = new SiteViewsArr[0];
+                    var views = new ArrayOfSiteViews[0];
                     new EvccWidgetSiteMainView( views, null, activeSite, true ); // The view adds itself to views
                     var delegate = new EvccViewCarouselDelegate( views, breadCrumb );
                     return [views[0], delegate];
@@ -143,7 +145,8 @@ import Toybox.Math;
     
     // This function starts the background service
     // It is currently only used in tinyglance mode
-    (:exclForGlanceFull :exclForGlanceNone) function getServiceDelegate() {  
+    (:exclForGlanceFull :exclForGlanceNone :typecheck(disableGlanceCheck)) 
+    function getServiceDelegate() as [ System.ServiceDelegate ] {  
         // EvccHelperBase.debug( "EvccApp: getServiceDelegate" );
 
         // We store the active site, so when the widget is reopened, it 
@@ -158,6 +161,7 @@ import Toybox.Math;
     // The onHide() function of the views takes care
     // of required clean-ups. For glances, onHide() is
     // not called automatically, so we do this here
+    (:typecheck([disableBackgroundCheck, disableGlanceCheck]))
     function onStop( state as Lang.Dictionary or Null ) as Void {
         try {
             // EvccHelperBase.debug( "EvccApp: onStop" );
@@ -170,11 +174,12 @@ import Toybox.Math;
        }
     }
 
-    (:exclForGlanceNone) private function hideGlance() {
+    (:exclForGlanceNone :typecheck([disableBackgroundCheck, disableGlanceCheck]))
+    private function hideGlance() as Void {
         if( _glanceView != null ) {
             // EvccHelperBase.debug( "EvccApp: onStop: glance mode, calling onHide" );
             _glanceView.onHide();
         }
     }
-    (:exclForGlanceFull :exclForGlanceTiny) private function hideGlance() {}
+    (:exclForGlanceFull :exclForGlanceTiny) private function hideGlance() as Void {}
 }

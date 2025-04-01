@@ -18,11 +18,11 @@ import Toybox.Math;
 //                  The truncateSpacing defines the horizontal margins to leave on both sides during this calculation.
 //                  It is derived from the spacing at the center y-position.
 class EvccContentArea {
-    var x = 0;
-    var y = 0;
-    var width = 0;
-    var height = 0;
-    var truncateSpacing = 0;
+    var x as Number = 0;
+    var y as Number = 0;
+    var width as Number = 0;
+    var height as Number = 0;
+    var truncateSpacing as Number = 0;
 }
 
  class EvccWidgetSiteBaseView extends WatchUi.View {
@@ -30,7 +30,7 @@ class EvccContentArea {
     // Functions to access the index and state request for the site of this view
     private var _siteIndex as Number;
     protected function getSiteIndex() as Number { return _siteIndex; }
-    protected function setSiteIndex( siteIndex as Number ) { _siteIndex = siteIndex; }
+    protected function setSiteIndex( siteIndex as Number ) as Void { _siteIndex = siteIndex; }
     protected function getStateRequest() as EvccStateRequest { return EvccStateRequestSingleton.getStateRequest( _siteIndex ); }
 
     // Organization of views
@@ -40,19 +40,19 @@ class EvccContentArea {
     function getParentView() as EvccWidgetSiteBaseView? { return _parentView; }
 
     // Other views on the same level
-    private var _sameLevelViews as SiteViewsArr;
+    private var _sameLevelViews as ArrayOfSiteViews;
     private var _pageIndex as Number; // index of this view in the array
-    protected function getSameLevelViews() as SiteViewsArr { return _sameLevelViews; }
+    protected function getSameLevelViews() as ArrayOfSiteViews { return _sameLevelViews; }
     protected function getSameLevelViewCount() as Number { return _sameLevelViews.size(); }
     protected function getPageIndex() as Number { return _pageIndex; }
 
     // Views on the lower level
-    private var _lowerLevelViews = new SiteViewsArr[0];
-    protected function addLowerLevelViews( views as SiteViewsArr ) { _lowerLevelViews.addAll( views ); }
-    public function getLowerLevelViews() as SiteViewsArr { return _lowerLevelViews; }
+    private var _lowerLevelViews as ArrayOfSiteViews = new ArrayOfSiteViews[0];
+    protected function addLowerLevelViews( views as ArrayOfSiteViews ) as Void { _lowerLevelViews.addAll( views ); }
+    public function getLowerLevelViews() as ArrayOfSiteViews { return _lowerLevelViews; }
 
     // Definition of the content area, see EvccContentArea further above for details
-    private var _ca = new EvccContentArea();
+    private var _ca as EvccContentArea = new EvccContentArea();
     protected function getContentArea() as EvccContentArea { return _ca; }
 
     // Below some functions to be overriden by the implementations of this class,
@@ -74,10 +74,10 @@ class EvccContentArea {
     public function actsAsGlance() as Boolean { return false; }
 
     // Function to be overriden to add content to the view
-    protected function addContent( block as EvccVerticalBlock, dc as Dc ) {}
+    protected function addContent( block as EvccVerticalBlock, dc as Dc ) as Void {}
 
     // Constructor
-    protected function initialize( views as SiteViewsArr, parentView as EvccWidgetSiteBaseView?, siteIndex as Number ) {
+    protected function initialize( views as ArrayOfSiteViews, parentView as EvccWidgetSiteBaseView?, siteIndex as Number ) {
         // EvccHelperBase.debug("Widget: initialize");
         View.initialize();
 
@@ -104,19 +104,19 @@ class EvccContentArea {
     // Update the view
     function onUpdate(dc as Dc) as Void {
         try {
+            //EvccHelperBase.debug("Widget: onUpdate");
             var stateRequest = getStateRequest();
 
-            // EvccHelperBase.debug("Widget: onUpdate");
-            dc.setColor( EvccConstants.COLOR_FOREGROUND, EvccConstants.COLOR_BACKGROUND );
+            dc.setColor( EvccColors.FOREGROUND, EvccColors.BACKGROUND );
             dc.clear();
 
             // Draw the header, footer, page indicator and select indicator
             drawShell( dc );
 
-            var block = new EvccVerticalBlock( dc, {} );
+            var block = new EvccVerticalBlock( dc, {} as DbOptions );
             
             if( ! stateRequest.hasLoaded() ) {
-                block.addText( "Loading ...", {} );
+                block.addText( "Loading ...", {} as DbOptions );
                 // Always vertically center the Loading message
                 _ca.y = dc.getHeight() / 2;
             } else { 
@@ -177,7 +177,7 @@ class EvccContentArea {
             addLayer( _navLayer );
         }
         var navDc = _navLayer.getDc();
-        navDc.setColor( EvccConstants.COLOR_FOREGROUND, Graphics.COLOR_TRANSPARENT );
+        navDc.setColor( EvccColors.FOREGROUND, Graphics.COLOR_TRANSPARENT );
         return drawShellInt( navDc );
     }
     private function drawShell( dc as Dc ) as EvccContentArea {
@@ -191,7 +191,7 @@ class EvccContentArea {
     // - Page indicator
     // - Select indicator
     // This function also sets the content area
-    private function drawShell( dc as Dc ) {
+    private function drawShell( dc as Dc ) as Void {
         var stateRequest = getStateRequest();
 
         // The font size of the hader is fixed to the second-smallest
@@ -209,9 +209,9 @@ class EvccContentArea {
         // If there is more than one site, we display the site title
         if( siteCount > 1 ) {
             hasSiteTitle = true;
-            if( stateRequest.getState() != null ) {
+            if( stateRequest.hasState() ) {
                 // We display a max of 9 characters
-                header.addText( stateRequest.getState().getSiteTitle().substring(0,9), {}  );
+                header.addText( (stateRequest.getState().getSiteTitle().substring(0,9) as String), {} as DbOptions );
             }
         }
         
@@ -280,7 +280,7 @@ class EvccContentArea {
 
         // AFTER x is calculated, we add some horizontal spacing to the content area
         // Value was fine-tuned during regression testing on different devices
-        _ca.width *= 0.93; 
+        _ca.width = Math.round( _ca.width * 0.93 ).toNumber(); 
 
         _ca.truncateSpacing = dc.getWidth() - _ca.width;
 

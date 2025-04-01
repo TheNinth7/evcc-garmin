@@ -6,7 +6,7 @@ import Toybox.System;
 
 // Simple view for showing version of the app and some other device settings
 (:exclForSystemInfoNone) class EvccWidgetSystemInfoView extends WatchUi.View {
-    private var _spacing = 0;
+    private var _spacing as Number = 0;
 
     function initialize() {
         View.initialize();
@@ -14,7 +14,7 @@ import Toybox.System;
 
     // Draw the content
     function onUpdate(dc as Dc) as Void {
-            dc.setColor( EvccConstants.COLOR_FOREGROUND, EvccConstants.COLOR_BACKGROUND );
+            dc.setColor( EvccColors.FOREGROUND, EvccColors.BACKGROUND );
             dc.clear();
             var block = new EvccVerticalBlock( dc, { :font => EvccWidgetResourceSet.FONT_XTINY } );
             block.addText( "evccg " + EvccHelperUI.getVersion(), {}  );
@@ -41,7 +41,7 @@ import Toybox.System;
     // in :release scope, checkFonts is only a dummy
     (:release) function checkFonts( block as EvccVerticalBlock, dc as Dc ) as Void {}
 
-    (:debug) private var _debugDone = false;
+    (:debug) private var _debugDone as Boolean = false;
     // For full-glance devices we also check the glance icons
     (:debug) function checkFonts( block as EvccVerticalBlock, dc as Dc ) as Void {
         if( ! _debugDone ) { EvccHelperBase.debug( "Icon sizes:" ); }
@@ -69,7 +69,7 @@ import Toybox.System;
     // for tiny glances we create our own debug resource set, which
     // is not included in that type
     (:debug) function checkIcons( uiLib as EvccWidgetResourceSet or EvccGlanceResourceSet, block as EvccVerticalBlock, dc as Dc ) as Void {
-        var fonts = uiLib._fonts as GarminFontsArr;
+        var fonts = uiLib._fonts as ArrayOfGarminFonts;
         var icons = uiLib._icons as EvccIcons;
         var text = "icons: OK";
         var fontSizeNames = new Array<String>[0];
@@ -98,7 +98,7 @@ import Toybox.System;
             var bitmap = null;
             for( var j = 0; j < icons.size(); j++ ) {
                 if( icons[j][i] != null ) {
-                    bitmap = WatchUi.loadResource( icons[j][i] );
+                    bitmap = WatchUi.loadResource( icons[j][i] as ResourceId ) as DbBitmap;
                 }
             }
         
@@ -113,7 +113,7 @@ import Toybox.System;
             }
             if( ! _debugDone ) { EvccHelperBase.debug( debug ); }
         } 
-        block.addText( prefix + "-" + text, {} );
+        block.addText( prefix + "-" + text, {} as DbOptions );
     }
 
     (:debug :exclForFontsStatic :exclForFontsStaticOptimized) function fontMode() as String { return "vector"; }
@@ -129,8 +129,6 @@ import Toybox.System;
     enum Font {
         FONT_GLANCE
     }
-    public var _fonts = [Graphics.FONT_GLANCE] as GarminFontsArr;
-    public var _icons = [
-        [ Rez.Drawables.battery_empty_glance ]
-    ] as EvccIcons;
+    public var _fonts as ArrayOfGarminFonts = [Graphics.FONT_GLANCE];
+    public var _icons as EvccIcons = [[ Rez.Drawables.battery_empty_glance ]];
 }

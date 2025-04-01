@@ -6,7 +6,7 @@ import Toybox.Application.Properties;
 // with an index (e.g. site_0_url ). Unfortunately array settings
 // do not work (Garmin bugs), so we had to revert to this solution
 (:glance :background) class EvccSiteConfigSingleton {
-    private static var _siteCount = 0;
+    private static var _siteCount as Number = 0;
     static function getSiteCount() as Number { 
         if( _siteCount == 0 ) {
             for( var i = 0; i < EvccConstants.MAX_SITES; i++ ) {
@@ -25,8 +25,8 @@ import Toybox.Application.Properties;
     private var _url as String;
     private var _user as String;
     private var _pass as String;
-    private var _basicAuth = false;
-    private var _scaleForecast = true;
+    private var _basicAuth as Boolean = false;
+    private var _scaleForecast as Boolean = true;
 
     function getUrl() as String { return _url; }
     function needsBasicAuth() as Boolean { return _basicAuth; }

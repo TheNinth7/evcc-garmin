@@ -10,7 +10,7 @@ import Toybox.Application.Properties;
 (:glance :exclForGlanceTiny :exclForGlanceNone) class EvccGlanceView extends WatchUi.GlanceView {
     
     private var _stateRequest as EvccStateRequest;
-    public function getStateRequest() { return _stateRequest; }
+    public function getStateRequest() as EvccStateRequest { return _stateRequest; }
 
     function initialize( index as Number ) {
         // EvccHelperBase.debug("Glance: initialize");
@@ -39,19 +39,18 @@ import Toybox.Application.Properties;
             var spacing = dc.getTextDimensions( " ", Graphics.FONT_GLANCE )[0];
 
             if( ! _stateRequest.hasLoaded() ) {
-                line.addText( "Loading ...", {} );
+                line.addText( "Loading ...", {} as DbOptions );
             } else { 
                 if( _stateRequest.hasError() ) {
                     throw new StateRequestException( _stateRequest.getErrorCode(), _stateRequest.getErrorMessage() );
                 } else { 
                     var state=_stateRequest.getState();
-                    
                     if( state.hasBattery() ) {
                         var column = new EvccVerticalBlock( dc, { :font => EvccGlanceResourceSet.FONT_GLANCE } );
                         column.addIcon( EvccIconBlock.ICON_BATTERY, { :batterySoc => state.getBatterySoc() } );
 
                         var batteryState = new EvccHorizontalBlock( dc, { :font => EvccGlanceResourceSet.FONT_GLANCE } );
-                        batteryState.addText( EvccHelperUI.formatSoc( state.getBatterySoc() ), {} );
+                        batteryState.addText( EvccHelperUI.formatSoc( state.getBatterySoc() ), {} as DbOptions );
                         
                         batteryState.addIcon( EvccIconBlock.ICON_POWER_FLOW, { :power => state.getBatteryPowerRounded() } );
 
@@ -59,12 +58,12 @@ import Toybox.Application.Properties;
                         line.addBlock( column );
                     }
 
-                    var loadpoints = state.getLoadPoints() as LoadPointsArr;
+                    var loadpoints = state.getLoadPoints() as ArrayOfLoadPoints;
                     var hasVehicle = false;
                     // We use the height of the font as spacing between the columns
                     // This gives us a space that is suitable for each screen size/resolution
 
-                    var displayedLPs = new LoadPointsArr[0];
+                    var displayedLPs = new ArrayOfLoadPoints[0];
                     for (var i = 0; i < loadpoints.size(); i++) {
                         var loadpoint = loadpoints[i] as EvccLoadPoint;
                         if( loadpoint.getVehicle() != null ) {
@@ -78,12 +77,12 @@ import Toybox.Application.Properties;
                         var vehicle = loadpoint.getVehicle();
                         if( vehicle != null ) {
                             var column = new EvccVerticalBlock( dc, { :font => EvccGlanceResourceSet.FONT_GLANCE, :marginLeft => spacing } );
-                            column.addText( vehicle.getTitle().substring( 0, 8 ), {} );
+                            column.addText( vehicle.getTitle().substring( 0, 8 ) as String, {} as DbOptions );
                             var vehicleState = new EvccHorizontalBlock( dc, { :font => EvccGlanceResourceSet.FONT_GLANCE } );
                             if( vehicle.isGuest() ) {
-                                vehicleState.addBitmap( Rez.Drawables.car_glance, {} );
+                                vehicleState.addBitmap( Rez.Drawables.car_glance, {} as DbOptions );
                             } else {
-                                vehicleState.addText( EvccHelperUI.formatSoc( vehicle.getSoc() ), {} );
+                                vehicleState.addText( EvccHelperUI.formatSoc( vehicle.getSoc() ), {} as DbOptions );
                             }
                             vehicleState.addIcon( EvccIconBlock.ICON_ACTIVE_PHASES, { :charging => loadpoint.isCharging(), :activePhases => loadpoint.getActivePhases() } );
                             column.addBlock( vehicleState );

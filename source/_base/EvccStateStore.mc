@@ -1,5 +1,6 @@
 import Toybox.Lang;
 import Toybox.Application.Storage;
+import Toybox.Application;
 import Toybox.Time;
 
 // This class provides access to the site states in persistant storage
@@ -15,14 +16,14 @@ import Toybox.Time;
         _siteIndex = siteIndex;
     }
 
-    static function clearUnusedSites( totalSites as Number ) {
+    static function clearUnusedSites( totalSites as Number ) as Void {
         for( var i = totalSites; i < EvccConstants.MAX_SITES; i++ ) {
             // EvccHelperBase.debug( "EvccStateStore: clearing site " + i );
             Storage.deleteValue( EvccConstants.STORAGE_SITE_PREFIX + i );
         }
     }
 
-    function setState( result as Dictionary<String,Object?> ) {
+    function setState( result as JsonContainer ) as Void {
         // EvccHelperBase.debug( "EvccStateStore: storing site " + _siteIndex );
         _state = new EvccState( result, Time.now() );
     }
@@ -46,9 +47,10 @@ import Toybox.Time;
         var state = null;
 
         if( siteData != null ) {
-            var stateData = siteData[NAME_DATA] as Dictionary<String,Object?>;
+            var stateData = siteData[NAME_DATA] as JsonContainer;
             if( stateData != null ) {
-                if( stateData[EvccState.SITETITLE] != null && ! stateData[EvccState.SITETITLE].equals( "" ) ) {
+                var siteTitle = stateData[EvccState.SITETITLE] as String?;
+                if( siteTitle != null && ! siteTitle.equals( "" ) ) {
                     state = new EvccState( stateData, new Moment( siteData[NAME_DATATIMESTAMP] as Number ) );
                 }
             }
@@ -64,13 +66,14 @@ import Toybox.Time;
     // both at once would cause out of memory errors. So instead we have persist()
     // be called when the application is stopped, at that point, there is no
     // JSON data in dictionary form in memory anymore.
-    function persist() {
-        if( _state != null ) {
+    function persist() as Void {
+        var state = _state;
+        if( state != null ) {
             // EvccHelperBase.debug( "EvccStateStore: persisting site " + _siteIndex );
-            var siteData = {} as Dictionary<String,Object?>;
-            siteData[NAME_DATA] = _state.serialize();
-            siteData[NAME_DATATIMESTAMP] = _state.getTimestamp().value();
-            Storage.setValue( EvccConstants.STORAGE_SITE_PREFIX + _siteIndex, siteData );
+            var siteData = {} as JsonContainer;
+            siteData[NAME_DATA] = state.serialize();
+            siteData[NAME_DATATIMESTAMP] = state.getTimestamp().value();
+            Storage.setValue( EvccConstants.STORAGE_SITE_PREFIX + _siteIndex, siteData as Dictionary<Application.PropertyKeyType, Application.PropertyValueType> );
             _state = null;
         } else {
             // EvccHelperBase.debug( "EvccStateStore: state is null!" );

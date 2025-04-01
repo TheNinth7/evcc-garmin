@@ -18,17 +18,17 @@ class EvccSelectIndicator {
     // The spacing that content should keep from the right side
     // The actual spacing will be calculated and put in this member
     // by the draw functions
-    private var _spacing = 0.0;
-    public function getSpacing() as Number { return Math.round( _spacing ); }
+    private var _spacing as Float = 0.0;
+    public function getSpacing() as Number { return Math.round( _spacing ).toNumber(); }
     
     // Draw function to be used if no hint shall be shown
-    (:exclForSelect30 :exclForSelect27 :exclForSelectTouch) public function draw( dc as Dc ) {}
+    (:exclForSelect30 :exclForSelect27 :exclForSelectTouch) public function draw( dc as Dc ) as Void {}
 
     // Draw function for arc
     // Angle can be either 27° or 30°
     (:exclForSelect30 :exclForSelectNone :exclForSelectTouch) private const SELECT_CENTER_ANGLE = 27;
     (:exclForSelect27 :exclForSelectNone :exclForSelectTouch) private const SELECT_CENTER_ANGLE = 30;
-    (:exclForSelectNone :exclForSelectTouch) public function draw( dc as Dc ) {
+    (:exclForSelectNone :exclForSelectTouch) public function draw( dc as Dc ) as Void {
         // Constants are put inside the function, otherwise they'd need the annotations
         var SELECT_RADIUS_FACTOR = 0.49; // factor applied to dc width to calculate the radius of the arc
         var SELECT_LINE_WIDTH_FACTOR = 0.01; // factor applied to dc width to calculate the width of the arc
@@ -52,7 +52,7 @@ class EvccSelectIndicator {
     }
     
     // Draw function for tap hint
-    (:exclForSelect30 :exclForSelect27 :exclForSelectNone) public function draw( dc as Dc ) {
+    (:exclForSelect30 :exclForSelect27 :exclForSelectNone) public function draw( dc as Dc ) as Void {
         // Constants are put inside the function, otherwise they'd need the annotations
         var TOUCH_RADIUS_INNER_FACTOR = 0.02;
         var TOUCH_RADIUS_OUTER_FACTOR = 0.04;
@@ -100,7 +100,7 @@ class EvccSelectIndicator {
         // we do not need to keep the full spacing. Testing has shown that 1/4
         // of the diameter gives good results.
         var diameter = radiusOuter * 2 + penWidth;
-        _spacing = diameter / 4;
+        _spacing = ( diameter / 4 ).toFloat();
     }
 
     /* Swipe indicator, not yet fully implemented

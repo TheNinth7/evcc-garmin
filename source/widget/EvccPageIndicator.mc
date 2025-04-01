@@ -4,8 +4,8 @@ import Toybox.WatchUi;
 
 //! Draws a graphic indicating which page the user is currently on
 class EvccPageIndicator {
-    private var _centerAngle = 0 as Number;
-    private var _dotDistanceAngle = 0 as Number;
+    private var _centerAngle as Number = 0;
+    private var _dotDistanceAngle as Number = 0;
     private var _dotSize as Number;
     private var _lineWidth as Number;
     private var _dc as Dc;
@@ -34,8 +34,8 @@ class EvccPageIndicator {
     public function initialize( dc as Dc ) {
         setCenterAngle( CENTER_ANGLE );
         setDotDistanceAngle( DOT_DISTANCE_ANGLE );
-        _dotSize = Math.round( dc.getWidth() * DOT_SIZE_FACTOR );
-        _lineWidth = Math.round( dc.getWidth() * LINE_WIDTH_FACTOR );
+        _dotSize = Math.round( dc.getWidth() * DOT_SIZE_FACTOR ).toNumber();
+        _lineWidth = Math.round( dc.getWidth() * LINE_WIDTH_FACTOR ).toNumber();
         _dc = dc;
     }
 
@@ -43,28 +43,28 @@ class EvccPageIndicator {
     // a page indicator dot. This works for all dots, counting from the edge of the screen
     // in their position.
     public function getSpacing() as Number {
-        return Math.round( _dc.getWidth() * ( 0.5 - RADIUS_FACTOR + DOT_SIZE_FACTOR + LINE_WIDTH_FACTOR / 2 ) );
+        return Math.round( _dc.getWidth() * ( 0.5 - RADIUS_FACTOR + DOT_SIZE_FACTOR + LINE_WIDTH_FACTOR / 2 ) ).toNumber();
     }
 
-    public function setCenterAngle( angle as Number ) {
+    public function setCenterAngle( angle as Number ) as Void {
         if( angle < 0 || angle > 360 ) {
             throw new InvalidValueException( "setCenterAngle: " + angle + " is not valid." );
         }
         _centerAngle = angle;
     }
 
-    public function setDotDistanceAngle( angle as Number ) {
+    public function setDotDistanceAngle( angle as Number ) as Void {
         if( angle < 1 || angle > 90 ) {
             throw new InvalidValueException( "setDotDistanceAngle: " + angle + " is not valid" );
         }
         _dotDistanceAngle = angle;
     }
 
-    public function setDotSize( dotSize as Number ) { _dotSize = dotSize; }
-    public function setLineWidth( lineWidth as Number ) { _lineWidth = lineWidth; }
+    public function setDotSize( dotSize as Number ) as Void { _dotSize = dotSize; }
+    public function setLineWidth( lineWidth as Number ) as Void { _lineWidth = lineWidth; }
 
     // Main function to draw the indicator
-    function drawPageIndicator( activePage as Number, totalPages as Number ) {
+    function drawPageIndicator( activePage as Number, totalPages as Number ) as Void {
         // from the center angle, calculate the angle of the first dot
         var currentAngle = _centerAngle + _dotDistanceAngle * ( ( totalPages - 1 ) / 2.0 );
         
@@ -76,14 +76,14 @@ class EvccPageIndicator {
     }
 
     // Function to draw a single dot at an angle
-    function drawDot( angle as Float, active as Boolean ) {
+    function drawDot( angle as Float, active as Boolean ) as Void {
         var dotCoordinates = orbitXY( _dc.getWidth() / 2, _dc.getHeight() / 2, angle, _dc.getWidth() * RADIUS_FACTOR );
         drawDotXY( dotCoordinates[0], dotCoordinates[1], active );
     }
 
     // Function to draw a single dot at a certain X/Y location
-    function drawDotXY( dotX as Number, dotY as Number, active as Boolean ) {
-        _dc.setColor( EvccConstants.COLOR_FOREGROUND, Graphics.COLOR_BLACK );
+    function drawDotXY( dotX as Number, dotY as Number, active as Boolean ) as Void {
+        _dc.setColor( EvccColors.FOREGROUND, Graphics.COLOR_BLACK );
         
         // Anti-alias is only available in newer SDK versions
         if( _dc has :setAntiAlias ) {
@@ -93,7 +93,7 @@ class EvccPageIndicator {
         _dc.drawCircle( dotX, dotY, _dotSize );
         _dc.setColor( Graphics.COLOR_BLACK, Graphics.COLOR_BLACK );
         _dc.drawCircle( dotX, dotY, _dotSize - _lineWidth );
-        _dc.setColor( EvccConstants.COLOR_FOREGROUND, Graphics.COLOR_BLACK );
+        _dc.setColor( EvccColors.FOREGROUND, Graphics.COLOR_BLACK );
         if( active ) {
             _dc.fillCircle( dotX, dotY, _dotSize - _lineWidth * 2 );
         }
@@ -115,7 +115,7 @@ class EvccPageIndicator {
             y = - y;
         }
 
-        return [(centerX + x) as Number, (centerY + y) as Number];
+        return [Math.round(centerX + x).toNumber(), Math.round(centerY + y).toNumber()];
     }
 }
 

@@ -1,5 +1,16 @@
 import Toybox.Lang;
 import Toybox.Application.Storage;
+import Toybox.Application;
+
+typedef ArrayOfBreadCrumbs as Array<EvccBreadCrumb?>;
+// Crumb, serialized for storage
+// ATTENTION: there is a bug in the compiler typecheck that causes stack overflow
+// with recursive tuples under some circumstances. For now this code circumvents
+// these (not fully understood) circumstances, but changes may trigger the bug
+// again.
+// https://forums.garmin.com/developer/connect-iq/i/bug-reports/compiler-crash-with-recursive-typedef-tuple
+// https://forums.garmin.com/developer/connect-iq/i/bug-reports/stackoverflowerror-during-build-for-tuple-with-self-reference
+typedef SerializedBreadCrumb as [Number, Array<SerializedBreadCrumb> or Null ];
 
 // These classes are used to manage and persist the selected
 // site and lower level views. This allows us to start with the
@@ -10,10 +21,10 @@ import Toybox.Application.Storage;
 // Read-only class for only the site (root) level
 // For :glance and :background to save memory
 (:glance :background) class EvccBreadCrumbSiteReadOnly {
-    static function getSelectedSite( totalSites as Number ) {
-        var storedCrumb = Storage.getValue( EvccConstants.STORAGE_BREAD_CRUMBS );
+    static function getSelectedSite( totalSites as Number ) as Number {
+        var storedCrumb = Storage.getValue( EvccConstants.STORAGE_BREAD_CRUMBS ) as SerializedBreadCrumb?;
 
-        if( storedCrumb != null && storedCrumb instanceof Array && storedCrumb[0] < totalSites ) {
+        if( storedCrumb != null && storedCrumb[0] < totalSites ) {
             return storedCrumb[0];
         } else {
             return 0;
@@ -29,17 +40,17 @@ import Toybox.Application.Storage;
 // implementation below this one
 (:exclForSitesOne) class EvccBreadCrumb {
     private var _parent as EvccBreadCrumb?;
-    private var _selectedChild = 0;
-    private var _children as Array<EvccBreadCrumb?>;
+    private var _selectedChild as Number = 0;
+    private var _children as ArrayOfBreadCrumbs;
 
     // Initialize a new bread crumb
     public function initialize( parentCrumb as EvccBreadCrumb? ) {
         _parent = parentCrumb;
-        _children = new Array<EvccBreadCrumb>[0];
+        _children = new ArrayOfBreadCrumbs[0];
         
         // If no parent is given, we initialize from the storage
         if( parentCrumb == null ) {
-            var storedCrumb = Storage.getValue( EvccConstants.STORAGE_BREAD_CRUMBS );
+            var storedCrumb = Storage.getValue( EvccConstants.STORAGE_BREAD_CRUMBS ) as SerializedBreadCrumb?;
             if( storedCrumb != null && storedCrumb instanceof Array ) {
                 self.deserialize( storedCrumb );
             }
@@ -54,7 +65,7 @@ import Toybox.Application.Storage;
         return _selectedChild;
     }
     // Set the selected child and immediately persist
-    public function setSelectedChild( activeChild as Number ) {
+    public function setSelectedChild( activeChild as Number ) as Void {
         if( _selectedChild != activeChild ) {
             _selectedChild = activeChild;
             self.persist();
@@ -63,26 +74,30 @@ import Toybox.Application.Storage;
 
     // get the crumb for a child, and create it if it does not exist 
     public function getChild( key as Number ) as EvccBreadCrumb {
-        var children = _children as Array<EvccBreadCrumb?>;
-        
         // Extend the array, if it does not yet extend to the child key
-        while ( children.size() <= key ) {
-            children.add( null );
+        while ( _children.size() <= key ) {
+            _children.add( null );
         }
 
+        var child = _children[key];
         // Create the child if it does not yet exist
-        if( children[key] == null ) {
-            children[key] = new EvccBreadCrumb( self );
+        if( child == null ) {
+            child = new EvccBreadCrumb( self );
+            _children[key] = child;
         }
-        return children[key];
+        return child;
     }
 
     // Persist to storage, starting from the root element
-    function persist() {
+    function persist() as Void {
         if( _parent != null ) {
             _parent.persist();
         } else {
-            Storage.setValue( EvccConstants.STORAGE_BREAD_CRUMBS, self.serialize() );
+            // There is a type-checker bug that prevents the compiler from correctly recognizing
+            // the validity of values passed into Storage.setValue. We therefore cast the
+            // output of self.serialize to a type recognizable by the type checker
+            // https://forums.garmin.com/developer/connect-iq/i/bug-reports/sdk-7-2-0-strict-typechecker-regression
+            Storage.setValue( EvccConstants.STORAGE_BREAD_CRUMBS, self.serialize() as Array<PropertyValueType> );
         }
     }
 
@@ -90,11 +105,13 @@ import Toybox.Application.Storage;
     // Data is stored in an array, with index
     // 0 = selected child for the current level
     // 1 = any lower level breadcrumbs
-    function serialize() as Array {
-        var children = _children as Array<EvccBreadCrumb>;
-        var serializedChildren = new Array<Array>[children.size()];
+    function serialize() as SerializedBreadCrumb {
+        var serializedChildren = new SerializedBreadCrumb[_children.size()];
         for( var i = 0; i < serializedChildren.size(); i++ ) {
-            serializedChildren[i] = children[i].serialize() as Array;
+            var child = _children[i];
+            if( child != null ) {
+                serializedChildren[i] = child.serialize() as Array;
+            }
         }        
         return [ _selectedChild, serializedChildren ];
     }
@@ -103,13 +120,18 @@ import Toybox.Application.Storage;
     // Data is stored in an array, with index
     // 0 = selected child for the current level
     // 1 = any lower level breadcrumbs
-    function deserialize( serializedCrumb as Array ) {
+    function deserialize( serializedCrumb as SerializedBreadCrumb ) as Void {
         _selectedChild = serializedCrumb[0];
-        var serializedChildren = serializedCrumb[1] as Array<Array>;
-        for( var i = 0; i < serializedChildren.size(); i++ ) {
-            var child = new EvccBreadCrumb( self );
-            child.deserialize( serializedChildren[i] );
-            _children.add( child );
+        var serializedChildren = serializedCrumb[1];
+        if( serializedChildren != null ) {
+            for( var i = 0; i < serializedChildren.size(); i++ ) {
+                var serializedChild = serializedChildren[i];
+                if( serializedChild != null ) {
+                    var child = new EvccBreadCrumb( self );
+                    child.deserialize( serializedChild );
+                    _children.add( child );
+                }
+            }
         }
     }
 }
@@ -117,11 +139,11 @@ import Toybox.Application.Storage;
 // Non-recursive implementation, for devices that support only
 // one site
 (:exclForSitesMultiple) class EvccBreadCrumb {
-    private var _selectedChild = 0;
+    private var _selectedChild as Number = 0;
 
     // Initialize a new bread crumb
     public function initialize( parentCrumb as EvccBreadCrumb? ) {
-        var storedCrumb = Storage.getValue( EvccConstants.STORAGE_BREAD_CRUMBS ) as Array;
+        var storedCrumb = Storage.getValue( EvccConstants.STORAGE_BREAD_CRUMBS ) as SerializedBreadCrumb?;
         if( storedCrumb != null && storedCrumb instanceof Array && storedCrumb.size() > 0 ) {
             _selectedChild = storedCrumb[0];
         } else {
@@ -137,10 +159,10 @@ import Toybox.Application.Storage;
         return _selectedChild;
     }
     // Set the selected child and immediately persist
-    public function setSelectedChild( activeChild as Number ) {
+    public function setSelectedChild( activeChild as Number ) as Void {
         if( _selectedChild != activeChild ) {
             _selectedChild = activeChild;
-            Storage.setValue( EvccConstants.STORAGE_BREAD_CRUMBS, [ _selectedChild, new Array<Array>[0] ] );
+            Storage.setValue( EvccConstants.STORAGE_BREAD_CRUMBS, [ _selectedChild, null ] );
         }
     }
     

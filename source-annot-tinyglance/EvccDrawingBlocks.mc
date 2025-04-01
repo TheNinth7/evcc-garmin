@@ -8,6 +8,35 @@ import Toybox.Lang;
 import Toybox.Graphics;
 import Toybox.WatchUi;
 
+// Defines all the possible options used in drawing blocks
+typedef DbOptions as {
+    :parent as EvccContainerBlock or WeakReference or Null,
+    :justify as TextJustification?,
+    :vjustifyTextToBottom as Boolean?,
+    :marginLeft as Numeric?,
+    :marginRight as Numeric?,
+    :marginTop as Numeric?,
+    :marginBottom as Numeric?,
+    :spreadToHeight as Numeric?,
+    :color as ColorType?,
+    :backgroundColor as ColorType?,
+    :font as EvccFont?,
+    :baseFont as EvccFont?,
+    :relativeFont as Number?,
+    :isTruncatable as Boolean?,
+    :truncateSpacing as Number?,
+    :batterySoc as Number?,
+    :power as Number?,
+    :activePhases as Number?
+};
+
+// Defines all the possible values, needs to duplicate all types used in DbOptions
+typedef DbOptionValue as EvccContainerBlock or WeakReference or TextJustification or Boolean or Numeric or ColorType or EvccFont or Null;
+
+// CIQ3 and before uses BitmapResource, CIQ4+ uses BitmapReference since bitmaps are 
+// stored in a separate graphics pool. We need to support both.
+typedef DbBitmap as BitmapResource or BitmapReference;
+
 // Base class for all drawing elements
 // In the options dictionary, the following entries are used:
 // :marginLeft, :marginRight, :marginTop, :marginBottom - margins in pixels to be put around the element
@@ -26,29 +55,30 @@ class EvccBlock {
     var _dc as Dc; 
     
     // The options for this block (see documentation above)
-    private var _options as Dictionary<Symbol,Object>;
+    private var _options as DbOptions;
 
     // Constructor
-    protected function initialize( dc as Dc, options as Dictionary<Symbol,Object> ) {
+    protected function initialize( dc as Dc, options as DbOptions ) {
         _dc = dc;
 
         // If a parent is passed in, we convert it to a WeakReference,
         // to avoid a circular reference, which would result in a 
         // memory leak
-        if( options[:parent] != null && ! ( options[:parent] instanceof WeakReference ) ) { options[:parent] = options[:parent].weak(); }
+        var parent = options[:parent];
+        if( parent != null && ! ( parent instanceof WeakReference ) ) { options[:parent] = parent.weak(); }
 
         _options = options;
     }
 
     // draw this block, to be overriden by implementations of this class
-    public function draw( x, y );
+    public function draw( x as Number, y as Number ) as Void;
 
     // Returning the value of a certain option
     // Is also responsible for defining default values
-    public function getOption( option as Symbol ) {
+    public function getOption( option as Symbol ) as DbOptionValue {
         // If the option is present, we return it right away
         if( _options[option] != null ) {
-            return _options[option];
+            return _options[option] as DbOptionValue;
         }
 
         // The following options are not inherited, and are immediately
@@ -77,8 +107,8 @@ class EvccBlock {
             return value;
         } else {
             // If no more parent is present, we apply the following default behavior
-            if( option == :backgroundColor ) { return EvccConstants.COLOR_BACKGROUND; }
-            if( option == :color ) { return EvccConstants.COLOR_FOREGROUND; }
+            if( option == :backgroundColor ) { return EvccColors.BACKGROUND; }
+            if( option == :color ) { return EvccColors.FOREGROUND; }
             if( option == :font ) { throw new InvalidValueException( "Font not set!"); }
         }
 
@@ -88,7 +118,7 @@ class EvccBlock {
 
     // set an option
     // for certain options, we reset the cached width/height
-    public function setOption( option as Symbol, value ) {
+    (:exclForDbCacheDisabled) public function setOption( option as Symbol, value as DbOptionValue ) as Void {
         _options[option] = value;
         if( option == :marginLeft || option == :marginRight ) {
             resetCache( :resetWidth, :resetDirectionUp );
@@ -98,10 +128,13 @@ class EvccBlock {
             resetCache( :resetFont, :resetDirectionBoth );
         }
     }
+    (:exclForDbCacheEnabled) public function setOption( option as Symbol, value ) { 
+        _options[option] = value;
+    }
 
     // Parent can be passed into an element either in the options structure
     // or later via this function
-    public function setParent( parent as EvccContainerBlock ) {
+    public function setParent( parent as EvccContainerBlock ) as Void {
         setOption( :parent, parent.weak() );
     }
     protected function getParent() as EvccContainerBlock? {
@@ -111,21 +144,30 @@ class EvccBlock {
 
     // Functions for getting and caching width/height to reduce
     // amount of calculations
+    // Depending on build option, we either apply the caching or not
+    
     // The cached values are reset if the font size has changed,
     // or if margins are set (see setOption)
-    private var _width as Number?;
-    private var _height as Number?;
-    public function getWidth() as Number {
+    (:exclForDbCacheDisabled) private var _width as Number?;
+    (:exclForDbCacheDisabled) private var _height as Number?;
+    (:exclForDbCacheDisabled) public function getWidth() as Number {
         if( _width == null ) {
             _width = calculateWidth();
         }
-        return _width;
+        return _width as Number;
     }
-    public function getHeight() as Number {
+    (:exclForDbCacheDisabled) public function getHeight() as Number {
         if( _height == null ) {
             _height = calculateHeight();
         }
-        return _height;
+        return _height as Number;
+    }
+    // Simple functions if cache is disabled
+    (:exclForDbCacheEnabled) public function getWidth() as Number {
+        return calculateWidth();
+    }
+    (:exclForDbCacheEnabled) public function getHeight() as Number {
+        return calculateHeight();
     }
     
     // Functions for reseting the cache if relevant parameters change - these need to be called
@@ -137,7 +179,7 @@ class EvccBlock {
     // direction:   :resetDirectionUp to recursively reset all parents
     //              :resetDirectionDown to recursively reset all children
     //              :resetDirectionBoth to recursively reset both parents and children
-    public function resetCache( resetType as Symbol, direction as Symbol ) {
+    (:exclForDbCacheDisabled) public function resetCache( resetType as Symbol, direction as Symbol ) as Void {
         if( resetType == :resetHeight || resetType == :resetFont ) { _height = null; }
         if( resetType == :resetWidth || resetType == :resetFont ) { _width = null; }
         if( direction == :resetDirectionUp || direction == :resetDirectionBoth ) {
@@ -148,8 +190,8 @@ class EvccBlock {
 
     // Functions to be implemented by implementations of this class to:
     // calculate width or height of the element
-    protected function calculateWidth();
-    protected function calculateHeight();
+    protected function calculateWidth() as Number { return 0; }
+    protected function calculateHeight() as Number { return 0; }
 
     // Calculate the available screen width at a given y coordinate
     protected function getDcWidthAtY( y as Number ) as Number {
@@ -159,47 +201,44 @@ class EvccBlock {
         // a: y distance from center
         var c = _dc.getWidth() / 2;
         var a = ( y - _dc.getHeight() / 2 ).abs();
-        return ( Math.sqrt( c*c - a*a ) * 2 ) as Number;
+        return Math.round( Math.sqrt( c*c - a*a ) * 2 ).toNumber();
     }
 
     // Get the font height
     // This is used on several places, and having it in a function
     // saves code space memory
     protected function getFontHeight() as Number {
-        return EvccResources.getFontHeight( getOption( :font ) );
+        return EvccResources.getFontHeight( getOption( :font ) as EvccFont );
     }
 }
 
 // Base class for all drawing elements that consists of other drawing elements
 class EvccContainerBlock extends EvccBlock {
-    protected var _elements as Array;
+    protected var _elements as Array<EvccBlock> = new Array<EvccBlock>[0];
 
-    function initialize( dc, options as Dictionary<Symbol,Object> ) {
+    function initialize( dc as Dc, options as DbOptions ) {
         EvccBlock.initialize( dc, options );
-        _elements = new Array[0];
     }
 
-    function getElementCount() {
+    function getElementCount() as Number {
         return _elements.size();
     }
 
     // Add text is implemented differently for vertical and horizontal containers
-    function addText( text, options as Dictionary<Symbol,Object> ) {}
+    function addText( text as String, options as DbOptions ) as Void {}
 
     // Functions to add elements
-    function addError( text, options as Dictionary<Symbol,Object> ) {
-        options[:color] = EvccConstants.COLOR_ERROR;
+    function addError( text as String, options as DbOptions ) as Void {
+        options[:color] = EvccColors.ERROR;
         options[:parent] = self;
         _elements.add( new EvccTextBlock( text, _dc, options ) );
-        return self;
     }
-    function addBitmap( reference, options as Dictionary<Symbol,Object> ) {
+    function addBitmap( reference as ResourceId, options as DbOptions ) as Void {
         options[:parent] = self;
         _elements.add( new EvccBitmapBlock( reference, _dc, options ) );
-        return self;
     }
     
-    function addIcon( icon as EvccIconBlock.Icon, options as Dictionary<Symbol,Object> ) {
+    function addIcon( icon as EvccIconBlock.Icon, options as DbOptions ) as Void {
         options[:parent] = self;
         
         // Special handling for the power flow and active phases icons
@@ -210,18 +249,15 @@ class EvccContainerBlock extends EvccBlock {
         {
             _elements.add( new EvccIconBlock( icon, _dc, options ) );
         }
-        
-        return self;
     }
 
-    function addBlock( block as EvccBlock ) {
+    function addBlock( block as EvccBlock ) as Void {
         block.setParent( self );
         _elements.add( block );
-        return self;
     }
 
     // For containers, the resetCache function additionally resets all elements
-    public function resetCache( resetType as Symbol, direction as Symbol ) {
+    (:exclForDbCacheDisabled) public function resetCache( resetType as Symbol, direction as Symbol ) as Void {
         EvccBlock.resetCache( resetType, direction );
         if( direction == :resetDirectionDown || direction == :resetDirectionBoth ) {
             for( var i = 0; i < _elements.size(); i++ ) {
@@ -236,7 +272,7 @@ class EvccHorizontalBlock extends EvccContainerBlock {
     
     var _truncatableElement as EvccTextBlock?;
 
-    function initialize( dc, options as Dictionary<Symbol,Object> ) {
+    function initialize( dc as Dc, options as DbOptions ) {
         EvccContainerBlock.initialize( dc, options );
     }
     
@@ -250,34 +286,36 @@ class EvccHorizontalBlock extends EvccContainerBlock {
         // The y passed in is the center
         // To calculate the y for the elements, we have to adjust it
         // by marginTop and marginBottom
-        y = y + getOption( :marginTop ) / 2 - getOption( :marginBottom ) / 2;
+        y = y + getOption( :marginTop ) as Number / 2 - getOption( :marginBottom ) as Number / 2;
         // derivated from
         // var marginTop = getOption( :marginTop );
         // var elementHeights = getHeight() - marginTop - getOption( :marginBottom );
         // y = y - getHeight() / 2 + marginTop + elementHeights / 2;
 
-        var availableWidth = getDcWidthAtY( y ) - getOption( :truncateSpacing );
+        var availableWidth = getDcWidthAtY( y ) - getOption( :truncateSpacing ) as Number;
         if( _truncatableElement != null ) {
-            while( availableWidth < getWidth() && _truncatableElement._text.length() > 1 ) {
+            var truncatableElement = _truncatableElement as EvccTextBlock;
+            while( availableWidth < getWidth() && truncatableElement._text.length() > 1 ) {
                 //System.println( "**** before truncate " + _truncatableElement._text );
-                _truncatableElement.truncate( 1 );
+                truncatableElement.truncate( 1 );
                 //System.println( "**** after truncate " + _truncatableElement._text );
             }
         }
         
-        x += getOption( :marginLeft ); 
+        x += getOption( :marginLeft ) as Number; 
 
         // For justify left, we start at the current x position
         // For justify center, we adjust x to center the content at x
         // For justify right, we adjust x to align the content to the left of x
-        x -= getOption( :justify ) == Graphics.TEXT_JUSTIFY_CENTER ? getWidth() / 2 : 0;
-        x -= getOption( :justify ) == Graphics.TEXT_JUSTIFY_RIGHT ? getWidth() : 0;
+        var justify = getOption( :justify ) as TextJustification;
+        x -= justify == Graphics.TEXT_JUSTIFY_CENTER ? getWidth() / 2 : 0;
+        x -= justify == Graphics.TEXT_JUSTIFY_RIGHT ? getWidth() : 0;
         
         for( var i = 0; i < _elements.size(); i++ ) {
             // Elements of the horizontal will be aligned by the container
             // They should center at the x passed on to them
             // Therefore justify should not be specified and defaults to center
-            if( _elements[i].getOption(:justify) != Graphics.TEXT_JUSTIFY_CENTER 
+            if( _elements[i].getOption(:justify) as TextJustification != Graphics.TEXT_JUSTIFY_CENTER 
                 && ! ( _elements[i] instanceof EvccVerticalBlock ) ) 
             {
                 throw new InvalidValueException( "EvccHorizontalBlock does not support justify for elements." );
@@ -287,83 +325,89 @@ class EvccHorizontalBlock extends EvccContainerBlock {
             _elements[i].draw( x, y );
             x += _elements[i].getWidth() / 2;
 
-            // To save memory, we discard elements after they are drawn!
-            _elements[i] = null;
+            // If we have the width/height cache enabled
+            // We can discard elements after they are drawn!
+            /* Saves only minimal memory, and the if required to
+               take it out when there is no cache, take the same amount
+            if( self has :resetCache ) {
+                _elements[i] = null;
+            }
+            */
         }
     }
 
     // Width is the sum of all widths
-    protected function calculateWidth()
+    protected function calculateWidth() as Number
     {
         var width = 0;
         for( var i = 0; i < _elements.size(); i++ ) {
             width += _elements[i].getWidth();
         }
-        return getOption( :marginLeft ) + width + getOption( :marginRight );
+        return getOption( :marginLeft ) as Number + width + getOption( :marginRight ) as Number;
     }
 
     // Height is the maximum of all heights
-    protected function calculateHeight()
+    protected function calculateHeight() as Number
     {
         var height = 0;
         for( var i = 0; i < _elements.size(); i++ ) {
             height = EvccHelperUI.max( height, _elements[i].getHeight() );
         }
-        return getOption( :marginTop ) + height + getOption( :marginBottom );
+        return getOption( :marginTop ) as Number + height as Number + getOption( :marginBottom ) as Number;
     }
     
     // If text is added to a horizontal element and the previous element
     // is also text, then the text is just appended to the previous element
-    function addText( text, options as Dictionary<Symbol,Object> ) {
-        var elements = _elements as Array;
+    function addText( text as String, options as DbOptions ) {
         // We append the text to an existing element if:
         // - there is a previous element
         // - it is a text element
         // - it is not truncatable
         // - and we do not have any options set for the new text
-        if( elements.size() > 0 && 
-            elements[elements.size() - 1] instanceof EvccTextBlock && 
-            elements[elements.size() - 1].getOption( :isTruncatable ) != true && 
+        var lastElement = _elements.size() - 1;
+        if( lastElement >= 0 && 
+            _elements[lastElement] instanceof EvccTextBlock && 
+            _elements[lastElement].getOption( :isTruncatable ) as Boolean != true && 
             options.isEmpty() ) 
         {
-            elements[elements.size() - 1].append( text );
+            ( _elements[lastElement] as EvccTextBlock ).append( text );
         } else { 
             options[:parent] = self;
-            _elements.add( new EvccTextBlock( text, _dc, options ) );
+            var textBlock = new EvccTextBlock( text, _dc, options );
+            _elements.add( textBlock );
             if( options[:isTruncatable] == true ) {
-                _truncatableElement = _elements[_elements.size() - 1];
+                _truncatableElement = textBlock;
             }
         }
-        return self;
     }
 }
 
 // An element containing other elements that shall be stacked vertically
 class EvccVerticalBlock extends EvccContainerBlock {
-    function initialize( dc, options as Dictionary<Symbol,Object> ) {
+    function initialize( dc as Dc, options as DbOptions ) {
         EvccContainerBlock.initialize( dc, options );
     }
 
     // Draw all elements
     // Vertical alignment is always centered, therefore for each element we calculate 
     // the y at the center of the element and pass it as starting point.
-    function draw( x, y )
+    function draw( x as Number, y as Number )
     {
-        if( getOption( :justify ) != Graphics.TEXT_JUSTIFY_CENTER ) {
+        if( getOption( :justify ) as TextJustification != Graphics.TEXT_JUSTIFY_CENTER ) {
             throw new InvalidValueException( "EvccVerticalBlock supports only justify center." );
         }
 
         // If spreadToHeight is set, we will check if there is more
         // space than 1/2 text line above and below the content
         // and if yes, spread out the elements vertically
-        var spreadToHeight = getOption( :spreadToHeight );
+        var spreadToHeight = getOption( :spreadToHeight ) as Number;
         if( spreadToHeight > 0 ) {
             var heightWithSpace = getHeight() + getFontHeight();
             if( spreadToHeight > heightWithSpace ) {
                 // Last element will also get spacing in the bottom, therefore we
                 // spread the space to number of elements + 1
                 // EvccHelperBase.debug( "Spreading content!");
-                var spacing = ( spreadToHeight - heightWithSpace ) / _elements.size() + 1;
+                var spacing = Math.round( ( spreadToHeight - heightWithSpace ) / _elements.size() ).toNumber() + 1;
                 for( var i = 0; i < _elements.size(); i++ ) {
                     _elements[i].setOption( :marginTop, spacing );
                 }
@@ -371,8 +415,8 @@ class EvccVerticalBlock extends EvccContainerBlock {
             }
         }
 
-        x += getOption( :marginLeft ); 
-        y = y - getHeight() / 2 + getOption( :marginTop );
+        x += getOption( :marginLeft ) as Number; 
+        y = y - getHeight() / 2 + getOption( :marginTop ) as Number;
         
         for( var i = 0; i < _elements.size(); i++ ) {
             y += _elements[i].getHeight() / 2;
@@ -380,108 +424,125 @@ class EvccVerticalBlock extends EvccContainerBlock {
             // Depending on the alignment of the element, we
             // adjust the x coordinate we pass in
             var elX = x;
-            elX -= _elements[i].getOption( :justify ) == Graphics.TEXT_JUSTIFY_LEFT ? getWidth() / 2 : 0;
-            elX += _elements[i].getOption( :justify ) == Graphics.TEXT_JUSTIFY_RIGHT ? getWidth() / 2 : 0;
+            var elJust = _elements[i].getOption( :justify ) as TextJustification;
+            elX -= elJust == Graphics.TEXT_JUSTIFY_LEFT ? Math.round( getWidth() / 2 ).toNumber() : 0;
+            elX += elJust == Graphics.TEXT_JUSTIFY_RIGHT ? Math.round( getWidth() / 2 ).toNumber() : 0;
             
             _elements[i].draw( elX, y );
             y += _elements[i].getHeight() / 2;
 
-            // To save memory, we discard elements after they are drawn!
-            _elements[i] = null;
+            // If we have the width/height cache enabled
+            // We can discard elements after they are drawn!
+            /* Saves only minimal memory, and the if required to
+               take it out when there is no cache, take the same amount
+            if( self has :resetCache ) {
+                _elements[i] = null;
+            }
+            */
         }
     }
 
     // Width is max of all widths
-    protected function calculateWidth()
+    protected function calculateWidth() as Number
     {
         var width = 0;
         for( var i = 0; i < _elements.size(); i++ ) {
             width = EvccHelperUI.max( width, _elements[i].getWidth() );
         }
-        return getOption( :marginLeft ) + width + getOption( :marginRight );
+        return ( getOption( :marginLeft ) as Number + width + getOption( :marginRight ) as Number ) as Number;
     }
 
     // Height is sum of all heights
-    protected function calculateHeight()
+    protected function calculateHeight() as Number
     {
         var height = 0;
         for( var i = 0; i < _elements.size(); i++ ) {
             height += _elements[i].getHeight();
         }
-        return getOption( :marginTop ) + height + getOption( :marginBottom );
+        return getOption( :marginTop ) as Number + height + getOption( :marginBottom ) as Number;
     }
 
     // For the vertical container, new text is always added as new element
-    function addText( text, options as Dictionary<Symbol,Object> ) {
+    function addText( text as String, options as DbOptions ) as Void {
         options[:parent] = self;
-        _elements.add( new EvccTextBlock( text, _dc, options as Dictionary<Symbol,Object> ) );
-        return self;
+        _elements.add( new EvccTextBlock( text, _dc, options as DbOptions ) );
     }
 }
 
 // Text element
 class EvccTextBlock extends EvccBlock {
-    var _text;
+    var _text as String;
 
-    function initialize( text, dc as Dc, options as Dictionary<Symbol,Object> ) {
+    function initialize( text as String, dc as Dc, options as DbOptions ) {
         EvccBlock.initialize( dc, options );
         _text = text;
     }
 
     // Removes the specified number of characters from the
-    // end of the text
-    function truncate( chars as Number ) {
-        _text = _text.substring( 0, _text.length() - chars );
+    // end of the text 
+    // one version for enabled cache, one for disabled
+    (:exclForDbCacheDisabled) function truncate( chars as Number ) as Void {
+        _text = _text.substring( 0, _text.length() - chars ) as String;
         resetCache( :resetWidth, :resetDirectionUp );
     }
+    (:exclForDbCacheEnabled) function truncate( chars as Number ) as Void {
+        _text = _text.substring( 0, _text.length() - chars ) as String;
+    }
 
-    function append( text ) as EvccTextBlock { 
+    // Appends characters to the text
+    // one version for enabled cache, one for disabled
+    (:exclForDbCacheDisabled) function append( text as String ) as Void { 
         _text += text;
         resetCache( :resetWidth, :resetDirectionUp );
-        return self; 
+    }
+    (:exclForDbCacheEnabled) function append( text as String ) as Void { 
+        _text += text;
     }
 
-    protected function calculateWidth() { return getTextWidth() + getOption( :marginLeft ) + getOption( :marginRight ); }
-    protected function calculateHeight() { return getTextHeight() + getOption( :marginTop ) + getOption( :marginBottom ); }
-    function getTextWidth() { return _dc.getTextDimensions( _text, EvccResources.getGarminFont( getOption( :font ) ) )[0]; }
-    function getTextHeight() { return getFontHeight(); }
+    protected function calculateWidth() as Number { return getTextWidth() + getOption( :marginLeft ) as Number + getOption( :marginRight ) as Number; }
+    protected function calculateHeight() as Number { return getTextHeight() + getOption( :marginTop ) as Number + getOption( :marginBottom ) as Number; }
+    function getTextWidth() as Number { return _dc.getTextDimensions( _text, EvccResources.getGarminFont( getOption( :font ) as EvccFont ) )[0]; }
+    function getTextHeight() as Number { return getFontHeight(); }
 
     // For alignment we just pass the justify parameter on to the drawText
-    function draw( x, y ) {
+    function draw( x as Number, y as Number ) {
+        var font = getOption( :font ) as EvccFont;
+
         // Align text to have the same baseline as the base font would have
         // this is for aligning two different font sizes in one line of text
         if( getOption( :vjustifyTextToBottom ) ) {
             var fontHeight = getFontHeight();
-            var baseFontHeight = EvccResources.getFontHeight( getOption( :baseFont ) );
-            var fontDescent = EvccResources.getFontDescent( getOption( :font ) );
-            var baseFontDescent = EvccResources.getFontDescent( getOption( :baseFont ) );
+            var baseFont = getOption( :baseFont ) as EvccFont;
+            var baseFontHeight = EvccResources.getFontHeight( baseFont );
+            var fontDescent = EvccResources.getFontDescent( font );
+            var baseFontDescent = EvccResources.getFontDescent( baseFont );
             if( fontHeight < baseFontHeight ) {
                 y += baseFontHeight/2 - baseFontDescent - ( fontHeight/2 - fontDescent );
             }
         }
 
-        _dc.setColor( getOption( :color ), getOption( :backgroundColor ) );
+        _dc.setColor( getOption( :color ) as ColorType, getOption( :backgroundColor ) as ColorType );
 
-        var justify = getOption( :justify );
+        var justify = getOption( :justify ) as TextJustification;
         if( justify == Graphics.TEXT_JUSTIFY_LEFT ) {
-            x = x + getOption( :marginLeft );
+            x = x + getOption( :marginLeft ) as Number;
         } else if ( justify == Graphics.TEXT_JUSTIFY_RIGHT ) {
-            x = x - getOption( :marginRight );
+            x = x - getOption( :marginRight ) as Number;
         } else {
-            x = x - getWidth() / 2 + getOption( :marginLeft ) + getTextWidth() / 2;
+            x = x - getWidth() / 2 + getOption( :marginLeft ) as Number + getTextWidth() / 2;
         }
 
-        var marginTop = getOption( :marginTop );
-        if( marginTop != 0 || getOption( :marginBottom ) != 0 )
+        var marginTop = getOption( :marginTop ) as Number;
+        if( marginTop != 0 || getOption( :marginBottom ) as Number != 0 )
         {
             y = y - getHeight() / 2 + marginTop + getTextHeight() / 2;
         }
 
         _dc.drawText( x, 
                       y, 
-                      EvccResources.getGarminFont( getOption( :font ) ), 
+                      EvccResources.getGarminFont( font ), 
                       _text, 
-                      getOption( :justify ) | Graphics.TEXT_JUSTIFY_VCENTER );
+                      justify | Graphics.TEXT_JUSTIFY_VCENTER );
 
         /* Debug code for drawing a line above and below the text 
         var topY = y + getOption( :marginTop ) - getHeight() / 2;
@@ -501,24 +562,28 @@ class EvccBitmapBlock extends EvccBlock {
     // We store only the reference and width and height,
     // the actual bitmap resource is loaded only when needed
     // to save memory
-    var _bitmapRef; 
+    var _bitmapRef as ResourceId?; 
 
-    function initialize( reference as ResourceId?, dc as Dc, options as Dictionary<Symbol,Object> ) {
+    function initialize( reference as ResourceId?, dc as Dc, options as DbOptions ) {
         EvccBlock.initialize( dc, options );
         _bitmapRef = reference;
     }
 
     // Load the actual bitmap
-    private function bitmap() {
-        return WatchUi.loadResource( bitmapRef() );
+    private function bitmap() as DbBitmap {
+        return WatchUi.loadResource( bitmapRef() ) as DbBitmap;
     }
 
     // Accessing the reference via this function enables the derived class
     // icon to override it and have different logic how the reference is
     // determined
     protected function bitmapRef() as ResourceId {
-        if( _bitmapRef == null ) { throw new InvalidValueException( "ResourceId is missing!" ); }
-        return _bitmapRef;
+        if( _bitmapRef == null ) { 
+            throw new InvalidValueException( "ResourceId is missing!" ); 
+        }
+        else {
+            return _bitmapRef;
+        }
     }
 
     // NOTE: in addition to the standard caching, bitmaps additionally cache the bitmap
@@ -530,13 +595,13 @@ class EvccBitmapBlock extends EvccBlock {
 
     // These function first make sure that the bitmap width/height is loaded and then
     // calculate the total width/height
-    protected function calculateWidth() { loadData(); return _bitmapWidth + getOption( :marginLeft ) + getOption( :marginRight ); }
-    protected function calculateHeight() { loadData(); return _bitmapHeight + getOption( :marginTop ) + getOption( :marginBottom ); }
+    protected function calculateWidth() as Number { loadData(); return _bitmapWidth as Number + getOption( :marginLeft ) as Number + getOption( :marginRight ) as Number; }
+    protected function calculateHeight() as Number { loadData(); return _bitmapHeight as Number + getOption( :marginTop ) as Number + getOption( :marginBottom ) as Number; }
     // Load width/height
     // We don't do this in the constructor because for the EvccIconBlock sub class, the font
     // size is needed to determine the actual icon used, and that one is not available
     // at initialization time
-    protected function loadData() {
+    protected function loadData() as Void {
         if( _bitmapWidth == null || _bitmapHeight == null ) {
             var bitmap = bitmap();
             _bitmapWidth = bitmap.getWidth();
@@ -545,7 +610,7 @@ class EvccBitmapBlock extends EvccBlock {
     }
 
     // Draw the bitmap
-    function draw( x, y ) {
+    function draw( x as Number, y as Number ) {
         var bitmap = bitmap();
         // Note that for drawBitmap, the input x/y is the upper left corner
         // of the bitmap. The input y is assumed to be the vertical center
@@ -555,9 +620,9 @@ class EvccBitmapBlock extends EvccBlock {
         // alignment.
         // For drawBitmap we need the upper left corner of the bitmap,
         // this is calculated here.
-        var justify = getOption( :justify );
-        var marginLeft = getOption( :marginLeft );
-        var marginRight = getOption( :marginRight );
+        var justify = getOption( :justify ) as TextJustification;
+        var marginLeft = getOption( :marginLeft ) as Number;
+        var marginRight = getOption( :marginRight ) as Number;
         if( justify == Graphics.TEXT_JUSTIFY_LEFT ) {
             x = x + marginLeft;
         } else if ( justify == Graphics.TEXT_JUSTIFY_RIGHT ) {
@@ -566,12 +631,13 @@ class EvccBitmapBlock extends EvccBlock {
             x = x - getWidth() / 2 + marginLeft;
         }
 
-        _dc.drawBitmap( x, y - getHeight() / 2 + getOption( :marginTop ), bitmap );
+        y = y - Math.round( getHeight() / 2 ).toNumber() + getOption( :marginTop ) as Number;
+        _dc.drawBitmap( x, y, bitmap );
     }
 }
 
 
-// class representing an icon. The difference between an icon and the bitmap above
+// Class representing an icon. The difference between an icon and the bitmap above
 // is that for icons multiple sizes are supported and this element shows the icon
 // based on the font that is passed in the options or used by its parent element
 class EvccIconBlock extends EvccBitmapBlock {
@@ -613,17 +679,14 @@ class EvccIconBlock extends EvccBitmapBlock {
         ICON_ACTIVE_PHASES = -3
     }
 
-    function initialize( icon as Icon, dc as Dc, options as Dictionary<Symbol,Object> ) {
+    function initialize( icon as Icon, dc as Dc, options as DbOptions ) {
         EvccBitmapBlock.initialize( null, dc, options );
 
         // We analyse the icon and passed in data and from that
         // store the interpreted icon
         // For the battery we determine the icon based on SoC
         if( icon == ICON_BATTERY ) {
-            var batterySoc = getOption( :batterySoc );
-            if( batterySoc == null ) {
-                throw new InvalidValueException( ":batterySoc is missing!");
-            }
+            var batterySoc = getOption( :batterySoc ) as Number;
             if( batterySoc >= 90 ) {
                 _icon = ICON_BATTERY_FULL;
             } else if( batterySoc >= 63 ) {
@@ -638,20 +701,14 @@ class EvccIconBlock extends EvccBitmapBlock {
         // For power flow we determine the icon (in/out)
         // based on the power
         } else if( icon == ICON_POWER_FLOW ) {
-            var power = getOption( :power );
-            if( power == null ) {
-                throw new InvalidValueException( ":power is missing!");
-            }
+            var power = getOption( :power ) as Number;
             _icon = power < 0 ? ICON_ARROW_LEFT : ICON_ARROW_RIGHT;
         // And for active phases it is based on the active phases
         } else if( icon == ICON_ACTIVE_PHASES ) {
-            var activePhases = getOption( :activePhases );
-            if( activePhases == null ) {
-                throw new InvalidValueException( ":activePhases is missing!");
-            }
+            var activePhases = getOption( :activePhases ) as Number;
             _icon = activePhases == 3 ? ICON_ARROW_LEFT_THREE : ICON_ARROW_LEFT;
         } else {
-            _icon = icon;
+            _icon = icon as BaseIcon;
         }
     }
 
@@ -672,11 +729,24 @@ class EvccIconBlock extends EvccBitmapBlock {
 
     // Special handling of the cache reset - if the font is changed,
     // we also invalidate the cache for the bitmap dimensions
-    public function resetCache( resetType as Symbol, direction as Symbol ) {
+    (:exclForDbCacheDisabled) public function resetCache( resetType as Symbol, direction as Symbol ) {
         EvccBlock.resetCache( resetType, direction );
         if( resetType == :resetFont ) {
             _bitmapWidth = null;
             _bitmapHeight = null;
+        }
+    }
+    
+    // If the overall width/height cache is not applied, we still
+    // need to apply special behavior here for invalidating the
+    // bitmap width/height cache
+    (:exclForDbCacheEnabled) private var _lastFont as Number?;
+    (:exclForDbCacheEnabled) protected function loadData() {
+        var font = getOption( :font );
+        if( font != _lastFont ) {
+            _lastFont = font;
+            _bitmapHeight = null; _bitmapWidth = null;
+            EvccBitmapBlock.loadData();
         }
     }
 }

@@ -1,4 +1,6 @@
 project.manifest = manifest.xml
+project.optimization = 2
+project.typecheck = 3
 
 # This build file sets the rules for building the app for different devices,
 # with different options/functionality for each device.
@@ -78,72 +80,81 @@ hasSelect = exclForHasSelect
 swipeLeftDefault = exclForSwipeLeftDefault
 swipeLeftOverride = exclForSwipeLeftOverride
 
+# Drawing Blocks cache for width/height
+# The cache improves performance (onUpdate ~ 20% faster) but incurs a memory
+# penalty. However on older devices, where memory is tight, also the cpu resources
+# are limited, e.g. on Fenix 6 and Vivoactive 3 watchdog errors occured in sites
+# with forecast. Therefore currently the cache is enabled for all devices,
+# though the disabled variant is retained for future use
+drawingBlockCacheEnabled = exclForDbCacheEnabled
+drawingBlockCacheDisabled = exclForDbCacheDisabled
+
 # Below the device configurations
 
 # Default
 # This is applied to all devices that do not have build instructions
 # Full glance, complex code, vector fonts, multipole sites, select indicator at 30° and having onSelect behavior
 base.sourcePath = $(sourceGlanceFull)
-base.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select30);$(hasSelect);$(swipeLeftDefault)
+base.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select30);$(hasSelect);$(swipeLeftDefault);$(drawingBlockCacheEnabled)
 base.resourcePath = settings-site5;$(base.resourcePath)
 
 # Full glance devices, but with static/optimized fonts
-venu2.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple);$(select30);$(swipeLeftDefault)
-venu2plus.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple);$(select30);$(swipeLeftDefault)
-venu2s.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple);$(select30);$(swipeLeftDefault)
-vivoactive5.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple);$(select30);$(swipeLeftDefault)
+venu2.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple);$(select30);$(swipeLeftDefault);$(drawingBlockCacheEnabled)
+venu2plus.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple);$(select30);$(swipeLeftDefault);$(drawingBlockCacheEnabled)
+venu2s.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple);$(select30);$(swipeLeftDefault);$(drawingBlockCacheEnabled)
+vivoactive5.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(systemInfo);$(sitesMultiple);$(select30);$(swipeLeftDefault);$(drawingBlockCacheEnabled)
 # Full glance devices, but with select button at 27°
-fr265.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select27);$(hasSelect);$(swipeLeftDefault)
-fr265s.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select27);$(hasSelect);$(swipeLeftDefault)
-fr965.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select27);$(hasSelect);$(swipeLeftDefault)
+fr265.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select27);$(hasSelect);$(swipeLeftDefault);$(drawingBlockCacheEnabled)
+fr265s.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select27);$(hasSelect);$(swipeLeftDefault);$(drawingBlockCacheEnabled)
+fr965.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select27);$(hasSelect);$(swipeLeftDefault);$(drawingBlockCacheEnabled)
 # Full glance devices, but with swipe left override
-epix2pro47mm.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select30);$(hasSelect);$(swipeLeftOverride)
-epix2pro42mm.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select30);$(hasSelect);$(swipeLeftOverride)
-epix2pro51mm.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select30);$(hasSelect);$(swipeLeftOverride)
+epix2pro47mm.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select30);$(hasSelect);$(swipeLeftOverride);$(drawingBlockCacheEnabled)
+epix2pro42mm.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select30);$(hasSelect);$(swipeLeftOverride);$(drawingBlockCacheEnabled)
+epix2pro51mm.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select30);$(hasSelect);$(swipeLeftOverride);$(drawingBlockCacheEnabled)
 
 
 # Tiny glance devices
 # One site, static font, no select behavior since there is only one site and never a select action
 fr745.sourcePath = $(sourceGlanceTiny)
-fr745.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne);$(selectNone);$(swipeLeftDefault)
+fr745.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne);$(selectNone);$(swipeLeftDefault);$(drawingBlockCacheEnabled)
 fr745.resourcePath = settings-site1;resources;resources-fr745
 fr945.sourcePath = $(sourceGlanceTiny)
-fr945.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne);$(selectNone);$(swipeLeftDefault)
+fr945.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne);$(selectNone);$(swipeLeftDefault);$(drawingBlockCacheEnabled)
 fr945.resourcePath = settings-site1;resources;resources-round-240x240
 fr945lte.sourcePath = $(sourceGlanceTiny)
-fr945lte.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne);$(selectNone);$(swipeLeftDefault)
+fr945lte.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne);$(selectNone);$(swipeLeftDefault);$(drawingBlockCacheEnabled)
 fr945lte.resourcePath = settings-site1;resources;resources-round-240x240
 #Fenix 6
 fenix6.sourcePath = $(sourceGlanceNone)
-fenix6.excludeAnnotations = $(glanceNone);$(calcSimple);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(selectNone);$(swipeLeftDefault)
+fenix6.excludeAnnotations = $(glanceNone);$(calcSimple);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(selectNone);$(swipeLeftDefault);$(drawingBlockCacheEnabled)
 fenix6.resourcePath = settings-site1;resources;resources-round-260x260
 fenix6s.sourcePath = $(sourceGlanceNone)
-fenix6s.excludeAnnotations = $(glanceNone);$(calcSimple);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(selectNone);$(swipeLeftDefault)
+fenix6s.excludeAnnotations = $(glanceNone);$(calcSimple);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(selectNone);$(swipeLeftDefault);$(drawingBlockCacheEnabled)
 fenix6s.resourcePath = settings-site1;resources;resources-round-240x240
 # Fenix 6 Pro
 fenix6pro.sourcePath = $(sourceGlanceTiny)
-fenix6pro.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne);$(selectNone);$(swipeLeftDefault)
+fenix6pro.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne);$(selectNone);$(swipeLeftDefault);$(drawingBlockCacheEnabled)
 fenix6pro.resourcePath = settings-site1;resources;resources-round-260x260
 fenix6spro.sourcePath = $(sourceGlanceTiny)
-fenix6spro.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne);$(selectNone);$(swipeLeftDefault)
+fenix6spro.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne);$(selectNone);$(swipeLeftDefault);$(drawingBlockCacheEnabled)
 fenix6spro.resourcePath = settings-site1;resources;resources-round-240x240
 fenix6xpro.sourcePath = $(sourceGlanceTiny)
-fenix6xpro.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne);$(selectNone);$(swipeLeftDefault)
+fenix6xpro.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne);$(selectNone);$(swipeLeftDefault);$(drawingBlockCacheEnabled)
 fenix6xpro.resourcePath = settings-site1;resources;resources-fenix6xpro
 
 # No glance
 # With one site only
 vivoactive3.sourcePath = $(sourceGlanceNone)
-vivoactive3.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(selectTouch);$(swipeLeftDefault)
+vivoactive3.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(selectTouch);$(swipeLeftDefault);$(drawingBlockCacheEnabled)
 vivoactive3.resourcePath = settings-site1;resources;resources-vivoactive3
 vivoactive3m.sourcePath = $(sourceGlanceNone)
-vivoactive3m.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(selectTouch);$(swipeLeftDefault)
+vivoactive3m.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(selectTouch);$(swipeLeftDefault);$(drawingBlockCacheEnabled)
 vivoactive3m.resourcePath = settings-site1;resources;resources-vivoactive3m
 vivoactive3mlte.sourcePath = $(sourceGlanceNone)
-vivoactive3mlte.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(selectTouch);$(swipeLeftDefault)
+vivoactive3mlte.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(selectTouch);$(swipeLeftDefault);$(drawingBlockCacheEnabled)
 vivoactive3mlte.resourcePath = settings-site1;resources;resources-vivoactive3mlte
 # With multiple sites
 vivoactive4.sourcePath = $(sourceGlanceNone)
-vivoactive4.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesMultiple);$(selectTouch);$(swipeLeftDefault)
+vivoactive4.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesMultiple);$(selectTouch);$(swipeLeftDefault);$(drawingBlockCacheEnabled)
 vivoactive4s.sourcePath = $(sourceGlanceNone)
-vivoactive4s.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesMultiple);$(selectTouch);$(swipeLeftDefault)
+vivoactive4s.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesMultiple);$(selectTouch);$(swipeLeftDefault);$(drawingBlockCacheEnabled)

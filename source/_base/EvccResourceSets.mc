@@ -20,16 +20,16 @@ import Toybox.Application.Properties;
     function initialize() {
         EvccWidgetResourceSetBase.initialize();
         
-        var fonts = _fonts as Array<FontDefinition?>;
         if( !( Graphics has :getVectorFont ) ) {
             throw new OperationNotAllowedException( "Device does not support vector fonts!" );
         }
 
-        var heights = new Array<Float>[fonts.size()];
+        var heights = new Array<Float>[_fonts.size()];
         // We take either 13 % of the screen height or the size of the medium font, whichever is smaller
-        heights[0] = EvccHelperUI.min( Graphics.getFontHeight( fonts[0] ).toFloat(), System.getDeviceSettings().screenHeight * 0.13 );
+        heights[0] = EvccHelperUI.min( Graphics.getFontHeight( _fonts[0] ).toFloat(), System.getDeviceSettings().screenHeight * 0.13 );
+        
         // We take either 56 % of the medium font or the height of the xtiny font, whichever is smaller
-        heights[heights.size()-1] = EvccHelperUI.min( Graphics.getFontHeight( fonts[fonts.size()-1] ).toFloat(), heights[0] * 0.56 );
+        heights[heights.size()-1] = EvccHelperUI.min( Graphics.getFontHeight( _fonts[_fonts.size()-1] ).toFloat(), heights[0] * 0.56 );
         
         var step = ( heights[0] - heights[heights.size()-1] ) / ( heights.size()-1 );
         
@@ -51,11 +51,13 @@ import Toybox.Application.Properties;
              fontFaces = [ "RobotoRegular", "RobotoCondensedBold" ];
         }
 
-        for( var i = 0; i < fonts.size(); i++ ) {
+        for( var i = 0; i < _fonts.size(); i++ ) {
             var height = Math.round( heights[i] ).toNumber();
-            fonts[i] = Graphics.getVectorFont( { :face => fontFaces, :size => height } );
-            if( fonts[i] == null ) {
+            var vectorFont = Graphics.getVectorFont( { :face => fontFaces, :size => height } );
+            if( vectorFont == null ) {
                 throw new InvalidValueException( "Font faces not found!" );
+            } else {
+                _fonts[i] = vectorFont;
             }
         }
     }
@@ -79,29 +81,28 @@ import Toybox.Application.Properties;
         // As first step, we skip any font that is the same size as its predecessor
         // and move the remaining fonts up. The vacated positions in the end will
         // be filled with the smallest font.
-        var fontsPreset = _fonts as GarminFontsArr;
 
         // Fill an array with all the heights, to avoid multiple costly 
         // requests to Graphics.getFontHeight
         var heightsPreset = new Array<Number>[0];
-        for( var i = 0; i< fontsPreset.size(); i++ ) { heightsPreset.add( Graphics.getFontHeight( fontsPreset[i] ) ); }
+        for( var i = 0; i< _fonts.size(); i++ ) { heightsPreset.add( Graphics.getFontHeight( _fonts[i] ) ); }
 
         // Create a new array for the optimized fonts
-        var fontsOptimized = new GarminFontsArr[0];
-        fontsOptimized.add( fontsPreset[0] ); // the first one stays
+        var fontsOptimized = new ArrayOfGarminFonts[0];
+        fontsOptimized.add( _fonts[0] ); // the first one stays
         var ipr = 1;
         // loop through all font sizes
-        for( var iop = 1; iop < fontsPreset.size(); ) {
+        for( var iop = 1; iop < _fonts.size(); ) {
             // If current font from the preset is smaller than the last one, we add it
             // Also, if there are no more fonts left, we add the current one regardless
             // of size
-            if( heightsPreset[ipr] < heightsPreset[ipr-1] || ipr + 1 == fontsPreset.size() )
+            if( heightsPreset[ipr] < heightsPreset[ipr-1] || ipr + 1 == _fonts.size() )
             {
-                fontsOptimized.add( fontsPreset[ipr] );
+                fontsOptimized.add( _fonts[ipr] );
                 iop++;
             }
             // we move to the next preset, if there is one
-            ipr += ( ipr + 1 < fontsPreset.size() ) ? 1 : 0;
+            ipr += ( ipr + 1 < _fonts.size() ) ? 1 : 0;
         }
 
         _fonts = fontsOptimized;
@@ -128,8 +129,8 @@ class EvccWidgetResourceSetBase {
         FONT_XTINY,
         FONT_MICRO
     }
-    public var _fonts = [ Graphics.FONT_MEDIUM, Graphics.FONT_SMALL, Graphics.FONT_TINY, Graphics.FONT_GLANCE, Graphics.FONT_XTINY ] as GarminFontsArr;
-    public var _icons = [
+    public var _fonts as ArrayOfGarminFonts = [ Graphics.FONT_MEDIUM, Graphics.FONT_SMALL, Graphics.FONT_TINY, Graphics.FONT_GLANCE, Graphics.FONT_XTINY ];
+    public var _icons as EvccIcons = [
         [ Rez.Drawables.battery_empty_medium, Rez.Drawables.battery_empty_small, Rez.Drawables.battery_empty_tiny, Rez.Drawables.battery_empty_xtiny, null ],
         [ Rez.Drawables.battery_onequarter_medium, Rez.Drawables.battery_onequarter_small, Rez.Drawables.battery_onequarter_tiny, Rez.Drawables.battery_onequarter_xtiny, null ],
         [ Rez.Drawables.battery_half_medium, Rez.Drawables.battery_half_small, Rez.Drawables.battery_half_tiny, Rez.Drawables.battery_half_xtiny, null ],
@@ -143,7 +144,7 @@ class EvccWidgetResourceSetBase {
         [ Rez.Drawables.grid_medium, Rez.Drawables.grid_small, Rez.Drawables.grid_tiny, Rez.Drawables.grid_xtiny, null ],
         [ null, null, null, Rez.Drawables.clock_xtiny, Rez.Drawables.clock_micro ],
         [ Rez.Drawables.forecast_medium, null, null, Rez.Drawables.forecast_xtiny, null ]
-    ] as EvccIcons;
+    ];
 }
 
 // Glance
@@ -153,8 +154,8 @@ class EvccWidgetResourceSetBase {
     enum Font {
         FONT_GLANCE
     }
-    public var _fonts = [Graphics.FONT_GLANCE] as GarminFontsArr;
-    public var _icons = [
+    public var _fonts as ArrayOfGarminFonts = [Graphics.FONT_GLANCE];
+    public var _icons as EvccIcons = [
         [ Rez.Drawables.battery_empty_glance ],
         [ Rez.Drawables.battery_onequarter_glance ],
         [ Rez.Drawables.battery_half_glance ],
@@ -163,5 +164,5 @@ class EvccWidgetResourceSetBase {
         [ Rez.Drawables.arrow_right_glance ],
         [ Rez.Drawables.arrow_left_glance ],
         [ Rez.Drawables.arrow_left_three_glance ]
-    ] as EvccIcons;
+    ];
 }

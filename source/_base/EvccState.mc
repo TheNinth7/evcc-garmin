@@ -10,13 +10,13 @@ import Toybox.Time;
     private var _timestamp as Moment;
     public function getTimestamp() as Moment { return _timestamp; }
 
-    private var _hasBattery = false;
-    private var _batterySoc = null as Number?;
-    private var _batteryPower = null as Number?;
-    private var _gridPower = 0;
-    private var _homePower = 0;
-    private var _pvPower = 0;
-    private var _siteTitle = "";
+    private var _hasBattery as Boolean = false;
+    private var _batterySoc as Number? = null;
+    private var _batteryPower as Number? = null;
+    private var _gridPower as Number?;
+    private var _homePower as Number?;
+    private var _pvPower as Number?;
+    private var _siteTitle as String?;
 
     private const BATTERYSOC = "batterySoc";
     private const BATTERYPOWER = "batteryPower";
@@ -30,20 +30,20 @@ import Toybox.Time;
     private const FORECAST = "forecast";
 
     public function hasBattery() as Boolean { return _hasBattery; }
-    public function getBatterySoc() as Number { return _batterySoc; }
+    public function getBatterySoc() as Number? { return _batterySoc; }
     public function getBatteryPowerRounded() as Number { return EvccHelperBase.roundPower( _batteryPower ); }
     public function getGridPowerRounded() as Number { return EvccHelperBase.roundPower( _gridPower ); }
     public function getHomePowerRounded() as Number { return EvccHelperBase.roundPower( _homePower ); }
     public function getPvPowerRounded() as Number { return EvccHelperBase.roundPower( _pvPower ); }
-    public function getSiteTitle() as String { return _siteTitle; }
+    public function getSiteTitle() as String { return _siteTitle != null ? _siteTitle : ""; }
 
-    private var _loadPoints = new LoadPointsArr[0];
-    private var _numOfLPsCharging = 0;
-    public function getLoadPoints() as LoadPointsArr { return _loadPoints; }
+    private var _loadPoints as ArrayOfLoadPoints = new ArrayOfLoadPoints[0];
+    private var _numOfLPsCharging as Number = 0;
+    public function getLoadPoints() as ArrayOfLoadPoints { return _loadPoints; }
     public function getNumOfLPsCharging() as Number { return _numOfLPsCharging; }
 
     private var _forecast as EvccSolarForecast?;
-    public function getForecast() as EvccSolarForecast { return _forecast; }
+    public function getForecast() as EvccSolarForecast? { return _forecast; }
     public function hasForecast() as Boolean { return _forecast == null ? false : _forecast.hasForecast(); }
 
     // Creating a new state object.
@@ -54,7 +54,7 @@ import Toybox.Time;
     // space for low-memory devices.
     // ATTENTION: therefore if new fields from evcc should be used here, they also need
     // to be added to the jq statement in EvccStateRequest.
-    function initialize( result as Dictionary<String, Object?>, dataTimestamp as Moment ) {
+    function initialize( result as JsonContainer, dataTimestamp as Moment ) {
         _timestamp = dataTimestamp;
 
         if( result[BATTERYSOC] != null ) {
@@ -66,27 +66,28 @@ import Toybox.Time;
         // For grid power we support both the old structure with
         // result.gridPower and the new structure with result.grid.power
         // used by evcc from 0.132.2 onwards
-        _gridPower = result[GRIDPOWER];
+        _gridPower = result[GRIDPOWER] as Number?;
         if( _gridPower == null ) {
             var grid = result[GRID] as Array;
-            _gridPower = grid[POWER];
+            _gridPower = grid[POWER] as Number?;
         }
 
-        _homePower = result[HOMEPOWER];
-        _pvPower = result[PVPOWER];
-        _siteTitle = result[SITETITLE];
+        _homePower = result[HOMEPOWER] as Number?;
+        _pvPower = result[PVPOWER] as Number?;
+        _siteTitle = result[SITETITLE] as String?;
 
-        _loadPoints = new LoadPointsArr[0];
+        _loadPoints = new ArrayOfLoadPoints[0];
         var loadPoints = result[LOADPOINTS] as Array;
         for (var i = 0; i < loadPoints.size(); i++) {
-            var loadPointData = loadPoints[i] as Dictionary;
+            var loadPointData = loadPoints[i] as JsonContainer;
             var loadPoint = new EvccLoadPoint( loadPointData, result );
             if( ! loadPoint.isHeater() && loadPoint.isCharging() ) { _numOfLPsCharging++; }
             _loadPoints.add( loadPoint );
         }
 
-        if( result[FORECAST] != null ) {
-            _forecast = new EvccSolarForecast( result[FORECAST] );
+        var forecast = result[FORECAST] as JsonContainer?;
+        if( forecast != null ) {
+            _forecast = new EvccSolarForecast( forecast );
         }
 
     }
@@ -95,13 +96,13 @@ import Toybox.Time;
     // with the same structure that is used by the evcc response. Thus the
     // constructor can process both the Dicionary from the web request response
     // and from the storage
-    function serialize() as Dictionary<String, Object?> { 
+    function serialize() as JsonContainer { 
         var result = { 
             GRIDPOWER => _gridPower, // for grid power we serialize using the old structure, see initialize()
             HOMEPOWER => _homePower,
             PVPOWER => _pvPower,
             SITETITLE => _siteTitle
-        };
+        } as JsonContainer;
 
         if( _hasBattery ) {
             result[BATTERYSOC] = _batterySoc;
@@ -111,15 +112,16 @@ import Toybox.Time;
         var serializedLoadPoints = new Array<Dictionary>[0];
 
         for (var i = 0; i < _loadPoints.size(); i++) {
-            var loadPoints = _loadPoints as LoadPointsArr;
+            var loadPoints = _loadPoints as ArrayOfLoadPoints;
             var serializedLoadPoint = loadPoints[i] as EvccLoadPoint;
-            serializedLoadPoints.add( serializedLoadPoint.serialize() );
+            serializedLoadPoints.add( serializedLoadPoint.serialize() as Dictionary );
         }
 
-        result[LOADPOINTS] = serializedLoadPoints;
+        result.put( LOADPOINTS, serializedLoadPoints );
 
-        if( hasForecast() ) {
-            result[FORECAST] = _forecast.serialize();
+        var forecast = _forecast;
+        if( forecast != null && hasForecast() ) {
+            result.put( FORECAST, forecast.serialize() );
         }
 
         return result; 
@@ -130,15 +132,14 @@ import Toybox.Time;
 // both reading from response/storage in the constructor
 // and serializing the data into a Dictionary.
 (:glance :background) class EvccLoadPoint {
-    private var _vehicle = null;
-    private var _heater = null;
+    private var _vehicle as EvccConnectedVehicle?;
+    private var _heater as EvccHeater?;
 
-    private var _isCharging = false;
-    private var _chargePower = 0;
-    private var _activePhases = 0;
-    private var _mode = null;
-    private var _chargeRemainingDuration = 0;
-
+    private var _isCharging as Boolean = false;
+    private var _chargePower as Number = 0;
+    private var _activePhases as Number = 0;
+    private var _mode as String? = null;
+    private var _chargeRemainingDuration as Number?;
 
     private const CHARGING = "charging";
     private const PHASESACTIVE = "phasesActive";
@@ -148,12 +149,12 @@ import Toybox.Time;
     private const CHARGEREMAININGDURATION = "chargeRemainingDuration";
     private const CHARGERFEATUREHEATING = "chargerFeatureHeating";
     
-    function initialize( dataLp as Dictionary<String, Object?>, dataResult as Dictionary<String, Object?> ) {
-        _isCharging = dataLp[CHARGING];
-        _activePhases = dataLp[PHASESACTIVE];
-        _chargePower = dataLp[CHARGEPOWER];
-        _mode = dataLp[MODE];
-        _chargeRemainingDuration = dataLp[CHARGEREMAININGDURATION];
+    function initialize( dataLp as JsonContainer, dataResult as JsonContainer ) {
+        _isCharging = dataLp[CHARGING] as Boolean;
+        _activePhases = dataLp[PHASESACTIVE] as Number;
+        _chargePower = dataLp[CHARGEPOWER] as Number;
+        _mode = dataLp[MODE] as String;
+        _chargeRemainingDuration = dataLp[CHARGEREMAININGDURATION] as Number?;
 
         if( dataLp[CHARGERFEATUREHEATING] as Boolean ) {
             _heater = new EvccHeater( dataLp );
@@ -162,14 +163,14 @@ import Toybox.Time;
         }
     }
     
-    function serialize() as Dictionary<String, Object?> {
+    function serialize() as JsonContainer {
         var loadpoint = { 
             CHARGING => _isCharging,
             PHASESACTIVE => _activePhases,
             CHARGEPOWER => _chargePower,
             MODE => _mode,
             CHARGEREMAININGDURATION => _chargeRemainingDuration
-        };
+        } as JsonContainer;
 
         if( _vehicle != null ) {
             loadpoint[CONNECTED] = true;
@@ -186,13 +187,13 @@ import Toybox.Time;
     public function isCharging() as Boolean { return _isCharging; }
     public function getActivePhases() as Number { return _activePhases; }
     public function getChargePowerRounded() as Number { return EvccHelperBase.roundPower( _chargePower ); }
-    public function getVehicle() as EvccConnectedVehicle { return _vehicle; }
+    public function getVehicle() as EvccConnectedVehicle? { return _vehicle; }
 
     public function isHeater() as Boolean { return _heater != null; }
-    public function getHeater() as EvccHeater { return _heater; }
+    public function getHeater() as EvccHeater? { return _heater; }
 
     // Possible values: "pv", "now", "minpv", "off"
-    public function getMode() as String { return _mode; }
+    public function getMode() as String { return _mode != null ? _mode : "unknown"; }
     // Return the text to be displayed for the mode
     public function getModeFormatted() as String { 
         if( _mode != null && _mode instanceof String ) {
@@ -206,17 +207,13 @@ import Toybox.Time;
     }
 
     public function getChargeRemainingDuration() as Number { return _chargeRemainingDuration != null ? _chargeRemainingDuration : 0; }
-    // Returns the remaining duration as formatted string
-    public function getChargeRemainingDurationFormatted() as String { 
-        return EvccHelperWidget.formatDuration( _chargeRemainingDuration );
-    }
 }
 
 (:glance :background) class EvccConnectedVehicle {
-    private var _name = "";
-    private var _title = "";
-    private var _soc = 0;
-    private var _isGuest = false;
+    private var _name as String;
+    private var _title as String;
+    private var _soc as Number = 0;
+    private var _isGuest as Boolean = false;
     
     private const VEHICLENAME = "vehicleName";
     private const VEHICLETITLE = "vehicleTitle";
@@ -225,8 +222,8 @@ import Toybox.Time;
     private const VH_TITLE = "title";
     private const VEHICLESOC = "vehicleSoc";
 
-    function initialize( dataLp as Dictionary<String, Object?>, dataResult as Dictionary<String, Object?> ) {
-        _name = dataLp[VEHICLENAME] as String;
+    function initialize( dataLp as JsonContainer, dataResult as JsonContainer ) {
+        var name = dataLp[VEHICLENAME] as String?;
         
         // Note: here the storage serialization diverts from the 
         // evcc response. In the evcc response, the loadpoint
@@ -234,12 +231,12 @@ import Toybox.Time;
         // in the vehicles to get the vehicle title. For serialization
         // we store the vehicle title in the loadpoint as well, to 
         // save space
-        _title = dataLp[VEHICLETITLE] as String?;
+        var title = dataLp[VEHICLETITLE] as String?;
         
         // For guest vehicles we use the loadpoint title as name/title
-        if( _name == null || _name.equals( "" ) ) {
-            _name = dataLp[LP_TITLE];
-            _title = _name;
+        if( name == null || name.equals( "" ) ) {
+            name = dataLp[LP_TITLE] as String;
+            title = name;
             _isGuest = true;
         } else {
             _soc = dataLp[VEHICLESOC] as Number;
@@ -247,22 +244,25 @@ import Toybox.Time;
         
         // Only if no title was set (either from storage or because it is
         // a guest vehicle), we check the vehicles data.
-        if( _title == null || _title.equals( "" ) ) {
+        if( title == null || title.equals( "" ) ) {
             // we still default to the _name ...
-            _title = _name;
+            title = name;
             // and then lookup the vehicle and replace it
             // if we find the title there
-            var vehicles = dataResult[VEHICLES] as Dictionary;
+            var vehicles = dataResult[VEHICLES] as Dictionary?;
             if( vehicles != null ) {
-                var vehicle = vehicles[_name] as Dictionary;
+                var vehicle = vehicles[name] as Dictionary?;
                 if( vehicle != null ) {
-                    _title = vehicle[VH_TITLE];
+                    title = vehicle[VH_TITLE] as String;
                 }
             }
         }
+
+        _title = title;
+        _name = name;
     }
     
-    function serialize( loadpoint as Dictionary<String, Object?> ) as Dictionary<String, Object?> {
+    function serialize( loadpoint as JsonContainer ) as JsonContainer {
         if( _isGuest ) {
             loadpoint[LP_TITLE] = _name;
         } else {
@@ -280,18 +280,18 @@ import Toybox.Time;
 }
 
 (:glance :background) class EvccHeater {
-    private var _title = "";
-    private var _temp = 0;
+    private var _title as String = "";
+    private var _temp as Number = 0;
     
     private const LP_TITLE = "title";
     private const VEHICLESOC = "vehicleSoc";
 
-    function initialize( dataLp as Dictionary<String, Object?> ) {
+    function initialize( dataLp as JsonContainer ) {
         _title = dataLp[LP_TITLE] as String;
         _temp = dataLp[VEHICLESOC] as Number;
     }
 
-    function serialize( loadpoint as Dictionary<String, Object?> ) as Dictionary<String, Object?> {
+    function serialize( loadpoint as JsonContainer ) as JsonContainer {
         loadpoint[LP_TITLE] = _title;
         loadpoint[VEHICLESOC] = _temp;
         return loadpoint;
@@ -303,26 +303,26 @@ import Toybox.Time;
 
 // Class to represent the forecast
 (:glance :background) class EvccSolarForecast {
-    private var _hasForecast = false;
+    private var _hasForecast as Boolean = false;
     function hasForecast() as Boolean { return _hasForecast; }
     private var _scale as Float?;
-    function getScale() as Float? { return _scale; }
+    function getScale() as Float { return _scale != null ? _scale : 1.0; }
     
-    private var _energy = new Array<Float?>[3];
-    function getEnergy() as Array<Float?> { return _energy; }
+    private var _energy as Array<Float> = new Array<Float>[3];
+    function getEnergy() as Array<Float> { return _energy; }
 
     private const FORECAST_SOLAR = "solar";
     private const FORECAST_DAYS = [ "today", "tomorrow", "dayAfterTomorrow" ];
     private const FORECAST_ENERGY = "energy";
     private const FORECAST_SCALE = "scale";
 
-    function initialize( forecast as Dictionary<String, Object?> ) {
-        var solar = forecast[FORECAST_SOLAR] as Dictionary;
+    function initialize( forecast as JsonContainer ) {
+        var solar = forecast[FORECAST_SOLAR] as Dictionary?;
         var energy = _energy as Array<Float?>;
         if( solar != null ) {
-            _scale = solar[FORECAST_SCALE];
+            _scale = solar[FORECAST_SCALE] as Float?;
             for( var i = 0; i < FORECAST_DAYS.size(); i++ ) {
-                var day = solar[FORECAST_DAYS[i]] as Dictionary;
+                var day = solar[FORECAST_DAYS[i]] as Dictionary?;
                 if( day != null ) {
                     energy[i] = day[FORECAST_ENERGY] as Float?;
                     _hasForecast = _hasForecast || energy[i] != null;
@@ -331,20 +331,20 @@ import Toybox.Time;
         }
     }
 
-    function serialize() as Dictionary<String, Object?> { 
-        var forecast = {} as Dictionary<String, Object?>;
+    function serialize() as JsonContainer { 
+        var forecast = {} as JsonContainer;
         var energy = _energy as Array<Float?>;
         if( _hasForecast ) {
-            var solar = {} as Dictionary<String, Object?>;
+            var solar = {} as JsonContainer;
             solar[FORECAST_SCALE] = _scale;
             for( var i = 0; i < FORECAST_DAYS.size(); i++ ) {
                 if( energy[i] != null ) {
-                    var day = {} as Dictionary<String, Object?>;
+                    var day = {} as JsonContainer;
                     day[FORECAST_ENERGY] = energy[i];
                     solar[FORECAST_DAYS[i]] = day;
                 }
             }
-            forecast[FORECAST_SOLAR] = solar;
+            forecast.put( FORECAST_SOLAR, solar );
         }
         return forecast;
     }

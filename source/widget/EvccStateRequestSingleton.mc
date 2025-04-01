@@ -22,17 +22,17 @@ public class EvccStateRequestSingleton {
             _stateRequest.start();
             _siteIndex = siteIndex;
         }
-        return _stateRequest;
+        return _stateRequest as EvccStateRequest;
     }
 
     // Activates the state request for a specific site
     // Sames as getStateRequest(), but without returning it
-    public static function activateStateRequest( siteIndex as Number ) {
+    public static function activateStateRequest( siteIndex as Number ) as Void {
         getStateRequest( siteIndex );
     }
 
     // Stop the currently active state request
-    public static function stopStateRequest() {
+    public static function stopStateRequest() as Void {
         if( _stateRequest != null ) {
             _stateRequest.stop();
             _stateRequest = null;

@@ -13,7 +13,7 @@ import Toybox.Application.Storage;
 // but instead rely on the data that is put at longer intervals into
 // the storage by the background service
 (:glance :exclForGlanceFull :exclForGlanceNone) class EvccGlanceView extends WatchUi.GlanceView {
-    private var _timer = new Timer.Timer();
+    private var _timer as Timer.Timer = new Timer.Timer();
     private var _stateStore as EvccStateStore;
 
     function initialize( index as Number ) {
@@ -51,15 +51,15 @@ import Toybox.Application.Storage;
             // Getting the state is memory-intense, so we do it before we
             // allocate space for other variables
             var siteData = _stateStore.getStateFromStorage() as EvccState?;
-            var errorMsg = Storage.getValue( EvccConstants.STORAGE_BG_ERROR_MSG );
+            var errorMsg = Storage.getValue( EvccConstants.STORAGE_BG_ERROR_MSG ) as String;
 
             // Check the storage for error messages
-            if( errorMsg != null && errorMsg != "" ) {
-                var errorCode = Storage.getValue( EvccConstants.STORAGE_BG_ERROR_CODE );
+            if( errorMsg != null && ! errorMsg.equals( "" ) ) {
+                var errorCode = Storage.getValue( EvccConstants.STORAGE_BG_ERROR_CODE ) as String;
                 throw new StateRequestException( errorCode, errorMsg );
             }
 
-            dc.setColor( EvccConstants.COLOR_FOREGROUND, Graphics.COLOR_TRANSPARENT );
+            dc.setColor( EvccColors.FOREGROUND, Graphics.COLOR_TRANSPARENT );
             dc.clear();
             var line1 = "Loading ...";
             var line2 = "";
@@ -75,27 +75,28 @@ import Toybox.Application.Storage;
                 line1 = "";
                 if( siteData.hasBattery() ) {
                     var bmpRef = Rez.Drawables.battery_empty_glance;
-                    if( siteData.getBatterySoc() >= 80 ) {
+                    var batterySoc = siteData.getBatterySoc() as Number;
+                    if( batterySoc >= 80 ) {
                         bmpRef = Rez.Drawables.battery_full_glance;
-                    } else if( siteData.getBatterySoc() >= 60 ) {
+                    } else if( batterySoc >= 60 ) {
                         bmpRef = Rez.Drawables.battery_threequarters_glance;
-                    } else if( siteData.getBatterySoc() >= 40 ) {
+                    } else if( batterySoc >= 40 ) {
                         bmpRef = Rez.Drawables.battery_half_glance;
-                    } else if( siteData.getBatterySoc() >= 20 ) {
+                    } else if( batterySoc >= 20 ) {
                         bmpRef = Rez.Drawables.battery_onequarter_glance;
                     }
-                    var bmp = WatchUi.loadResource( bmpRef );
+                    var bmp = WatchUi.loadResource( bmpRef ) as DbBitmap;
                     // We apply a one pixel offset, it looks more balanced this way,
                     // because of the whitespace on top of the letters, which is part
                     // of Garmin's fonts.
-                    dc.drawBitmap( line1X, line1Y - ( bmp.getHeight() / 2 ) + 1, bmp );
+                    dc.drawBitmap( line1X, line1Y - Math.round( ( bmp.getHeight() / 2 ) ).toNumber() + 1, bmp );
                     line1X += bmp.getWidth();
                     line2X += bmp.getWidth() * 0.21;
                     line1 += EvccHelperUI.formatSoc( siteData.getBatterySoc() ) + "  ";
                 }
                 var loadpoints = siteData.getLoadPoints();
                 if( loadpoints.size() > 0 && loadpoints[0].getVehicle() != null ) {
-                    var vehicle = loadpoints[0].getVehicle();
+                    var vehicle = loadpoints[0].getVehicle() as EvccConnectedVehicle;
                     line1 += vehicle.getTitle().substring( 0, 8 );
                     if( ! vehicle.isGuest() ) {
                         line1 += " " + EvccHelperUI.formatSoc( vehicle.getSoc() );

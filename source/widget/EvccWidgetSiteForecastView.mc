@@ -4,17 +4,17 @@ using Toybox.Time.Gregorian;
 
 // View showing forecast data
 class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
-    private var _label as Array;
-    private var _indicator as Array;
+    private var _label as Array<String>;
+    private var _indicator as Array<String?>;
 
-    function initialize( views as SiteViewsArr, parentView as EvccWidgetSiteBaseView?, siteIndex as Number ) {
+    function initialize( views as ArrayOfSiteViews, parentView as EvccWidgetSiteBaseView?, siteIndex as Number ) {
         EvccWidgetSiteBaseView.initialize( views, parentView, siteIndex );
 
         // Define the labels for the rows
         // Third label is the three-character short code for the weekday
         _label = [ "tday", "tmrw" ];
-        var now = Gregorian.info(Time.now().add( Gregorian.duration({:days => 2})), Time.FORMAT_MEDIUM);
-        _label.add( now.day_of_week.toLower() );
+        var dat = Gregorian.info(Time.now().add( Gregorian.duration({:days => 2})), Time.FORMAT_MEDIUM);
+        _label.add( dat.day_of_week.toString().toLower() );
         
         // Define indicators to be shown in small font at the end of each line
         _indicator = [ "rem.", null, "ptly" ];
@@ -22,7 +22,7 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
 
     // Show the forecast icon as page title
     function getPageTitle( dc as Dc ) as EvccBlock? {
-        return new EvccIconBlock( EvccIconBlock.ICON_FORECAST, dc, {} );
+        return new EvccIconBlock( EvccIconBlock.ICON_FORECAST, dc, {} as DbOptions );
     }
 
     // Add the content
@@ -30,25 +30,29 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
 
         var state = getStateRequest().getState();
 
-        if( state.hasForecast() ) {
-            var forecast = getStateRequest().getState().getForecast();
+        if( state != null && state.hasForecast() ) {
 
-            // Check if scale is available and configured to be applied
-            // Otherwise set scale=1
-            var applyScale = new EvccSite( getSiteIndex() ).scaleForecast() && forecast.getScale() != null;
-            var scale = applyScale ? forecast.getScale() : 1;
+            var forecast = state.getForecast();
 
-            var energy = forecast.getEnergy() as Array<Float?>;
+            if( forecast != null ) {
+                // Check if scale is available and configured to be applied
+                // Otherwise set scale=1
+                var applyScale = new EvccSite( getSiteIndex() ).scaleForecast() && forecast.getScale() != null;
+                var scale = applyScale ? forecast.getScale() : 1.0;
 
-            // The actual forecast is added in a separate function, since
-            // there are two versions used for different devices
-            addForecast( block, dc, energy, scale );
+                var energy = forecast.getEnergy();
 
-            if( applyScale ) {
-                block.addText( "adj. w\\ real data", { :relativeFont => 4, :marginTop => dc.getHeight() * 0.007 } );
+                // The actual forecast is added in a separate function, since
+                // there are two versions used for different devices
+                addForecast( block, dc, energy, scale );
+
+                if( applyScale ) {
+                    block.addText( "adj. w\\ real data", { :relativeFont => 4, :marginTop => dc.getHeight() * 0.007 } );
+                }
+
             }
         } else {
-            block.addText( "Site has no forecast!", {} );
+            block.addText( "Site has no forecast!", {} as DbOptions );
             block.addText( "Restart app to remove view", { :relativeFont => 4, :marginTop => dc.getHeight() * 0.007 } );
         }
 
@@ -62,20 +66,20 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
     // a nice table structure
     // The layouting is cpu-intense, so below this there is 
     // more light-weight variant for older devices
-    (:exclForCalcSimple) function addForecast( block as EvccVerticalBlock, dc as Dc, energy as Array<Float?>, scale as Float ) {
+    (:exclForCalcSimple) function addForecast( block as EvccVerticalBlock, dc as Dc, energy as Array<Float>, scale as Float ) as Void {
 
-        var row = new EvccHorizontalBlock( dc, {} );
-        var column1 = new EvccVerticalBlock( dc, {} );
-        var column3 = new EvccVerticalBlock( dc, {} );
-        var column2 = new EvccVerticalBlock( dc, {} );
+        var row = new EvccHorizontalBlock( dc, {} as DbOptions );
+        var column1 = new EvccVerticalBlock( dc, {} as DbOptions );
+        var column3 = new EvccVerticalBlock( dc, {} as DbOptions );
+        var column2 = new EvccVerticalBlock( dc, {} as DbOptions );
 
         for( var i = 0; i < energy.size(); i++ ) {
             column1.addText( _label[i] + ": ", {:justify => Graphics.TEXT_JUSTIFY_RIGHT} );
             var value = new EvccHorizontalBlock( dc, {:justify => Graphics.TEXT_JUSTIFY_RIGHT} );
-            value.addText( formatEnergy( energy[i] * scale ), {} );
+            value.addText( formatEnergy( energy[i] * scale ), {} as DbOptions );
             column2.addBlock( value );
             var unit = new EvccHorizontalBlock( dc, {:justify => Graphics.TEXT_JUSTIFY_LEFT} );
-            unit.addText( " kWh", {} );
+            unit.addText( " kWh", {} as DbOptions );
             if( _indicator[i] != null ) {
                 unit.addText( " " + _indicator[i], { :relativeFont => 4, :vjustifyTextToBottom => true } );
             }
@@ -92,10 +96,10 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
     // Simple forecast layout, with just single lines
     // Content of the lines will not be aligned, but this is
     // much simpler to layout
-    (:exclForCalcComplex) function addForecast( block as EvccVerticalBlock, dc as Dc, energy as Array<Float?>, scale as Float ) {
+    (:exclForCalcComplex) function addForecast( block as EvccVerticalBlock, dc as Dc, energy as Array<Float>, scale as Float ) as Void {
         for( var i = 0; i < energy.size(); i++ ) {
             var line = new EvccHorizontalBlock( dc, { :justify => Graphics.TEXT_JUSTIFY_LEFT } );
-            line.addText( _label[i] + ": " + formatEnergy( energy[i] * scale ) + "kWh", {} );
+            line.addText( _label[i] + ": " + formatEnergy( energy[i] * scale ) + "kWh", {} as DbOptions );
             if( _indicator[i] != null ) {
                 line.addText( " " + _indicator[i], { :relativeFont => 4, :vjustifyTextToBottom => true } );
             }
@@ -111,7 +115,7 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
     // Digits is the number of digits to be displayed before the
     // decimal point - if there are less it will be filled with
     // zeros
-    private function formatEnergy( energy as Float ) {
+    private function formatEnergy( energy as Float ) as String {
         return ( Math.round( energy / 100.0 ) / 10 ).format( "%.1f" );    
     }
 }

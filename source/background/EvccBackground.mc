@@ -9,12 +9,12 @@ import Toybox.Application.Properties;
 // for processing the request. Therefore the request to evcc is made in this background
 // task, and the result passed to the glance via storage
 (:background :exclForGlanceFull :exclForGlanceNone) class EvccBackground extends Toybox.System.ServiceDelegate {
-	var _index as Number;
+	var _siteIndex as Number;
 
     function initialize( index as Number ) {
         // EvccHelperBase.debug( "EvccBackground: initialize" );
         System.ServiceDelegate.initialize();
-        _index = index;
+        _siteIndex = index;
 	}
 	
     // When the background timer triggers, we initiate the
@@ -25,7 +25,7 @@ import Toybox.Application.Properties;
 
             // We do not want to start the state request timer with .start()
             // but only do a single request.
-            var stateRequest = new EvccStateRequest( _index );
+            var stateRequest = new EvccStateRequest( _siteIndex );
             stateRequest.makeRequest();
             // If in background, makeRequest() automatically persists the result
         } catch ( ex ) {

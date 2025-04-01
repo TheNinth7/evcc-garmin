@@ -9,8 +9,8 @@ import Toybox.Math;
  class EvccWidgetSiteMainView extends EvccWidgetSiteBaseView {
 
     // This function returns a list of views for all sites
-    static function getAllSiteViews() as SiteViewsArr {
-        var views = new SiteViewsArr[0];
+    static function getAllSiteViews() as ArrayOfSiteViews {
+        var views = new ArrayOfSiteViews[0];
         var siteCount = EvccSiteConfigSingleton.getSiteCount();
         for( var i = 0; i < siteCount; i++ ) {
            // The view adds itself to views
@@ -29,9 +29,9 @@ import Toybox.Math;
     
     // When we process the state the first time, we check if a
     // forecast is available and if yes add the forecast view 
-    var _hasForecast = false;
+    var _hasForecast as Boolean = false;
 
-    function initialize( views as SiteViewsArr, parentView as EvccWidgetSiteBaseView?, siteIndex as Number, actAsGlance as Boolean ) {
+    function initialize( views as ArrayOfSiteViews, parentView as EvccWidgetSiteBaseView?, siteIndex as Number, actAsGlance as Boolean ) {
         // EvccHelperBase.debug("Widget: initialize");
         EvccWidgetSiteBaseView.initialize( views, parentView, siteIndex );
 
@@ -56,22 +56,24 @@ import Toybox.Math;
     // ATTENTION: this function may be called multiple times, so it has protect itself from 
     // adding the same view twice. This is because views can be added based on the state, 
     // which may not be available on initialization or may change over time 
-    function addDetailViews() {
+    function addDetailViews() as Void {
         if( ! _hasForecast ) {
-            var staterq = getStateRequest();
+            var stateRequest = getStateRequest();
             // Note that we DO NOT check fore staterq.hasLoaded(). In this instance we are not interested
             // whether the stored state is current or not. Regardless of age, if the previous state had a 
             // forecast we assume that there is still a forecast
-            if( ! staterq.hasError() && staterq.getState() != null && staterq.getState().hasForecast() ) {
-                _hasForecast = true;
-                addDetailView( EvccWidgetSiteForecastView );
+            if( ! stateRequest.hasError() ) {
+                if( stateRequest.hasState() && stateRequest.getState().hasForecast() ) {
+                    _hasForecast = true;
+                    addDetailView( EvccWidgetSiteForecastView );
+                }
             }
         }
     }
     // This function is the one actually decides if a detail view is added
     // on the same or on the lower level. To be able to apply this to 
     // different detail views, it accepts a class type as input
-    private function addDetailView( viewClass ) {
+    (:typecheck(false)) private function addDetailView( viewClass ) as Void {
         var siteCount = EvccSiteConfigSingleton.getSiteCount();
         // If we act as glance, and there is only one site, then we add the detail view to the lower level views
         // Also if we do not act as glance, but there is more than one site, it goes to the lower level views 
@@ -114,8 +116,8 @@ import Toybox.Math;
     }
 
 
-    private static var SMALL_LINE = 0.6; // site title, charging details and logo count only as the fraction of a line specified here
-    private static var MAX_VAR_LINES = 6; // 1 x site title, 1 x battery, 2 x loadpoints with 2 lines each
+    private const SMALL_LINE as Float = 0.6; // site title, charging details and logo count only as the fraction of a line specified here
+    private const MAX_VAR_LINES as Number = 6; // 1 x site title, 1 x battery, 2 x loadpoints with 2 lines each
 
     // Generate the content
     function addContent( block as EvccVerticalBlock, dc as Dc ) {
@@ -133,7 +135,7 @@ import Toybox.Math;
         }                
 
         // Loadpoints
-        var loadpoints = state.getLoadPoints() as LoadPointsArr;
+        var loadpoints = state.getLoadPoints() as ArrayOfLoadPoints;
         var hasVehicle = false;
         var showChargingDetails = MAX_VAR_LINES - variableLineCount >= loadpoints.size() + ( state.getNumOfLPsCharging() * SMALL_LINE );
         for (var i = 0; i < loadpoints.size() && variableLineCount < MAX_VAR_LINES; i++) {
@@ -148,13 +150,13 @@ import Toybox.Math;
                 variableLineCount++;
                 hasVehicle = true;
                 if( loadpoint.isCharging() && showChargingDetails ) {
-                    block.addBlock( getChargingElement( loadpoint, dc, loadpointLine.getOption( :marginLeft ) ) );
+                    block.addBlock( getChargingElement( loadpoint, dc, loadpointLine.getOption( :marginLeft ) as Number ) );
                     variableLineCount += SMALL_LINE;
                 }
             }
         }
         if( ! hasVehicle ) {
-            block.addText( "No vehicle", {} );
+            block.addText( "No vehicle", {} as DbOptions );
             variableLineCount++;
         }
 
@@ -179,10 +181,10 @@ import Toybox.Math;
         var line = new EvccHorizontalBlock( dc, lineOptions );
         line.addIcon( icon, iconOptions );
         // For battery we display the SoC as text as well
-        if( icon == EvccIconBlock.ICON_BATTERY ) { line.addText( EvccHelperUI.formatSoc( state.getBatterySoc() ), {} ); }
+        if( icon == EvccIconBlock.ICON_BATTERY ) { line.addText( EvccHelperUI.formatSoc( state.getBatterySoc() ), {} as DbOptions ); }
 
         if( power != 0 ) {
-            line.addText( " ", {} );
+            line.addText( " ", {} as DbOptions );
             var flowOptions = {};
             if( flowIcon == EvccIconBlock.ICON_POWER_FLOW ) { flowOptions[:power] = power; }
             line.addIcon( flowIcon, flowOptions );
@@ -190,28 +192,28 @@ import Toybox.Math;
         // For battery we show the power only if it is not 0,
         // for all others we always show it
         if( icon != EvccIconBlock.ICON_BATTERY || power != 0 ) {
-            line.addText( " " + EvccHelperWidget.formatPower( power.abs() ), {} );
+            line.addText( " " + EvccHelperWidget.formatPower( power.abs() ), {} as DbOptions );
         }
         return line;
     }
 
     // Function to generate main loadpoint lines
-    private function getLoadPointElement( loadpoint as EvccLoadPoint, dc as Dc, showChargingDetails as Boolean ) {
-        var vehicle = loadpoint.getVehicle();
-        
+    private function getLoadPointElement( loadpoint as EvccLoadPoint, dc as Dc, showChargingDetails as Boolean ) as EvccHorizontalBlock {
+        var vehicle = loadpoint.getVehicle() as EvccConnectedVehicle;
+
         var lineVehicle = new EvccHorizontalBlock( dc, { :truncateSpacing => getContentArea().truncateSpacing } );
         
-        lineVehicle.addText( vehicle.getTitle(), { :isTruncatable => true } );
+        lineVehicle.addText( vehicle.getTitle(), { :isTruncatable => true } as DbOptions );
         
         // For guest vehicles there is no SoC
         if( ! vehicle.isGuest() ) {
-            lineVehicle.addText( " " + EvccHelperUI.formatSoc( vehicle.getSoc() ), {} );
+            lineVehicle.addText( " " + EvccHelperUI.formatSoc( vehicle.getSoc() ), {} as DbOptions );
         }
         // If the vehicle is charging, we show the power
         if( loadpoint.isCharging() ) {
-            lineVehicle.addText( " ", {} );
+            lineVehicle.addText( " ", {} as DbOptions );
             lineVehicle.addIcon( EvccIconBlock.ICON_ACTIVE_PHASES, { :charging => true, :activePhases => loadpoint.getActivePhases() } );
-            lineVehicle.addText( " " + EvccHelperWidget.formatPower( loadpoint.getChargePowerRounded() ), {} );
+            lineVehicle.addText( " " + EvccHelperWidget.formatPower( loadpoint.getChargePowerRounded() ), {} as DbOptions );
             if( ! showChargingDetails ) {
                 lineVehicle.addText( " (" + loadpoint.getModeFormatted() + ")", { :relativeFont => 4 } );
             }
@@ -224,31 +226,31 @@ import Toybox.Math;
     }
 
     // Function to generate charging info below main loadpoint line
-    private function getChargingElement( loadpoint as EvccLoadPoint, dc as Dc, marginLeft as Number ) {
+    private function getChargingElement( loadpoint as EvccLoadPoint, dc as Dc, marginLeft as Number ) as EvccHorizontalBlock {
         var lineCharging = new EvccHorizontalBlock( dc, { :relativeFont => 3, :marginLeft => marginLeft } );
-        lineCharging.addText( loadpoint.getModeFormatted(), {} );
+        lineCharging.addText( loadpoint.getModeFormatted(), {} as DbOptions );
         if( loadpoint.getChargeRemainingDuration() > 0 ) {
-            lineCharging.addText( " - ", {} );
-            lineCharging.addIcon( EvccIconBlock.ICON_DURATION, {} );
-            lineCharging.addText( " " + loadpoint.getChargeRemainingDurationFormatted(), {} );
+            lineCharging.addText( " - ", {} as DbOptions );
+            lineCharging.addIcon( EvccIconBlock.ICON_DURATION, {} as DbOptions );
+            lineCharging.addText( " " + EvccHelperWidget.formatDuration( loadpoint.getChargeRemainingDuration() ), {} as DbOptions );
         }
         return lineCharging;
     }
 
 
     // Function to generate the line for heater loadpoints
-    private function getHeaterElement( loadpoint as EvccLoadPoint, dc as Dc ) {
-        var heater = loadpoint.getHeater();
+    private function getHeaterElement( loadpoint as EvccLoadPoint, dc as Dc ) as EvccHorizontalBlock {
+        var heater = loadpoint.getHeater() as EvccHeater;
         var lineHeater = new EvccHorizontalBlock( dc, { :truncateSpacing => getContentArea().truncateSpacing } );
         
-        lineHeater.addText( heater.getTitle(), { :isTruncatable => true } );
-        lineHeater.addText( " " + EvccHelperWidget.formatTemp( heater.getTemperature() ), {} );
+        lineHeater.addText( heater.getTitle(), { :isTruncatable => true } as DbOptions );
+        lineHeater.addText( " " + EvccHelperWidget.formatTemp( heater.getTemperature() ), {} as DbOptions );
         
         // If the heater is charging, we show the power
         if( loadpoint.getChargePowerRounded() > 0 ) {
-            lineHeater.addText( " ", {} );
+            lineHeater.addText( " ", {} as DbOptions );
             lineHeater.addIcon( EvccIconBlock.ICON_ACTIVE_PHASES, { :charging => true, :activePhases => loadpoint.getActivePhases() } );
-            lineHeater.addText( " " + EvccHelperWidget.formatPower( loadpoint.getChargePowerRounded() ), {} );
+            lineHeater.addText( " " + EvccHelperWidget.formatPower( loadpoint.getChargePowerRounded() ), {} as DbOptions );
             lineHeater.addText( " (" + loadpoint.getModeFormatted() + ")", { :relativeFont => 4 } );
         }
         else {

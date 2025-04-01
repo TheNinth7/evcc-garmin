@@ -14,13 +14,14 @@ import Toybox.Application;
     // since we are making display decisions based on the
     // rounded value
     // Function used to round power values
-    static function roundPower( power as Number ) {
+    static function roundPower( power as Number? ) as Number {
         // We round to full 100 W
-        return Math.round( power / 100.0 ) * 100;
+        if( power == null ) { power = 0; }
+        return Math.round( power / 100.0 ).toNumber() * 100;
     }
 
     // Output a debug statement
-    (:debug) public static function debug( text as String ) {
+    (:debug) public static function debug( text as String ) as Void {
         var now = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
         var dateString = Lang.format(
             "$4$.$5$.$6$ $1$:$2$:$3$",
@@ -36,33 +37,36 @@ import Toybox.Application;
     }
 
     // Output the content of an exception
-    (:debug) public static function debugException( ex as Exception )
+    (:debug) public static function debugException( ex as Exception ) as Void
     {
         // We only output the content of unknown exceptions
         // The exceptions we have defined based on EvccBaseException
         // all represent well-known conditions, debug statements are
         // therefore not required
         if( ! ( ex instanceof EvccBaseException ) ) {
-            EvccHelperBase.debug( ex.getErrorMessage() );
+            var errorMsg = ex.getErrorMessage();
+            if( errorMsg != null ) {
+                EvccHelperBase.debug( errorMsg );
+            }
             ex.printStackTrace();
             System.println(" ");
         }
     }
 
     // For release builds, there shall be no debug output
-    (:release) public static function debug( text as String ) {}
-    (:release) public static function debugException( ex as Exception ) {}
+    (:release) public static function debug( text as String ) as Void {}
+    (:release) public static function debugException( ex as Exception ) as Void {}
 }
 
 // UI helper is available in glance and foreground scope
 (:glance) class EvccHelperUI {
     
-    static function getVersion() {
-        return Application.loadResource( Rez.Strings.AppVersion );
+    static function getVersion() as String {
+        return Application.loadResource( Rez.Strings.AppVersion ) as String;
     }
 
     // Format SoC of battery or vehicles
-    public static function formatSoc( soc as Number ) as String { 
+    public static function formatSoc( soc as Number? ) as String { 
         if( soc != null ) {
             return soc.format("%.0f") + "%";
         } else {
@@ -71,14 +75,13 @@ import Toybox.Application;
     }
 
     // This is the universal function for showing erros on the UI
-    public static function drawError( dc as Dc, ex as Exception )
-    {
+    public static function drawError( dc as Dc, ex as Exception ) as Void {
         var errorMsg;
         var useTxtArea = false;
         var glance = EvccApp.isGlance();
-        var backgroundColor = glance ? Graphics.COLOR_TRANSPARENT : EvccConstants.COLOR_BACKGROUND;
+        var backgroundColor = glance ? Graphics.COLOR_TRANSPARENT : EvccColors.BACKGROUND;
 
-        dc.setColor( EvccConstants.COLOR_ERROR, backgroundColor );
+        dc.setColor( EvccColors.ERROR, backgroundColor );
         dc.clear();
 
         if( ex instanceof NoSiteException ) {
@@ -87,8 +90,9 @@ import Toybox.Application;
             errorMsg = "Password for site " + ex.getSite() + " is missing"; 
         } else if ( ex instanceof StateRequestException ) {
             errorMsg = ex.getErrorMessage();
-            if( ex.getErrorCode() != null && ! ex.getErrorCode().toString().equals( "" ) ) {
-                errorMsg += "\n" + ex.getErrorCode();
+            var errorCode = ex.getErrorCode();
+            if( errorCode != null && ! errorCode.toString().equals( "" ) ) {
+                errorMsg += "\n" + errorCode;
             }
         } else {
             // For unknown errors we show the evcc version, to help supporting
@@ -100,8 +104,8 @@ import Toybox.Application;
 
         if( useTxtArea )
         {
-            var txtWidth;
-            var txtHeight;
+            var txtWidth = 0;
+            var txtHeight = 0;
             
             // For glance we use the whole area, for
             // widget we calculate a square to fit into
@@ -115,8 +119,8 @@ import Toybox.Application;
             }
 
             var txtArea = new WatchUi.TextArea({
-                :text => errorMsg,
-                :color => EvccConstants.COLOR_ERROR,
+                :text => errorMsg != null ? errorMsg : "",
+                :color => EvccColors.ERROR,
                 :backgroundColor => backgroundColor,
                 :font => [Graphics.FONT_TINY, Graphics.FONT_GLANCE, Graphics.FONT_XTINY],
                 :locX => WatchUi.LAYOUT_HALIGN_CENTER,
@@ -136,15 +140,15 @@ import Toybox.Application;
         }
     }
 
-    public static function maxn( n as Array ) { 
+    public static function maxn( n as Array<Numeric> ) as Numeric { 
         var max = 0;
         for( var i = 0; i < n.size(); i++ ) {
             max = EvccHelperUI.max( max, n[i] );
         }
         return max;
     }
-    public static function max( a, b ) { return a > b ? a : b; }
-    public static function min( a, b ) { return a < b ? a : b; }
+    public static function max( a as Numeric, b as Numeric ) as Numeric { return a > b ? a : b; }
+    public static function min( a as Numeric, b as Numeric ) as Numeric { return a < b ? a : b; }
 }
 
 
@@ -152,10 +156,11 @@ import Toybox.Application;
 class EvccHelperWidget {
     
     // Function to format power values for the main view
-    public static function formatPower( power as Number ) {
+    public static function formatPower( power as Number? ) as String {
         // We always use kW, even for small values, to make
         // the display consistent
-        return ( power / 1000.0 ).format("%.1f") + "kW";    
+        if( power == null ) { power = 0; }
+        return ( power / 1000.0 ).format("%.1f") + "kW";
     }
 
     // Format temperature of heaters

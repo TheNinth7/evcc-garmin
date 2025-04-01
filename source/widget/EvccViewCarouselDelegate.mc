@@ -14,10 +14,10 @@ import Toybox.Application;
 
 // Standard derivate, that just implements onSwipe for swipe left
 (:exclForSwipeLeftOverride) class EvccViewCarouselDelegate extends EvccViewCarouselDelegateBase {
-    function initialize( views as SiteViewsArr, breadCrumb as EvccBreadCrumb ) {
+    function initialize( views as ArrayOfSiteViews, breadCrumb as EvccBreadCrumb ) {
         EvccViewCarouselDelegateBase.initialize( views, breadCrumb );
     }
-    public function onSwipe( swipeEvent ) {
+    public function onSwipe( swipeEvent ) as Boolean {
         // EvccHelperBase.debug("ViewCarouselDelegate: onSwipe");
         if( swipeEvent.getDirection() == SWIPE_LEFT ) {
             return onSelect();
@@ -35,13 +35,13 @@ import Toybox.Application;
 // To circumvent this, excplicitly does not handle onNextPage(), and instead
 // uses onKey() and onSwipe()
 (:exclForSwipeLeftDefault) class EvccViewCarouselDelegate extends EvccViewCarouselDelegateBase {
-    private var _onNextPage = false;
-    function initialize( views as SiteViewsArr, breadCrumb as EvccBreadCrumb ) {
+    private var _onNextPage as Boolean = false;
+    function initialize( views as ArrayOfSiteViews, breadCrumb as EvccBreadCrumb ) {
         EvccViewCarouselDelegateBase.initialize( views, breadCrumb );
     }
     // We call onNextPage again if it was the original behavior,
     // or hand over to our base class
-    public function onKey( keyEvent ) {
+    public function onKey( keyEvent ) as Boolean {
         // EvccHelperBase.debug("ViewCarouselDelegate (override): onKey");
         if( _onNextPage ) {
             return onNextPage();
@@ -53,7 +53,7 @@ import Toybox.Application;
     // For any other input, we call onNextPage
     // again if it was the original behavior,
     // or hand over to our base class
-    public function onSwipe( swipeEvent ) {
+    public function onSwipe( swipeEvent ) as Boolean {
         // EvccHelperBase.debug("ViewCarouselDelegate (override): onSwipe");
         if( swipeEvent.getDirection() == SWIPE_LEFT ) {
             _onNextPage = false;
@@ -68,7 +68,7 @@ import Toybox.Application;
     // and return false
     // The event is then processed by either onKey or onSwipe, which will
     // call onNextPage again if the input was not swipe left
-    public function onNextPage() {
+    public function onNextPage() as Boolean {
         if( _onNextPage ) {
             _onNextPage = false;
             return EvccViewCarouselDelegateBase.onNextPage();
@@ -81,10 +81,10 @@ import Toybox.Application;
 
 // Main class implementing most of the delegate functionality
 class EvccViewCarouselDelegateBase extends EvccViewSimpleDelegate {
-    private var _views as SiteViewsArr;
+    private var _views as ArrayOfSiteViews;
     private var _breadCrumb as EvccBreadCrumb;
 
-    function initialize( views as SiteViewsArr, breadCrumb as EvccBreadCrumb ) {
+    function initialize( views as ArrayOfSiteViews, breadCrumb as EvccBreadCrumb ) {
         EvccViewSimpleDelegate.initialize();
         _views = views;
         _breadCrumb = breadCrumb;
@@ -93,7 +93,7 @@ class EvccViewCarouselDelegateBase extends EvccViewSimpleDelegate {
     // For enter key and swipe left we trigger the onSelect
     // behavior. In some gesture-based devices the keys are not
     // associated with that behavior (Venu, Vivoactive)
-    (:exclForHasSelect) public function onKey( keyEvent ) {
+    (:exclForHasSelect) public function onKey( keyEvent ) as Boolean {
         // EvccHelperBase.debug("ViewCarouselDelegate: onKey");
         if( keyEvent.getKey() == KEY_ENTER ) {
             return onSelect();

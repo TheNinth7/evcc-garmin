@@ -1,7 +1,8 @@
 import Toybox.Graphics;
 
-// Various constants used in the implementation
-(:glance) class EvccConstants {
+// This class holds constants that are used across the code base,
+// mainly for defining keys for storage and properties
+(:glance :background) class EvccConstants {
     // Names of elements in persistant storage
     public static const STORAGE_SITE_PREFIX = "site_";
     public static const STORAGE_BREAD_CRUMBS = "breadCrumbs";
@@ -19,17 +20,19 @@ import Toybox.Graphics;
     public static const PROPERTY_SITE_SCALE_FORECAST_SUFFIX = "_sfc";
     public static const PROPERTY_REFRESH_INTERVAL = "refreshInterval";
     public static const PROPERTY_DATA_EXPIRY = "dataExpiry";
-    public static const PROPERTY_GLANCE_MARGIN_LEFT = "glanceMarginLeft";
     public static const PROPERTY_VECTOR_FONT_FACE = "vectorFontFace";
-    //public static const PROPERTY_REDUCE_RESPONSE_SIZE = "reduceResponseSize";
+    public static const PROPERTY_GLANCE_MARGIN_LEFT = "glanceMarginLeft";
 
     // Number of sites supported, needs to match the number of settings
     // defined in settings.xml
     (:exclForSitesOne) public static const MAX_SITES = 5;
     (:exclForSitesMultiple) public static const MAX_SITES = 1;
+}
 
-    // Default foreground and background
-    public static const COLOR_BACKGROUND = Graphics.COLOR_BLACK;
-    public static const COLOR_FOREGROUND = Graphics.COLOR_WHITE;
-    public static const COLOR_ERROR = Graphics.COLOR_RED;
+// Colors are not definable in background because Graphics is not available,
+// therefore they are separated into a dedicated class with different scope
+(:glance) class EvccColors {
+    public static const BACKGROUND = Graphics.COLOR_BLACK;
+    public static const FOREGROUND = Graphics.COLOR_WHITE;
+    public static const ERROR = Graphics.COLOR_RED;
 }
