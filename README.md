@@ -14,23 +14,30 @@ The user manual is published via GitHub Pages at:<br>https://evccg.the-ninth.com
 This README covers the following topics:
 
 - [Introduction](#introduction)
+
 - [Project Structure](#project-structure)
   - [Root Folder `/`](#root-folder-)
   - [Folder `/docs`](#folder-docs)
   - [Folder `/icons`](#folder-icons)
+  - [Folders `/resources*` and `/settings*`](#folders-resources-and-settings)
+  - [Folders `/source*`](#folders-source)
+- [Build Instructions](#build-instructions)
+  - [To Run the App in the Garmin Simulator](#to-run-the-app-in-the-garmin-simulator)
+  - [To Compile for a Single Device](#to-compile-for-a-single-device)
+  - [To Compile for All Devices and Export `.iq` File for Upload](#to-compile-for-all-devices-and-export-iq-file-for-upload)
+  - [Modifications in `source-annot-glance`](#modifcations-in-source-annot-glance)
+  - [To Add a New Device](#to-add-a-new-device)
+  - [To Generate the Device-Specific Icons](#to-generate-the-device-specific-icons)
     - [How the App Selects Font Sizes](#how-the-app-selects-font-sizes)
       - [1. Vector Font Mode (Modern Devices)](#1-vector-font-mode-modern-devices)
       - [2. Static Mode](#2-static-mode)
       - [3. Static Optimized Mode](#3-static-optimized-mode)
-    - [How to Generate Icons for a New Device](#how-to-generate-icons-for-a-new-device)
-  - [Folders `/resources*` and `/settings*`](#folders-resources-and-settings)
-  - [Folders `/source*`](#folders-source)
-    - [Generate Source for Tiny Glance](#generate-source-for-tiny-glance)
-- [Build Instructions](#build-instructions)
-  - [To run the app in the Garmin simulator](#to-run-the-app-in-the-garmin-simulator)
-  - [To compile for a single device](#to-compile-for-a-single-device)
-  - [To compile for all devices and export `.iq` file for upload](#to-compile-for-all-devices-and-export-iq-file-for-upload)
-  - [To add a new device](#to-add-a-new-device)
+    - [Generatinc Icons for a New Device](#generating-icons-for-a-new-device)
+    - [Adding, Removing or Modifying Icons](#adding-removing-or-modifying-icons)
+      - [1. `generate.json`](#1-generatejson)
+      - [2. `drawables.xml`](#2-drawablesxml)
+      - [3. `EvccResourceSet.mc`](#3-source_baseevccresourcesetmc)
+    - [Generating the Device-Specific PNG Files](#generating-the-device-specific-png-files)
 
 <br>
 
@@ -103,11 +110,6 @@ Icons are created in multiple font sizes based on each device's display resoluti
 
 At runtime, the app dynamically selects the appropriate font size based on the displayed content. 
 
-**Dependencies:**
-
-- **Inkscape**: Used to convert SVG to PNG (must be available in the Windows PATH).
-- **pngcrush.exe**: Used to optimize PNG files (included in the directory, no installation required).
-
 **Key files:**
 
 - `generate.json`: Defines font/icon sizes per device and which icons to generate
@@ -118,13 +120,144 @@ At runtime, the app dynamically selects the appropriate font size based on the d
   - `drawables.xml` as parameter: only copies `drawables.xml` to all device resource folders, without generating icons
 - `generate.js`: JavaScript script, run by `generate.bat` using Windows Scripting Host
 
+<br>
+
+## Folders /resources* and /settings*
+
+In the Connect IQ SDK, resources define:
+
+- **Properties**: Parameters stored outside the app, hidden to the user
+- **Settings**: User-facing configurations
+- **Drawables**: Image assets used by the app
+- **Strings**: Text values like app name and version
+
+**Folder breakdown:**
+
+- `/resources`: Shared across all devices
+- `/resources-[devicename]`: Specific to individual devices
+- `/resources-round-[resolution]`: Shared among devices with identical screen dimensions
+- `/settings-site1`: Settings for devices supporting one site
+- `/settings-site5`: Settings for devices supporting up to five sites
+
+**Further reading:**
+
+- [Connect IQ SDK Core Topics - Resources](https://developer.garmin.com/connect-iq/core-topics/resources/)
+
+<br>
+
+## Folders /source*
+
+The app is written in **Monkey C**, Garmin's programming language, using the Connect IQ SDK API for UI, settings, persistent storage, and HTTP requests to evcc.
+
+**Annotations:**
+
+- `(:glance)` and `(:background)` are used to isolate code for those specific modules.
+- Extensive use of exclude annotations helps the build system tailor the code to each device (see the [root folder](#root-folder-) for details).
+
+**Key files and directories:**
+
+- `/source/EvccApp.mc`: Entry point for glance, widget, and background modes
+- `/source/_base`: Shared code
+- `/source/background`: Background data handling, to support the tiny glance
+- `/glance`: Glance versions (full-featured and tiny)
+- `/widget`: Widget app
+- `/source-annot-glance`: Some classes are required in the glance scope for the full-featured glance but not for the tiny glance. Therefore, their source files must be duplicated—once with the `:glance` annotation and once without. The `source-annot-glance` directory contains the master versions of these annotated files, and any modifications to these classes should be made there.
+- `/source-annot-tinyglance`: This folder contains the duplicated source files mentioned above, with the `:glance` annotation removed.
+- `/source-annot-tinyglance/create-source-files.bat`: This script generates the duplicated source files (see [here](#modifcations-in-source-annot-glance) for details).
+
+**Further reading:**
+
+- [Connect IQ Core Topics](https://developer.garmin.com/connect-iq/core-topics/)  
+- [Connect IQ API Reference](https://developer.garmin.com/connect-iq/api-docs/)
+
+<br>
+
+# Build Instructions
+
+Follow the steps below to build, run, and test the app using the Connect IQ SDK and Garmin simulator.
+<br>
+
+## To Run the App in the Garmin Simulator
+
+1. Install:
+   - Visual Studio Code
+   - Git
+   - [Connect IQ SDK](https://developer.garmin.com/connect-iq/sdk/)
+   - Monkey C extension for VS Code
+
+2. Open VS Code and clone the `evcc-garmin` repository
+3. Open any file in the `/source` folder
+4. Press **F5** to start the simulator and select a target device
+5. Go to `File` → `Edit Persistent Storage` → `Edit Application.Properties` and configure as needed  
+   - Use `https://demo.evcc.io/` for testing if you don’t have a local instance  
+   - To allow HTTP URLs, uncheck `Settings > Use Device HTTPS Requirements`
+
+<br>
+
+## To Compile for a Single Device
+
+1. Press `CTRL+SHIFT+P` → `Monkey C: Build Current Project`
+
+<br>
+
+## To Compile for All Devices and Export `.iq` File for Upload
+
+The following command generates the `.iq` file, which is used for uploading the app to the Garmin Connect IQ Store.
+
+1. Press `CTRL+SHIFT+P` → `Monkey C: Export Project`
+
+<br>
+
+## Modifcations in `/source-annot-glance`
+
+As explained in [Folders `/source`](#folders-source), the `/source-annot-tinyglance` folder contains duplicates of the files in `/source-annot-glance`, but without the `:glance` annotations. **All changes should be made only in `/source-annot-glance`.**  
+
+After making changes, run `/source-annot-tinyglance/create-source-files.bat` to regenerate the tiny glance source files. This script copies the files and removes the `:glance` annotations. It requires `sed` for Windows to be installed and added to your `PATH` environment variable. You can download it from [here](https://gnuwin32.sourceforge.net/packages/sed.htm).
+
+Alternatively, you can use the custom VS Code task defined in the project. Press `CTRL+SHIFT+B` and choose `Generate Source for Tiny Glance` to run the batch file from the integrated terminal.
+
+<br>
+
+## To Add a New Device
+
+To support a new device:
+
+1. If the device isn't available in your current SDK, launch the **SDK Manager** and download/activate the latest version.
+
+2. In `manifest.xml`, check the new device in the supported device list.
+
+3. Configure device-specific features in the `monkey.jungle` build file (see [Root Folder `/`](#root-folder-)). The default feature set is a good starting point. You can launch the app in the simulator to evaluate whether any adjustments are needed. For example:
+
+   - If the app reports that vector fonts are not supported, switch to static fonts—or to static optimized fonts if standard sizes overlap.
+   - If out-of-memory errors occur during testing, consider switching to the tiny glance, limiting support to a single site, and removing the system info view.
+   - If watchdog errors occur (indicating that execution is taking too long), switch from complex to simple calculations.
+   - If the select/enter button is not in the standard 30° position, switch to the appropriate option.
+
+4. Generate the icons for the new device following the steps described in [How to Generate Icons for a New Device](#how-to-generate-icons-for-a-new-device).
+
+6. Test in the simulator (see [above](#to-run-the-app-in-the-garmin-simulator))
+
+7. Export the project (`CTRL+SHIFT+P` → `Monkey C: Export Project`) and upload the `.iq` file to the Connect IQ Store
+
+<br>
+
+## To Generate the Device-Specific Icons
+
+All icons are stored in SVG format in the [icons folder](#folder-icons). From these, device-specific PNGs are generated at multiple font sizes, tailored to each device's display resolution. The resulting PNGs are stored in the appropriate [resource folders](#folders-resources-and-settings).
+
+At runtime, the app dynamically selects the appropriate icon size based on the displayed content. Font sizes per device are defined in `/icons/generate.json`.
+
+Each icon also requires entries in `/icons/drawables.xml` for every size it will be used at.
+
+The following sections explain how font sizes are selected, how to add support for a new device, how to add new icons, and how to generate the PNGs.
+
 ### How the App Selects Font Sizes
 
-For glances, a single font size is defined:
+For glances, a single font size is defined in `generate.json` under each device entry:
 
 - `icon_glance` → always equaling `FONT_GLANCE` as defined by Garmin for the device
 
-For the widget, five icon/font sizes are defined per device. In `generate.json`, these are specified under each device entry as:
+For the widget, five icon/font sizes are defined per device in `generate.json`:
 
 - `icon_medium`
 - `icon_small`
@@ -170,8 +303,9 @@ You can enable debugging in `EvccUILibWidgetSingleton` to print the actual font 
 - `icon_xtiny` → `FONT_XTINY`
 - `icon_micro` → `FONT_XTINY`
 
+<br>
 
-### How to Generate Icons for a New Device
+### Generating Icons for a New Device
 
 To determine the actual font sizes used by the app, follow these steps:
 
@@ -224,113 +358,98 @@ There are two types of entries for devices in `generate.json`:
 
 <br>
 
-## Folders /resources* and /settings*
+### Adding, Removing, or Modifying Icons
 
-In the Connect IQ SDK, resources define:
+To add, remove, or change icons, you'll need to update the following files in the `/icons` directory:
 
-- **Properties**: Parameters stored outside the app, hidden to the user
-- **Settings**: User-facing configurations
-- **Drawables**: Image assets used by the app
-- **Strings**: Text values like app name and version
+#### **1. `generate.json`**  
 
-**Folder breakdown:**
+This file serves as input for the PNG generation script.
 
-- `/resources`: Shared across all devices
-- `/resources-[devicename]`: Specific to individual devices
-- `/resources-round-[resolution]`: Shared among devices with identical screen dimensions
-- `/settings-site1`: Settings for devices supporting one site
-- `/settings-site5`: Settings for devices supporting up to five sites
+- The `device-families` entry, covered in the previous section, defines available icon sizes for each device family.
+- The `files` section specifies how each SVG should be processed and which sizes to generate. Each entry includes:
+  - **`anti-aliasing`**: Level of anti-aliasing applied by Inkscape (range: `0` = none, `3` = max).
+  - **`types`**: An array of size identifiers (e.g., `icon_medium`) that match entries in `device-families`. PNGs will be generated for each type listed.
+  - **`png-name`** (optional): For entries with only one `type`, this overrides the default PNG filename.
 
-**Further reading:**
+  **Example:**
+  ```json
+  "files": {
+    "battery_empty.svg": { 
+      "anti-aliasing": "3", 
+      "types": ["icon_glance", "icon_xtiny", "icon_tiny", "icon_small", "icon_medium"] 
+    },
+    "sun.svg": { 
+      "anti-aliasing": "3", 
+      "types": ["icon_xtiny", "icon_tiny", "icon_small", "icon_medium"] 
+    },
+    "evcc.svg": { 
+      "anti-aliasing": "3", 
+      "types": ["logo_evcc"], 
+      "png-name": "logo_evcc.png" 
+    }
+  }
+  ```
 
-- [Connect IQ SDK Core Topics - Resources](https://developer.garmin.com/connect-iq/core-topics/resources/)
+In this example:
+- `battery_empty.svg` will be generated in multiple sizes for various UI contexts.
+- `sun.svg` is limited to widget-specific sizes.
+- `evcc.svg` is generated in a single size with a custom filename.
 
-<br>
+**Default PNG naming convention:**
+```
+<type>_<name>_crushed.png
+```
+Where:
+- `<type>` = icon size (e.g., `icon_medium`)
+- `<name>` = original SVG filename (without extension)
+- `_crushed` = indicates the PNG has been optimized
 
-## Folders /source*
-
-The app is written in **Monkey C**, Garmin's programming language, using the Connect IQ SDK API for UI, settings, persistent storage, and HTTP requests to evcc.
-
-**Annotations:**
-
-- `(:glance)` and `(:background)` are used to isolate code for those specific modules.
-- Extensive use of exclude annotations helps the build system tailor the code to each device (see the [root folder](#root-folder-) for details).
-
-**Key files and directories:**
-
-- `/source/EvccApp.mc`: Entry point for glance, widget, and background modes
-- `/source/_base`: Shared code
-- `/source/background`: Background data handling, to support the tiny glance
-- `/glance`: Glance versions (full-featured and tiny)
-- `/widget`: Widget app
-- `/source-annot-glance`: Some classes are required in the glance scope for the full-featured glance but not for the tiny glance. Therefore, their source files must be duplicated—once with the `:glance` annotation and once without. The `source-annot-glance` directory contains the master versions of these annotated files, and any modifications to these classes should be made there.
-- `/source-annot-tinyglance`: This folder contains the duplicated source files mentioned above, with the `:glance` annotation removed.
-- `/source-annot-tinyglance/create-source-files.bat`: This script generates the duplicated source files (see below).
-
-### Generate source for tiny glance
-
-As mentioned above, `/source-annot-tinyglance/create-source-files.bat` duplicates the source files for the tiny glance, and removes the :glance annotation. The batch files needs `sed` for Windows to be installed and added to the `PATH` environment variable. You can download the installation file (here)[https://gnuwin32.sourceforge.net/packages/sed.htm].
-
-This project also defines a custom VS Code task for this. Use `CTRL+SHIFT+B` and select `Generate Source for Tiny Glance`.
-
-**Further reading:**
-
-- [Connect IQ Core Topics](https://developer.garmin.com/connect-iq/core-topics/)  
-- [Connect IQ API Reference](https://developer.garmin.com/connect-iq/api-docs/)
+For example, the output PNGs for `sun.svg` would include:  
+`icon_xtiny_sun_crushed.png`, `icon_small_sun_crushed.png`, etc.
 
 <br>
 
-# Build Instructions
+#### **2. `drawables.xml`**  
+Defines resources for use in the app via the Connect IQ SDK.
 
-Follow the steps below to build, run, and test the app using the Connect IQ SDK and Garmin simulator.
-<br>
+Each icon requires an entry for **every size** it's used in. For example, the `sun.svg` in medium size would have:
 
-## To run the app in the Garmin simulator
+```xml
+<bitmap scope="foreground" id="sun_medium" filename="icon_medium_sun_crushed.png" packingFormat="png"/>
+```
 
-1. Install:
-   - Visual Studio Code
-   - Git
-   - [Connect IQ SDK](https://developer.garmin.com/connect-iq/sdk/)
-   - Monkey C extension for VS Code
+- `scope="foreground"` indicates it's available only in widget contexts.
 
-2. Open VS Code and clone the `evcc-garmin` repository
-3. Open any file in the `/source` folder
-4. Press **F5** to start the simulator and select a target device
-5. Go to `File` → `Edit Persistent Storage` → `Edit Application.Properties` and configure as needed  
-   - Use `https://demo.evcc.io/` for testing if you don’t have a local instance  
-   - To allow HTTP URLs, uncheck `Settings > Use Device HTTPS Requirements`
+Refer to the [Connect IQ SDK Resources documentation](https://developer.garmin.com/connect-iq/core-topics/resources/#resources) for more details on these entries.
 
 <br>
 
-## To compile for a single device
 
-1. Press `CTRL+SHIFT+P` → `Monkey C: Build Current Project`
+#### **3. `/source/_base/EvccResourceSet.mc`**  
+
+This file contains Monkey C classes that define resource sets used in the app. Each resource set defines font sizes to be used and maps them to the corresponding PNG resources.
+
+- `EvccWidgetResourceSetBase`: Defines resources for **widgets**
+- `EvccGlanceResourceSetBase`: Defines resources for **glances**
+
+These mappings act as the bridge between the resource definitions in drawables.xml and the font sizes used in the Monkey C code.
 
 <br>
 
-## To compile for all devices and export `.iq` file for upload
+### Generating the Device-Specific PNG Files
 
-1. Press `CTRL+SHIFT+P` → `Monkey C: Export Project`
+Whenever you make changes to `/icons/generate.json`, `/icons/drawables.xml`, or any of the SVG files, you need to run `generate.bat` to regenerate the device-specific PNG icons and copy `drawables.xml` into each device’s [resource folder](#folders-resources-and-settings).
 
-<br>
+You can run `generate.bat` with the following parameters:
 
-## To add a new device
+- **No parameters**: Generates icons for **all devices**.
+- **Device folder** (e.g. `resources-fenix7`): Generates icons only for that specific device.
+- **`drawables.xml`**: Copies `drawables.xml` to all device resource folders **without generating icons**.
 
-To support a new device:
+**Dependencies**
 
-1. If the device isn't available in your current SDK, launch the **SDK Manager** and download/activate the latest version.
+The script relies on the following third-party tools:
 
-2. In `manifest.xml`, check the new device in the supported device list.
-
-3. Configure device-specific features in the `monkey.jungle` build file (see [Root Folder `/`](#root-folder-)). The default feature set is a good starting point. You can launch the app in the simulator to evaluate whether any adjustments are needed. For example:
-
-   - If the app reports that vector fonts are not supported, switch to static fonts—or to static optimized fonts if standard sizes overlap.
-   - If out-of-memory errors occur during testing, consider switching to the tiny glance, limiting support to a single site, and removing the system info view.
-   - If watchdog errors occur (indicating that execution is taking too long), switch from complex to simple calculations.
-   - If the select/enter button is not in the standard 30° position, switch to the appropriate option.
-
-4. Generate the icons for the new device following the steps described in [How to Generate Icons for a New Device](#how-to-generate-icons-for-a-new-device).
-
-6. Test in the simulator (see [above](#to-run-the-app-in-the-garmin-simulator))
-
-7. Export the project (`CTRL+SHIFT+P` → `Monkey C: Export Project`) and upload the `.iq` file to the Connect IQ Store
+- **Inkscape** – Converts SVG files to PNG. It must be available in your system’s `PATH`.
+- **pngcrush.exe** – Optimizes PNG files. This tool is included in the project directory and requires no installation.
