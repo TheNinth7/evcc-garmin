@@ -1,9 +1,3 @@
-// ATTENTION: This is a duplication of /source-glance/EvccResources.mc
-// For normal devices this class is required for both glance and widget
-// For devices that use the tinyglance, it is required only for the widget
-// To save valuable code space this file is not in the main source folder,
-// but once in each of the glance folders, in source-glance with :glance 
-// annotation and in source-tinyglance without.
 import Toybox.Lang;
 import Toybox.Graphics;
 

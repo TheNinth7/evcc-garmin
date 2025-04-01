@@ -1,0 +1,15 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Generate Source for Tiny Glance",
+        "type": "shell",
+        "command": ".\\source-annot-tinyglance\\create-source-files.bat",
+        "group": {
+          "kind": "build",
+          "isDefault": false
+        },
+        "problemMatcher": []
+      }
+    ]
+  }

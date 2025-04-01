@@ -1,9 +1,3 @@
-// ATTENTION: This is a duplication of /source-glance/EvccDrawingBlocks.mc
-// For normal devices this class is required for both glance and widget
-// For devices that use the tinyglance, it is required only for the widget
-// To save valuable code space this file is not in the main source folder,
-// but once in each of the glance folders, in source-glance with :glance 
-// annotation and in source-tinyglance without.
 import Toybox.Lang;
 import Toybox.Graphics;
 import Toybox.WatchUi;
@@ -93,7 +87,7 @@ class EvccBlock {
         // Special handling for :baseFont
         // If the base font is requested, we return the parent font, or if that is not present our current font
         if( option == :baseFont ) {
-            return parent != null ? parent.getOption( :font ) : _options[:font];
+            return parent != null ? parent.getFont() : _options[:font];
         }
 
         if( parent != null ) {
@@ -132,15 +126,28 @@ class EvccBlock {
         _options[option] = value;
     }
 
+    // Returns from getOption are Any and need type-casting
+    // For often used options, we have dedicated accessor functions
+    // doing the type-casting, which saves a tiny bit of memory.
+    public function getJustify() as TextJustification { return getOption( :justify ) as TextJustification; }
+    public function getMarginLeft() as Number { return getOption( :marginLeft ) as Number; }
+    public function getMarginRight() as Number { return getOption( :marginRight ) as Number; }
+    public function getMarginTop() as Number { return getOption( :marginTop ) as Number; }
+    public function getMarginBottom() as Number { return getOption( :marginBottom ) as Number; }
+    public function getFont() as EvccFont { return getOption( :font ) as EvccFont; }
+
+    // Accessor for parent needs special treatment
     // Parent can be passed into an element either in the options structure
-    // or later via this function
+    // or later via this set function
     public function setParent( parent as EvccContainerBlock ) as Void {
         setOption( :parent, parent.weak() );
     }
+    // For the get function we resolve the weak reference
     protected function getParent() as EvccContainerBlock? {
         var parentRef = _options[:parent] as WeakReference?;
         return ( parentRef != null ? parentRef.get() : null ) as EvccContainerBlock?;
     }
+
 
     // Functions for getting and caching width/height to reduce
     // amount of calculations
@@ -208,7 +215,7 @@ class EvccBlock {
     // This is used on several places, and having it in a function
     // saves code space memory
     protected function getFontHeight() as Number {
-        return EvccResources.getFontHeight( getOption( :font ) as EvccFont );
+        return EvccResources.getFontHeight( getFont() );
     }
 }
 
@@ -286,7 +293,7 @@ class EvccHorizontalBlock extends EvccContainerBlock {
         // The y passed in is the center
         // To calculate the y for the elements, we have to adjust it
         // by marginTop and marginBottom
-        y = y + getOption( :marginTop ) as Number / 2 - getOption( :marginBottom ) as Number / 2;
+        y = y + getMarginTop() / 2 - getMarginBottom() / 2;
         // derivated from
         // var marginTop = getOption( :marginTop );
         // var elementHeights = getHeight() - marginTop - getOption( :marginBottom );
@@ -302,12 +309,12 @@ class EvccHorizontalBlock extends EvccContainerBlock {
             }
         }
         
-        x += getOption( :marginLeft ) as Number; 
+        x += getMarginLeft(); 
 
         // For justify left, we start at the current x position
         // For justify center, we adjust x to center the content at x
         // For justify right, we adjust x to align the content to the left of x
-        var justify = getOption( :justify ) as TextJustification;
+        var justify = getJustify();
         x -= justify == Graphics.TEXT_JUSTIFY_CENTER ? getWidth() / 2 : 0;
         x -= justify == Graphics.TEXT_JUSTIFY_RIGHT ? getWidth() : 0;
         
@@ -343,7 +350,7 @@ class EvccHorizontalBlock extends EvccContainerBlock {
         for( var i = 0; i < _elements.size(); i++ ) {
             width += _elements[i].getWidth();
         }
-        return getOption( :marginLeft ) as Number + width + getOption( :marginRight ) as Number;
+        return getMarginLeft() + width + getMarginRight();
     }
 
     // Height is the maximum of all heights
@@ -353,7 +360,7 @@ class EvccHorizontalBlock extends EvccContainerBlock {
         for( var i = 0; i < _elements.size(); i++ ) {
             height = EvccHelperUI.max( height, _elements[i].getHeight() );
         }
-        return getOption( :marginTop ) as Number + height as Number + getOption( :marginBottom ) as Number;
+        return getMarginTop() + height as Number + getMarginBottom();
     }
     
     // If text is added to a horizontal element and the previous element
@@ -393,7 +400,7 @@ class EvccVerticalBlock extends EvccContainerBlock {
     // the y at the center of the element and pass it as starting point.
     function draw( x as Number, y as Number )
     {
-        if( getOption( :justify ) as TextJustification != Graphics.TEXT_JUSTIFY_CENTER ) {
+        if( getJustify() != Graphics.TEXT_JUSTIFY_CENTER ) {
             throw new InvalidValueException( "EvccVerticalBlock supports only justify center." );
         }
 
@@ -415,8 +422,8 @@ class EvccVerticalBlock extends EvccContainerBlock {
             }
         }
 
-        x += getOption( :marginLeft ) as Number; 
-        y = y - getHeight() / 2 + getOption( :marginTop ) as Number;
+        x += getMarginLeft(); 
+        y = y - getHeight() / 2 + getMarginTop();
         
         for( var i = 0; i < _elements.size(); i++ ) {
             y += _elements[i].getHeight() / 2;
@@ -424,7 +431,7 @@ class EvccVerticalBlock extends EvccContainerBlock {
             // Depending on the alignment of the element, we
             // adjust the x coordinate we pass in
             var elX = x;
-            var elJust = _elements[i].getOption( :justify ) as TextJustification;
+            var elJust = _elements[i].getJustify();
             elX -= elJust == Graphics.TEXT_JUSTIFY_LEFT ? Math.round( getWidth() / 2 ).toNumber() : 0;
             elX += elJust == Graphics.TEXT_JUSTIFY_RIGHT ? Math.round( getWidth() / 2 ).toNumber() : 0;
             
@@ -449,7 +456,7 @@ class EvccVerticalBlock extends EvccContainerBlock {
         for( var i = 0; i < _elements.size(); i++ ) {
             width = EvccHelperUI.max( width, _elements[i].getWidth() );
         }
-        return ( getOption( :marginLeft ) as Number + width + getOption( :marginRight ) as Number ) as Number;
+        return ( getMarginLeft() + width + getMarginRight() ) as Number;
     }
 
     // Height is sum of all heights
@@ -459,7 +466,7 @@ class EvccVerticalBlock extends EvccContainerBlock {
         for( var i = 0; i < _elements.size(); i++ ) {
             height += _elements[i].getHeight();
         }
-        return getOption( :marginTop ) as Number + height + getOption( :marginBottom ) as Number;
+        return getMarginTop() + height + getMarginBottom();
     }
 
     // For the vertical container, new text is always added as new element
@@ -499,14 +506,14 @@ class EvccTextBlock extends EvccBlock {
         _text += text;
     }
 
-    protected function calculateWidth() as Number { return getTextWidth() + getOption( :marginLeft ) as Number + getOption( :marginRight ) as Number; }
-    protected function calculateHeight() as Number { return getTextHeight() + getOption( :marginTop ) as Number + getOption( :marginBottom ) as Number; }
-    function getTextWidth() as Number { return _dc.getTextDimensions( _text, EvccResources.getGarminFont( getOption( :font ) as EvccFont ) )[0]; }
+    protected function calculateWidth() as Number { return getTextWidth() + getMarginLeft() + getMarginRight(); }
+    protected function calculateHeight() as Number { return getTextHeight() + getMarginTop() + getMarginBottom(); }
+    function getTextWidth() as Number { return _dc.getTextDimensions( _text, EvccResources.getGarminFont( getFont() ) )[0]; }
     function getTextHeight() as Number { return getFontHeight(); }
 
     // For alignment we just pass the justify parameter on to the drawText
     function draw( x as Number, y as Number ) {
-        var font = getOption( :font ) as EvccFont;
+        var font = getFont();
 
         // Align text to have the same baseline as the base font would have
         // this is for aligning two different font sizes in one line of text
@@ -523,17 +530,17 @@ class EvccTextBlock extends EvccBlock {
 
         _dc.setColor( getOption( :color ) as ColorType, getOption( :backgroundColor ) as ColorType );
 
-        var justify = getOption( :justify ) as TextJustification;
+        var justify = getJustify();
         if( justify == Graphics.TEXT_JUSTIFY_LEFT ) {
-            x = x + getOption( :marginLeft ) as Number;
+            x = x + getMarginLeft();
         } else if ( justify == Graphics.TEXT_JUSTIFY_RIGHT ) {
-            x = x - getOption( :marginRight ) as Number;
+            x = x - getMarginRight();
         } else {
-            x = x - getWidth() / 2 + getOption( :marginLeft ) as Number + getTextWidth() / 2;
+            x = x - getWidth() / 2 + getMarginLeft() + getTextWidth() / 2;
         }
 
-        var marginTop = getOption( :marginTop ) as Number;
-        if( marginTop != 0 || getOption( :marginBottom ) as Number != 0 )
+        var marginTop = getMarginTop();
+        if( marginTop != 0 || getMarginBottom() != 0 )
         {
             y = y - getHeight() / 2 + marginTop + getTextHeight() / 2;
         }
@@ -595,8 +602,8 @@ class EvccBitmapBlock extends EvccBlock {
 
     // These function first make sure that the bitmap width/height is loaded and then
     // calculate the total width/height
-    protected function calculateWidth() as Number { loadData(); return _bitmapWidth as Number + getOption( :marginLeft ) as Number + getOption( :marginRight ) as Number; }
-    protected function calculateHeight() as Number { loadData(); return _bitmapHeight as Number + getOption( :marginTop ) as Number + getOption( :marginBottom ) as Number; }
+    protected function calculateWidth() as Number { loadData(); return _bitmapWidth as Number + getMarginLeft() + getMarginRight(); }
+    protected function calculateHeight() as Number { loadData(); return _bitmapHeight as Number + getMarginTop() + getMarginBottom(); }
     // Load width/height
     // We don't do this in the constructor because for the EvccIconBlock sub class, the font
     // size is needed to determine the actual icon used, and that one is not available
@@ -620,9 +627,9 @@ class EvccBitmapBlock extends EvccBlock {
         // alignment.
         // For drawBitmap we need the upper left corner of the bitmap,
         // this is calculated here.
-        var justify = getOption( :justify ) as TextJustification;
-        var marginLeft = getOption( :marginLeft ) as Number;
-        var marginRight = getOption( :marginRight ) as Number;
+        var justify = getJustify();
+        var marginLeft = getMarginLeft();
+        var marginRight = getMarginRight();
         if( justify == Graphics.TEXT_JUSTIFY_LEFT ) {
             x = x + marginLeft;
         } else if ( justify == Graphics.TEXT_JUSTIFY_RIGHT ) {
@@ -631,7 +638,7 @@ class EvccBitmapBlock extends EvccBlock {
             x = x - getWidth() / 2 + marginLeft;
         }
 
-        y = y - Math.round( getHeight() / 2 ).toNumber() + getOption( :marginTop ) as Number;
+        y = y - Math.round( getHeight() / 2 ).toNumber() + getMarginTop();
         _dc.drawBitmap( x, y, bitmap );
     }
 }
@@ -717,7 +724,7 @@ class EvccIconBlock extends EvccBitmapBlock {
     // This is not done in the constructor, because we need to adapt
     // to changing font size
     protected function bitmapRef() as ResourceId {
-        var font = getOption( :font );
+        var font = getFont();
         var icons = EvccResources.getIcons() as EvccIcons;
         var ref = icons[_icon][font];
         // Throw an exception if we could not find the icon
@@ -742,7 +749,7 @@ class EvccIconBlock extends EvccBitmapBlock {
     // bitmap width/height cache
     (:exclForDbCacheEnabled) private var _lastFont as Number?;
     (:exclForDbCacheEnabled) protected function loadData() {
-        var font = getOption( :font );
+        var font = getFont();
         if( font != _lastFont ) {
             _lastFont = font;
             _bitmapHeight = null; _bitmapWidth = null;
@@ -750,3 +757,5 @@ class EvccIconBlock extends EvccBitmapBlock {
         }
     }
 }
+
+

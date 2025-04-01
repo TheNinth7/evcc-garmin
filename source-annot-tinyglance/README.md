@@ -1,0 +1,1 @@
+**ATTENTION:** The files here are duplicates from `source-annot-glance` without the :glance annotation. **DO NOT MODIFY HERE** but use execute `\source-tiny-glance\create-source-file.bat` from the root directory to create the files.

@@ -73,6 +73,15 @@ The root directory contains essential project files.
 
 <br>
 
+## Folder `/.vscode`
+
+Contains VS Code customizations.
+
+**Key files:**
+
+- `tasks.json`: defines custom build tasks.
+  - Generate Source for Tiny Glance: see [further below for details](#generate-source-for-tiny-glance)
+
 ## Folder `/docs`
 
 Contains the user manual, published at <https://evccg.the-ninth.com>.
@@ -253,7 +262,15 @@ The app is written in **Monkey C**, Garmin's programming language, using the Con
 - `/source/background`: Background data handling, to support the tiny glance
 - `/glance`: Glance versions (full-featured and tiny)
 - `/widget`: Widget app
-- `/source-annot-*`: Some base classes are used across modules but differ based on the device. Code is duplicated and selectively annotated to match device needs. **Important**: Any changes to one copy must be mirrored in the other.
+- `/source-annot-glance`: Some classes are required in the glance scope for the full-featured glance but not for the tiny glance. Therefore, their source files must be duplicated—once with the `:glance` annotation and once without. The `source-annot-glance` directory contains the master versions of these annotated files, and any modifications to these classes should be made there.
+- `/source-annot-tinyglance`: This folder contains the duplicated source files mentioned above, with the `:glance` annotation removed.
+- `/source-annot-tinyglance/create-source-files.bat`: This script generates the duplicated source files (see below).
+
+### Generate source for tiny glance
+
+As mentioned above, `/source-annot-tinyglance/create-source-files.bat` duplicates the source files for the tiny glance, and removes the :glance annotation. The batch files needs `sed` for Windows to be installed and added to the `PATH` environment variable. You can download the installation file (here)[https://gnuwin32.sourceforge.net/packages/sed.htm].
+
+This project also defines a custom VS Code task for this. Use `CTRL+SHIFT+B` and select `Generate Source for Tiny Glance`.
 
 **Further reading:**
 
