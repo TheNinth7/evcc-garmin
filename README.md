@@ -25,6 +25,7 @@ This README covers the following topics:
     - [How to Generate Icons for a New Device](#how-to-generate-icons-for-a-new-device)
   - [Folders `/resources*` and `/settings*`](#folders-resources-and-settings)
   - [Folders `/source*`](#folders-source)
+    - [Generate Source for Tiny Glance](#generate-source-for-tiny-glance)
 - [Build Instructions](#build-instructions)
   - [To run the app in the Garmin simulator](#to-run-the-app-in-the-garmin-simulator)
   - [To compile for a single device](#to-compile-for-a-single-device)
