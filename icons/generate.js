@@ -48,7 +48,7 @@ if( errors != "" ) {
     WScript.Echo ( "\r\nErrors:\r\n" + errors );
 }
 
-WScript.Echo( "" );
+WScript.Echo( "\n" );
 
 /* Function to generate the resource folder for one
    device family */
