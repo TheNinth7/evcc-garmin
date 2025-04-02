@@ -88,7 +88,10 @@ Contains VS Code customizations.
 **Key files:**
 
 - `tasks.json`: defines custom build tasks.
-  - Generate Source for Tiny Glance: see [further below for details](#generate-source-for-tiny-glance)
+  - evccg: Generate Source for Tiny Glance - see [further below for details](#generate-source-for-tiny-glance)
+  - evccg: Generate Icons for All Devices - see [further below for details](#generating-the-device-specific-png-files)
+  - evccg: Copy drawables.xml for All Devices - see [further below for details](#generating-the-device-specific-png-files)
+  - evccg: Generate Icons for epix2pro47mm - see [further below for details](#generating-the-device-specific-png-files)
 
 ## Folder `/docs`
 
@@ -214,7 +217,7 @@ As explained in [Folders `/source`](#folders-source), the `/source-annot-tinygla
 
 After making changes, run `/source-annot-tinyglance/create-source-files.bat` to regenerate the tiny glance source files. This script copies the files and removes the `:glance` annotations. It requires `sed` for Windows to be installed and added to your `PATH` environment variable. You can download it from [here](https://gnuwin32.sourceforge.net/packages/sed.htm).
 
-Alternatively, you can use the custom VS Code task defined in the project. Press `CTRL+SHIFT+B` and choose `Generate Source for Tiny Glance` to run the batch file from the integrated terminal.
+Alternatively, you can use the custom VS Code task defined in the project. Press `CTRL+SHIFT+B` and choose `evccg: Generate Source for Tiny Glance` to run the batch file from the integrated terminal.
 
 <br>
 
@@ -398,12 +401,11 @@ In this example:
 
 **Default PNG naming convention:**
 ```
-<type>_<name>_crushed.png
+<type>_<name>.png
 ```
 Where:
 - `<type>` = icon size (e.g., `icon_medium`)
 - `<name>` = original SVG filename (without extension)
-- `_crushed` = indicates the PNG has been optimized
 
 For example, the output PNGs for `sun.svg` would include:  
 `icon_xtiny_sun_crushed.png`, `icon_small_sun_crushed.png`, etc.
@@ -446,6 +448,12 @@ You can run `generate.bat` with the following parameters:
 - **No parameters**: Generates icons for **all devices**.
 - **Device folder** (e.g. `resources-fenix7`): Generates icons only for that specific device.
 - **`drawables.xml`**: Copies `drawables.xml` to all device resource folders **without generating icons**.
+
+Alternatively, you can use the custom VS Code task defined in the project. Press `CTRL+SHIFT+B` and choose one of the following tasks to run the batch file from the integrated terminal.
+
+  - **evccg: Generate Icons for All Devices**: Generates icons for **all devices**.
+  - **evccg: Copy drawables.xml for All Devices**: Copies `drawables.xml` to all device resource folders **without generating icons**.
+  - **evccg: Generate Icons for \<device name\>**: Generates icons only for that specific device. **Note:** not available for all devices.
 
 **Dependencies**
 

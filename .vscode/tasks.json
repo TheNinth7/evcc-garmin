@@ -2,9 +2,39 @@
     "version": "2.0.0",
     "tasks": [
       {
-        "label": "Generate Source for Tiny Glance",
+        "label": "evccg: Generate Source for Tiny Glance",
         "type": "shell",
         "command": "cd .\\source-annot-tinyglance;.\\create-source-files.bat",
+        "group": {
+          "kind": "build",
+          "isDefault": false
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "evccg: Generate Icons for All Devices",
+        "type": "shell",
+        "command": "cd .\\icons;.\\generate.bat",
+        "group": {
+          "kind": "build",
+          "isDefault": false
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "evccg: Copy drawables.xml for All Devices",
+        "type": "shell",
+        "command": "cd .\\icons;.\\generate.bat drawables.xml",
+        "group": {
+          "kind": "build",
+          "isDefault": false
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "evccg: Generate Icons for epix2pro47mm",
+        "type": "shell",
+        "command": "cd .\\icons;.\\generate.bat resources-epix2pro47mm",
         "group": {
           "kind": "build",
           "isDefault": false
