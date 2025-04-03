@@ -32,7 +32,7 @@ class EvccSelectIndicator {
         // Constants are put inside the function, otherwise they'd need the annotations
         var SELECT_RADIUS_FACTOR = 0.49; // factor applied to dc width to calculate the radius of the arc
         var SELECT_LINE_WIDTH_FACTOR = 0.01; // factor applied to dc width to calculate the width of the arc
-        var SELECT_LENGTH = 16; // total length of the arc in degree
+        var SELECT_LENGTH = 18; // total length of the arc in degree
         
         // Anti-alias is only available in newer SDK versions
         if( dc has :setAntiAlias ) {
