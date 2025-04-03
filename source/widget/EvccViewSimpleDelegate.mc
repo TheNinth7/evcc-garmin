@@ -15,6 +15,13 @@ import Toybox.Application;
         return true;
     }
 
+    // Tap and hold on the touch screen also triggers the system info view
+    // This was introduced for Vivoactive6, since that watch does not have
+    // the onMenu behavior anymore.
+    public function onHold( clickEvent ) as Boolean {
+        // EvccHelperBase.debug( "EvccViewSimpleDelegate: onHold" );
+        return onMenu();
+    }
 }
 
 (:exclForSystemInfo) class EvccViewSimpleDelegate extends WatchUi.BehaviorDelegate {

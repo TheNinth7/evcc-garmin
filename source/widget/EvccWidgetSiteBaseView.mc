@@ -88,6 +88,13 @@ class EvccContentArea {
         views.add( self );
         _pageIndex = views.size() - 1;
         _sameLevelViews = views;
+        
+        /*
+        // Enable the action menu for Vivoactive6
+        if ( self has :setActionMenuIndicator ) {
+            setActionMenuIndicator( {:enabled=>true} );
+        }
+        */
     }
 
     // Called when the view is brought to the foreground.

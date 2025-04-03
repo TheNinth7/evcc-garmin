@@ -101,10 +101,20 @@ class EvccViewCarouselDelegateBase extends EvccViewSimpleDelegate {
         return false;
     }
 
+    /* Trial for VA6 system info view, but does not work
+    public function onTap( clickEvent ) as Boolean {
+        //EvccHelperBase.debug("ViewCarouselDelegate: onTap");
+        if( clickEvent.getType() == CLICK_TYPE_HOLD ) {
+            return onMenu();
+        }
+        return false;
+    }
+    */
+
     // When the select action is triggered, we open the active sub view
     public function onSelect() as Boolean {
         try {
-            // EvccHelperBase.debug("ViewCarouselDelegate: onSelect");
+            EvccHelperBase.debug("ViewCarouselDelegate: onSelect");
 
 
             // For devices that do not have glances, this view
