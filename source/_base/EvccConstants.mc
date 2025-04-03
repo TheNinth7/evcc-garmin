@@ -32,7 +32,7 @@ import Toybox.Graphics;
 // Colors are not definable in background because Graphics is not available,
 // therefore they are separated into a dedicated class with different scope
 (:glance) class EvccColors {
-    public static const BACKGROUND = Graphics.COLOR_BLACK;
-    public static const FOREGROUND = Graphics.COLOR_WHITE;
-    public static const ERROR = Graphics.COLOR_RED;
+    public static const BACKGROUND as ColorType = Graphics.COLOR_BLACK;
+    public static const FOREGROUND as ColorType = Graphics.COLOR_WHITE;
+    public static const ERROR as ColorType = Graphics.COLOR_RED;
 }

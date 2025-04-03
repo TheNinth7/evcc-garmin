@@ -35,7 +35,7 @@ This README covers the following topics:
     - [Generatinc Icons for a New Device](#generating-icons-for-a-new-device)
     - [Adding, Removing or Modifying Icons](#adding-removing-or-modifying-icons)
       - [1. `generate.json`](#1-generatejson)
-      - [2. `drawables.xml`](#2-drawablesxml)
+      - [2. `drawables*.xml`](#2-drawablesxml)
       - [3. `EvccResourceSet.mc`](#3-source_baseevccresourcesetmc)
     - [Generating the Device-Specific PNG Files](#generating-the-device-specific-png-files)
 
@@ -115,13 +115,12 @@ At runtime, the app dynamically selects the appropriate font size based on the d
 
 **Key files:**
 
-- `generate.json`: Defines font/icon sizes per device and which icons to generate
-- `drawables.xml`: Garmin resource definition file that maps icon files to resource identifiers used in the source code. It is identical for all devices and is copied—along with the generated PNGs—into each device-specific resource folder.
-- `generate.bat`: Generates icons. Usage:
-  - No parameters: generates icons for all devices
-  - Device folder as parameter (e.g. `resources-fenix7`): generates icons only for that device
-  - `drawables.xml` as parameter: only copies `drawables.xml` to all device resource folders, without generating icons
+- `generate.json`: Defines font/icon sizes per device which icons to generate.
+- `drawables*.xml`: Garmin resource definition file that associates icon files with resource identifiers used in the source code. Three versions of this file exist, and one is copied—along with the corresponding generated PNGs—into each device-specific resource folder based on the device type.
+- `generate.bat`: Generates icons.
 - `generate.js`: JavaScript script, run by `generate.bat` using Windows Scripting Host
+
+For more information on these files, see [To Generate the Device-Specific Icons](#to-generate-the-device-specific-icons).
 
 <br>
 
@@ -336,10 +335,21 @@ There are two types of entries for devices in `generate.json`:
 
 > **Note:** Device-specific entries take precedence over general resolution-based entries. While the app initially relied on resolution-based mappings, differences in font rendering across devices with identical resolutions have led to an increasing use of ID-based entries.
 
-**Example entry:**
+**Example entries:**
 ```json
+"resources-fenix6":{
+    "fontMode":"static",
+    "deviceType":"noglance-lowmemory",
+    "logo_flash":"40",
+    "logo_evcc":"13",
+    "icon_micro":"19",
+    "icon_xtiny":"22",
+    "icon_tiny":"29",
+    "icon_small":"32",
+    "icon_medium":"37"
+},
 "resources-fenix847mm": {
-  "mode": "vector",
+  "fontMode": "vector",
   "logo_flash": "65",
   "logo_evcc": "26",
   "icon_glance": "42",
@@ -356,7 +366,8 @@ There are two types of entries for devices in `generate.json`:
 - `icon_*`: These values correspond to the font sizes selected by the app, based on the method described [above](#how-the-app-selects-font-sizes).
 - `logo_flash`: Must match the **Launcher Icon Size** as listed in Garmin’s [Device Reference](https://developer.garmin.com/connect-iq/reference-guides/devices-reference).
 - `logo_evcc`: The logo shown at the bottom of the screen. Typically set to 65% of `icon_xtiny`.
-- `mode`: A comment indicating the font sizing mode used by the app for this device (e.g., `"vector"`, `"static"`, or `"static-optimized"`).
+- `deviceType`: Enables special handling for older devices that either do not support glances or use the tiny glance. Can be omitted for newer models. See the section on [`drawables*.xml`](#2-drawablesxml) for more details.
+- `fontMode`: A comment indicating the font sizing mode used by the app for this device (e.g., `"vector"`, `"static"`, or `"static-optimized"`).
 - `devices`: (Only in resolution-based entries) A comment listing the devices this resolution mapping applies to.
 
 <br>
@@ -408,22 +419,49 @@ Where:
 - `<name>` = original SVG filename (without extension)
 
 For example, the output PNGs for `sun.svg` would include:  
-`icon_xtiny_sun_crushed.png`, `icon_small_sun_crushed.png`, etc.
+`icon_xtiny_sun.png`, `icon_small_sun.png`, etc.
 
 <br>
 
-#### **2. `drawables.xml`**  
+#### **2. `drawables*.xml`**  
+
 Defines resources for use in the app via the Connect IQ SDK.
 
-Each icon requires an entry for **every size** it's used in. For example, the `sun.svg` in medium size would have:
+There are three versions of this file:
+
+- **`drawables.xml`**: The default version, containing all icons and using the full color palette available on the device.
+- **`drawables-noglance-lowmemory.xml`**: A version for devices without glances and with limited memory. Glance icons are omitted, and all other icons are compiled with a reduced color palette and no transparency to conserve memory.
+- **`drawables-tinyglance.xml`**: A version for tiny glance devices. Only the icons used in the tiny glance are included, with a reduced color palette and no transparency.
+
+Each icon must have an entry for **every size** it's used in, and in **all applicable versions** of the drawables file.  
+For example, the medium-sized `sun.svg` icon would be defined in both `drawables.xml` and `drawables-tinyglance.xml` like this:
 
 ```xml
 <bitmap scope="foreground" id="sun_medium" filename="icon_medium_sun_crushed.png" packingFormat="png"/>
 ```
 
-- `scope="foreground"` indicates it's available only in widget contexts.
+- `scope="foreground"` indicates the icon is only available in widget contexts.
 
-Refer to the [Connect IQ SDK Resources documentation](https://developer.garmin.com/connect-iq/core-topics/resources/#resources) for more details on these entries.
+In `drawables-noglance-lowmemory.xml`, the same icon would appear as:
+
+```xml
+<bitmap scope="foreground" id="sun_medium" filename="icon_medium_sun.png">
+    <palette disableTransparency="true">
+        <color>FFFFFF</color>
+        <color>AAAAAA</color>
+        <color>555555</color>
+        <color>000000</color>    
+    </palette>
+</bitmap>
+```
+
+- The `<palette>` tag limits the icon to four grayscale colors: white, light gray, dark gray, and black.
+- `disableTransparency="true"` disables transparency, which would otherwise occupy a separate color slot. In this case, transparency is replaced with black—already part of the palette—so no extra color is needed.
+
+**Further reading:**
+
+- See the [Connect IQ SDK Resources documentation](https://developer.garmin.com/connect-iq/core-topics/resources/#resources) for more information on resource definitions.
+- The [Connect IQ FAQ](https://developer.garmin.com/connect-iq/connect-iq-faq/how-do-i-optimize-bitmaps/#howdoioptimizebitmapsinmyapp) explains how to optimize bitmaps by reducing the color palette and removing transparency.
 
 <br>
 
@@ -441,7 +479,9 @@ These mappings act as the bridge between the resource definitions in drawables.x
 
 ### Generating the Device-Specific PNG Files
 
-Whenever you make changes to `/icons/generate.json`, `/icons/drawables.xml`, or any of the SVG files, you need to run `generate.bat` to regenerate the device-specific PNG icons and copy `drawables.xml` into each device’s [resource folder](#folders-resources-and-settings).
+Whenever you make changes to `/icons/generate.json`, any of the `/icons/drawables*.xml`, or any of the SVG files, you need to run `generate.bat` to regenerate the device-specific PNG icons and copy `drawables.xml` into each device’s [resource folder](#folders-resources-and-settings).
+
+Based on the `deviceType` specified in `generate.json`, the script selects the appropriate `drawables*.xml` version and generates certain icons without transparency.
 
 You can run `generate.bat` with the following parameters:
 

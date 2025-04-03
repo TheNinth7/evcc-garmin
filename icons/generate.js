@@ -79,23 +79,28 @@ function generateFamily( family, device_families, files, xmlOnly ) {
     }
     
 	// We count the files for the status bar
-	// Start from 1 to cover drawables.xml
-	var totalFiles = 1;
+	var totalImages = 0;
 	if( ! xmlOnly ) {
 		for( var file in files ) {
 	        var types = files[file]["types"];
 	        for( var i in types ) { 
 	            var height = device_families[family][types[i]];
-				if( height != undefined ) { totalFiles++; }
+				if( height != undefined ) { totalImages++; }
 			}
 		}
 	}
 
+	var deviceType = device_families[family]["deviceType"];
 
-	// WScript.Echo( "    Copying drawables.xml" );
-    fso.CopyFile( "drawables.xml", drawableFolder + "\\", true );
+	var drawables = "drawables";
+	if( deviceType != undefined ) {
+		drawables += "-" + deviceType;
+	}
+	drawables += ".xml";
+
+	WScript.Echo( "    Copying " + drawables );
+    fso.CopyFile( drawables, drawableFolder + "\\", true );
 	var fileCount = 1;
-	drawProgress( fileCount, totalFiles );
 
 	if( ! xmlOnly ) {
 
@@ -109,6 +114,7 @@ function generateFamily( family, device_families, files, xmlOnly ) {
 	            var height = device_families[family][types[i]];
 	            
 	            if( height != undefined ) {
+					drawProgress( fileCount - 1, totalImages );
 	                // Prepare the inkscape command
 	                //WScript.Echo( "    " + file + ": type=" + types[i] + ", height=" + height + ( anti_aliasing != "0" ? ", anti-aliasing=" + anti_aliasing : "" ) );
 	                
@@ -123,9 +129,15 @@ function generateFamily( family, device_families, files, xmlOnly ) {
 					var cmd = "inkscape.exe --export-type=png" +
 	                    " --export-filename=" + drawableFolder + "\\" + inkscape_name + 
 	                    " --export-png-antialias=" + anti_aliasing + 
-	                    " --export-height=" + height +
-	                    " " + file;
+	                    " --export-height=" + height;
+					
+					if( deviceType != undefined ) {
+	                    cmd += " --export-background=\"#000000\"";
+						cmd += " --export-background-opacity=1";
+					}
 
+					cmd += " " + file;
+						
 						// Make the call to inkscape and wait until it finishes
 	                var shell = new ActiveXObject("WScript.Shell");
 	                var exec = shell.Exec( cmd );
@@ -137,12 +149,13 @@ function generateFamily( family, device_families, files, xmlOnly ) {
 					var exec = shell.Exec( crush );
 	                while ( exec.Status == 0 ) { WScript.Sleep( 100 ); }
 					fso.DeleteFile( drawableFolder + "\\" + inkscape_name );
-					drawProgress( fileCount, totalFiles );
 				}
 	        }
 	    }
 	    
-		//WScript.Echo( fileCount + "/" + totalFiles );
+		drawProgress( fileCount - 1, totalImages );
+
+		//WScript.Echo( fileCount + "/" + totalImages );
 
 		// For safety we check that the number of generated files
 	    // matches what we expect
@@ -173,6 +186,6 @@ function drawProgress(current, total) {
     var bar = Array(done + 1).join("#") + Array(barWidth - done + 1).join("-");
     var percentText = Math.floor(percent * 100) + "%";
 
-    stdout.Write("\r[" + bar + "] " + percentText);
+    stdout.Write("\r    [" + bar + "] " + percentText);
 }
 

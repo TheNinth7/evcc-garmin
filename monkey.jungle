@@ -127,14 +127,14 @@ fr945lte.resourcePath = settings-site1;resources;resources-round-240x240
 #Fenix 6
 fenix6.sourcePath = $(sourceGlanceNone)
 fenix6.excludeAnnotations = $(glanceNone);$(calcSimple);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(selectNone);$(swipeLeftDefault);$(drawingBlockCacheEnabled)
-fenix6.resourcePath = settings-site1;resources;resources-round-260x260
+fenix6.resourcePath = settings-site1;resources;resources-fenix6
 fenix6s.sourcePath = $(sourceGlanceNone)
 fenix6s.excludeAnnotations = $(glanceNone);$(calcSimple);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(selectNone);$(swipeLeftDefault);$(drawingBlockCacheEnabled)
-fenix6s.resourcePath = settings-site1;resources;resources-round-240x240
+fenix6s.resourcePath = settings-site1;resources;resources-fenix6s
 # Fenix 6 Pro
 fenix6pro.sourcePath = $(sourceGlanceTiny)
 fenix6pro.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne);$(selectNone);$(swipeLeftDefault);$(drawingBlockCacheEnabled)
-fenix6pro.resourcePath = settings-site1;resources;resources-round-260x260
+fenix6pro.resourcePath = settings-site1;resources;resources-fenix6pro
 fenix6spro.sourcePath = $(sourceGlanceTiny)
 fenix6spro.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne);$(selectNone);$(swipeLeftDefault);$(drawingBlockCacheEnabled)
 fenix6spro.resourcePath = settings-site1;resources;resources-round-240x240

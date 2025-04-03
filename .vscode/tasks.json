@@ -40,6 +40,18 @@
           "isDefault": false
         },
         "problemMatcher": []
+      },
+      {
+        "label": "evccg: Generate Icons for fenix6/fenix6pro",
+        "type": "shell",
+        "command": "cd .\\icons;.\\generate.bat resources-round-260x260",
+        "group": {
+          "kind": "build",
+          "isDefault": false
+        },
+        "problemMatcher": []
       }
     ]
   }
+
+  

@@ -1,20 +1,30 @@
 {
     "device-families":{
-        "resources-round-240x240":{
-            "devices":"fenix6s, fenix6spro, fr945, fr945lte",
-            "mode":"static",
+        "resources-fenix6":{
+            "fontMode":"static",
+            "deviceType":"noglance-lowmemory",
             "logo_flash":"40",
             "logo_evcc":"13",
-            "icon_glance":"22",
+            "icon_micro":"19",
+            "icon_xtiny":"22",
+            "icon_tiny":"29",
+            "icon_small":"32",
+            "icon_medium":"37"
+        },
+        "resources-fenix6s":{
+            "fontMode":"static",
+            "deviceType":"noglance-lowmemory",
+            "logo_flash":"40",
+            "logo_evcc":"13",
             "icon_micro":"19",
             "icon_xtiny":"22",
             "icon_tiny":"26",
             "icon_small":"29",
             "icon_medium":"34"
         },
-        "resources-round-260x260":{
-            "devices":"fenix6, fenix6pro",
-            "mode":"static",
+        "resources-fenix6pro":{
+            "fontMode":"static",
+            "deviceType":"tinyglance",
             "logo_flash":"40",
             "logo_evcc":"13",
             "icon_glance":"22",
@@ -24,8 +34,22 @@
             "icon_small":"32",
             "icon_medium":"37"
         },
+        "resources-round-240x240":{
+            "devices":"fenix6spro, fr945, fr945lte",
+            "fontMode":"static",
+            "deviceType":"tinyglance",
+            "logo_flash":"40",
+            "logo_evcc":"13",
+            "icon_glance":"22",
+            "icon_micro":"19",
+            "icon_xtiny":"22",
+            "icon_tiny":"26",
+            "icon_small":"29",
+            "icon_medium":"34"
+        },
         "resources-fenix6xpro":{
-            "mode":"static",
+            "fontMode":"static",
+            "deviceType":"tinyglance",
             "logo_flash":"40",
             "icon_glance":"22",
             "logo_evcc":"13",
@@ -37,7 +61,7 @@
         },
         "resources-round-280x280":{
             "devices":"fenix7x, fenix7xpro, fenix7xpronowifi",
-            "mode":"vector",
+            "fontMode":"vector",
             "logo_flash":"40",
             "icon_glance":"22",
             "logo_evcc":"13",
@@ -48,7 +72,7 @@
             "icon_medium":"36"
         },
         "resources-fenix7s":{
-            "mode":"vector",
+            "fontMode":"vector",
             "logo_flash":"40",
             "logo_evcc":"13",
             "icon_glance":"22",
@@ -59,7 +83,7 @@
             "icon_medium":"31"
         },
         "resources-fenix7spro":{
-            "mode":"vector",
+            "fontMode":"vector",
             "logo_flash":"40",
             "logo_evcc":"13",
             "icon_glance":"22",
@@ -71,7 +95,7 @@
         },
         "resources-fenix7":{
             "same_as":"fenix7pro",
-            "mode":"vector",
+            "fontMode":"vector",
             "logo_flash":"40",
             "logo_evcc":"13",
             "icon_glance":"22",
@@ -83,7 +107,19 @@
         },
         "resources-fenix7pro":{
             "same_as":"fenix7",
-            "mode":"vector",
+            "fontMode":"vector",
+            "logo_flash":"40",
+            "logo_evcc":"13",
+            "icon_glance":"22",
+            "icon_micro":"19",
+            "icon_xtiny":"23",
+            "icon_tiny":"26",
+            "icon_small":"30",
+            "icon_medium":"34"
+        },
+        "resources-fenix7pronowifi":{
+            "same_as":"fenix7",
+            "fontMode":"vector",
             "logo_flash":"40",
             "logo_evcc":"13",
             "icon_glance":"22",
@@ -94,7 +130,7 @@
             "icon_medium":"34"
         },
         "resources-epix2pro42mm":{
-            "mode":"vector",
+            "fontMode":"vector",
             "logo_flash":"60",
             "logo_evcc":"20",
             "icon_glance":"33",
@@ -105,7 +141,7 @@
             "icon_medium":"51"
         },
         "resources-epix2pro47mm":{
-            "mode":"vector",
+            "fontMode":"vector",
             "logo_flash":"60",
             "icon_glance":"35",
             "logo_evcc":"22",
@@ -116,7 +152,7 @@
             "icon_medium":"54"
         },
         "resources-epix2pro51mm":{
-            "mode":"vector",
+            "fontMode":"vector",
             "logo_flash":"60",
             "logo_evcc":"23",
             "icon_glance":"39",
@@ -127,7 +163,7 @@
             "icon_medium":"59"
         },
         "resources-fenix843mm":{
-            "mode":"vector",
+            "fontMode":"vector",
             "logo_flash":"60",
             "logo_evcc":"24",
             "icon_glance":"39",
@@ -138,7 +174,7 @@
             "icon_medium":"54"
         },
         "resources-fenix847mm":{
-            "mode":"vector",
+            "fontMode":"vector",
             "logo_flash":"65",
             "logo_evcc":"26",
             "icon_glance":"42",
@@ -149,7 +185,7 @@
             "icon_medium":"59"
         },
         "resources-fenix8solar47mm":{
-            "mode":"vector",
+            "fontMode":"vector",
             "logo_flash":"40",
             "logo_evcc":"15",
             "icon_glance":"24",
@@ -160,7 +196,7 @@
             "icon_medium":"34"
         },
         "resources-fenix8solar51mm":{
-            "mode":"vector",
+            "fontMode":"vector",
             "logo_flash":"40",
             "logo_evcc":"15",
             "icon_glance":"26",
@@ -171,7 +207,7 @@
             "icon_medium":"36"
        },
         "resources-venu2":{
-            "mode":"static-opt",
+            "fontMode":"static-opt",
             "logo_flash":"70",
             "logo_evcc":"22",
             "icon_glance":"43",
@@ -182,7 +218,7 @@
             "icon_medium":"58"
         },
         "resources-venu2plus":{
-            "mode":"static-opt",
+            "fontMode":"static-opt",
             "logo_flash":"70",
             "logo_evcc":"22",
             "icon_glance":"43",
@@ -193,7 +229,7 @@
             "icon_medium":"58"
         },
         "resources-venu2s":{
-            "mode":"static-opt",
+            "fontMode":"static-opt",
             "logo_flash":"61",
             "logo_evcc":"20",
             "icon_glance":"37",
@@ -204,7 +240,7 @@
             "icon_medium":"52"
         },
         "resources-venu3":{
-            "mode":"vector",
+            "fontMode":"vector",
             "logo_flash":"70",
             "logo_evcc":"25",
             "icon_glance":"45",
@@ -215,7 +251,7 @@
             "icon_medium":"58"
         },
         "resources-venu3s":{
-            "mode":"vector",
+            "fontMode":"vector",
             "logo_flash":"70",
             "logo_evcc":"22",
             "icon_glance":"40",
@@ -226,7 +262,7 @@
             "icon_medium":"51"
         },
         "resources-fr265s":{
-            "mode":"vector",
+            "fontMode":"vector",
             "logo_flash":"60",
             "logo_evcc":"20",
             "icon_glance":"34",
@@ -237,7 +273,7 @@
             "icon_medium":"47"
         },
         "resources-fr265":{
-            "mode":"vector",
+            "fontMode":"vector",
             "logo_flash":"60",
             "logo_evcc":"24",
             "icon_glance":"39",
@@ -248,7 +284,8 @@
             "icon_medium":"54"
         },
         "resources-fr745":{
-            "mode":"static",
+            "fontMode":"static",
+            "deviceType":"tinyglance",
             "logo_flash":"40",
             "logo_evcc":"13",
             "icon_glance":"19",
@@ -259,7 +296,7 @@
             "icon_medium":"34"
         },
         "resources-fr955":{
-            "mode":"vector",
+            "fontMode":"vector",
             "logo_flash":"40",
             "logo_evcc":"15",
             "icon_glance":"24",
@@ -270,7 +307,7 @@
             "icon_medium":"34"
         },
         "resources-fr965":{
-            "mode":"vector",
+            "fontMode":"vector",
             "logo_flash":"65",
             "logo_evcc":"26",
             "icon_glance":"42",
@@ -281,7 +318,8 @@
             "icon_medium":"59"
         },
         "resources-vivoactive3":{
-            "mode":"static",
+            "fontMode":"static",
+            "deviceType":"noglance-lowmemory",
             "logo-40x33":"33",
             "logo_evcc":"15",
             "icon_glance":"22",
@@ -292,7 +330,7 @@
             "icon_medium":"34"
         },
         "resources-vivoactive3m":{
-            "mode":"static",
+            "fontMode":"static",
             "logo-40x33":"33",
             "logo_evcc":"11",
             "icon_glance":"20",
@@ -303,7 +341,7 @@
             "icon_medium":"28"
         },
         "resources-vivoactive3mlte":{
-            "mode":"static",
+            "fontMode":"static",
             "logo-40x33":"33",
             "logo_evcc":"11",
             "icon_glance":"20",
@@ -314,7 +352,7 @@
             "icon_medium":"28"
         },
         "resources-vivoactive4":{
-            "mode":"static",
+            "fontMode":"static",
             "logo_flash":"35",
             "logo_evcc":"13",
             "icon_glance":"19",
@@ -325,7 +363,7 @@
             "icon_medium":"35"
         },
         "resources-vivoactive4s":{
-            "mode":"static",
+            "fontMode":"static",
             "logo_flash":"30",
             "logo_evcc":"12",
             "icon_glance":"17",
@@ -336,7 +374,7 @@
             "icon_medium":"30"
         },
         "resources-vivoactive5":{
-            "mode":"static-opt",
+            "fontMode":"static-opt",
             "logo_flash":"56",
             "logo_evcc":"22",
             "icon_glance":"41",
