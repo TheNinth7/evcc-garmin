@@ -383,6 +383,17 @@
             "icon_tiny":"41",
             "icon_small":"48",
             "icon_medium":"54"
+        },
+        "resources-vivoactive6":{
+            "fontMode":"vector",
+            "logo_flash":"54",
+            "logo_evcc":"20",
+            "icon_glance":"35",
+            "icon_micro":"28",
+            "icon_xtiny":"34",
+            "icon_tiny":"40",
+            "icon_small":"45",
+            "icon_medium":"51"
         }
     },
     "files":{
