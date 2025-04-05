@@ -3,6 +3,7 @@ import Toybox.Lang;
 import Toybox.WatchUi;
 import Toybox.Timer;
 import Toybox.Application.Properties;
+import Toybox.Application.Storage;
 import Toybox.Math;
 
 // This is the base view for all views using and showing
@@ -89,6 +90,15 @@ class EvccContentArea {
         _pageIndex = views.size() - 1;
         _sameLevelViews = views;
         
+        var systemSettings = System.getDeviceSettings();
+        var bufferedBitmapReference = Graphics.createBufferedBitmap( { :width => systemSettings.screenWidth, :height => systemSettings.screenHeight } );
+        var bufferedBitmap = bufferedBitmapReference.get() as BufferedBitmap;
+        var dc = bufferedBitmap.getDc();
+        dc.setColor( EvccColors.FOREGROUND, EvccColors.BACKGROUND );
+        dc.clear();
+        dc.drawLine( 0, 0, dc.getWidth(), dc.getHeight() );
+        Storage.setValue( "test", bufferedBitmap as BitmapResource );
+
         /*
         // Enable the action menu for Vivoactive6
         if ( self has :setActionMenuIndicator ) {
@@ -111,6 +121,10 @@ class EvccContentArea {
     // Update the view
     function onUpdate(dc as Dc) as Void {
         try {
+            var fromStorage = Storage.getValue( "test" ) as BufferedBitmap;
+            dc.clear();
+            dc.drawBitmap( 0, 0, fromStorage );
+            /*
             //EvccHelperBase.debug("Widget: onUpdate");
             var stateRequest = getStateRequest();
 
@@ -165,6 +179,7 @@ class EvccContentArea {
             // EvccHelperBase.debug( "Using font " + block.getOption( :font ) );
 
             block.draw( _ca.x, _ca.y );
+            */
 
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
