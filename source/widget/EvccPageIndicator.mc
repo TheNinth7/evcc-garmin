@@ -8,7 +8,8 @@ class EvccPageIndicator {
     private var _dotDistanceAngle as Number = 0;
     private var _dotSize as Number;
     private var _lineWidth as Number;
-    private var _dc as Dc;
+    private var _activePage as Number;
+    private var _totalPages as Number;
 
     // Dots are drawn in a circle around the center
     // of the screen ("orbit"), this constant indicates the
@@ -31,19 +32,20 @@ class EvccPageIndicator {
     // total width of the screen
     private const RADIUS_FACTOR = 0.47;
 
-    public function initialize( dc as Dc ) {
+    public function initialize( dc as EvccDcStub, activePage as Number, totalPages as Number ) {
         setCenterAngle( CENTER_ANGLE );
         setDotDistanceAngle( DOT_DISTANCE_ANGLE );
         _dotSize = Math.round( dc.getWidth() * DOT_SIZE_FACTOR ).toNumber();
         _lineWidth = Math.round( dc.getWidth() * LINE_WIDTH_FACTOR ).toNumber();
-        _dc = dc;
+        _activePage = activePage;
+        _totalPages = totalPages;
     }
 
     // Returns the distance between the left side of the screen and the right-most point of 
     // a page indicator dot. This works for all dots, counting from the edge of the screen
     // in their position.
-    public function getSpacing() as Number {
-        return Math.round( _dc.getWidth() * ( 0.5 - RADIUS_FACTOR + DOT_SIZE_FACTOR + LINE_WIDTH_FACTOR / 2 ) ).toNumber();
+    public function getSpacing( dc as EvccDcStub ) as Number {
+        return Math.round( dc.getWidth() * ( 0.5 - RADIUS_FACTOR + DOT_SIZE_FACTOR + LINE_WIDTH_FACTOR / 2 ) ).toNumber();
     }
 
     public function setCenterAngle( angle as Number ) as Void {
@@ -64,45 +66,45 @@ class EvccPageIndicator {
     public function setLineWidth( lineWidth as Number ) as Void { _lineWidth = lineWidth; }
 
     // Main function to draw the indicator
-    function drawPageIndicator( activePage as Number, totalPages as Number ) as Void {
+    function draw( dc as Dc ) as Void {
         // from the center angle, calculate the angle of the first dot
-        var currentAngle = _centerAngle + _dotDistanceAngle * ( ( totalPages - 1 ) / 2.0 );
+        var currentAngle = _centerAngle + _dotDistanceAngle * ( ( _totalPages - 1 ) / 2.0 );
         
         // For each page, draw a dot
-        for( var i = 0; i < totalPages; i++ ) {
-            drawDot( currentAngle, i == activePage );
+        for( var i = 0; i < _totalPages; i++ ) {
+            drawDot( dc, currentAngle, i == _activePage );
             currentAngle -= _dotDistanceAngle;
         }
     }
 
     // Function to draw a single dot at an angle
-    function drawDot( angle as Float, active as Boolean ) as Void {
-        var dotCoordinates = orbitXY( _dc.getWidth() / 2, _dc.getHeight() / 2, angle, _dc.getWidth() * RADIUS_FACTOR );
-        drawDotXY( dotCoordinates[0], dotCoordinates[1], active );
+    private function drawDot( dc as Dc, angle as Float, active as Boolean ) as Void {
+        var dotCoordinates = orbitXY( dc.getWidth() / 2, dc.getHeight() / 2, angle, dc.getWidth() * RADIUS_FACTOR );
+        drawDotXY( dc, dotCoordinates[0], dotCoordinates[1], active );
     }
 
     // Function to draw a single dot at a certain X/Y location
-    function drawDotXY( dotX as Number, dotY as Number, active as Boolean ) as Void {
-        _dc.setColor( EvccColors.FOREGROUND, Graphics.COLOR_BLACK );
+    private function drawDotXY( dc as Dc, dotX as Number, dotY as Number, active as Boolean ) as Void {
+        dc.setColor( EvccColors.FOREGROUND, Graphics.COLOR_BLACK );
         
         // Anti-alias is only available in newer SDK versions
-        if( _dc has :setAntiAlias ) {
-            _dc.setAntiAlias( true );
+        if( dc has :setAntiAlias ) {
+            dc.setAntiAlias( true );
         }
-        _dc.setPenWidth( _lineWidth );
-        _dc.drawCircle( dotX, dotY, _dotSize );
-        _dc.setColor( Graphics.COLOR_BLACK, Graphics.COLOR_BLACK );
-        _dc.drawCircle( dotX, dotY, _dotSize - _lineWidth );
-        _dc.setColor( EvccColors.FOREGROUND, Graphics.COLOR_BLACK );
+        dc.setPenWidth( _lineWidth );
+        dc.drawCircle( dotX, dotY, _dotSize );
+        dc.setColor( Graphics.COLOR_BLACK, Graphics.COLOR_BLACK );
+        dc.drawCircle( dotX, dotY, _dotSize - _lineWidth );
+        dc.setColor( EvccColors.FOREGROUND, Graphics.COLOR_BLACK );
         if( active ) {
-            _dc.fillCircle( dotX, dotY, _dotSize - _lineWidth * 2 );
+            dc.fillCircle( dotX, dotY, _dotSize - _lineWidth * 2 );
         }
     }
 
     // Calculate the X/Y coordinates of one element in the "orbit"
     // As input we take the center of the "orbit", the degree
     // of the element (0-360) and the radius of the "orbit"
-    function orbitXY( centerX as Number, centerY as Number, degree as Float, radius as Float ) as [Number,Number] {
+    private function orbitXY( centerX as Number, centerY as Number, degree as Float, radius as Float ) as [Number,Number] {
         if( degree < 0 || degree > 360 ) {
             throw new InvalidValueException( "orbitXY: " + degree + " is not valid." );
         }

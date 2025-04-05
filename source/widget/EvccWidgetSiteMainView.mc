@@ -120,7 +120,7 @@ import Toybox.Math;
     private const MAX_VAR_LINES as Number = 6; // 1 x site title, 1 x battery, 2 x loadpoints with 2 lines each
 
     // Generate the content
-    function addContent( block as EvccVerticalBlock, dc as Dc ) {
+    function addContent( block as EvccVerticalBlock, dc as EvccDcStub ) {
         var state = getStateRequest().getState();
         var variableLineCount = 0;
 
@@ -170,7 +170,7 @@ import Toybox.Math;
 
 
     // Function to generate line for PV, grid, battery and home
-    private function getBasicElement( icon as EvccIconBlock.Icon, power as Number, flowIcon as EvccIconBlock.Icon, dc as Dc ) as EvccHorizontalBlock {
+    private function getBasicElement( icon as EvccIconBlock.Icon, power as Number, flowIcon as EvccIconBlock.Icon, dc as EvccDcStub ) as EvccHorizontalBlock {
         var state = getStateRequest().getState();
         var lineOptions = {};
         var iconOptions = {};
@@ -198,7 +198,7 @@ import Toybox.Math;
     }
 
     // Function to generate main loadpoint lines
-    private function getLoadPointElement( loadpoint as EvccLoadPoint, dc as Dc, showChargingDetails as Boolean ) as EvccHorizontalBlock {
+    private function getLoadPointElement( loadpoint as EvccLoadPoint, dc as EvccDcStub, showChargingDetails as Boolean ) as EvccHorizontalBlock {
         var vehicle = loadpoint.getVehicle() as EvccConnectedVehicle;
 
         var lineVehicle = new EvccHorizontalBlock( dc, { :truncateSpacing => getContentArea().truncateSpacing } );
@@ -226,7 +226,7 @@ import Toybox.Math;
     }
 
     // Function to generate charging info below main loadpoint line
-    private function getChargingElement( loadpoint as EvccLoadPoint, dc as Dc, marginLeft as Number ) as EvccHorizontalBlock {
+    private function getChargingElement( loadpoint as EvccLoadPoint, dc as EvccDcStub, marginLeft as Number ) as EvccHorizontalBlock {
         var lineCharging = new EvccHorizontalBlock( dc, { :relativeFont => 3, :marginLeft => marginLeft } );
         lineCharging.addText( loadpoint.getModeFormatted(), {} as DbOptions );
         if( loadpoint.getChargeRemainingDuration() > 0 ) {
@@ -239,7 +239,7 @@ import Toybox.Math;
 
 
     // Function to generate the line for heater loadpoints
-    private function getHeaterElement( loadpoint as EvccLoadPoint, dc as Dc ) as EvccHorizontalBlock {
+    private function getHeaterElement( loadpoint as EvccLoadPoint, dc as EvccDcStub ) as EvccHorizontalBlock {
         var heater = loadpoint.getHeater() as EvccHeater;
         var lineHeater = new EvccHorizontalBlock( dc, { :truncateSpacing => getContentArea().truncateSpacing } );
         

@@ -59,7 +59,7 @@ class EvccContentArea {
     // to define the behavior and provide content
 
     // Function to be overriden to add a page title to the view
-    protected function getPageTitle( dc as Dc ) as EvccBlock? { return null; }
+    protected function getPageTitle( dc as EvccDcStub ) as EvccBlock? { return null; }
 
     // Decide whether the content shall be limited by
     // height and/or width. Default is height only
@@ -74,7 +74,10 @@ class EvccContentArea {
     public function actsAsGlance() as Boolean { return false; }
 
     // Function to be overriden to add content to the view
-    protected function addContent( block as EvccVerticalBlock, dc as Dc ) as Void {}
+    protected function addContent( block as EvccVerticalBlock, dc as EvccDcStub ) as Void {}
+
+    //private var _bufferedBitmap as BufferedBitmap;
+    // private var _layer as Layer;
 
     // Constructor
     protected function initialize( views as ArrayOfSiteViews, parentView as EvccWidgetSiteBaseView?, siteIndex as Number ) {
@@ -89,6 +92,30 @@ class EvccContentArea {
         _pageIndex = views.size() - 1;
         _sameLevelViews = views;
         
+        //var systemSettings = System.getDeviceSettings();
+        //var bufferedBitmapReference = Graphics.createBufferedBitmap( { :width => systemSettings.screenWidth, :height => systemSettings.screenHeight } );
+        //_bufferedBitmap = bufferedBitmapReference.get() as BufferedBitmap;
+
+        // _layer = new Layer( { :locX => 0, :locY => 0, :width => systemSettings.screenWidth, :height => systemSettings.screenHeight } );
+        // addLayer( _layer );
+
+
+        /*
+        var dc = _bufferedBitmap.getDc();
+        dc.setColor( EvccColors.FOREGROUND, EvccColors.BACKGROUND );
+        dc.clear();
+        if( _siteIndex == 0 ) {
+            for( var i = 1; i < dc.getHeight(); i = i + 2 ) {
+                dc.drawLine( 0, i, dc.getWidth(), i );
+            }
+        } 
+        else {
+            for( var i = 1; i < dc.getWidth(); i = i + 2 ) {
+                dc.drawLine( i, 0, i, dc.getHeight() );
+            }
+        }
+        */
+
         /*
         // Enable the action menu for Vivoactive6
         if ( self has :setActionMenuIndicator ) {
@@ -108,22 +135,42 @@ class EvccContentArea {
         }
     }
 
-    // Update the view
-    function onUpdate(dc as Dc) as Void {
+/*
+    function onUpdate( dcx as Dc ) as Void {
+        // drawView( dc );
+        drawView( _bufferedBitmap.getDc() );
+        // dc.drawBitmap( 0, 0, _bufferedBitmap );
+        // drawView( _layer.getDc() as Dc );
+    }
+*/
+
+    var _dc as Dc?;
+    function testDc() as Void {
+        var dc = _dc as Dc;
+
+        System.println( "***** dc.getWidth=" + dc.getWidth() );
+        System.println( "***** dc.getHeight=" + dc.getHeight() );
+        var x = dc.getTextDimensions( "BLAH", Graphics.FONT_MEDIUM )[0];
+        System.println( "***** dc.getTextDimensions=" + x );
+    }
+
+    
+    private var _exception as Exception?;
+    private var _content as EvccVerticalBlock?;
+    function prepareDraw() as Void {
         try {
+
             //EvccHelperBase.debug("Widget: onUpdate");
             var stateRequest = getStateRequest();
 
-            dc.setColor( EvccColors.FOREGROUND, EvccColors.BACKGROUND );
-            dc.clear();
+            var dc = new EvccDcStub();
 
-            // Draw the header, footer, page indicator and select indicator
-            drawShell( dc );
+            prepareShell( dc );
 
-            var block = new EvccVerticalBlock( dc, {} as DbOptions );
+            var content = new EvccVerticalBlock( dc, {} as DbOptions );
             
             if( ! stateRequest.hasLoaded() ) {
-                block.addText( "Loading ...", {} as DbOptions );
+                content.addText( "Loading ...", {} as DbOptions );
                 // Always vertically center the Loading message
                 _ca.y = dc.getHeight() / 2;
             } else { 
@@ -131,7 +178,7 @@ class EvccContentArea {
                     throw new StateRequestException( stateRequest.getErrorCode(), stateRequest.getErrorMessage() );
                 } else { 
                     // The actual content comes from implementations of this class
-                    addContent( block, dc );
+                    addContent( content, dc );
                 }
             }
 
@@ -141,7 +188,7 @@ class EvccContentArea {
 
             // To save computing resources, if the block 
             // has more than 6 elements, we do not even try the largest font
-            if( block.getElementCount() > 6 ) {
+            if( content.getElementCount() > 6 ) {
                 font++;
             }
 
@@ -149,22 +196,63 @@ class EvccContentArea {
             // is reserved for explicit declarations (:font or :relativeFont)
             // but will not automatically be choosen for the main content
             for( ; font < fonts.size() - 1; font++ ) {
-                block.setOption( :font, font );
+                content.setOption( :font, font );
                 // The implementation of this class determines if the sizing should
                 // happen based on height or width
                 // Generally applying both would be to cpu-intense
                 // Note: the main view is sized by height, but uses the truncate
                 // feature of the EvccDrawingTools to cut content to width
-                if( limitHeight() && block.getHeight() <= _ca.height ) {
+                if( limitHeight() && content.getHeight() <= _ca.height ) {
                     break;
-                } else if ( limitWidth() && block.getWidth() <= _ca.width ) {
+                } else if ( limitWidth() && content.getWidth() <= _ca.width ) {
                     break;
                 }
             }
 
             // EvccHelperBase.debug( "Using font " + block.getOption( :font ) );
 
-            block.draw( _ca.x, _ca.y );
+            content.prepareDraw( _ca.x, _ca.y );
+            _content = content;
+
+        } catch ( ex ) {
+            EvccHelperBase.debugException( ex );
+            _exception = ex;
+        }
+    }
+
+
+    // Update the view
+    function onUpdate( dc as Dc ) as Void {
+        try {
+            prepareDraw();
+            
+            dc.setColor( EvccColors.FOREGROUND, EvccColors.BACKGROUND );
+            dc.clear();
+
+            if( _exception != null ) {
+                throw _exception;
+            }
+
+            ( _header as EvccVerticalBlock ).drawPrepared( dc );
+            ( _logo as EvccBitmapBlock ).drawPrepared( dc );
+
+            ( _content as EvccVerticalBlock ).drawPrepared( dc );
+
+            if( _pageIndicator != null ) {
+                _pageIndicator.draw( dc );
+            }
+
+            if( _selectIndicator != null ) {
+                _selectIndicator.draw( dc );
+            }
+
+            // Code for drawing visual alignment grid 
+            /*
+            dc.setPenWidth( 1 );
+            dc.drawCircle( dc.getWidth() / 2, dc.getHeight() / 2, dc.getWidth() / 2 );
+            dc.drawRectangle( _ca.x - _ca.width / 2, _ca.y - _ca.height / 2, _ca.width, _ca.height );
+            dc.drawLine( _ca.x - _ca.width / 2, _ca.y, _ca.x + _ca.width / 2, _ca.y );
+            */
 
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
@@ -198,7 +286,12 @@ class EvccContentArea {
     // - Page indicator
     // - Select indicator
     // This function also sets the content area
-    private function drawShell( dc as Dc ) as Void {
+    private var _header as EvccVerticalBlock?;
+    private var _logo as EvccBitmapBlock?;
+    private var _pageIndicator as EvccPageIndicator?;
+    private var _selectIndicator as EvccSelectIndicator?;
+
+    private function prepareShell( dc as EvccDcStub ) as Void {
         var stateRequest = getStateRequest();
 
         // The font size of the hader is fixed to the second-smallest
@@ -251,29 +344,30 @@ class EvccContentArea {
 
         // Draw the header
         var headerHeight = header.getHeight();
-        header.draw( xCenter, headerHeight / 2 );
+        header.prepareDraw( xCenter, headerHeight / 2 );
+        _header = header;
         
         // Draw the logo
         var logo = new EvccBitmapBlock( Rez.Drawables.logo_evcc, dc, { :marginTop => spacing, :marginBottom => spacing } );
         var logoHeight = logo.getHeight();
-        logo.draw( xCenter, dc.getHeight() - logoHeight / 2 );
+        logo.prepareDraw( xCenter, dc.getHeight() - logoHeight / 2 );
+        _logo = logo;
 
         // If there is more than one view on the same level, draw the page indicator
         var piSpacing = 0;
         if( getSameLevelViewCount() > 1 ) {
-            var pi = new EvccPageIndicator( dc );
-            pi.drawPageIndicator( _pageIndex, getSameLevelViewCount() );
-            piSpacing = pi.getSpacing();
+            var pageIndicator = new EvccPageIndicator( dc, _pageIndex, getSameLevelViewCount() );
+            piSpacing = pageIndicator.getSpacing( dc );
+            _pageIndicator = pageIndicator;
         }
 
         // If there are lower level views, draw the select indicator
         var siSpacing = 0;        
         if( _lowerLevelViews.size() > 0 ) {
-            var si = new EvccSelectIndicator();
-            si.draw( dc );
-            siSpacing = si.getSpacing();
+            var selectIndicator = new EvccSelectIndicator();
+            siSpacing = selectIndicator.getSpacing( dc );
+            _selectIndicator = selectIndicator;
         }
-
 
         // Calculate the dimensions of the content area
 
@@ -290,16 +384,7 @@ class EvccContentArea {
         _ca.width = Math.round( _ca.width * 0.93 ).toNumber(); 
 
         _ca.truncateSpacing = dc.getWidth() - _ca.width;
-
         
-        // Code for drawing visual alignment grid 
-        /*
-        dc.setPenWidth( 1 );
-        dc.drawCircle( dc.getWidth() / 2, dc.getHeight() / 2, dc.getWidth() / 2 );
-        dc.drawRectangle( _ca.x - _ca.width / 2, _ca.y - _ca.height / 2, _ca.width, _ca.height );
-        dc.drawLine( _ca.x - _ca.width / 2, _ca.y, _ca.x + _ca.width / 2, _ca.y );
-        */
-        // Return the content area dimensions
     }
 }
 

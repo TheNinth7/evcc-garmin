@@ -15,24 +15,19 @@ import Toybox.Lang;
 // script decides which option shall be used for a device, and all other code is excluded.
 class EvccSelectIndicator {
     
-    // The spacing that content should keep from the right side
-    // The actual spacing will be calculated and put in this member
-    // by the draw functions
-    private var _spacing as Float = 0.0;
-    public function getSpacing() as Number { return Math.round( _spacing ).toNumber(); }
-    
     // Draw function to be used if no hint shall be shown
     (:exclForSelect30 :exclForSelect27 :exclForSelectTouch) public function draw( dc as Dc ) as Void {}
+    (:exclForSelect30 :exclForSelect27 :exclForSelectTouch) public function getSpacing( dc as EvccDcStub ) as Number { return 0; }
 
     // Draw function for arc
     // Angle can be either 27° or 30°
     (:exclForSelect30 :exclForSelectNone :exclForSelectTouch) private const SELECT_CENTER_ANGLE = 27;
     (:exclForSelect27 :exclForSelectNone :exclForSelectTouch) private const SELECT_CENTER_ANGLE = 30;
+    (:exclForSelectNone :exclForSelectTouch) private var SELECT_RADIUS_FACTOR as Float = 0.49; // factor applied to dc width to calculate the radius of the arc
+    (:exclForSelectNone :exclForSelectTouch) private var SELECT_LINE_WIDTH_FACTOR as Float = 0.01; // factor applied to dc width to calculate the width of the arc
+    (:exclForSelectNone :exclForSelectTouch) private var SELECT_LENGTH as Number = 18; // total length of the arc in degree
     (:exclForSelectNone :exclForSelectTouch) public function draw( dc as Dc ) as Void {
         // Constants are put inside the function, otherwise they'd need the annotations
-        var SELECT_RADIUS_FACTOR = 0.49; // factor applied to dc width to calculate the radius of the arc
-        var SELECT_LINE_WIDTH_FACTOR = 0.01; // factor applied to dc width to calculate the width of the arc
-        var SELECT_LENGTH = 18; // total length of the arc in degree
         
         // Anti-alias is only available in newer SDK versions
         if( dc has :setAntiAlias ) {
@@ -40,8 +35,8 @@ class EvccSelectIndicator {
         }
         
         // Spacing is set to the line width
-        _spacing = dc.getWidth() * SELECT_LINE_WIDTH_FACTOR;
-        dc.setPenWidth( _spacing );
+        var lineWidth = dc.getWidth() * SELECT_LINE_WIDTH_FACTOR;
+        dc.setPenWidth( lineWidth );
         
         dc.drawArc( dc.getWidth() / 2, 
                     dc.getHeight() / 2, 
@@ -50,6 +45,7 @@ class EvccSelectIndicator {
                     SELECT_CENTER_ANGLE - SELECT_LENGTH / 2,
                     SELECT_CENTER_ANGLE + SELECT_LENGTH / 2 );
     }
+    (:exclForSelectNone :exclForSelectTouch) public function getSpacing( dc as EvccDcStub ) as Number { return Math.round( dc.getWidth() * SELECT_LINE_WIDTH_FACTOR ).toNumber(); }
     
     // Draw function for tap hint
     (:exclForSelect30 :exclForSelect27 :exclForSelectNone) public function draw( dc as Dc ) as Void {
@@ -101,6 +97,11 @@ class EvccSelectIndicator {
         // of the diameter gives good results.
         var diameter = radiusOuter * 2 + penWidth;
         _spacing = ( diameter / 4 ).toFloat();
+    }
+    (:exclForSelect30 :exclForSelect27 :exclForSelectNone) public function getSpacing( dc as EvccDcStub ) as Number { 
+        var radiusOuter = dc.getWidth() * TOUCH_RADIUS_OUTER_FACTOR;
+        var diameter = radiusOuter * 2 + penWidth;
+        return Math.round( ( diameter / 4 ).toFloat() ).toNumber(); 
     }
 
     /* Swipe indicator, not yet fully implemented

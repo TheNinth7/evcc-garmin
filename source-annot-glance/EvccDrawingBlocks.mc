@@ -31,6 +31,32 @@ typedef DbOptionValue as EvccContainerBlock or WeakReference or TextJustificatio
 // stored in a separate graphics pool. We need to support both.
 typedef DbBitmap as BitmapResource or BitmapReference;
 
+typedef EvccDcInterface as interface {
+    function getWidth() as Number;
+    function getHeight() as Number;
+    function getTextWidthInPixels( text as String, font as FontType ) as Number;
+};
+
+(:glance) class EvccDcStub {
+    
+    private var _width as Number;
+    private var _height as Number;
+    private var _bufferedBitmap as BufferedBitmapReference;
+
+    public function initialize() {
+        var systemSettings = System.getDeviceSettings();
+        _width = systemSettings.screenWidth;
+        _height = systemSettings.screenHeight;
+        _bufferedBitmap = Graphics.createBufferedBitmap( { :width => 1, :height => 1 } );
+    }
+    public function getWidth() as Number { return _width; }
+    public function getHeight() as Number { return _height; }
+    public function getTextWidthInPixels( text as String, font as FontType ) as Number {
+        return ( _bufferedBitmap.get() as BufferedBitmap ).getDc().getTextDimensions( text, font )[0];
+    }   
+}
+
+
 // Base class for all drawing elements
 // In the options dictionary, the following entries are used:
 // :marginLeft, :marginRight, :marginTop, :marginBottom - margins in pixels to be put around the element
@@ -46,14 +72,14 @@ typedef DbBitmap as BitmapResource or BitmapReference;
 // :spreadToHeight - if set for a vertical block, it will spread out the content to the specified height in pixel
 // :baseFont - not to be set but calculated only, showing the applicable :font, without considering :relativeFont
 (:glance) class EvccBlock {
-    var _dc as Dc; 
+    protected var _dcStub as EvccDcInterface; 
     
     // The options for this block (see documentation above)
     private var _options as DbOptions;
 
     // Constructor
-    protected function initialize( dc as Dc, options as DbOptions ) {
-        _dc = dc;
+    protected function initialize( dcStub as EvccDcInterface, options as DbOptions ) {
+        _dcStub = dcStub;
 
         // If a parent is passed in, we convert it to a WeakReference,
         // to avoid a circular reference, which would result in a 
@@ -64,8 +90,18 @@ typedef DbBitmap as BitmapResource or BitmapReference;
         _options = options;
     }
 
-    // draw this block, to be overriden by implementations of this class
-    public function draw( x as Number, y as Number ) as Void;
+    // We implement a cache to enable all calculation about positioning elements
+    // prepareDraw does the calculations
+    // drawPrepared does the actual drawing
+    // draw is for places where separation is not necessary and combines the other two
+    protected var _x as Number?;
+    protected var _y as Number?;
+    protected function prepareDraw( x as Number, y as Number ) as Void;
+    protected function drawPrepared( dc as Dc ) as Void;
+    public function draw( x as Number, y as Number ) as Void {
+        prepareDraw( x, y );
+        drawPrepared( _dcStub as Dc );
+    }
 
     // Returning the value of a certain option
     // Is also responsible for defining default values
@@ -206,8 +242,8 @@ typedef DbBitmap as BitmapResource or BitmapReference;
         // b: distance of screen edge from center
         // c: radius
         // a: y distance from center
-        var c = _dc.getWidth() / 2;
-        var a = ( y - _dc.getHeight() / 2 ).abs();
+        var c = _dcStub.getWidth() / 2;
+        var a = ( y - _dcStub.getHeight() / 2 ).abs();
         return Math.round( Math.sqrt( c*c - a*a ) * 2 ).toNumber();
     }
 
@@ -217,14 +253,15 @@ typedef DbBitmap as BitmapResource or BitmapReference;
     protected function getFontHeight() as Number {
         return EvccResources.getFontHeight( getFont() );
     }
+
 }
 
 // Base class for all drawing elements that consists of other drawing elements
 (:glance) class EvccContainerBlock extends EvccBlock {
     protected var _elements as Array<EvccBlock> = new Array<EvccBlock>[0];
 
-    function initialize( dc as Dc, options as DbOptions ) {
-        EvccBlock.initialize( dc, options );
+    function initialize( dcStub as EvccDcInterface, options as DbOptions ) {
+        EvccBlock.initialize( dcStub, options );
     }
 
     function getElementCount() as Number {
@@ -238,11 +275,11 @@ typedef DbBitmap as BitmapResource or BitmapReference;
     function addError( text as String, options as DbOptions ) as Void {
         options[:color] = EvccColors.ERROR;
         options[:parent] = self;
-        _elements.add( new EvccTextBlock( text, _dc, options ) );
+        _elements.add( new EvccTextBlock( text, _dcStub, options ) );
     }
     function addBitmap( reference as ResourceId, options as DbOptions ) as Void {
         options[:parent] = self;
-        _elements.add( new EvccBitmapBlock( reference, _dc, options ) );
+        _elements.add( new EvccBitmapBlock( reference, _dcStub, options ) );
     }
     
     function addIcon( icon as EvccIconBlock.Icon, options as DbOptions ) as Void {
@@ -254,7 +291,7 @@ typedef DbBitmap as BitmapResource or BitmapReference;
         if( ( icon != EvccIconBlock.ICON_POWER_FLOW || options[:power] != 0 ) &&
             ( icon != EvccIconBlock.ICON_ACTIVE_PHASES || options[:charging] == true ) )  
         {
-            _elements.add( new EvccIconBlock( icon, _dc, options ) );
+            _elements.add( new EvccIconBlock( icon, _dcStub, options ) );
         }
     }
 
@@ -272,6 +309,16 @@ typedef DbBitmap as BitmapResource or BitmapReference;
             }
         }
     }
+
+
+    function drawPrepared( dc as Dc ) as Void
+    {
+        for( var i = 0; i < _elements.size(); i++ ) {
+            _elements[i].drawPrepared( dc );
+        }
+    }
+
+
 }
 
 // An element containing other elements that shall stacked horizontally
@@ -279,16 +326,16 @@ typedef DbBitmap as BitmapResource or BitmapReference;
     
     var _truncatableElement as EvccTextBlock?;
 
-    function initialize( dc as Dc, options as DbOptions ) {
-        EvccContainerBlock.initialize( dc, options );
+    function initialize( dcStub as EvccDcInterface, options as DbOptions ) {
+        EvccContainerBlock.initialize( dcStub, options );
     }
     
-    // Draw all elements
+    // Prepare the drawing of all elements
     // Vertical alignment is always centered
     // For horizontal left alignment, we just start at x
     // For horizontal center alignment, our x is the center, and we align
     // the starting point by half of the total width
-    function draw( x, y )
+    function prepareDraw( x, y ) as Void
     {
         // The y passed in is the center
         // To calculate the y for the elements, we have to adjust it
@@ -329,7 +376,7 @@ typedef DbBitmap as BitmapResource or BitmapReference;
             }
             
             x += _elements[i].getWidth() / 2;
-            _elements[i].draw( x, y );
+            _elements[i].prepareDraw( x, y );
             x += _elements[i].getWidth() / 2;
 
             // If we have the width/height cache enabled
@@ -380,7 +427,7 @@ typedef DbBitmap as BitmapResource or BitmapReference;
             ( _elements[lastElement] as EvccTextBlock ).append( text );
         } else { 
             options[:parent] = self;
-            var textBlock = new EvccTextBlock( text, _dc, options );
+            var textBlock = new EvccTextBlock( text, _dcStub, options );
             _elements.add( textBlock );
             if( options[:isTruncatable] == true ) {
                 _truncatableElement = textBlock;
@@ -391,14 +438,14 @@ typedef DbBitmap as BitmapResource or BitmapReference;
 
 // An element containing other elements that shall be stacked vertically
 (:glance) class EvccVerticalBlock extends EvccContainerBlock {
-    function initialize( dc as Dc, options as DbOptions ) {
-        EvccContainerBlock.initialize( dc, options );
+    function initialize( dcStub as EvccDcInterface, options as DbOptions ) {
+        EvccContainerBlock.initialize( dcStub, options );
     }
 
-    // Draw all elements
+    // Prepare the drawing of all
     // Vertical alignment is always centered, therefore for each element we calculate 
     // the y at the center of the element and pass it as starting point.
-    function draw( x as Number, y as Number )
+    function prepareDraw( x as Number, y as Number )
     {
         if( getJustify() != Graphics.TEXT_JUSTIFY_CENTER ) {
             throw new InvalidValueException( "EvccVerticalBlock supports only justify center." );
@@ -435,7 +482,7 @@ typedef DbBitmap as BitmapResource or BitmapReference;
             elX -= elJust == Graphics.TEXT_JUSTIFY_LEFT ? Math.round( getWidth() / 2 ).toNumber() : 0;
             elX += elJust == Graphics.TEXT_JUSTIFY_RIGHT ? Math.round( getWidth() / 2 ).toNumber() : 0;
             
-            _elements[i].draw( elX, y );
+            _elements[i].prepareDraw( elX, y );
             y += _elements[i].getHeight() / 2;
 
             // If we have the width/height cache enabled
@@ -472,7 +519,7 @@ typedef DbBitmap as BitmapResource or BitmapReference;
     // For the vertical container, new text is always added as new element
     function addText( text as String, options as DbOptions ) as Void {
         options[:parent] = self;
-        _elements.add( new EvccTextBlock( text, _dc, options as DbOptions ) );
+        _elements.add( new EvccTextBlock( text, _dcStub, options as DbOptions ) );
     }
 }
 
@@ -480,8 +527,8 @@ typedef DbBitmap as BitmapResource or BitmapReference;
 (:glance) class EvccTextBlock extends EvccBlock {
     var _text as String;
 
-    function initialize( text as String, dc as Dc, options as DbOptions ) {
-        EvccBlock.initialize( dc, options );
+    function initialize( text as String, dcStub as EvccDcInterface, options as DbOptions ) {
+        EvccBlock.initialize( dcStub, options );
         _text = text;
     }
 
@@ -508,11 +555,14 @@ typedef DbBitmap as BitmapResource or BitmapReference;
 
     protected function calculateWidth() as Number { return getTextWidth() + getMarginLeft() + getMarginRight(); }
     protected function calculateHeight() as Number { return getTextHeight() + getMarginTop() + getMarginBottom(); }
-    function getTextWidth() as Number { return _dc.getTextDimensions( _text, EvccResources.getGarminFont( getFont() ) )[0]; }
+    function getTextWidth() as Number { return _dcStub.getTextWidthInPixels( _text, EvccResources.getGarminFont( getFont() ) ); }
     function getTextHeight() as Number { return getFontHeight(); }
 
-    // For alignment we just pass the justify parameter on to the drawText
-    function draw( x as Number, y as Number ) {
+    private var _justify as Number?;
+    private var _garminFont as GarminFont?;
+
+    // Make all calculations necessary for drawing
+    function prepareDraw( x as Number, y as Number ) {
         var font = getFont();
 
         // Align text to have the same baseline as the base font would have
@@ -527,8 +577,6 @@ typedef DbBitmap as BitmapResource or BitmapReference;
                 y += baseFontHeight/2 - baseFontDescent - ( fontHeight/2 - fontDescent );
             }
         }
-
-        _dc.setColor( getOption( :color ) as ColorType, getOption( :backgroundColor ) as ColorType );
 
         var justify = getJustify();
         if( justify == Graphics.TEXT_JUSTIFY_LEFT ) {
@@ -545,18 +593,21 @@ typedef DbBitmap as BitmapResource or BitmapReference;
             y = y - getHeight() / 2 + marginTop + getTextHeight() / 2;
         }
 
-        _dc.drawText( x, 
-                      y, 
-                      EvccResources.getGarminFont( font ), 
-                      _text, 
-                      justify | Graphics.TEXT_JUSTIFY_VCENTER );
+        _x = x;
+        _y = y;
+        _justify = justify | Graphics.TEXT_JUSTIFY_VCENTER;
+        _garminFont = EvccResources.getGarminFont( font );
+    }
 
-        /* Debug code for drawing a line above and below the text 
-        var topY = y + getOption( :marginTop ) - getHeight() / 2;
-        var botY = y + getOption( :marginTop ) + getHeight() / 2;
-        _dc.drawLine( 0, topY, _dc.getWidth(), topY );
-        _dc.drawLine( 0, botY, _dc.getWidth(), botY );
-        */    
+    // Draw the text element
+    function drawPrepared( dc as Dc ) as Void {
+        dc.setColor( getOption( :color ) as ColorType, getOption( :backgroundColor ) as ColorType );
+
+        dc.drawText( _x as Number, 
+                      _y as Number, 
+                      _garminFont as GarminFont, 
+                      _text, 
+                      _justify as TextJustification );
     }
 }
 
@@ -571,8 +622,8 @@ typedef DbBitmap as BitmapResource or BitmapReference;
     // to save memory
     var _bitmapRef as ResourceId?; 
 
-    function initialize( reference as ResourceId?, dc as Dc, options as DbOptions ) {
-        EvccBlock.initialize( dc, options );
+    function initialize( reference as ResourceId?, dcStub as EvccDcInterface, options as DbOptions ) {
+        EvccBlock.initialize( dcStub, options );
         _bitmapRef = reference;
     }
 
@@ -616,8 +667,8 @@ typedef DbBitmap as BitmapResource or BitmapReference;
         }
     }
 
-    // Draw the bitmap
-    function draw( x as Number, y as Number ) {
+    // Make all the calculations for drawing
+    function prepareDraw( x as Number, y as Number ) as Void {
         var bitmap = bitmap();
         // Note that for drawBitmap, the input x/y is the upper left corner
         // of the bitmap. The input y is assumed to be the vertical center
@@ -639,7 +690,14 @@ typedef DbBitmap as BitmapResource or BitmapReference;
         }
 
         y = y - Math.round( getHeight() / 2 ).toNumber() + getMarginTop();
-        _dc.drawBitmap( x, y, bitmap );
+        
+        _x = x;
+        _y = y;
+    }
+
+    // Perform the actual drawing
+    function drawPrepared( dc as Dc ) as Void {
+        dc.drawBitmap( _x as Number, _y as Number, bitmap() );
     }
 }
 
@@ -686,8 +744,8 @@ typedef DbBitmap as BitmapResource or BitmapReference;
         ICON_ACTIVE_PHASES = -3
     }
 
-    function initialize( icon as Icon, dc as Dc, options as DbOptions ) {
-        EvccBitmapBlock.initialize( null, dc, options );
+    function initialize( icon as Icon, dcStub as EvccDcInterface, options as DbOptions ) {
+        EvccBitmapBlock.initialize( null, dcStub, options );
 
         // We analyse the icon and passed in data and from that
         // store the interpreted icon
@@ -757,5 +815,3 @@ typedef DbBitmap as BitmapResource or BitmapReference;
         }
     }
 }
-
-

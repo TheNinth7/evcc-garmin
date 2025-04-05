@@ -21,12 +21,12 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
     }
 
     // Show the forecast icon as page title
-    function getPageTitle( dc as Dc ) as EvccBlock? {
+    function getPageTitle( dc as EvccDcStub ) as EvccBlock? {
         return new EvccIconBlock( EvccIconBlock.ICON_FORECAST, dc, {} as DbOptions );
     }
 
     // Add the content
-    function addContent( block as EvccVerticalBlock, dc as Dc ) {
+    function addContent( block as EvccVerticalBlock, dc as EvccDcStub ) {
 
         var state = getStateRequest().getState();
 
@@ -66,7 +66,7 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
     // a nice table structure
     // The layouting is cpu-intense, so below this there is 
     // more light-weight variant for older devices
-    (:exclForCalcSimple) function addForecast( block as EvccVerticalBlock, dc as Dc, energy as Array<Float>, scale as Float ) as Void {
+    (:exclForCalcSimple) function addForecast( block as EvccVerticalBlock, dc as EvccDcStub, energy as Array<Float>, scale as Float ) as Void {
 
         var row = new EvccHorizontalBlock( dc, {} as DbOptions );
         var column1 = new EvccVerticalBlock( dc, {} as DbOptions );
@@ -96,7 +96,7 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
     // Simple forecast layout, with just single lines
     // Content of the lines will not be aligned, but this is
     // much simpler to layout
-    (:exclForCalcComplex) function addForecast( block as EvccVerticalBlock, dc as Dc, energy as Array<Float>, scale as Float ) as Void {
+    (:exclForCalcComplex) function addForecast( block as EvccVerticalBlock, dc as EvccDcStub, energy as Array<Float>, scale as Float ) as Void {
         for( var i = 0; i < energy.size(); i++ ) {
             var line = new EvccHorizontalBlock( dc, { :justify => Graphics.TEXT_JUSTIFY_LEFT } );
             line.addText( _label[i] + ": " + formatEnergy( energy[i] * scale ) + "kWh", {} as DbOptions );

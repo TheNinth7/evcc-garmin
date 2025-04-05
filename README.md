@@ -38,6 +38,7 @@ This README covers the following topics:
       - [2. `drawables*.xml`](#2-drawablesxml)
       - [3. `EvccResourceSet.mc`](#3-source_baseevccresourcesetmc)
     - [Generating the Device-Specific PNG Files](#generating-the-device-specific-png-files)
+- [Supported Devices](#supported-devices)
 
 <br>
 
@@ -501,3 +502,57 @@ The script relies on the following third-party tools:
 
 - **Inkscape** – Converts SVG files to PNG. It must be available in your system’s `PATH`.
 - **pngcrush.exe** – Optimizes PNG files. This tool is included in the project directory and requires no installation.
+
+<br>
+
+# Supported Devices
+
+A table listing supported devices and their features is available in the [user manual](https://evccg.the-ninth.com/#supported-devices).
+
+Below is an additional reference for developers, showing the Connect IQ (CIQ) API level supported by each device.
+
+| Device               | CIQ API Level |
+|----------------------|---------------|
+| fenix6               | 3.4.0         |
+| fenix6s              | 3.4.0         |
+| fenix6pro            | 3.4.0         |
+| fenix6spro           | 3.4.0         |
+| fenix6xpro           | 3.4.0         |
+| fenix7               | 5.1.0         |
+| fenix7s              | 5.1.0         |
+| fenix7x              | 5.1.0         |
+| epix2pro42mm         | 5.1.0         |
+| epix2pro47mm         | 5.1.0         |
+| epix2pro51mm         | 5.1.0         |
+| fenix7pro            | 5.1.0         |
+| fenix7spro           | 5.1.0         |
+| fenix7xpro           | 5.1.0         |
+| fenix7xpronowifi     | 5.1.0         |
+| fenix843mm           | 5.1.0         |
+| fenix847mm           | 5.1.0         |
+| fenix8solar47mm      | 5.1.0         |
+| fenix8solar51mm      | 5.1.0         |
+| fr745                | 3.3.0         |
+| fr945                | 3.3.0         |
+| fr945lte             | 3.4.0         |
+| fr955                | 5.1.0         |
+| fr265                | 5.1.0         |
+| fr265s               | 5.1.0         |
+| fr965                | 5.1.0         |
+| venu2                | 5.0.0         |
+| venu2plus            | 5.0.0         |
+| venu2s               | 5.0.0         |
+| venu3                | 5.1.0         |
+| venu3s               | 5.1.0         |
+| vivoactive3          | 3.1.0         |
+| vivoactive3m         | 3.2.0         |
+| vivoactive3mlte      | 3.1.0         |
+| vivoactive4          | 3.3.0         |
+| vivoactive4s         | 3.3.0         |
+| vivoactive5          | 5.1.0         |
+| vivoactive6          | 5.1.0         |
+
+**Further reading**
+
+- [Connect IQ SDK - Compatible Devices](https://developer.garmin.com/connect-iq/compatible-devices/)
+- [Connect IQ SDK - Device Reference](https://developer.garmin.com/connect-iq/reference-guides/devices-reference)

@@ -131,6 +131,8 @@ class EvccViewCarouselDelegateBase extends EvccViewSimpleDelegate {
                 childCrumb = _breadCrumb.getChild( activeView );
             }
 
+            _views[activeView].testDc();
+            
             var lowerLevelViews = _views[activeView].getLowerLevelViews();
             var activeSubView = childCrumb.getSelectedChild( lowerLevelViews.size() );
 
