@@ -17,7 +17,7 @@ class EvccSelectIndicator {
     
     // Draw function to be used if no hint shall be shown
     (:exclForSelect30 :exclForSelect27 :exclForSelectTouch) public function draw( dc as Dc ) as Void {}
-    (:exclForSelect30 :exclForSelect27 :exclForSelectTouch) public function getSpacing( dc as EvccDcStub ) as Number { return 0; }
+    (:exclForSelect30 :exclForSelect27 :exclForSelectTouch) public function getSpacing() as Number { return 0; }
 
     // Draw function for arc
     // Angle can be either 27° or 30°
@@ -45,7 +45,7 @@ class EvccSelectIndicator {
                     SELECT_CENTER_ANGLE - SELECT_LENGTH / 2,
                     SELECT_CENTER_ANGLE + SELECT_LENGTH / 2 );
     }
-    (:exclForSelectNone :exclForSelectTouch) public function getSpacing( dc as EvccDcStub ) as Number { return Math.round( dc.getWidth() * SELECT_LINE_WIDTH_FACTOR ).toNumber(); }
+    (:exclForSelectNone :exclForSelectTouch) public function getSpacing() as Number { return Math.round( EvccDc.getWidth() * SELECT_LINE_WIDTH_FACTOR ).toNumber(); }
     
     // Draw function for tap hint
     (:exclForSelect30 :exclForSelect27 :exclForSelectNone) public function draw( dc as Dc ) as Void {
@@ -98,8 +98,8 @@ class EvccSelectIndicator {
         var diameter = radiusOuter * 2 + penWidth;
         _spacing = ( diameter / 4 ).toFloat();
     }
-    (:exclForSelect30 :exclForSelect27 :exclForSelectNone) public function getSpacing( dc as EvccDcStub ) as Number { 
-        var radiusOuter = dc.getWidth() * TOUCH_RADIUS_OUTER_FACTOR;
+    (:exclForSelect30 :exclForSelect27 :exclForSelectNone) public function getSpacing() as Number { 
+        var radiusOuter = EvccDc.getWidth() * TOUCH_RADIUS_OUTER_FACTOR;
         var diameter = radiusOuter * 2 + penWidth;
         return Math.round( ( diameter / 4 ).toFloat() ).toNumber(); 
     }

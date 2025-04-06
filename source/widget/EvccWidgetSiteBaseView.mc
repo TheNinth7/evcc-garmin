@@ -59,7 +59,7 @@ class EvccContentArea {
     // to define the behavior and provide content
 
     // Function to be overriden to add a page title to the view
-    protected function getPageTitle( dc as EvccDcStub ) as EvccBlock? { return null; }
+    protected function getPageTitle() as EvccBlock? { return null; }
 
     // Decide whether the content shall be limited by
     // height and/or width. Default is height only
@@ -74,7 +74,7 @@ class EvccContentArea {
     public function actsAsGlance() as Boolean { return false; }
 
     // Function to be overriden to add content to the view
-    protected function addContent( block as EvccVerticalBlock, dc as EvccDcStub ) as Void {}
+    protected function addContent( block as EvccVerticalBlock ) as Void {}
 
     //private var _bufferedBitmap as BufferedBitmap;
     // private var _layer as Layer;
@@ -144,17 +144,6 @@ class EvccContentArea {
     }
 */
 
-    var _dc as Dc?;
-    function testDc() as Void {
-        var dc = _dc as Dc;
-
-        System.println( "***** dc.getWidth=" + dc.getWidth() );
-        System.println( "***** dc.getHeight=" + dc.getHeight() );
-        var x = dc.getTextDimensions( "BLAH", Graphics.FONT_MEDIUM )[0];
-        System.println( "***** dc.getTextDimensions=" + x );
-    }
-
-    
     private var _exception as Exception?;
     private var _content as EvccVerticalBlock?;
     function prepareDraw() as Void {
@@ -163,22 +152,20 @@ class EvccContentArea {
             //EvccHelperBase.debug("Widget: onUpdate");
             var stateRequest = getStateRequest();
 
-            var dc = new EvccDcStub();
+            prepareShell();
 
-            prepareShell( dc );
-
-            var content = new EvccVerticalBlock( dc, {} as DbOptions );
+            var content = new EvccVerticalBlock( {} as DbOptions );
             
             if( ! stateRequest.hasLoaded() ) {
                 content.addText( "Loading ...", {} as DbOptions );
                 // Always vertically center the Loading message
-                _ca.y = dc.getHeight() / 2;
+                _ca.y = EvccDc.getHeight() / 2;
             } else { 
                 if( stateRequest.hasError() ) {
                     throw new StateRequestException( stateRequest.getErrorCode(), stateRequest.getErrorMessage() );
                 } else { 
                     // The actual content comes from implementations of this class
-                    addContent( content, dc );
+                    addContent( content );
                 }
             }
 
@@ -291,9 +278,12 @@ class EvccContentArea {
     private var _pageIndicator as EvccPageIndicator?;
     private var _selectIndicator as EvccSelectIndicator?;
 
-    private function prepareShell( dc as EvccDcStub ) as Void {
+    private function prepareShell() as Void {
         var stateRequest = getStateRequest();
 
+        var dcWidth = EvccDc.getWidth();
+        var dcHeight = EvccDc.getHeight();
+        
         // The font size of the hader is fixed to the second-smallest
         var font = EvccWidgetResourceSet.FONT_XTINY;
         
@@ -301,10 +291,10 @@ class EvccContentArea {
         var spacing = EvccResources.getFontHeight( font ) / 3;
 
         // Header consists of site title and page title (assumed to be an icon)
-        var header = new EvccVerticalBlock( dc, { :font => font, :marginTop => spacing } );
+        var header = new EvccVerticalBlock( { :font => font, :marginTop => spacing } );
         var hasSiteTitle = siteCount > 1;
 
-        var xCenter = dc.getWidth() / 2;
+        var xCenter = dcWidth / 2;
 
         // If there is more than one site, we display the site title
         if( siteCount > 1 ) {
@@ -316,7 +306,7 @@ class EvccContentArea {
         }
         
         // Page title (icon) is provided by the class' implementation
-        var pageTitle = getPageTitle( dc );
+        var pageTitle = getPageTitle();
         if( pageTitle != null ) {
             if( hasSiteTitle ) {
                 // If we have a site title, we leave the font (=icon size) for the 
@@ -348,16 +338,16 @@ class EvccContentArea {
         _header = header;
         
         // Draw the logo
-        var logo = new EvccBitmapBlock( Rez.Drawables.logo_evcc, dc, { :marginTop => spacing, :marginBottom => spacing } );
+        var logo = new EvccBitmapBlock( Rez.Drawables.logo_evcc, { :marginTop => spacing, :marginBottom => spacing } );
         var logoHeight = logo.getHeight();
-        logo.prepareDraw( xCenter, dc.getHeight() - logoHeight / 2 );
+        logo.prepareDraw( xCenter, dcHeight - logoHeight / 2 );
         _logo = logo;
 
         // If there is more than one view on the same level, draw the page indicator
         var piSpacing = 0;
         if( getSameLevelViewCount() > 1 ) {
-            var pageIndicator = new EvccPageIndicator( dc, _pageIndex, getSameLevelViewCount() );
-            piSpacing = pageIndicator.getSpacing( dc );
+            var pageIndicator = new EvccPageIndicator( _pageIndex, getSameLevelViewCount() );
+            piSpacing = pageIndicator.getSpacing();
             _pageIndicator = pageIndicator;
         }
 
@@ -365,25 +355,25 @@ class EvccContentArea {
         var siSpacing = 0;        
         if( _lowerLevelViews.size() > 0 ) {
             var selectIndicator = new EvccSelectIndicator();
-            siSpacing = selectIndicator.getSpacing( dc );
+            siSpacing = selectIndicator.getSpacing();
             _selectIndicator = selectIndicator;
         }
 
         // Calculate the dimensions of the content area
 
         // Height any y are calculated based on header/logo height
-        _ca.height = dc.getHeight() - headerHeight - logoHeight;
+        _ca.height = dcHeight - headerHeight - logoHeight;
         _ca.y = headerHeight + _ca.height / 2; // y is vertically centered between header and logo
 
         // Width is calculated based on page indicator and select indicator spacing
-        _ca.width = dc.getWidth() - piSpacing - siSpacing;
+        _ca.width = dcWidth - piSpacing - siSpacing;
         _ca.x = piSpacing + _ca.width / 2; // x is horizontally centered between pi and si
 
         // AFTER x is calculated, we add some horizontal spacing to the content area
         // Value was fine-tuned during regression testing on different devices
         _ca.width = Math.round( _ca.width * 0.93 ).toNumber(); 
 
-        _ca.truncateSpacing = dc.getWidth() - _ca.width;
+        _ca.truncateSpacing = dcWidth - _ca.width;
         
     }
 }

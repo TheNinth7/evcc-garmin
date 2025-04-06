@@ -32,11 +32,12 @@ class EvccPageIndicator {
     // total width of the screen
     private const RADIUS_FACTOR = 0.47;
 
-    public function initialize( dc as EvccDcStub, activePage as Number, totalPages as Number ) {
+    public function initialize( activePage as Number, totalPages as Number ) {
         setCenterAngle( CENTER_ANGLE );
         setDotDistanceAngle( DOT_DISTANCE_ANGLE );
-        _dotSize = Math.round( dc.getWidth() * DOT_SIZE_FACTOR ).toNumber();
-        _lineWidth = Math.round( dc.getWidth() * LINE_WIDTH_FACTOR ).toNumber();
+        var dcWidth = EvccDc.getWidth();
+        _dotSize = Math.round( dcWidth * DOT_SIZE_FACTOR ).toNumber();
+        _lineWidth = Math.round( dcWidth * LINE_WIDTH_FACTOR ).toNumber();
         _activePage = activePage;
         _totalPages = totalPages;
     }
@@ -44,8 +45,8 @@ class EvccPageIndicator {
     // Returns the distance between the left side of the screen and the right-most point of 
     // a page indicator dot. This works for all dots, counting from the edge of the screen
     // in their position.
-    public function getSpacing( dc as EvccDcStub ) as Number {
-        return Math.round( dc.getWidth() * ( 0.5 - RADIUS_FACTOR + DOT_SIZE_FACTOR + LINE_WIDTH_FACTOR / 2 ) ).toNumber();
+    public function getSpacing() as Number {
+        return Math.round( EvccDc.getWidth() * ( 0.5 - RADIUS_FACTOR + DOT_SIZE_FACTOR + LINE_WIDTH_FACTOR / 2 ) ).toNumber();
     }
 
     public function setCenterAngle( angle as Number ) as Void {

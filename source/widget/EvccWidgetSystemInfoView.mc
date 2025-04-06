@@ -13,10 +13,10 @@ import Toybox.System;
     }
 
     // Draw the content
-    function onUpdate(dc as Dc) as Void {
+    function onUpdate( dc as Dc ) as Void {
             dc.setColor( EvccColors.FOREGROUND, EvccColors.BACKGROUND );
             dc.clear();
-            var block = new EvccVerticalBlock( dc, { :font => EvccWidgetResourceSet.FONT_XTINY } );
+            var block = new EvccVerticalBlock( { :font => EvccWidgetResourceSet.FONT_XTINY } );
             block.addText( "evccg " + EvccHelperUI.getVersion(), {}  );
 
             _spacing = EvccResources.getFontHeight( EvccWidgetResourceSet.FONT_XTINY ) / 2;
@@ -30,8 +30,7 @@ import Toybox.System;
             // Show font mode and if icons are the correct size
             checkFonts( block, dc );
             
-            block.draw( dc.getWidth() / 2, dc.getHeight() / 2 );
-    
+            block.draw( dc, dc.getWidth() / 2, dc.getHeight() / 2 );
     }
 
     // The checkFonts functions checks if the icon sizes match the

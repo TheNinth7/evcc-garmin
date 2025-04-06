@@ -31,29 +31,39 @@ typedef DbOptionValue as EvccContainerBlock or WeakReference or TextJustificatio
 // stored in a separate graphics pool. We need to support both.
 typedef DbBitmap as BitmapResource or BitmapReference;
 
-typedef EvccDcInterface as interface {
-    function getWidth() as Number;
-    function getHeight() as Number;
-    function getTextWidthInPixels( text as String, font as FontType ) as Number;
-};
-
-(:glance) class EvccDcStub {
+(:glance) class EvccDc {
     
     private var _width as Number;
     private var _height as Number;
-    private var _bufferedBitmap as BufferedBitmapReference;
+    private var _bufferedBitmap as BufferedBitmapReference or BufferedBitmap;
 
-    public function initialize() {
+    private static var _instance as EvccDc?;
+    public static function getInstance() as EvccDc {
+        if( _instance == null ) { _instance = new EvccDc(); }
+        return _instance as EvccDc;
+    }
+    public static function getWidth() as Number { return getInstance().getInstanceWidth(); }
+    public static function getHeight() as Number { return getInstance().getInstanceHeight(); }
+    
+    private function initialize() {
         var systemSettings = System.getDeviceSettings();
         _width = systemSettings.screenWidth;
         _height = systemSettings.screenHeight;
-        _bufferedBitmap = Graphics.createBufferedBitmap( { :width => 1, :height => 1 } );
+        if( Graphics has :createBufferedBitmap ) {
+            _bufferedBitmap = Graphics.createBufferedBitmap( { :width => 1, :height => 1 } );
+        } else {
+            _bufferedBitmap = new BufferedBitmap( { :width => 1, :height => 1 } );
+        }
     }
-    public function getWidth() as Number { return _width; }
-    public function getHeight() as Number { return _height; }
     public function getTextWidthInPixels( text as String, font as FontType ) as Number {
-        return ( _bufferedBitmap.get() as BufferedBitmap ).getDc().getTextDimensions( text, font )[0];
-    }   
+        var bufferedBitmap = _bufferedBitmap;
+        if( Graphics has :createBufferedBitmap ) {
+            bufferedBitmap = ( bufferedBitmap as BufferedBitmapReference ).get();
+        }
+        return (bufferedBitmap as BufferedBitmap).getDc().getTextWidthInPixels( text, font );
+    }
+    public function getInstanceWidth() as Number { return _width; }
+    public function getInstanceHeight() as Number { return _height; }
 }
 
 
@@ -72,14 +82,11 @@ typedef EvccDcInterface as interface {
 // :spreadToHeight - if set for a vertical block, it will spread out the content to the specified height in pixel
 // :baseFont - not to be set but calculated only, showing the applicable :font, without considering :relativeFont
 (:glance) class EvccBlock {
-    protected var _dcStub as EvccDcInterface; 
-    
     // The options for this block (see documentation above)
     private var _options as DbOptions;
 
     // Constructor
-    protected function initialize( dcStub as EvccDcInterface, options as DbOptions ) {
-        _dcStub = dcStub;
+    protected function initialize( options as DbOptions ) {
 
         // If a parent is passed in, we convert it to a WeakReference,
         // to avoid a circular reference, which would result in a 
@@ -98,9 +105,9 @@ typedef EvccDcInterface as interface {
     protected var _y as Number?;
     protected function prepareDraw( x as Number, y as Number ) as Void;
     protected function drawPrepared( dc as Dc ) as Void;
-    public function draw( x as Number, y as Number ) as Void {
+    public function draw( dc as Dc, x as Number, y as Number ) as Void {
         prepareDraw( x, y );
-        drawPrepared( _dcStub as Dc );
+        drawPrepared( dc );
     }
 
     // Returning the value of a certain option
@@ -242,8 +249,9 @@ typedef EvccDcInterface as interface {
         // b: distance of screen edge from center
         // c: radius
         // a: y distance from center
-        var c = _dcStub.getWidth() / 2;
-        var a = ( y - _dcStub.getHeight() / 2 ).abs();
+        var dc = EvccDc.getInstance();
+        var c = dc.getWidth() / 2;
+        var a = ( y - dc.getHeight() / 2 ).abs();
         return Math.round( Math.sqrt( c*c - a*a ) * 2 ).toNumber();
     }
 
@@ -260,8 +268,8 @@ typedef EvccDcInterface as interface {
 (:glance) class EvccContainerBlock extends EvccBlock {
     protected var _elements as Array<EvccBlock> = new Array<EvccBlock>[0];
 
-    function initialize( dcStub as EvccDcInterface, options as DbOptions ) {
-        EvccBlock.initialize( dcStub, options );
+    function initialize( options as DbOptions ) {
+        EvccBlock.initialize( options );
     }
 
     function getElementCount() as Number {
@@ -275,11 +283,11 @@ typedef EvccDcInterface as interface {
     function addError( text as String, options as DbOptions ) as Void {
         options[:color] = EvccColors.ERROR;
         options[:parent] = self;
-        _elements.add( new EvccTextBlock( text, _dcStub, options ) );
+        _elements.add( new EvccTextBlock( text, options ) );
     }
     function addBitmap( reference as ResourceId, options as DbOptions ) as Void {
         options[:parent] = self;
-        _elements.add( new EvccBitmapBlock( reference, _dcStub, options ) );
+        _elements.add( new EvccBitmapBlock( reference, options ) );
     }
     
     function addIcon( icon as EvccIconBlock.Icon, options as DbOptions ) as Void {
@@ -291,7 +299,7 @@ typedef EvccDcInterface as interface {
         if( ( icon != EvccIconBlock.ICON_POWER_FLOW || options[:power] != 0 ) &&
             ( icon != EvccIconBlock.ICON_ACTIVE_PHASES || options[:charging] == true ) )  
         {
-            _elements.add( new EvccIconBlock( icon, _dcStub, options ) );
+            _elements.add( new EvccIconBlock( icon, options ) );
         }
     }
 
@@ -326,8 +334,8 @@ typedef EvccDcInterface as interface {
     
     var _truncatableElement as EvccTextBlock?;
 
-    function initialize( dcStub as EvccDcInterface, options as DbOptions ) {
-        EvccContainerBlock.initialize( dcStub, options );
+    function initialize( options as DbOptions ) {
+        EvccContainerBlock.initialize( options );
     }
     
     // Prepare the drawing of all elements
@@ -427,7 +435,7 @@ typedef EvccDcInterface as interface {
             ( _elements[lastElement] as EvccTextBlock ).append( text );
         } else { 
             options[:parent] = self;
-            var textBlock = new EvccTextBlock( text, _dcStub, options );
+            var textBlock = new EvccTextBlock( text, options );
             _elements.add( textBlock );
             if( options[:isTruncatable] == true ) {
                 _truncatableElement = textBlock;
@@ -438,8 +446,8 @@ typedef EvccDcInterface as interface {
 
 // An element containing other elements that shall be stacked vertically
 (:glance) class EvccVerticalBlock extends EvccContainerBlock {
-    function initialize( dcStub as EvccDcInterface, options as DbOptions ) {
-        EvccContainerBlock.initialize( dcStub, options );
+    function initialize( options as DbOptions ) {
+        EvccContainerBlock.initialize( options );
     }
 
     // Prepare the drawing of all
@@ -519,7 +527,7 @@ typedef EvccDcInterface as interface {
     // For the vertical container, new text is always added as new element
     function addText( text as String, options as DbOptions ) as Void {
         options[:parent] = self;
-        _elements.add( new EvccTextBlock( text, _dcStub, options as DbOptions ) );
+        _elements.add( new EvccTextBlock( text, options as DbOptions ) );
     }
 }
 
@@ -527,8 +535,8 @@ typedef EvccDcInterface as interface {
 (:glance) class EvccTextBlock extends EvccBlock {
     var _text as String;
 
-    function initialize( text as String, dcStub as EvccDcInterface, options as DbOptions ) {
-        EvccBlock.initialize( dcStub, options );
+    function initialize( text as String, options as DbOptions ) {
+        EvccBlock.initialize( options );
         _text = text;
     }
 
@@ -555,11 +563,8 @@ typedef EvccDcInterface as interface {
 
     protected function calculateWidth() as Number { return getTextWidth() + getMarginLeft() + getMarginRight(); }
     protected function calculateHeight() as Number { return getTextHeight() + getMarginTop() + getMarginBottom(); }
-    function getTextWidth() as Number { return _dcStub.getTextWidthInPixels( _text, EvccResources.getGarminFont( getFont() ) ); }
+    function getTextWidth() as Number { return EvccDc.getInstance().getTextWidthInPixels( _text, EvccResources.getGarminFont( getFont() ) ); }
     function getTextHeight() as Number { return getFontHeight(); }
-
-    private var _justify as Number?;
-    private var _garminFont as GarminFont?;
 
     // Make all calculations necessary for drawing
     function prepareDraw( x as Number, y as Number ) {
@@ -579,35 +584,45 @@ typedef EvccDcInterface as interface {
         }
 
         var justify = getJustify();
+        var textWidth = getTextWidth();
+        var textHeight = getTextHeight();
+
         if( justify == Graphics.TEXT_JUSTIFY_LEFT ) {
             x = x + getMarginLeft();
         } else if ( justify == Graphics.TEXT_JUSTIFY_RIGHT ) {
-            x = x - getMarginRight();
+            x = x - getMarginRight() - textWidth;
         } else {
-            x = x - getWidth() / 2 + getMarginLeft() + getTextWidth() / 2;
+            x = x - getWidth() / 2 + getMarginLeft();
         }
 
-        var marginTop = getMarginTop();
-        if( marginTop != 0 || getMarginBottom() != 0 )
-        {
-            y = y - getHeight() / 2 + marginTop + getTextHeight() / 2;
-        }
+        y = y - getHeight() / 2 + getMarginTop();
 
         _x = x;
         _y = y;
-        _justify = justify | Graphics.TEXT_JUSTIFY_VCENTER;
-        _garminFont = EvccResources.getGarminFont( font );
+
+        store( font, textWidth, textHeight );
     }
 
-    // Draw the text element
-    function drawPrepared( dc as Dc ) as Void {
+    (:exclForFontsStatic :exclForFontsStaticOptimized) private var _bufferedBitmap as BufferedBitmap?;
+    (:exclForFontsStatic :exclForFontsStaticOptimized) private function store( font as EvccFont, textWidth as Number, textHeight as Number ) as Void {
+        var bufferedBitmapReference = Graphics.createBufferedBitmap( { :width => textWidth, :height => textHeight } );
+        _bufferedBitmap = bufferedBitmapReference.get() as BufferedBitmap;
+        var dc = _bufferedBitmap.getDc();
         dc.setColor( getOption( :color ) as ColorType, getOption( :backgroundColor ) as ColorType );
+        dc.clear();
+        dc.drawText( 0, 0, EvccResources.getGarminFont( getFont() ), _text, Graphics.TEXT_JUSTIFY_LEFT );
+    }
+    (:exclForFontsStatic :exclForFontsStaticOptimized) function drawPrepared( dc as Dc ) as Void {
+        dc.drawBitmap( _x as Number, _y as Number, _bufferedBitmap as BufferedBitmap );
+    }
 
-        dc.drawText( _x as Number, 
-                      _y as Number, 
-                      _garminFont as GarminFont, 
-                      _text, 
-                      _justify as TextJustification );
+    (:exclForFontsVector) private var _garminFont as GarminFont?;
+    (:exclForFontsVector) private function store( font as EvccFont, textWidth as Number, textHeight as Number ) as Void {
+        _garminFont = EvccResources.getGarminFont( font );
+    }
+    (:exclForFontsVector) function drawPrepared( dc as Dc ) as Void {
+        dc.setColor( getOption( :color ) as ColorType, getOption( :backgroundColor ) as ColorType );
+        dc.drawText( _x as Number, _y as Number, _garminFont as GarminFont, _text, Graphics.TEXT_JUSTIFY_LEFT );
     }
 }
 
@@ -622,8 +637,8 @@ typedef EvccDcInterface as interface {
     // to save memory
     var _bitmapRef as ResourceId?; 
 
-    function initialize( reference as ResourceId?, dcStub as EvccDcInterface, options as DbOptions ) {
-        EvccBlock.initialize( dcStub, options );
+    function initialize( reference as ResourceId?, options as DbOptions ) {
+        EvccBlock.initialize( options );
         _bitmapRef = reference;
     }
 
@@ -744,8 +759,8 @@ typedef EvccDcInterface as interface {
         ICON_ACTIVE_PHASES = -3
     }
 
-    function initialize( icon as Icon, dcStub as EvccDcInterface, options as DbOptions ) {
-        EvccBitmapBlock.initialize( null, dcStub, options );
+    function initialize( icon as Icon, options as DbOptions ) {
+        EvccBitmapBlock.initialize( null, options );
 
         // We analyse the icon and passed in data and from that
         // store the interpreted icon

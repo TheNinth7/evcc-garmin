@@ -21,14 +21,15 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
     }
 
     // Show the forecast icon as page title
-    function getPageTitle( dc as EvccDcStub ) as EvccBlock? {
-        return new EvccIconBlock( EvccIconBlock.ICON_FORECAST, dc, {} as DbOptions );
+    function getPageTitle() as EvccBlock? {
+        return new EvccIconBlock( EvccIconBlock.ICON_FORECAST, {} as DbOptions );
     }
 
     // Add the content
-    function addContent( block as EvccVerticalBlock, dc as EvccDcStub ) {
+    function addContent( block as EvccVerticalBlock ) {
 
         var state = getStateRequest().getState();
+        var dcHeight = EvccDc.getHeight();
 
         if( state != null && state.hasForecast() ) {
 
@@ -44,21 +45,21 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
 
                 // The actual forecast is added in a separate function, since
                 // there are two versions used for different devices
-                addForecast( block, dc, energy, scale );
+                addForecast( block, energy, scale );
 
                 if( applyScale ) {
-                    block.addText( "adj. w\\ real data", { :relativeFont => 4, :marginTop => dc.getHeight() * 0.007 } );
+                    block.addText( "adj. w\\ real data", { :relativeFont => 4, :marginTop => dcHeight * 0.007 } );
                 }
 
             }
         } else {
             block.addText( "Site has no forecast!", {} as DbOptions );
-            block.addText( "Restart app to remove view", { :relativeFont => 4, :marginTop => dc.getHeight() * 0.007 } );
+            block.addText( "Restart app to remove view", { :relativeFont => 4, :marginTop => dcHeight * 0.007 } );
         }
 
         // Add a small margin to the bottom. While the content is centered vertically between title and logo,
         // the spacing in the fonts make it seem a bit off, and this is to compensate for that.
-        block.setOption( :marginBottom, dc.getHeight() * 0.02 );
+        block.setOption( :marginBottom, dcHeight * 0.02 );
     }
 
     
@@ -66,19 +67,19 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
     // a nice table structure
     // The layouting is cpu-intense, so below this there is 
     // more light-weight variant for older devices
-    (:exclForCalcSimple) function addForecast( block as EvccVerticalBlock, dc as EvccDcStub, energy as Array<Float>, scale as Float ) as Void {
+    (:exclForCalcSimple) function addForecast( block as EvccVerticalBlock, energy as Array<Float>, scale as Float ) as Void {
 
-        var row = new EvccHorizontalBlock( dc, {} as DbOptions );
-        var column1 = new EvccVerticalBlock( dc, {} as DbOptions );
-        var column3 = new EvccVerticalBlock( dc, {} as DbOptions );
-        var column2 = new EvccVerticalBlock( dc, {} as DbOptions );
+        var row = new EvccHorizontalBlock( {} as DbOptions );
+        var column1 = new EvccVerticalBlock( {} as DbOptions );
+        var column3 = new EvccVerticalBlock( {} as DbOptions );
+        var column2 = new EvccVerticalBlock( {} as DbOptions );
 
         for( var i = 0; i < energy.size(); i++ ) {
             column1.addText( _label[i] + ": ", {:justify => Graphics.TEXT_JUSTIFY_RIGHT} );
-            var value = new EvccHorizontalBlock( dc, {:justify => Graphics.TEXT_JUSTIFY_RIGHT} );
+            var value = new EvccHorizontalBlock( {:justify => Graphics.TEXT_JUSTIFY_RIGHT} );
             value.addText( formatEnergy( energy[i] * scale ), {} as DbOptions );
             column2.addBlock( value );
-            var unit = new EvccHorizontalBlock( dc, {:justify => Graphics.TEXT_JUSTIFY_LEFT} );
+            var unit = new EvccHorizontalBlock( {:justify => Graphics.TEXT_JUSTIFY_LEFT} );
             unit.addText( " kWh", {} as DbOptions );
             if( _indicator[i] != null ) {
                 unit.addText( " " + _indicator[i], { :relativeFont => 4, :vjustifyTextToBottom => true } );
@@ -98,7 +99,7 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
     // much simpler to layout
     (:exclForCalcComplex) function addForecast( block as EvccVerticalBlock, dc as EvccDcStub, energy as Array<Float>, scale as Float ) as Void {
         for( var i = 0; i < energy.size(); i++ ) {
-            var line = new EvccHorizontalBlock( dc, { :justify => Graphics.TEXT_JUSTIFY_LEFT } );
+            var line = new EvccHorizontalBlock( { :justify => Graphics.TEXT_JUSTIFY_LEFT } );
             line.addText( _label[i] + ": " + formatEnergy( energy[i] * scale ) + "kWh", {} as DbOptions );
             if( _indicator[i] != null ) {
                 line.addText( " " + _indicator[i], { :relativeFont => 4, :vjustifyTextToBottom => true } );
