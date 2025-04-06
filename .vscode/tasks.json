@@ -4,7 +4,7 @@
       {
         "label": "evccg: Generate Source for Tiny Glance",
         "type": "shell",
-        "command": "cd .\\source-annot-tinyglance;.\\create-source-files.bat",
+        "command": "cd .\\source-annot-tinyglance-script;.\\create-annot-tinyglance-source-files.bat",
         "group": {
           "kind": "build",
           "isDefault": false

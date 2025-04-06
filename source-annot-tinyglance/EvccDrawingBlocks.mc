@@ -155,7 +155,7 @@ class EvccBlock {
 
     // set an option
     // for certain options, we reset the cached width/height
-    (:exclForDbCacheDisabled) public function setOption( option as Symbol, value as DbOptionValue ) as Void {
+    public function setOption( option as Symbol, value as DbOptionValue ) as Void {
         _options[option] = value;
         if( option == :marginLeft || option == :marginRight ) {
             resetCache( :resetWidth, :resetDirectionUp );
@@ -164,9 +164,6 @@ class EvccBlock {
         } else if( option == :font ) {
             resetCache( :resetFont, :resetDirectionBoth );
         }
-    }
-    (:exclForDbCacheEnabled) public function setOption( option as Symbol, value ) { 
-        _options[option] = value;
     }
 
     // Returns from getOption are Any and need type-casting
@@ -198,26 +195,19 @@ class EvccBlock {
     
     // The cached values are reset if the font size has changed,
     // or if margins are set (see setOption)
-    (:exclForDbCacheDisabled) private var _width as Number?;
-    (:exclForDbCacheDisabled) private var _height as Number?;
-    (:exclForDbCacheDisabled) public function getWidth() as Number {
+    private var _width as Number?;
+    private var _height as Number?;
+    public function getWidth() as Number {
         if( _width == null ) {
             _width = calculateWidth();
         }
         return _width as Number;
     }
-    (:exclForDbCacheDisabled) public function getHeight() as Number {
+    public function getHeight() as Number {
         if( _height == null ) {
             _height = calculateHeight();
         }
         return _height as Number;
-    }
-    // Simple functions if cache is disabled
-    (:exclForDbCacheEnabled) public function getWidth() as Number {
-        return calculateWidth();
-    }
-    (:exclForDbCacheEnabled) public function getHeight() as Number {
-        return calculateHeight();
     }
     
     // Functions for reseting the cache if relevant parameters change - these need to be called
@@ -229,7 +219,7 @@ class EvccBlock {
     // direction:   :resetDirectionUp to recursively reset all parents
     //              :resetDirectionDown to recursively reset all children
     //              :resetDirectionBoth to recursively reset both parents and children
-    (:exclForDbCacheDisabled) public function resetCache( resetType as Symbol, direction as Symbol ) as Void {
+    public function resetCache( resetType as Symbol, direction as Symbol ) as Void {
         if( resetType == :resetHeight || resetType == :resetFont ) { _height = null; }
         if( resetType == :resetWidth || resetType == :resetFont ) { _width = null; }
         if( direction == :resetDirectionUp || direction == :resetDirectionBoth ) {
@@ -309,7 +299,7 @@ class EvccContainerBlock extends EvccBlock {
     }
 
     // For containers, the resetCache function additionally resets all elements
-    (:exclForDbCacheDisabled) public function resetCache( resetType as Symbol, direction as Symbol ) as Void {
+    public function resetCache( resetType as Symbol, direction as Symbol ) as Void {
         EvccBlock.resetCache( resetType, direction );
         if( direction == :resetDirectionDown || direction == :resetDirectionBoth ) {
             for( var i = 0; i < _elements.size(); i++ ) {
@@ -543,22 +533,16 @@ class EvccTextBlock extends EvccBlock {
     // Removes the specified number of characters from the
     // end of the text 
     // one version for enabled cache, one for disabled
-    (:exclForDbCacheDisabled) function truncate( chars as Number ) as Void {
+    function truncate( chars as Number ) as Void {
         _text = _text.substring( 0, _text.length() - chars ) as String;
         resetCache( :resetWidth, :resetDirectionUp );
-    }
-    (:exclForDbCacheEnabled) function truncate( chars as Number ) as Void {
-        _text = _text.substring( 0, _text.length() - chars ) as String;
     }
 
     // Appends characters to the text
     // one version for enabled cache, one for disabled
-    (:exclForDbCacheDisabled) function append( text as String ) as Void { 
+    function append( text as String ) as Void { 
         _text += text;
         resetCache( :resetWidth, :resetDirectionUp );
-    }
-    (:exclForDbCacheEnabled) function append( text as String ) as Void { 
-        _text += text;
     }
 
     protected function calculateWidth() as Number { return getTextWidth() + getMarginLeft() + getMarginRight(); }
@@ -809,24 +793,11 @@ class EvccIconBlock extends EvccBitmapBlock {
 
     // Special handling of the cache reset - if the font is changed,
     // we also invalidate the cache for the bitmap dimensions
-    (:exclForDbCacheDisabled) public function resetCache( resetType as Symbol, direction as Symbol ) {
+    public function resetCache( resetType as Symbol, direction as Symbol ) {
         EvccBlock.resetCache( resetType, direction );
         if( resetType == :resetFont ) {
             _bitmapWidth = null;
             _bitmapHeight = null;
-        }
-    }
-    
-    // If the overall width/height cache is not applied, we still
-    // need to apply special behavior here for invalidating the
-    // bitmap width/height cache
-    (:exclForDbCacheEnabled) private var _lastFont as Number?;
-    (:exclForDbCacheEnabled) protected function loadData() {
-        var font = getFont();
-        if( font != _lastFont ) {
-            _lastFont = font;
-            _bitmapHeight = null; _bitmapWidth = null;
-            EvccBitmapBlock.loadData();
         }
     }
 }
