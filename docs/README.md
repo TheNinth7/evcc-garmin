@@ -274,6 +274,7 @@ The table below lists supported devices along with their capabilities. Click on 
 | epix2pro47mm       | Full              | 5                       | Yes                              | Vector           |                                                                                    |
 | epix2pro51mm       | Full              | 5                       | Yes                              | Vector           |                                                                                    |
 | fenix7pro          | Full              | 5                       | Yes                              | Vector           |                                                                                    |
+| fenix7pronowifi    | Full              | 5                       | Yes                              | Vector           |                                                                                    |
 | fenix7spro         | Full              | 5                       | Yes                              | Vector           |                                                                                    |
 | fenix7xpro         | Full              | 5                       | Yes                              | Vector           |                                                                                    |
 | fenix7xpronowifi   | Full              | 5                       | Yes                              | Vector           |                                                                                    |

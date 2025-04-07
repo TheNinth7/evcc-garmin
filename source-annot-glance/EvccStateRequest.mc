@@ -190,7 +190,7 @@ import Toybox.PersistedContent;
         }
     }
 
-    (:exclForWebResponseCallbacksEnabled) 
+    (:exclForWebResponseCallbacksEnabled :typecheck(disableBackgroundCheck)) 
     private function invokeCallbacks() as Void {
         WatchUi.requestUpdate();
     }

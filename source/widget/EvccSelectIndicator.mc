@@ -48,12 +48,11 @@ class EvccSelectIndicator {
     (:exclForSelectNone :exclForSelectTouch) public function getSpacing( calcDc as EvccDcInterface ) as Number { return Math.round( calcDc.getWidth() * SELECT_LINE_WIDTH_FACTOR ).toNumber(); }
     
     // Draw function for tap hint
+    (:exclForSelect30 :exclForSelect27 :exclForSelectNone) private var TOUCH_RADIUS_INNER_FACTOR as Float = 0.02;
+    (:exclForSelect30 :exclForSelect27 :exclForSelectNone) private var TOUCH_RADIUS_OUTER_FACTOR as Float = 0.04;
+    (:exclForSelect30 :exclForSelect27 :exclForSelectNone) private var TOUCH_LINE_WIDTH_FACTOR as Float = 0.01;
+    (:exclForSelect30 :exclForSelect27 :exclForSelectNone) private var TOUCH_ANGLE as Number = 30;
     (:exclForSelect30 :exclForSelect27 :exclForSelectNone) public function draw( dc as Dc ) as Void {
-        // Constants are put inside the function, otherwise they'd need the annotations
-        var TOUCH_RADIUS_INNER_FACTOR = 0.02;
-        var TOUCH_RADIUS_OUTER_FACTOR = 0.04;
-        var TOUCH_LINE_WIDTH_FACTOR = 0.01;
-        var TOUCH_ANGLE = 30;
 
         // Anti-alias is only available in newer SDK versions
         if( dc has :setAntiAlias ) {
@@ -90,17 +89,14 @@ class EvccSelectIndicator {
         
         // Draw the half-circle
         dc.drawArc( x, y, radiusOuter, Graphics.ARC_COUNTER_CLOCKWISE, 0, 180 );
-
+    }
+    (:exclForSelect30 :exclForSelect27 :exclForSelectNone) public function getSpacing( calcDc as EvccDcInterface ) as Number { 
         // The spacing is based on diameter. However, since the hint sits at
         // the 30° (2 o'clock) position, and wider content usually sits further down,
         // we do not need to keep the full spacing. Testing has shown that 1/4
         // of the diameter gives good results.
-        var diameter = radiusOuter * 2 + penWidth;
-        _spacing = ( diameter / 4 ).toFloat();
-    }
-    (:exclForSelect30 :exclForSelect27 :exclForSelectNone) public function getSpacing( calcDc as EvccDcInterface ) as Number { 
         var radiusOuter = calcDc.getWidth() * TOUCH_RADIUS_OUTER_FACTOR;
-        var diameter = radiusOuter * 2 + penWidth;
+        var diameter = radiusOuter * 2 + Math.round( calcDc.getWidth() * TOUCH_LINE_WIDTH_FACTOR );
         return Math.round( ( diameter / 4 ).toFloat() ).toNumber(); 
     }
 

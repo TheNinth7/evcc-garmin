@@ -4,7 +4,7 @@
       {
         "label": "evccg: Generate Source for Tiny Glance",
         "type": "shell",
-        "command": "cd .\\source-annot-tinyglance-script;.\\create-annot-tinyglance-source-files.bat",
+        "command": "cd .\\source-annot-tinyglance-gen;.\\generate-annot-tinyglance-source-files.bat",
         "group": {
           "kind": "build",
           "isDefault": false
@@ -14,7 +14,7 @@
       {
         "label": "evccg: Generate Icons for All Devices",
         "type": "shell",
-        "command": "cd .\\icons;.\\generate.bat",
+        "command": "cd .\\resources-drawables-gen;.\\generate.bat",
         "group": {
           "kind": "build",
           "isDefault": false
@@ -24,7 +24,7 @@
       {
         "label": "evccg: Copy drawables.xml for All Devices",
         "type": "shell",
-        "command": "cd .\\icons;.\\generate.bat drawables.xml",
+        "command": "cd .\\resources-drawables-gen;.\\generate.bat drawables.xml",
         "group": {
           "kind": "build",
           "isDefault": false
@@ -34,17 +34,7 @@
       {
         "label": "evccg: Generate Icons for epix2pro47mm",
         "type": "shell",
-        "command": "cd .\\icons;.\\generate.bat resources-epix2pro47mm",
-        "group": {
-          "kind": "build",
-          "isDefault": false
-        },
-        "problemMatcher": []
-      },
-      {
-        "label": "evccg: Generate Icons for fenix6/fenix6pro",
-        "type": "shell",
-        "command": "cd .\\icons;.\\generate.bat resources-round-260x260",
+        "command": "cd .\\resources-drawables-gen;.\\generate.bat resources-epix2pro47mm",
         "group": {
           "kind": "build",
           "isDefault": false
