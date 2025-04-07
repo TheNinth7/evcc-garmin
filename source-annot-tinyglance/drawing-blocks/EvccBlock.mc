@@ -4,6 +4,7 @@ import Toybox.WatchUi;
 
 // Base class for all drawing elements
 // In the options dictionary, the following entries are used:
+// :dc - the Dc to be used, can be a real Dc or EvccDcStubStub
 // :marginLeft, :marginRight, :marginTop, :marginBottom - margins in pixels to be put around the element
 // :justify - one of the Graphics.TEXT_JUSTIFY_xxx constants, horizontal alignment
 // :color, :backgroundColor - colors to be used to draw the element
@@ -79,9 +80,13 @@ class EvccBlock {
             return value;
         } else {
             // If no more parent is present, we apply the following default behavior
+            if( option == :dc ) { 
+                if( $ has :EvccDcStub ) { return new EvccDcStub(); } 
+                else { throw new InvalidValueException( ":dc not set!" ); }
+            }
+            if( option == :font ) { throw new InvalidValueException( ":font not set!"); }
             if( option == :backgroundColor ) { return EvccColors.BACKGROUND; }
             if( option == :color ) { return EvccColors.FOREGROUND; }
-            if( option == :font ) { throw new InvalidValueException( "Font not set!"); }
         }
 
         // Value is not present
@@ -110,6 +115,7 @@ class EvccBlock {
     public function getMarginTop() as Number { return getOption( :marginTop ) as Number; }
     public function getMarginBottom() as Number { return getOption( :marginBottom ) as Number; }
     public function getFont() as EvccFont { return getOption( :font ) as EvccFont; }
+    public function getDc() as EvccDcInterface { return getOption( :dc ) as EvccDcInterface; }
 
     // Accessor for parent needs special treatment
     // Parent can be passed into an element either in the options structure
@@ -174,7 +180,7 @@ class EvccBlock {
         // b: distance of screen edge from center
         // c: radius
         // a: y distance from center
-        var dc = EvccDc.getInstance();
+        var dc = getDc();
         var c = dc.getWidth() / 2;
         var a = ( y - dc.getHeight() / 2 ).abs();
         return Math.round( Math.sqrt( c*c - a*a ) * 2 ).toNumber();

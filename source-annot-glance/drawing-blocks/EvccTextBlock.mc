@@ -28,7 +28,7 @@ import Toybox.WatchUi;
 
     protected function calculateWidth() as Number { return getTextWidth() + getMarginLeft() + getMarginRight(); }
     protected function calculateHeight() as Number { return getTextHeight() + getMarginTop() + getMarginBottom(); }
-    function getTextWidth() as Number { return EvccDc.getInstance().getTextWidthInPixels( _text, EvccResources.getGarminFont( getFont() ) ); }
+    function getTextWidth() as Number { return getDc().getTextWidthInPixels( _text, EvccResources.getGarminFont( getFont() ) ); }
     function getTextHeight() as Number { return getFontHeight(); }
 
     // Make all calculations necessary for drawing

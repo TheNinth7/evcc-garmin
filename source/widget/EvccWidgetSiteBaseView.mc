@@ -74,7 +74,7 @@ class EvccContentArea {
     public function actsAsGlance() as Boolean { return false; }
 
     // Function to be overriden to add content to the view
-    protected function addContent( block as EvccVerticalBlock ) as Void {}
+    protected function addContent( block as EvccVerticalBlock, calcDc as EvccDcInterface ) as Void {}
 
     //private var _bufferedBitmap as BufferedBitmap;
     // private var _layer as Layer;
@@ -108,22 +108,22 @@ class EvccContentArea {
     }
     */
 
-    function prepareContent() as EvccVerticalBlock {
+    function prepareContent( calcDc as EvccDcInterface ) as EvccVerticalBlock {
         //EvccHelperBase.debug("Widget: prepareContent");
         var stateRequest = getStateRequest();
 
-        var content = new EvccVerticalBlock( {} as DbOptions );
+        var content = new EvccVerticalBlock( { :dc => calcDc } as DbOptions );
         
         if( ! stateRequest.hasLoaded() ) {
             content.addText( "Loading ...", {} as DbOptions );
             // Always vertically center the Loading message
-            _ca.y = EvccDc.getHeight() / 2;
+            _ca.y = calcDc.getHeight() / 2;
         } else { 
             if( stateRequest.hasError() ) {
                 throw new StateRequestException( stateRequest.getErrorCode(), stateRequest.getErrorMessage() );
             } else { 
                 // The actual content comes from implementations of this class
-                addContent( content );
+                addContent( content, calcDc );
             }
         }
 
@@ -168,14 +168,14 @@ class EvccContentArea {
             dc.setColor( EvccColors.FOREGROUND, EvccColors.BACKGROUND );
             dc.clear();
 
-            prepareShell();
+            prepareShell( dc );
             
             ( _header as EvccVerticalBlock ).drawPrepared( dc );
             _header = null;
             ( _logo as EvccBitmapBlock ).drawPrepared( dc );
             _logo = null;
 
-            var content = prepareContent();
+            var content = prepareContent( dc );
             ( content as EvccVerticalBlock ).drawPrepared( dc );
             content = null;
 
@@ -214,11 +214,11 @@ class EvccContentArea {
     private var _pageIndicator as EvccPageIndicator?;
     private var _selectIndicator as EvccSelectIndicator?;
 
-    private function prepareShell() as Void {
+    private function prepareShell( calcDc as EvccDcInterface ) as Void {
         var stateRequest = getStateRequest();
 
-        var dcWidth = EvccDc.getWidth();
-        var dcHeight = EvccDc.getHeight();
+        var dcWidth = calcDc.getWidth();
+        var dcHeight = calcDc.getHeight();
         
         // The font size of the hader is fixed to the second-smallest
         var font = EvccWidgetResourceSet.FONT_XTINY;
@@ -227,7 +227,7 @@ class EvccContentArea {
         var spacing = EvccResources.getFontHeight( font ) / 3;
 
         // Header consists of site title and page title (assumed to be an icon)
-        var header = new EvccVerticalBlock( { :font => font, :marginTop => spacing } );
+        var header = new EvccVerticalBlock( { :dc => calcDc, :font => font, :marginTop => spacing } );
         var hasSiteTitle = siteCount > 1;
 
         var xCenter = dcWidth / 2;
@@ -282,7 +282,7 @@ class EvccContentArea {
         // If there is more than one view on the same level, draw the page indicator
         var piSpacing = 0;
         if( getSameLevelViewCount() > 1 ) {
-            var pageIndicator = new EvccPageIndicator( _pageIndex, getSameLevelViewCount() );
+            var pageIndicator = new EvccPageIndicator( _pageIndex, getSameLevelViewCount(), calcDc );
             piSpacing = pageIndicator.getSpacing();
             _pageIndicator = pageIndicator;
         }
@@ -291,7 +291,7 @@ class EvccContentArea {
         var siSpacing = 0;        
         if( _lowerLevelViews.size() > 0 ) {
             var selectIndicator = new EvccSelectIndicator();
-            siSpacing = selectIndicator.getSpacing();
+            siSpacing = selectIndicator.getSpacing( calcDc );
             _selectIndicator = selectIndicator;
         }
 

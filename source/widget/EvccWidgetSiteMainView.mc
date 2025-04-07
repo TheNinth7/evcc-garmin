@@ -120,7 +120,7 @@ import Toybox.Math;
     private const MAX_VAR_LINES as Number = 6; // 1 x site title, 1 x battery, 2 x loadpoints with 2 lines each
 
     // Generate the content
-    function addContent( block as EvccVerticalBlock ) {
+    function addContent( block as EvccVerticalBlock, calcDc as EvccDcInterface ) {
         var state = getStateRequest().getState();
         var variableLineCount = 0;
 

@@ -1,20 +1,12 @@
 import Toybox.Lang;
 import Toybox.Graphics;
 
-(:glance) class EvccDc {
+(:glance :exclForViewPreRenderingDisabled) class EvccDcStub {
     private var _width as Number;
     private var _height as Number;
     private var _bufferedBitmap as BufferedBitmapReference or BufferedBitmap;
 
-    private static var _instance as EvccDc?;
-    public static function getInstance() as EvccDc {
-        if( _instance == null ) { _instance = new EvccDc(); }
-        return _instance as EvccDc;
-    }
-    public static function getWidth() as Number { return getInstance().getInstanceWidth(); }
-    public static function getHeight() as Number { return getInstance().getInstanceHeight(); }
-    
-    private function initialize() {
+    public function initialize() {
         var systemSettings = System.getDeviceSettings();
         _width = systemSettings.screenWidth;
         _height = systemSettings.screenHeight;
@@ -31,6 +23,6 @@ import Toybox.Graphics;
         }
         return (bufferedBitmap as BufferedBitmap).getDc().getTextWidthInPixels( text, font );
     }
-    public function getInstanceWidth() as Number { return _width; }
-    public function getInstanceHeight() as Number { return _height; }
+    public function getWidth() as Number { return _width; }
+    public function getHeight() as Number { return _height; }
 }

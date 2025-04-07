@@ -28,13 +28,13 @@ import Toybox.Application.Properties;
     }
 
     // Update the view
-    function onUpdate(dc as Dc) as Void {
+    function onUpdate( dc as Dc ) as Void {
 
         //System.println( "onUpdate: s " + System.getSystemStats().usedMemory );
 
         try {
             // EvccHelperBase.debug("Glance: onUpdate");
-            var line = new EvccHorizontalBlock( { :font => EvccGlanceResourceSet.FONT_GLANCE, :justify => Graphics.TEXT_JUSTIFY_LEFT, :backgroundColor => Graphics.COLOR_TRANSPARENT } );
+            var line = new EvccHorizontalBlock( { :dc => dc, :font => EvccGlanceResourceSet.FONT_GLANCE, :justify => Graphics.TEXT_JUSTIFY_LEFT, :backgroundColor => Graphics.COLOR_TRANSPARENT } );
 
             var spacing = dc.getTextDimensions( " ", Graphics.FONT_GLANCE )[0];
 
