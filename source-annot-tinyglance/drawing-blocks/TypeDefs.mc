@@ -30,9 +30,3 @@ typedef DbOptionValue as EvccContainerBlock or WeakReference or TextJustificatio
 // CIQ3 and before uses BitmapResource, CIQ4+ uses BitmapReference since bitmaps are 
 // stored in a separate graphics pool. We need to support both.
 typedef DbBitmap as BitmapResource or BitmapReference;
-
-typedef EvccDcInterface as interface {
-    function getWidth() as Number;
-    function getHeight() as Number;
-    function getTextWidthInPixels( text as String, font as FontType ) as Number;
-};
