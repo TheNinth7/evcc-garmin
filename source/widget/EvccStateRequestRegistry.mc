@@ -12,7 +12,6 @@ import Toybox.Lang;
 
 // 1.
 (:exclForSitesOne :exclForViewPreRenderingDisabled) public class EvccStateRequestRegistry {
-    private static var _siteIndex as Number?;
     private static var _stateRequests as Array<EvccStateRequest> = [];
 
     // Get the state request for a specific site

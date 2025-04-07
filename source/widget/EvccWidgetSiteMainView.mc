@@ -11,7 +11,7 @@ import Toybox.Math;
     // This function returns a list of views for all sites
     static function getAllSiteViews() as ArrayOfSiteViews {
         var views = new ArrayOfSiteViews[0];
-        var siteCount = EvccSiteConfigSingleton.getSiteCount();
+        var siteCount = EvccSiteConfiguration.getSiteCount();
         for( var i = 0; i < siteCount; i++ ) {
            // The view adds itself to views
            new EvccWidgetSiteMainView( views, null, i, false );
@@ -37,7 +37,7 @@ import Toybox.Math;
 
         _actAsGlance = actAsGlance;
 
-        if( _actAsGlance && EvccSiteConfigSingleton.getSiteCount() > 1 ) {
+        if( _actAsGlance && EvccSiteConfiguration.getSiteCount() > 1 ) {
             // If we are acting as glance and there is more than one site,
             // we just add all sites as lower level views
             addLowerLevelViews( getAllSiteViews() );
@@ -74,7 +74,7 @@ import Toybox.Math;
     // on the same or on the lower level. To be able to apply this to 
     // different detail views, it accepts a class type as input
     (:typecheck(false)) private function addDetailView( viewClass ) as Void {
-        var siteCount = EvccSiteConfigSingleton.getSiteCount();
+        var siteCount = EvccSiteConfiguration.getSiteCount();
         // If we act as glance, and there is only one site, then we add the detail view to the lower level views
         // Also if we do not act as glance, but there is more than one site, it goes to the lower level views 
         if( ( _actAsGlance && siteCount == 1 ) || ( ! _actAsGlance && siteCount > 1 ) ) {
@@ -96,7 +96,7 @@ import Toybox.Math;
             // and we have to switch the glance view to the 
             // site last selected
             if( _actAsGlance ) {
-                setSiteIndex( EvccBreadCrumbSiteReadOnly.getSelectedSite( EvccSiteConfigSingleton.getSiteCount() ) );
+                setSiteIndex( EvccBreadCrumbSiteReadOnly.getSelectedSite( EvccSiteConfiguration.getSiteCount() ) );
             }
             EvccWidgetSiteBaseView.onShow();
         } catch ( ex ) {

@@ -39,7 +39,7 @@ import Toybox.Math;
             _isGlance = true;
 
             // Read the site count
-            var siteCount = EvccSiteConfigSingleton.getSiteCount();
+            var siteCount = EvccSiteConfiguration.getSiteCount();
 
             // We store the active site, so when the widget is reopened, it 
             // starts with the site displayed last. Also the glance is using
@@ -76,7 +76,7 @@ import Toybox.Math;
             EvccResources.load();
 
             // Read the site count
-            var siteCount = EvccSiteConfigSingleton.getSiteCount();
+            var siteCount = EvccSiteConfiguration.getSiteCount();
 
             // The bread crumbs are used to store which sites/pages have been opened last
             var breadCrumb = new EvccBreadCrumb( null );
@@ -152,7 +152,7 @@ import Toybox.Math;
         // We store the active site, so when the widget is reopened, it 
         // starts with the site displayed last. Also the glance is using
         // the active site and is only displaying its data.
-        var activeSite = EvccBreadCrumbSiteReadOnly.getSelectedSite( EvccSiteConfigSingleton.getSiteCount() );
+        var activeSite = EvccBreadCrumbSiteReadOnly.getSelectedSite( EvccSiteConfiguration.getSiteCount() );
 
         return [new EvccBackground( activeSite )];
     }    

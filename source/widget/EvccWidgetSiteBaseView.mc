@@ -80,7 +80,85 @@ class EvccContentArea {
     // private var _layer as Layer;
 
     // Constructor
-    protected function initialize( views as ArrayOfSiteViews, parentView as EvccWidgetSiteBaseView?, siteIndex as Number ) {
+    (:exclForViewPreRenderingDisabled) protected function initialize( views as ArrayOfSiteViews, parentView as EvccWidgetSiteBaseView?, siteIndex as Number ) {
+        // EvccHelperBase.debug("Widget: initialize");
+        View.initialize();
+
+        _siteIndex = siteIndex;
+        _parentView = parentView;
+
+        // Add ourself to the list of same level views
+        views.add( self );
+        _pageIndex = views.size() - 1;
+        _sameLevelViews = views;
+
+        getStateRequest().registerCallback( method( :onWebResponse ) );
+    }
+
+    (:exclForViewPreRenderingDisabled) private var _isActiveView as Boolean = false;
+    (:exclForViewPreRenderingDisabled) function onShow() as Void { _isActiveView = true; }
+    (:exclForViewPreRenderingDisabled) function onHide() as Void { _isActiveView = false; }
+
+    (:exclForViewPreRenderingDisabled) private var _content as EvccVerticalBlock?;
+    (:exclForViewPreRenderingDisabled) private var _exception as Exception?;
+    (:exclForViewPreRenderingDisabled) function onWebResponse() as Void {
+        try {
+            EvccHelperBase.debug("Widget: onWebResponse");
+            var dc = new EvccDcStub();
+            prepareShell( dc );
+            _content = prepareContent( dc );
+            if( _isActiveView ) {
+                WatchUi.requestUpdate();
+            }
+        } catch ( ex ) {
+            EvccHelperBase.debugException( ex );
+            _exception = ex;
+        }
+    }
+    (:exclForViewPreRenderingDisabled) function onUpdate( dc as Dc ) as Void {
+        try {
+            EvccHelperBase.debug("Widget: onUpdate (pre-rendering enabled)");
+            dc.clear();
+
+            if( _exception != null ) {
+                var ex = _exception;
+                _exception = null;
+                throw ex;
+            }
+
+            if( _header == null || _logo == null ) {
+                prepareShell( dc );
+            }
+            if( _content == null ) {
+                _content = prepareContent( dc );
+            }
+            
+            ( _header as EvccVerticalBlock ).drawPrepared( dc );
+            ( _logo as EvccBitmapBlock ).drawPrepared( dc );
+            ( _content as EvccVerticalBlock ).drawPrepared( dc );
+
+            if( _pageIndicator != null ) {
+                _pageIndicator.draw( dc );
+            }
+
+            if( _selectIndicator != null ) {
+                _selectIndicator.draw( dc );
+            }
+
+            // Code for drawing visual alignment grid 
+            /*
+            dc.setPenWidth( 1 );
+            dc.drawCircle( dc.getWidth() / 2, dc.getHeight() / 2, dc.getWidth() / 2 );
+            dc.drawRectangle( _ca.x - _ca.width / 2, _ca.y - _ca.height / 2, _ca.width, _ca.height );
+            dc.drawLine( _ca.x - _ca.width / 2, _ca.y, _ca.x + _ca.width / 2, _ca.y );
+            */
+        } catch ( ex ) {
+            EvccHelperBase.debugException( ex );
+            EvccHelperUI.drawError( dc, ex );
+        }
+    }
+
+    (:exclForViewPreRenderingEnabled) protected function initialize( views as ArrayOfSiteViews, parentView as EvccWidgetSiteBaseView?, siteIndex as Number ) {
         // EvccHelperBase.debug("Widget: initialize");
         View.initialize();
 
@@ -93,79 +171,10 @@ class EvccContentArea {
         _sameLevelViews = views;
     }
 
-    // Called when the view is brought to the foreground.
-    // Activates the state request for this view
-    // This is only needed if there are multiple
-    // Not needed, the EvccStateRequestRegistry takes care of switches automatically
-    /*
-    function onShow() as Void {
-        try {
-            // EvccHelperBase.debug( "Widget: onShow" );
-            EvccStateRequestRegistry.activateStateRequest( _siteIndex );
-        } catch ( ex ) {
-            EvccHelperBase.debugException( ex );
-        }
-    }
-    */
-
-    function prepareContent( calcDc as EvccDcInterface ) as EvccVerticalBlock {
-        //EvccHelperBase.debug("Widget: prepareContent");
-        var stateRequest = getStateRequest();
-
-        var content = new EvccVerticalBlock( { :dc => calcDc } as DbOptions );
-        
-        if( ! stateRequest.hasLoaded() ) {
-            content.addText( "Loading ...", {} as DbOptions );
-            // Always vertically center the Loading message
-            _ca.y = calcDc.getHeight() / 2;
-        } else { 
-            if( stateRequest.hasError() ) {
-                throw new StateRequestException( stateRequest.getErrorCode(), stateRequest.getErrorMessage() );
-            } else { 
-                // The actual content comes from implementations of this class
-                addContent( content, calcDc );
-            }
-        }
-
-        // Determine font size
-        var fonts = EvccResources.getGarminFonts();
-        var font = EvccWidgetResourceSet.FONT_MEDIUM; // We start with the largest font
-
-        // To save computing resources, if the block 
-        // has more than 6 elements, we do not even try the largest font
-        if( content.getElementCount() > 6 ) {
-            font++;
-        }
-
-        // We only scale to the second-smallest font, the smallest font
-        // is reserved for explicit declarations (:font or :relativeFont)
-        // but will not automatically be choosen for the main content
-        for( ; font < fonts.size() - 1; font++ ) {
-            content.setOption( :font, font );
-            // The implementation of this class determines if the sizing should
-            // happen based on height or width
-            // Generally applying both would be to cpu-intense
-            // Note: the main view is sized by height, but uses the truncate
-            // feature of the EvccDrawingTools to cut content to width
-            if( limitHeight() && content.getHeight() <= _ca.height ) {
-                break;
-            } else if ( limitWidth() && content.getWidth() <= _ca.width ) {
-                break;
-            }
-        }
-
-        // EvccHelperBase.debug( "Using font " + block.getOption( :font ) );
-
-        content.prepareDraw( _ca.x, _ca.y );
-
-        return content;
-    }
-
-
     // Update the view
-    function onUpdate( dc as Dc ) as Void {
+    (:exclForViewPreRenderingEnabled) function onUpdate( dc as Dc ) as Void {
         try {
-            dc.setColor( EvccColors.FOREGROUND, EvccColors.BACKGROUND );
+            EvccHelperBase.debug("Widget: onUpdate (pre-rendering disabled)");
             dc.clear();
 
             prepareShell( dc );
@@ -214,7 +223,38 @@ class EvccContentArea {
     private var _pageIndicator as EvccPageIndicator?;
     private var _selectIndicator as EvccSelectIndicator?;
 
+    /*
+    private function drawHeader( dc as Dc, clear as Boolean ) as Void {
+        if( _header == null ) {
+            prepareShell( dc );
+        }
+        ( _header as EvccVerticalBlock ).drawPrepared( dc );
+        if( clear ) {
+            _header = null;
+        }
+    }
+    private function drawLogo( dc as Dc, clear as Boolean ) as Void {
+        if( _logo == null ) {
+            prepareShell( dc );
+        }
+        ( _logo as EvccBitmapBlock ).drawPrepared( dc );
+        if( clear ) {
+            _logo = null;
+        }
+    }
+    private function drawIndicators( dc as Dc, clear as Boolean ) as Void {
+        if( _pageIndicator != null ) {
+            _pageIndicator.draw( dc );
+        }
+
+        if( _selectIndicator != null ) {
+            _selectIndicator.draw( dc );
+        }
+    }
+    */
     private function prepareShell( calcDc as EvccDcInterface ) as Void {
+        EvccHelperBase.debug("Widget: prepareShell");
+
         var stateRequest = getStateRequest();
 
         var dcWidth = calcDc.getWidth();
@@ -223,7 +263,7 @@ class EvccContentArea {
         // The font size of the hader is fixed to the second-smallest
         var font = EvccWidgetResourceSet.FONT_XTINY;
         
-        var siteCount = EvccSiteConfigSingleton.getSiteCount();
+        var siteCount = EvccSiteConfiguration.getSiteCount();
         var spacing = EvccResources.getFontHeight( font ) / 3;
 
         // Header consists of site title and page title (assumed to be an icon)
@@ -311,5 +351,60 @@ class EvccContentArea {
 
         _ca.truncateSpacing = dcWidth - _ca.width;
     }
+
+
+    function prepareContent( calcDc as EvccDcInterface ) as EvccVerticalBlock {
+        EvccHelperBase.debug("Widget: prepareContent");
+        var stateRequest = getStateRequest();
+
+        var content = new EvccVerticalBlock( { :dc => calcDc } as DbOptions );
+        
+        if( ! stateRequest.hasLoaded() ) {
+            content.addText( "Loading ...", {} as DbOptions );
+            // Always vertically center the Loading message
+            _ca.y = calcDc.getHeight() / 2;
+        } else { 
+            if( stateRequest.hasError() ) {
+                throw new StateRequestException( stateRequest.getErrorCode(), stateRequest.getErrorMessage() );
+            } else { 
+                // The actual content comes from implementations of this class
+                addContent( content, calcDc );
+            }
+        }
+
+        // Determine font size
+        var fonts = EvccResources.getGarminFonts();
+        var font = EvccWidgetResourceSet.FONT_MEDIUM; // We start with the largest font
+
+        // To save computing resources, if the block 
+        // has more than 6 elements, we do not even try the largest font
+        if( content.getElementCount() > 6 ) {
+            font++;
+        }
+
+        // We only scale to the second-smallest font, the smallest font
+        // is reserved for explicit declarations (:font or :relativeFont)
+        // but will not automatically be choosen for the main content
+        for( ; font < fonts.size() - 1; font++ ) {
+            content.setOption( :font, font );
+            // The implementation of this class determines if the sizing should
+            // happen based on height or width
+            // Generally applying both would be to cpu-intense
+            // Note: the main view is sized by height, but uses the truncate
+            // feature of the EvccDrawingTools to cut content to width
+            if( limitHeight() && content.getHeight() <= _ca.height ) {
+                break;
+            } else if ( limitWidth() && content.getWidth() <= _ca.width ) {
+                break;
+            }
+        }
+
+        // EvccHelperBase.debug( "Using font " + block.getOption( :font ) );
+
+        content.prepareDraw( _ca.x, _ca.y );
+
+        return content;
+    }
+
 }
 
