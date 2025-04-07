@@ -1,0 +1,92 @@
+import Toybox.Lang;
+import Toybox.Graphics;
+import Toybox.WatchUi;
+
+// Text element
+class EvccTextBlock extends EvccBlock {
+    var _text as String;
+
+    function initialize( text as String, options as DbOptions ) {
+        EvccBlock.initialize( options );
+        _text = text;
+    }
+
+    // Removes the specified number of characters from the
+    // end of the text 
+    // one version for enabled cache, one for disabled
+    function truncate( chars as Number ) as Void {
+        _text = _text.substring( 0, _text.length() - chars ) as String;
+        resetCache( :resetWidth, :resetDirectionUp );
+    }
+
+    // Appends characters to the text
+    // one version for enabled cache, one for disabled
+    function append( text as String ) as Void { 
+        _text += text;
+        resetCache( :resetWidth, :resetDirectionUp );
+    }
+
+    protected function calculateWidth() as Number { return getTextWidth() + getMarginLeft() + getMarginRight(); }
+    protected function calculateHeight() as Number { return getTextHeight() + getMarginTop() + getMarginBottom(); }
+    function getTextWidth() as Number { return EvccDc.getInstance().getTextWidthInPixels( _text, EvccResources.getGarminFont( getFont() ) ); }
+    function getTextHeight() as Number { return getFontHeight(); }
+
+    // Make all calculations necessary for drawing
+    function prepareDraw( x as Number, y as Number ) {
+        var font = getFont();
+
+        // Align text to have the same baseline as the base font would have
+        // this is for aligning two different font sizes in one line of text
+        if( getOption( :vjustifyTextToBottom ) ) {
+            var fontHeight = getFontHeight();
+            var baseFont = getOption( :baseFont ) as EvccFont;
+            var baseFontHeight = EvccResources.getFontHeight( baseFont );
+            var fontDescent = EvccResources.getFontDescent( font );
+            var baseFontDescent = EvccResources.getFontDescent( baseFont );
+            if( fontHeight < baseFontHeight ) {
+                y += baseFontHeight/2 - baseFontDescent - ( fontHeight/2 - fontDescent );
+            }
+        }
+
+        var justify = getJustify();
+        var textWidth = getTextWidth();
+        var textHeight = getTextHeight();
+
+        if( justify == Graphics.TEXT_JUSTIFY_LEFT ) {
+            x = x + getMarginLeft();
+        } else if ( justify == Graphics.TEXT_JUSTIFY_RIGHT ) {
+            x = x - getMarginRight() - textWidth;
+        } else {
+            x = x - getWidth() / 2 + getMarginLeft();
+        }
+
+        y = y - getHeight() / 2 + getMarginTop();
+
+        _x = x;
+        _y = y;
+
+        store( font, textWidth, textHeight );
+    }
+
+    (:exclForFontsStatic :exclForFontsStaticOptimized) private var _bufferedBitmap as BufferedBitmap?;
+    (:exclForFontsStatic :exclForFontsStaticOptimized) private function store( font as EvccFont, textWidth as Number, textHeight as Number ) as Void {
+        var bufferedBitmapReference = Graphics.createBufferedBitmap( { :width => textWidth, :height => textHeight } );
+        _bufferedBitmap = bufferedBitmapReference.get() as BufferedBitmap;
+        var dc = _bufferedBitmap.getDc();
+        dc.setColor( getOption( :color ) as ColorType, getOption( :backgroundColor ) as ColorType );
+        dc.clear();
+        dc.drawText( 0, 0, EvccResources.getGarminFont( getFont() ), _text, Graphics.TEXT_JUSTIFY_LEFT );
+    }
+    (:exclForFontsStatic :exclForFontsStaticOptimized) function drawPrepared( dc as Dc ) as Void {
+        dc.drawBitmap( _x as Number, _y as Number, _bufferedBitmap as BufferedBitmap );
+    }
+
+    (:exclForFontsVector) private var _garminFont as GarminFont?;
+    (:exclForFontsVector) private function store( font as EvccFont, textWidth as Number, textHeight as Number ) as Void {
+        _garminFont = EvccResources.getGarminFont( font );
+    }
+    (:exclForFontsVector) function drawPrepared( dc as Dc ) as Void {
+        dc.setColor( getOption( :color ) as ColorType, getOption( :backgroundColor ) as ColorType );
+        dc.drawText( _x as Number, _y as Number, _garminFont as GarminFont, _text, Graphics.TEXT_JUSTIFY_LEFT );
+    }
+}
