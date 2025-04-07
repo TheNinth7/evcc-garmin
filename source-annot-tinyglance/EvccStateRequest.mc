@@ -2,7 +2,6 @@ import Toybox.Lang;
 import Toybox.WatchUi;
 import Toybox.Timer;
 import Toybox.Application.Properties;
-import Toybox.Application.Storage;
 import Toybox.Time;
 import Toybox.PersistedContent;
 
@@ -30,6 +29,13 @@ import Toybox.PersistedContent;
     public function getErrorCode() as String { return _errorCode; }
     public function hasState() as Boolean { return _stateStore.getState() != null; }
     public function getState() as EvccState { return _stateStore.getState() as EvccState; }
+
+    // Classes can register callback function, which will be triggered every time
+    // a web response is received
+    (:exclForWebResponseCallbacksDisabled) private var _callbacks as Array<Method> = [];
+    (:exclForWebResponseCallbacksDisabled) public function registerCallback( callback as Method() as Void ) as Void {
+        _callbacks.add( callback );
+    }
 
     function initialize( siteIndex as Number ) {
         // EvccHelperBase.debug("StateRequest: initialize");
@@ -100,6 +106,12 @@ import Toybox.PersistedContent;
         _stateStore.persist();
     }
 
+    // Only persists the state store, to be used by the background, which does not do
+    // a full start, but only makes a single request
+    (:exclForGlanceFull :exclForGlanceNone) public function persist() as Void {
+        _stateStore.persist();
+    }
+
     //! Make the web request
     function makeRequest() as Void {
         // EvccHelperBase.debug("StateRequest: makeRequest");
@@ -161,21 +173,24 @@ import Toybox.PersistedContent;
             }
         }
         
-        // In the background, access to WatchUi is not permitted (and does not make sense)
-        // Instead, we immediately persist the data. Also in the background AppBase.onStop()
-        // is called and would stop the state request and persist the data, but we'd rather
-        // do it here as well, in case onStop() is not called for some reason
-        if( ! EvccApp._isInBackground ) {
+        // If there are no callbacks, we request an update, otherwise
+        // we call the callbacks. Note that in background WatchUI is not
+        // available, therefore a callback HAS TO BE registered
+        invokeCallbacks();
+    }
+
+    (:exclForWebResponseCallbacksDisabled :typecheck(disableBackgroundCheck)) 
+    private function invokeCallbacks() as Void {
+        if( _callbacks.size() == 0 ) {
             WatchUi.requestUpdate();
         } else {
-            if( _error == true ) {
-                Storage.setValue( EvccConstants.STORAGE_BG_ERROR_MSG, _errorMessage );
-                Storage.setValue( EvccConstants.STORAGE_BG_ERROR_CODE, _errorCode );
-            } else {
-                Storage.deleteValue( EvccConstants.STORAGE_BG_ERROR_MSG );
-                Storage.deleteValue( EvccConstants.STORAGE_BG_ERROR_CODE );
-                _stateStore.persist();
+            for( var i = 0; i < _callbacks.size(); i++ ) {
+                _callbacks[i].invoke();
             }
         }
+    }
+
+    (:exclForWebResponseCallbacksEnabled) private function invokeCallbacks() as Void {
+        WatchUi.requestUpdate();
     }
 }

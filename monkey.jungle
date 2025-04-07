@@ -27,9 +27,20 @@ sourceGlanceNone = $(sourceBase);source-annot-glance
 # The variables below are to be combined into the excludeAnnotations property of each
 # device, to define the functionality of the device
 
+# Enable or disable the capability to register callbacks with EvccStateRequest
+# Callbacks are needed for:
+# glanceTiny (because of background task)
+# viewPreRenderingEnabled (because of views registering to get updates)
+# For devices that have either of the two above excludeAnnotations, this
+# does not need to be set explicitly. Only for devices that have neither,
+# webResponseCallbacksDisabled needs to explicitly be included in their
+# excludeAnnotations
+webResponseCallbacksEnabled = exclForWebResponseCallbacksEnabled
+webResponseCallbacksDisabled = exclForWebResponseCallbacksDisabled
+
 # Different glance types
 glanceFull = exclForGlanceFull
-glanceTiny = exclForGlanceTiny
+glanceTiny = exclForGlanceTiny;exclForWebResponseCallbacksEnabled
 glanceNone = exclForGlanceNone
 
 # Different font types
@@ -87,7 +98,7 @@ swipeLeftOverride = exclForSwipeLeftOverride
 # pre-rendering is performed for all views in the background. This significantly improves
 # the time to show a new view, resulting in a more responsive user experience.
 viewPreRenderingDisabled = exclForViewPreRenderingEnabled
-viewPreRenderingEnabled  = exclForViewPreRenderingDisabled
+viewPreRenderingEnabled  = exclForViewPreRenderingDisabled;exclForWebResponseCallbacksEnabled
 
 # Below the device configurations
 
@@ -126,7 +137,7 @@ fr945lte.excludeAnnotations = $(fr745.excludeAnnotations)
 fr945lte.resourcePath = settings-site1;resources;resources-round-240x240
 #Fenix 6
 fenix6.sourcePath = $(sourceGlanceNone)
-fenix6.excludeAnnotations = $(glanceNone);$(calcSimple);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(selectNone);$(swipeLeftDefault);$(viewPreRenderingDisabled)
+fenix6.excludeAnnotations = $(glanceNone);$(calcSimple);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(selectNone);$(swipeLeftDefault);$(viewPreRenderingDisabled);$(webResponseCallbacksDisabled)
 fenix6.resourcePath = settings-site1;resources;resources-fenix6
 fenix6s.sourcePath = $(fenix6.sourcePath)
 fenix6s.excludeAnnotations = $(fenix6.excludeAnnotations)
@@ -134,7 +145,7 @@ fenix6s.resourcePath = settings-site1;resources;resources-fenix6s
 
 # Fenix 6 Pro
 fenix6pro.sourcePath = $(sourceGlanceTiny)
-fenix6pro.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne);$(selectNone);$(swipeLeftDefault)
+fenix6pro.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesOne);$(selectNone);$(swipeLeftDefault);$(viewPreRenderingEnabled)
 fenix6pro.resourcePath = settings-site1;resources;resources-fenix6pro
 fenix6spro.sourcePath = $(fenix6pro.sourcePath)
 fenix6spro.excludeAnnotations = $(fenix6pro.excludeAnnotations)
@@ -146,7 +157,7 @@ fenix6xpro.resourcePath = settings-site1;resources;resources-fenix6xpro
 # No glance
 # With one site only
 vivoactive3.sourcePath = $(sourceGlanceNone)
-vivoactive3.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(selectTouch);$(swipeLeftDefault)
+vivoactive3.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(selectTouch);$(swipeLeftDefault);$(viewPreRenderingDisabled);$(webResponseCallbacksDisabled)
 vivoactive3.resourcePath = settings-site1;resources;resources-vivoactive3
 vivoactive3m.sourcePath = $(vivoactive3.sourcePath)
 vivoactive3m.excludeAnnotations = $(vivoactive3.excludeAnnotations)
@@ -156,6 +167,6 @@ vivoactive3mlte.excludeAnnotations = $(vivoactive3.excludeAnnotations)
 vivoactive3mlte.resourcePath = settings-site1;resources;resources-vivoactive3mlte
 # With multiple sites
 vivoactive4.sourcePath = $(sourceGlanceNone)
-vivoactive4.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesMultiple);$(selectTouch);$(swipeLeftDefault)
+vivoactive4.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(systemInfo);$(sitesMultiple);$(selectTouch);$(swipeLeftDefault);$(viewPreRenderingEnabled)
 vivoactive4s.sourcePath = $(vivoactive4.sourcePath)
 vivoactive4s.excludeAnnotations = $(vivoactive4.excludeAnnotations)
