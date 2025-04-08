@@ -129,10 +129,22 @@ class EvccContentArea {
             _exception = ex;
         }
     }
+    var _preparedContent as EvccVerticalBlock?;
     (:exclForViewPreRenderingDisabled) function prepareContentEvent() as Void {
         try {
             EvccHelperBase.debug("Widget: prepareContentEvent" );
-            _content = prepareContent( new EvccDcStub() );
+            _preparedContent = prepareContent( new EvccDcStub() );
+        } catch ( ex ) {
+            EvccHelperBase.debugException( ex );
+            _exception = ex;
+        }
+    }
+    (:exclForViewPreRenderingDisabled) function prepareContentForDrawEvent() as Void {
+        try {
+            EvccHelperBase.debug("Widget: prepareContentForDrawEvent" );
+            ( _preparedContent as EvccVerticalBlock).prepareDraw( _ca.x, _ca.y );
+            _content = _preparedContent;
+            _preparedContent = null;
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
             _exception = ex;
@@ -161,6 +173,7 @@ class EvccContentArea {
         var eventQueue = EvccEventQueue.getInstance();
         eventQueue.add( method( :prepareShellEvent ) );
         eventQueue.add( method( :prepareContentEvent ) );
+        eventQueue.add( method( :prepareContentForDrawEvent ) );
         eventQueue.add( method( :requestUpdateEvent ) );
     }
 
@@ -181,6 +194,7 @@ class EvccContentArea {
             }
             if( _content == null ) {
                 _content = prepareContent( dc );
+                _content.prepareDraw( _ca.x, _ca.y );
             }
             
             ( _header as EvccVerticalBlock ).drawPrepared( dc );
@@ -235,7 +249,7 @@ class EvccContentArea {
             _logo = null;
 
             var content = prepareContent( dc );
-            ( content as EvccVerticalBlock ).drawPrepared( dc );
+            ( content as EvccVerticalBlock ).draw( dc, _ca.x, _ca.y );
             content = null;
 
             if( _pageIndicator != null ) {
@@ -450,8 +464,6 @@ class EvccContentArea {
         }
 
         // EvccHelperBase.debug( "Using font " + block.getOption( :font ) );
-
-        content.prepareDraw( _ca.x, _ca.y );
 
         return content;
     }
