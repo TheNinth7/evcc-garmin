@@ -1,7 +1,7 @@
 import Toybox.Lang;
 import Toybox.Background;
 import Toybox.System;
-import Toybox.Application.Properties;
+import Toybox.Application.Storage;
 
 // The background service 
 // Used for the tiny glance only
@@ -10,11 +10,14 @@ import Toybox.Application.Properties;
 // task, and the result passed to the glance via storage
 (:background :exclForGlanceFull :exclForGlanceNone) class EvccBackground extends Toybox.System.ServiceDelegate {
 	var _siteIndex as Number;
+    var _stateRequest as EvccStateRequest;
 
-    function initialize( index as Number ) {
+    function initialize( siteIndex as Number ) {
         // EvccHelperBase.debug( "EvccBackground: initialize" );
         System.ServiceDelegate.initialize();
-        _siteIndex = index;
+        _siteIndex = siteIndex;
+        _stateRequest = new EvccStateRequest( _siteIndex );
+        _stateRequest.registerCallback( method( :onWebResponse ) );
 	}
 	
     // When the background timer triggers, we initiate the
@@ -22,14 +25,25 @@ import Toybox.Application.Properties;
     function onTemporalEvent() {
         try {
             // EvccHelperBase.debug("EvccBackground: onTemporalEvent");
-
             // We do not want to start the state request timer with .start()
-            // but only do a single request.
-            var stateRequest = new EvccStateRequest( _siteIndex );
-            stateRequest.makeRequest();
-            // If in background, makeRequest() automatically persists the result
+            // but only do a single request. Start would not work, since
+            // in the background no timers can be created
+            _stateRequest.makeRequest();
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
+        }
+    }
+
+    // Once the response is received, we either persist an error
+    // or the result
+    function onWebResponse() as Void {
+        if( _stateRequest.hasError() ) {
+            Storage.setValue( EvccConstants.STORAGE_BG_ERROR_MSG, _stateRequest.getErrorMessage() );
+            Storage.setValue( EvccConstants.STORAGE_BG_ERROR_CODE, _stateRequest.getErrorCode() );
+        } else {
+            Storage.deleteValue( EvccConstants.STORAGE_BG_ERROR_MSG );
+            Storage.deleteValue( EvccConstants.STORAGE_BG_ERROR_CODE );
+            _stateRequest.persist();
         }
     }
 }
