@@ -106,7 +106,7 @@ Contains the user manual, published at <https://evccg.the-ninth.com>.
 
 <br>
 
-## Folder `/icons`
+## Folder `/resources-drawables-gen`
 
 This folder contains the SVG icon source files and scripts used to generate device-specific PNG icons.
 
@@ -125,7 +125,7 @@ For more information on these files, see [To Generate the Device-Specific Icons]
 
 <br>
 
-## Folders /resources* and /settings*
+## Folders /resources*
 
 In the Connect IQ SDK, resources define:
 
@@ -137,10 +137,10 @@ In the Connect IQ SDK, resources define:
 **Folder breakdown:**
 
 - `/resources`: Shared across all devices
-- `/resources-[devicename]`: Specific to individual devices
-- `/resources-round-[resolution]`: Shared among devices with identical screen dimensions
-- `/settings-site1`: Settings for devices supporting one site
-- `/settings-site5`: Settings for devices supporting up to five sites
+- `/resources-drawables/[devicename]`: Drawables specific to individual devices. However, if multiple devices share the same font sizes, they can also share drawables. In such cases, only one folder is created for the shared drawables, typically named after one of the devices. The other devices then reference this folder in [`monkey.jungle`](#root-folder-). Similarly, in [`generate.json`](#to-generate-the-device-specific-icons), there will be a single entry for the shared drawable set, using the `devices` property to list all applicable devices.
+- `/resources-drawables/[devicename]`: Properties specific to individual devices. Optional and currently only used for a few devices.
+- `/resources-settings/site1`: Settings for devices supporting one site
+- `/resources-settings/site5`: Settings for devices supporting up to five sites
 
 **Further reading:**
 
@@ -229,7 +229,7 @@ To support a new device:
 
 2. In `manifest.xml`, check the new device in the supported device list.
 
-3. Configure device-specific features in the `monkey.jungle` build file (see [Root Folder `/`](#root-folder-)). The default feature set is a good starting point. You can launch the app in the simulator to evaluate whether any adjustments are needed. For example:
+3. Configure device-specific features in the `monkey.jungle` build file (see [Root Folder `/`](#root-folder-)). You need to at least add an entry for the `resourcePath`. For `sourcePath` and `excludeAnnotations`, the default is a good starting point. You can launch the app in the simulator to evaluate whether any adjustments are needed. For example:
 
    - If the app reports that vector fonts are not supported, switch to static fonts—or to static optimized fonts if standard sizes overlap.
    - If out-of-memory errors occur during testing, consider switching to the tiny glance, limiting support to a single site, and removing the system info view.
@@ -320,6 +320,8 @@ To determine the actual font sizes used by the app, follow these steps:
    ```  
    Replace `[device-family]` with the name of the entry you just added to `generate.json`.
 
+2. **Ensure you added the device-specific `resourcePath`** in `monkey.jungle`, with the device-specific drawable path (see [above](#to-add-a-new-device)).
+
 3. **Run the app in the simulator**, open the widget, and press the `m` key twice to open the system info view. The app will print the actual font sizes to the debug console.
 
 4. **Update the `generate.json` entry** with the correct font sizes based on the output.
@@ -329,16 +331,9 @@ To determine the actual font sizes used by the app, follow these steps:
    generate.bat [device-family]
    ```
 
-There are two types of entries for devices in `generate.json`:
-
-- **Resolution-based entries** (e.g., `resources-round-416x416`) apply to all devices with the specified screen resolution.
-- **Device-specific entries** (e.g., `resources-fenix847mm`) use the device ID from Garmin’s [Device Reference](https://developer.garmin.com/connect-iq/reference-guides/devices-reference).
-
-> **Note:** Device-specific entries take precedence over general resolution-based entries. While the app initially relied on resolution-based mappings, differences in font rendering across devices with identical resolutions have led to an increasing use of ID-based entries.
-
 **Example entries:**
 ```json
-"resources-fenix6":{
+"fenix6":{
     "fontMode":"static",
     "deviceType":"noglance-lowmemory",
     "logo_flash":"40",
@@ -349,7 +344,7 @@ There are two types of entries for devices in `generate.json`:
     "icon_small":"32",
     "icon_medium":"37"
 },
-"resources-fenix847mm": {
+"fenix847mm": {
   "fontMode": "vector",
   "logo_flash": "65",
   "logo_evcc": "26",
@@ -369,7 +364,7 @@ There are two types of entries for devices in `generate.json`:
 - `logo_evcc`: The logo shown at the bottom of the screen. Typically set to 65% of `icon_xtiny`.
 - `deviceType`: Enables special handling for older devices that either do not support glances or use the tiny glance. Can be omitted for newer models. See the section on [`drawables*.xml`](#2-drawablesxml) for more details.
 - `fontMode`: A comment indicating the font sizing mode used by the app for this device (e.g., `"vector"`, `"static"`, or `"static-optimized"`).
-- `devices`: (Only in resolution-based entries) A comment listing the devices this resolution mapping applies to.
+- `devices`: A comment listing the devices this entry applies to.
 
 <br>
 
@@ -525,6 +520,7 @@ Below is an additional reference for developers, showing the Connect IQ (CIQ) AP
 | epix2pro47mm         | 5.1.0         |
 | epix2pro51mm         | 5.1.0         |
 | fenix7pro            | 5.1.0         |
+| fenix7pronowifi      | 5.1.0         |
 | fenix7spro           | 5.1.0         |
 | fenix7xpro           | 5.1.0         |
 | fenix7xpronowifi     | 5.1.0         |

@@ -114,7 +114,7 @@ class EvccViewCarouselDelegateBase extends EvccViewSimpleDelegate {
     // When the select action is triggered, we open the active sub view
     public function onSelect() as Boolean {
         try {
-            EvccHelperBase.debug("ViewCarouselDelegate: onSelect");
+            // EvccHelperBase.debug("ViewCarouselDelegate: onSelect");
 
 
             // For devices that do not have glances, this view
