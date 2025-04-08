@@ -116,7 +116,6 @@ class EvccViewCarouselDelegateBase extends EvccViewSimpleDelegate {
         try {
             EvccHelperBase.debug("ViewCarouselDelegate: onSelect");
 
-
             // For devices that do not have glances, this view
             // acts as glance, displaying only the selected site
             // In this case, we reuse the bread crumb and

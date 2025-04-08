@@ -17,9 +17,7 @@ import Toybox.Math;
     public static var _isInBackground as Boolean = true;
     (:exclForGlanceNone) private static var _glanceView as EvccGlanceView?;
     private static var _isGlance as Boolean = false;
-    public static function isGlance() as Boolean {
-        return _isGlance;
-    }
+    public static function isGlance() as Boolean { return _isGlance; }
 
     function initialize() {
         try {
@@ -81,6 +79,24 @@ import Toybox.Math;
             // The bread crumbs are used to store which sites/pages have been opened last
             var breadCrumb = new EvccBreadCrumb( null );
 
+            // Next we determine the active site
+            // Here we need to deal with the case that there is only one site, but there
+            // may be multiple detail views. In this case, the root breadcrumb would
+            // actually identify the detail view.
+            // The getSelectedChild() is implemented to receive the maximum number of children
+            // verify that the returned child is within that boundary and if needed reset
+            // the breadcrumb.
+            // So in this case we should not request the current site from the breadcrumb
+            // but just take 0 as current site
+            var activeSite = siteCount == 1 ? 0 : breadCrumb.getSelectedChild( siteCount );
+            // If the device supports pre-rendered views, then we have to start
+            // the state registry to start all state requests. With pre-rendered views
+            // state requests for ALL sites are active and updating all the views, even
+            // if they are not shown
+            if( EvccStateRequestRegistry has :start ) {
+                EvccStateRequestRegistry.start( activeSite );
+            }
+
             // We delete any unused site entries from storage
             // This is for the case when sites get deleted from
             // the settings and we want to clean up their persistant
@@ -96,18 +112,6 @@ import Toybox.Math;
                 // only the active site and has all the other sites as sub views
                 if ( ! ( settings has :isGlanceModeEnabled ) || ! settings.isGlanceModeEnabled ) {
                     // EvccHelperBase.debug( "EvccApp: no glance, starting with active site only" );
-                    
-                    // Next we determine the active site
-                    // Here we need to deal with the case that there is only one site, but there
-                    // may be multiple detail views. In this case, the root breadcrumb would
-                    // actually identify the detail view.
-                    // The getSelectedChild() is implemented to receive the maximum number of children
-                    // verify that the returned child is within that boundary and if needed reset
-                    // the breadcrumb.
-                    // So in this case we should not request the current site from the breadcrumb
-                    // but just take 0 as current site
-                    var activeSite = siteCount == 1 ? 0 : breadCrumb.getSelectedChild( siteCount );
-                    
                     var views = new ArrayOfSiteViews[0];
                     new EvccWidgetSiteMainView( views, null, activeSite, true ); // The view adds itself to views
                     var delegate = new EvccViewCarouselDelegate( views, breadCrumb );

@@ -1,4 +1,5 @@
 import Toybox.Lang;
+import Toybox.Timer;
 
 // In widget mode, this registry singleton centrally manages all EvccStateRequest instances
 // There are three implementations:
@@ -14,16 +15,27 @@ import Toybox.Lang;
 (:exclForSitesOne :exclForViewPreRenderingDisabled) public class EvccStateRequestRegistry {
     private static var _stateRequests as Array<EvccStateRequest> = [];
 
+    public static function start( activeSite as Number ) as Void {
+        var delayedStateRequests = new Array<EvccStateRequest>[0];
+        for( var i = 0; i < EvccSiteConfiguration.getSiteCount(); i++ ) {
+            var stateRequest = new EvccStateRequest( i );
+            _stateRequests.add( stateRequest );
+            if( i == activeSite ) {
+                EvccHelperBase.debug( "EvccStateRequestRegistry: starting active site " + activeSite );
+                stateRequest.start();
+            } else {
+                stateRequest.start();
+                //delayedStateRequests.add( stateRequest );
+            }
+        }
+        if( delayedStateRequests.size() > 0 ) {
+            //new StateRequestDelayedStarter( delayedStateRequests );
+        }
+    }
+    
     // Get the state request for a specific site
     // If the array is still empty, we instantiate all state requests
     public static function getStateRequest( siteIndex as Number ) as EvccStateRequest {
-        if( _stateRequests.size() == 0 ) {
-            for( var i = 0; i < EvccSiteConfiguration.getSiteCount(); i++ ) {
-                var stateRequest = new EvccStateRequest( i );
-                stateRequest.start();
-                _stateRequests.add( stateRequest );
-            }
-        }
         return _stateRequests[siteIndex];
     }
 
@@ -34,6 +46,25 @@ import Toybox.Lang;
                 _stateRequests[i].stop();
             }
         }
+    }
+}
+
+(:exclForSitesOne :exclForViewPreRenderingDisabled) public class StateRequestDelayedStarter {
+    private var _stateRequests as Array<EvccStateRequest>;
+    private var _i as Number = 0;
+    
+    public function initialize( stateRequests as Array<EvccStateRequest> ) {
+        EvccHelperBase.debug( "StateRequestDelayedStarter: initializing with " + stateRequests.size() + " state requests" );
+        _stateRequests = stateRequests;
+        for( var i = 0; i < _stateRequests.size(); i++ ) {
+            new Timer.Timer().start( method( :startStateRequest ), ( i + 1 ) * 1000, false );
+        }
+    }
+
+    public function startStateRequest() as Void {
+        EvccHelperBase.debug("StateRequestDelayedStarter: starting i=" + _i );
+        _stateRequests[_i].start();
+        _i++;
     }
 }
 

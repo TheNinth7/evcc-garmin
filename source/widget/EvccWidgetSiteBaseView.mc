@@ -103,7 +103,7 @@ class EvccContentArea {
     (:exclForViewPreRenderingDisabled) private var _exception as Exception?;
     (:exclForViewPreRenderingDisabled) function onWebResponse() as Void {
         try {
-            EvccHelperBase.debug("Widget: onWebResponse");
+            EvccHelperBase.debug("Widget: onWebResponse for site=" + _siteIndex );
             var dc = new EvccDcStub();
             prepareShell( dc );
             _content = prepareContent( dc );
@@ -117,7 +117,7 @@ class EvccContentArea {
     }
     (:exclForViewPreRenderingDisabled) function onUpdate( dc as Dc ) as Void {
         try {
-            EvccHelperBase.debug("Widget: onUpdate (pre-rendering enabled)");
+            EvccHelperBase.debug("Widget: onUpdate for site=" + _siteIndex );
             dc.clear();
 
             if( _exception != null ) {
@@ -174,7 +174,7 @@ class EvccContentArea {
     // Update the view
     (:exclForViewPreRenderingEnabled) function onUpdate( dc as Dc ) as Void {
         try {
-            EvccHelperBase.debug("Widget: onUpdate (pre-rendering disabled)");
+            EvccHelperBase.debug("Widget: onUpdate for site=" + _siteIndex );
             dc.clear();
 
             prepareShell( dc );

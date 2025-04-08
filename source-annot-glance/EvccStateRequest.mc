@@ -54,7 +54,7 @@ import Toybox.PersistedContent;
     // scope check for these two functions, to avoid error about the Timer
     (:typecheck(disableBackgroundCheck))
     public function start() as Void {
-        // EvccHelperBase.debug("StateRequest: start");
+        EvccHelperBase.debug("StateRequest: start site=" + _siteIndex );
 
         // Only when this state request is started we load the state data
         // We cannot load the state in initialize, because on some devices,
@@ -114,7 +114,7 @@ import Toybox.PersistedContent;
 
     //! Make the web request
     function makeRequest() as Void {
-        // EvccHelperBase.debug("StateRequest: makeRequest");
+        EvccHelperBase.debug("StateRequest: makeRequest site=" + _siteIndex );
         var siteConfig = new EvccSite( _siteIndex );
 
         var url = siteConfig.getUrl() + "/api/state";
@@ -148,7 +148,7 @@ import Toybox.PersistedContent;
     // Note: need to disable background check because of the call to WatchUi
     (:typecheck(disableBackgroundCheck))
     function onReceive( responseCode as Number, data as Dictionary<String,Object?> or String or PersistedContent.Iterator or Null ) as Void {
-        // EvccHelperBase.debug("StateRequest: onReceive");
+        EvccHelperBase.debug("StateRequest: onReceive site=" + _siteIndex );
         _hasLoaded = true;
         _error = false; _errorMessage = ""; _errorCode = "";
         
