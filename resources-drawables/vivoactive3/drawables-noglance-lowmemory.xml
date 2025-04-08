@@ -5,12 +5,12 @@ It is automatically copied by generate.js into each device resource folder, sinc
 
 <drawables>
     <bitmap id="logo_flash" filename="logo_flash.png"/>
-    <bitmap scope="foreground" id="logo_evcc" filename="logo_evcc.png"/>
+    <bitmap id="logo_evcc" filename="logo_evcc.png"/>
     
     <!-- micro font size -->
     <!-- only the clock icon (indicating remaining charging time) is needed here
          all other icons are not used in the smallest size -->
-    <bitmap scope="foreground" id="clock_micro" filename="icon_micro_clock.png">
+    <bitmap id="clock_micro" filename="icon_micro_clock.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -20,7 +20,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
     </bitmap>
 
     <!-- xtiny font size -->
-    <bitmap scope="foreground" id="battery_empty_xtiny" filename="icon_xtiny_battery_empty.png">
+    <bitmap id="battery_empty_xtiny" filename="icon_xtiny_battery_empty.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -28,7 +28,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="battery_onequarter_xtiny" filename="icon_xtiny_battery_onequarter.png">
+    <bitmap id="battery_onequarter_xtiny" filename="icon_xtiny_battery_onequarter.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -36,7 +36,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="battery_half_xtiny" filename="icon_xtiny_battery_half.png">
+    <bitmap id="battery_half_xtiny" filename="icon_xtiny_battery_half.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -44,7 +44,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="battery_threequarters_xtiny" filename="icon_xtiny_battery_threequarters.png">
+    <bitmap id="battery_threequarters_xtiny" filename="icon_xtiny_battery_threequarters.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -52,7 +52,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="battery_full_xtiny" filename="icon_xtiny_battery_full.png">
+    <bitmap id="battery_full_xtiny" filename="icon_xtiny_battery_full.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -60,7 +60,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="arrow_right_xtiny" filename="icon_xtiny_arrow_right.png">
+    <bitmap id="arrow_right_xtiny" filename="icon_xtiny_arrow_right.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -68,7 +68,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="arrow_left_xtiny" filename="icon_xtiny_arrow_left.png">
+    <bitmap id="arrow_left_xtiny" filename="icon_xtiny_arrow_left.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -76,7 +76,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="arrow_left_three_xtiny" filename="icon_xtiny_arrow_left_three.png">
+    <bitmap id="arrow_left_three_xtiny" filename="icon_xtiny_arrow_left_three.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -84,7 +84,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="sun_xtiny" filename="icon_xtiny_sun.png">
+    <bitmap id="sun_xtiny" filename="icon_xtiny_sun.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -92,7 +92,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="house_xtiny" filename="icon_xtiny_house.png">
+    <bitmap id="house_xtiny" filename="icon_xtiny_house.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -100,7 +100,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="grid_xtiny" filename="icon_xtiny_grid.png">
+    <bitmap id="grid_xtiny" filename="icon_xtiny_grid.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -109,7 +109,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
         </palette>
     </bitmap>
     <!-- exceptions - icons not available in all font sizes -->
-    <bitmap scope="foreground" id="forecast_xtiny" filename="icon_xtiny_forecast.png">
+    <bitmap id="forecast_xtiny" filename="icon_xtiny_forecast.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -117,7 +117,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="clock_xtiny" filename="icon_xtiny_clock.png">
+    <bitmap id="clock_xtiny" filename="icon_xtiny_clock.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -128,7 +128,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
 
 
     <!-- tiny font size -->
-    <bitmap scope="foreground" id="battery_empty_tiny" filename="icon_tiny_battery_empty.png">
+    <bitmap id="battery_empty_tiny" filename="icon_tiny_battery_empty.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -136,7 +136,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="battery_onequarter_tiny" filename="icon_tiny_battery_onequarter.png">
+    <bitmap id="battery_onequarter_tiny" filename="icon_tiny_battery_onequarter.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -144,7 +144,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="battery_half_tiny" filename="icon_tiny_battery_half.png">
+    <bitmap id="battery_half_tiny" filename="icon_tiny_battery_half.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -152,7 +152,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="battery_threequarters_tiny" filename="icon_tiny_battery_threequarters.png">
+    <bitmap id="battery_threequarters_tiny" filename="icon_tiny_battery_threequarters.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -160,7 +160,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="battery_full_tiny" filename="icon_tiny_battery_full.png">
+    <bitmap id="battery_full_tiny" filename="icon_tiny_battery_full.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -168,7 +168,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="arrow_right_tiny" filename="icon_tiny_arrow_right.png">
+    <bitmap id="arrow_right_tiny" filename="icon_tiny_arrow_right.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -176,7 +176,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="arrow_left_tiny" filename="icon_tiny_arrow_left.png">
+    <bitmap id="arrow_left_tiny" filename="icon_tiny_arrow_left.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -184,7 +184,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="arrow_left_three_tiny" filename="icon_tiny_arrow_left_three.png">
+    <bitmap id="arrow_left_three_tiny" filename="icon_tiny_arrow_left_three.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -192,7 +192,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="sun_tiny" filename="icon_tiny_sun.png">
+    <bitmap id="sun_tiny" filename="icon_tiny_sun.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -200,7 +200,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="house_tiny" filename="icon_tiny_house.png">
+    <bitmap id="house_tiny" filename="icon_tiny_house.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -208,7 +208,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="grid_tiny" filename="icon_tiny_grid.png">
+    <bitmap id="grid_tiny" filename="icon_tiny_grid.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -218,7 +218,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
     </bitmap>
 
     <!-- small font size -->
-    <bitmap scope="foreground" id="battery_empty_small" filename="icon_small_battery_empty.png">
+    <bitmap id="battery_empty_small" filename="icon_small_battery_empty.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -226,7 +226,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="battery_onequarter_small" filename="icon_small_battery_onequarter.png">
+    <bitmap id="battery_onequarter_small" filename="icon_small_battery_onequarter.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -234,7 +234,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="battery_half_small" filename="icon_small_battery_half.png">
+    <bitmap id="battery_half_small" filename="icon_small_battery_half.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -242,7 +242,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="battery_threequarters_small" filename="icon_small_battery_threequarters.png">
+    <bitmap id="battery_threequarters_small" filename="icon_small_battery_threequarters.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -250,7 +250,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="battery_full_small" filename="icon_small_battery_full.png">
+    <bitmap id="battery_full_small" filename="icon_small_battery_full.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -258,7 +258,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="arrow_right_small" filename="icon_small_arrow_right.png">
+    <bitmap id="arrow_right_small" filename="icon_small_arrow_right.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -266,7 +266,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="arrow_left_small" filename="icon_small_arrow_left.png">
+    <bitmap id="arrow_left_small" filename="icon_small_arrow_left.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -274,7 +274,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="arrow_left_three_small" filename="icon_small_arrow_left_three.png">
+    <bitmap id="arrow_left_three_small" filename="icon_small_arrow_left_three.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -282,7 +282,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="sun_small" filename="icon_small_sun.png">
+    <bitmap id="sun_small" filename="icon_small_sun.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -290,7 +290,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="house_small" filename="icon_small_house.png">
+    <bitmap id="house_small" filename="icon_small_house.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -298,7 +298,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="grid_small" filename="icon_small_grid.png">
+    <bitmap id="grid_small" filename="icon_small_grid.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -308,7 +308,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
     </bitmap>
 
     <!-- medium font size -->
-    <bitmap scope="foreground" id="battery_empty_medium" filename="icon_medium_battery_empty.png">
+    <bitmap id="battery_empty_medium" filename="icon_medium_battery_empty.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -316,7 +316,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="battery_onequarter_medium" filename="icon_medium_battery_onequarter.png">
+    <bitmap id="battery_onequarter_medium" filename="icon_medium_battery_onequarter.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -324,7 +324,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="battery_half_medium" filename="icon_medium_battery_half.png">
+    <bitmap id="battery_half_medium" filename="icon_medium_battery_half.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -332,7 +332,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="battery_threequarters_medium" filename="icon_medium_battery_threequarters.png">
+    <bitmap id="battery_threequarters_medium" filename="icon_medium_battery_threequarters.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -340,7 +340,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="battery_full_medium" filename="icon_medium_battery_full.png">
+    <bitmap id="battery_full_medium" filename="icon_medium_battery_full.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -348,7 +348,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="arrow_right_medium" filename="icon_medium_arrow_right.png">
+    <bitmap id="arrow_right_medium" filename="icon_medium_arrow_right.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -356,7 +356,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="arrow_left_medium" filename="icon_medium_arrow_left.png">
+    <bitmap id="arrow_left_medium" filename="icon_medium_arrow_left.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -364,7 +364,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="arrow_left_three_medium" filename="icon_medium_arrow_left_three.png">
+    <bitmap id="arrow_left_three_medium" filename="icon_medium_arrow_left_three.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -372,7 +372,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="sun_medium" filename="icon_medium_sun.png">
+    <bitmap id="sun_medium" filename="icon_medium_sun.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -380,7 +380,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="house_medium" filename="icon_medium_house.png">
+    <bitmap id="house_medium" filename="icon_medium_house.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -388,7 +388,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
             <color>000000</color>    
         </palette>
     </bitmap>
-    <bitmap scope="foreground" id="grid_medium" filename="icon_medium_grid.png">
+    <bitmap id="grid_medium" filename="icon_medium_grid.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
@@ -397,7 +397,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
         </palette>
     </bitmap>
     <!-- exceptions - icons not available in all font sizes -->
-    <bitmap scope="foreground" id="forecast_medium" filename="icon_medium_forecast.png">
+    <bitmap id="forecast_medium" filename="icon_medium_forecast.png">
         <palette disableTransparency="true">
             <color>FFFFFF</color>
             <color>AAAAAA</color>
