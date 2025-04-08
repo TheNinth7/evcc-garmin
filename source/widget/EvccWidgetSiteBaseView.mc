@@ -96,11 +96,14 @@ class EvccContentArea {
     }
 
     (:exclForViewPreRenderingDisabled) private var _isActiveView as Boolean = false;
-    (:exclForViewPreRenderingDisabled) function onShow() as Void { _isActiveView = true; }
+    (:exclForViewPreRenderingDisabled) function onShow() as Void { 
+        _isActiveView = true; 
+    }
     (:exclForViewPreRenderingDisabled) function onHide() as Void { _isActiveView = false; }
 
     (:exclForViewPreRenderingDisabled) private var _content as EvccVerticalBlock?;
     (:exclForViewPreRenderingDisabled) private var _exception as Exception?;
+    /*
     (:exclForViewPreRenderingDisabled) function onWebResponse() as Void {
         try {
             EvccHelperBase.debug("Widget: onWebResponse for site=" + _siteIndex );
@@ -116,6 +119,52 @@ class EvccContentArea {
             _exception = ex;
         }
     }
+    */
+    (:exclForViewPreRenderingDisabled) function prepareShellEvent() as Void {
+        try {
+            EvccHelperBase.debug("Widget: prepareShellEvent" );
+            prepareShell( new EvccDcStub() );
+        } catch ( ex ) {
+            EvccHelperBase.debugException( ex );
+            _exception = ex;
+        }
+    }
+    (:exclForViewPreRenderingDisabled) function prepareContentEvent() as Void {
+        try {
+            EvccHelperBase.debug("Widget: prepareContentEvent" );
+            _content = prepareContent( new EvccDcStub() );
+        } catch ( ex ) {
+            EvccHelperBase.debugException( ex );
+            _exception = ex;
+        }
+    }
+    (:exclForViewPreRenderingDisabled) function requestUpdateEvent() as Void {
+        try {
+            /*
+            var type = "unknown";
+            if( self instanceof EvccWidgetSiteForecastView ) {
+                type = "forecast";
+            } else if( self instanceof EvccWidgetSiteMainView ) {
+                type = "main";
+            }
+            */
+            if( _isActiveView == true ) {
+                EvccHelperBase.debug("Widget: requestUpdateEvent" );
+                WatchUi.requestUpdate();
+            }
+        } catch ( ex ) {
+            EvccHelperBase.debugException( ex );
+            _exception = ex;
+        }
+    }
+    (:exclForViewPreRenderingDisabled) function onWebResponse() as Void {
+        var eventQueue = EvccEventQueue.getInstance();
+        eventQueue.add( method( :prepareShellEvent ) );
+        eventQueue.add( method( :prepareContentEvent ) );
+        eventQueue.add( method( :requestUpdateEvent ) );
+    }
+
+
     (:exclForViewPreRenderingDisabled) function onUpdate( dc as Dc ) as Void {
         try {
             EvccHelperBase.debug("Widget: onUpdate for site=" + _siteIndex );

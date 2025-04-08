@@ -59,7 +59,8 @@ import Toybox.PersistedContent;
     }
 }
 
-(:exclForSitesOne :exclForViewPreRenderingDisabled) public class EvccStateRequestTimer {
+(:exclForSitesOne :exclForViewPreRenderingDisabled) 
+public class EvccStateRequestTimer {
     private var _stateRequests as Array<EvccStateRequest>;
     private var _i as Number = 0;
     private var _timer as Timer.Timer = new Timer.Timer();
@@ -105,6 +106,41 @@ import Toybox.PersistedContent;
         Communications.cancelAllRequests();
     }
 }
+
+
+(:exclForSitesOne :exclForViewPreRenderingDisabled) 
+public class EvccEventQueue {
+
+    private static var _instance as EvccEventQueue?;
+    public static function getInstance() as EvccEventQueue {
+        if( _instance == null ) { _instance = new EvccEventQueue(); }
+        return _instance as EvccEventQueue;
+    }
+
+    private var _methods as Array<Method> = new Array<Method>[0];
+    private var _timer as Timer.Timer = new Timer.Timer();
+    
+    public function add( method as Method ) as Void {
+        _methods.add( method );
+        if( _methods.size() == 1 ) {
+            startTimer();
+        }
+    }
+
+    private function startTimer() as Void {
+        _timer.start( method( :executeMethod ), 100, false );
+    }
+
+    public function executeMethod() as Void {
+        var method = _methods[0];
+        method.invoke();
+        _methods.remove( method );
+        if( _methods.size() > 0 ) {
+            startTimer();
+        }
+    }
+}
+
 
 // 2.
 (:exclForSitesOne :exclForViewPreRenderingEnabled) public class EvccStateRequestRegistry {
