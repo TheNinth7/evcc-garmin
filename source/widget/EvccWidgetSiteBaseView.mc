@@ -110,6 +110,7 @@ class EvccContentArea {
             if( _isActiveView ) {
                 WatchUi.requestUpdate();
             }
+            EvccHelperBase.debug("Widget: onWebResponse for site=" + _siteIndex + "done!" );
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
             _exception = ex;

@@ -1,5 +1,13 @@
 import Toybox.Lang;
 import Toybox.Timer;
+import Toybox.Application.Properties;
+
+import Toybox.Lang;
+import Toybox.WatchUi;
+import Toybox.Timer;
+import Toybox.Application.Properties;
+import Toybox.Time;
+import Toybox.PersistedContent;
 
 // In widget mode, this registry singleton centrally manages all EvccStateRequest instances
 // There are three implementations:
@@ -14,23 +22,24 @@ import Toybox.Timer;
 // 1.
 (:exclForSitesOne :exclForViewPreRenderingDisabled) public class EvccStateRequestRegistry {
     private static var _stateRequests as Array<EvccStateRequest> = [];
+    private static var _stateRequestTimer as EvccStateRequestTimer?;
 
-    public static function start( activeSite as Number ) as Void {
-        var delayedStateRequests = new Array<EvccStateRequest>[0];
+    public static function start( activeSiteIndex as Number ) as Void {
+        var inactiveSites = new Array<EvccStateRequest>[0];
+        var sortedSites = new Array<EvccStateRequest>[0];
         for( var i = 0; i < EvccSiteConfiguration.getSiteCount(); i++ ) {
             var stateRequest = new EvccStateRequest( i );
             _stateRequests.add( stateRequest );
-            if( i == activeSite ) {
-                EvccHelperBase.debug( "EvccStateRequestRegistry: starting active site " + activeSite );
-                stateRequest.start();
+            if( i == activeSiteIndex ) {
+                sortedSites.add( stateRequest );
             } else {
-                stateRequest.start();
-                //delayedStateRequests.add( stateRequest );
+                inactiveSites.add( stateRequest );
             }
         }
-        if( delayedStateRequests.size() > 0 ) {
-            //new StateRequestDelayedStarter( delayedStateRequests );
+        if( inactiveSites.size() > 0 ) {
+            sortedSites.addAll( inactiveSites );
         }
+        _stateRequestTimer = new EvccStateRequestTimer( sortedSites );
     }
     
     // Get the state request for a specific site
@@ -43,28 +52,57 @@ import Toybox.Timer;
     public static function stopStateRequests() as Void {
         if( _stateRequests.size() > 0 ) {
             for( var i = 0; i < _stateRequests.size(); i++ ) {
-                _stateRequests[i].stop();
+                _stateRequests[i].persist();
             }
         }
+        ( _stateRequestTimer as EvccStateRequestTimer ).stopRequestTimer();
     }
 }
 
-(:exclForSitesOne :exclForViewPreRenderingDisabled) public class StateRequestDelayedStarter {
+(:exclForSitesOne :exclForViewPreRenderingDisabled) public class EvccStateRequestTimer {
     private var _stateRequests as Array<EvccStateRequest>;
     private var _i as Number = 0;
+    private var _timer as Timer.Timer = new Timer.Timer();
     
     public function initialize( stateRequests as Array<EvccStateRequest> ) {
-        EvccHelperBase.debug( "StateRequestDelayedStarter: initializing with " + stateRequests.size() + " state requests" );
+        EvccHelperBase.debug( "EvccStateRequestTimer: initializing with " + stateRequests.size() + " state requests" );
         _stateRequests = stateRequests;
-        for( var i = 0; i < _stateRequests.size(); i++ ) {
-            new Timer.Timer().start( method( :startStateRequest ), ( i + 1 ) * 1000, false );
+        EvccHelperBase.debug( "EvccStateRequestTimer: initiating state request for site " + _stateRequests[0].getSiteIndex() );
+        _stateRequests[0].loadInitialState();
+
+        if( _stateRequests.size() > 1 ) {
+            EvccHelperBase.debug( "EvccStateRequestTimer: starting delayed initiation" );
+            _i++;
+            _timer.start( method( :initiateStateRequests ), 1000, true );
+        } else {
+            startRequestTimer();
         }
     }
 
-    public function startStateRequest() as Void {
-        EvccHelperBase.debug("StateRequestDelayedStarter: starting i=" + _i );
-        _stateRequests[_i].start();
+    public function initiateStateRequests() as Void {
+        EvccHelperBase.debug( "EvccStateRequestTimer: initiating state request for site " + _stateRequests[_i].getSiteIndex() );
+        _stateRequests[_i].loadInitialState();
         _i++;
+        if( _i == _stateRequests.size() ) {
+            _i = 0;
+            _timer.stop();
+            startRequestTimer();
+        }
+    }
+
+    public function startRequestTimer() as Void {
+        var refreshInterval = Properties.getValue( EvccConstants.PROPERTY_REFRESH_INTERVAL ) as Number;
+        var timerInterval = ( refreshInterval / _stateRequests.size() ).toNumber();
+        _timer.start( method( :makeRequest ), timerInterval * 1000, true );
+    }
+
+    public function makeRequest() as Void {
+        _stateRequests[_i].makeRequest();       
+        _i++; if( _i == _stateRequests.size() ) { _i = 0; }
+    }
+    public function stopRequestTimer() as Void {
+        _timer.stop();
+        Communications.cancelAllRequests();
     }
 }
 
