@@ -74,7 +74,7 @@ class EvccContentArea {
     public function actsAsGlance() as Boolean { return false; }
 
     // Function to be overriden to add content to the view
-    protected function addContent( block as EvccVerticalBlock, dc as Dc ) as Void {}
+    protected function addContent( block as EvccVerticalBlock ) as Void {}
 
     // Constructor
     protected function initialize( views as ArrayOfSiteViews, parentView as EvccWidgetSiteBaseView?, siteIndex as Number ) {
@@ -109,7 +109,7 @@ class EvccContentArea {
     }
 
     // Update the view
-    function onUpdate(dc as Dc) as Void {
+    function onUpdate( dc as Dc ) as Void {
         try {
             //EvccHelperBase.debug("Widget: onUpdate");
             var stateRequest = getStateRequest();
@@ -120,7 +120,7 @@ class EvccContentArea {
             // Draw the header, footer, page indicator and select indicator
             drawShell( dc );
 
-            var block = new EvccVerticalBlock( dc, {} as DbOptions );
+            var block = new EvccVerticalBlock( { :dc => dc } as DbOptions );
             
             if( ! stateRequest.hasLoaded() ) {
                 block.addText( "Loading ...", {} as DbOptions );
@@ -131,7 +131,7 @@ class EvccContentArea {
                     throw new StateRequestException( stateRequest.getErrorCode(), stateRequest.getErrorMessage() );
                 } else { 
                     // The actual content comes from implementations of this class
-                    addContent( block, dc );
+                    addContent( block );
                 }
             }
 
@@ -208,7 +208,7 @@ class EvccContentArea {
         var spacing = EvccResources.getFontHeight( font ) / 3;
 
         // Header consists of site title and page title (assumed to be an icon)
-        var header = new EvccVerticalBlock( dc, { :font => font, :marginTop => spacing } );
+        var header = new EvccVerticalBlock( { :dc => dc, :font => font, :marginTop => spacing } );
         var hasSiteTitle = siteCount > 1;
 
         var xCenter = dc.getWidth() / 2;
@@ -254,7 +254,7 @@ class EvccContentArea {
         header.draw( xCenter, headerHeight / 2 );
         
         // Draw the logo
-        var logo = new EvccBitmapBlock( Rez.Drawables.logo_evcc, dc, { :marginTop => spacing, :marginBottom => spacing } );
+        var logo = new EvccBitmapBlock( Rez.Drawables.logo_evcc, { :dc => dc, :marginTop => spacing, :marginBottom => spacing } );
         var logoHeight = logo.getHeight();
         logo.draw( xCenter, dc.getHeight() - logoHeight / 2 );
 

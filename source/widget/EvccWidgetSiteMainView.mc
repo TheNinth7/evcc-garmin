@@ -120,17 +120,17 @@ import Toybox.Math;
     private const MAX_VAR_LINES as Number = 6; // 1 x site title, 1 x battery, 2 x loadpoints with 2 lines each
 
     // Generate the content
-    function addContent( block as EvccVerticalBlock, dc as Dc ) {
+    function addContent( block as EvccVerticalBlock ) {
         var state = getStateRequest().getState();
         var variableLineCount = 0;
 
         // PV
-        block.addBlock( getBasicElement( EvccIconBlock.ICON_SUN, state.getPvPowerRounded(), EvccIconBlock.ICON_ARROW_RIGHT, dc ) );
+        block.addBlock( getBasicElement( EvccIconBlock.ICON_SUN, state.getPvPowerRounded(), EvccIconBlock.ICON_ARROW_RIGHT ) );
         // Grid
-        block.addBlock( getBasicElement( EvccIconBlock.ICON_GRID, state.getGridPowerRounded(), EvccIconBlock.ICON_POWER_FLOW, dc ) );
+        block.addBlock( getBasicElement( EvccIconBlock.ICON_GRID, state.getGridPowerRounded(), EvccIconBlock.ICON_POWER_FLOW ) );
         // Battery
         if( state.hasBattery() ) {
-            block.addBlock( getBasicElement( EvccIconBlock.ICON_BATTERY, state.getBatteryPowerRounded(), EvccIconBlock.ICON_POWER_FLOW, dc ) );
+            block.addBlock( getBasicElement( EvccIconBlock.ICON_BATTERY, state.getBatteryPowerRounded(), EvccIconBlock.ICON_POWER_FLOW ) );
             variableLineCount++;
         }                
 
@@ -141,16 +141,16 @@ import Toybox.Math;
         for (var i = 0; i < loadpoints.size() && variableLineCount < MAX_VAR_LINES; i++) {
             var loadpoint = loadpoints[i] as EvccLoadPoint;
             if( loadpoint.isHeater() ) {
-                block.addBlock( getHeaterElement( loadpoint, dc ) );
+                block.addBlock( getHeaterElement( loadpoint ) );
                 variableLineCount++;
                 hasVehicle = true;
             } else if( loadpoint.getVehicle() != null ) {
-                var loadpointLine = getLoadPointElement( loadpoint, dc, showChargingDetails );
+                var loadpointLine = getLoadPointElement( loadpoint, showChargingDetails );
                 block.addBlock( loadpointLine );
                 variableLineCount++;
                 hasVehicle = true;
                 if( loadpoint.isCharging() && showChargingDetails ) {
-                    block.addBlock( getChargingElement( loadpoint, dc, loadpointLine.getOption( :marginLeft ) as Number ) );
+                    block.addBlock( getChargingElement( loadpoint, loadpointLine.getOption( :marginLeft ) as Number ) );
                     variableLineCount += SMALL_LINE;
                 }
             }
@@ -161,7 +161,7 @@ import Toybox.Math;
         }
 
         // Home
-        block.addBlock( getBasicElement( EvccIconBlock.ICON_HOME, state.getHomePowerRounded(), EvccIconBlock.ICON_ARROW_LEFT, dc ) );
+        block.addBlock( getBasicElement( EvccIconBlock.ICON_HOME, state.getHomePowerRounded(), EvccIconBlock.ICON_ARROW_LEFT ) );
 
         // If there is too much space above and below the content,
         // the lines will be spread out vertically
@@ -170,7 +170,7 @@ import Toybox.Math;
 
 
     // Function to generate line for PV, grid, battery and home
-    private function getBasicElement( icon as EvccIconBlock.Icon, power as Number, flowIcon as EvccIconBlock.Icon, dc as Dc ) as EvccHorizontalBlock {
+    private function getBasicElement( icon as EvccIconBlock.Icon, power as Number, flowIcon as EvccIconBlock.Icon ) as EvccHorizontalBlock {
         var state = getStateRequest().getState();
         var lineOptions = {};
         var iconOptions = {};
@@ -178,7 +178,7 @@ import Toybox.Math;
             // For battery the SoC is used to choose on of the icons with different fill
             iconOptions[:batterySoc] = state.getBatterySoc(); 
         }
-        var line = new EvccHorizontalBlock( dc, lineOptions );
+        var line = new EvccHorizontalBlock( lineOptions );
         line.addIcon( icon, iconOptions );
         // For battery we display the SoC as text as well
         if( icon == EvccIconBlock.ICON_BATTERY ) { line.addText( EvccHelperUI.formatSoc( state.getBatterySoc() ), {} as DbOptions ); }
@@ -198,10 +198,10 @@ import Toybox.Math;
     }
 
     // Function to generate main loadpoint lines
-    private function getLoadPointElement( loadpoint as EvccLoadPoint, dc as Dc, showChargingDetails as Boolean ) as EvccHorizontalBlock {
+    private function getLoadPointElement( loadpoint as EvccLoadPoint, showChargingDetails as Boolean ) as EvccHorizontalBlock {
         var vehicle = loadpoint.getVehicle() as EvccConnectedVehicle;
 
-        var lineVehicle = new EvccHorizontalBlock( dc, { :truncateSpacing => getContentArea().truncateSpacing } );
+        var lineVehicle = new EvccHorizontalBlock( { :truncateSpacing => getContentArea().truncateSpacing } );
         
         lineVehicle.addText( vehicle.getTitle(), { :isTruncatable => true } as DbOptions );
         
@@ -226,8 +226,8 @@ import Toybox.Math;
     }
 
     // Function to generate charging info below main loadpoint line
-    private function getChargingElement( loadpoint as EvccLoadPoint, dc as Dc, marginLeft as Number ) as EvccHorizontalBlock {
-        var lineCharging = new EvccHorizontalBlock( dc, { :relativeFont => 3, :marginLeft => marginLeft } );
+    private function getChargingElement( loadpoint as EvccLoadPoint, marginLeft as Number ) as EvccHorizontalBlock {
+        var lineCharging = new EvccHorizontalBlock( { :relativeFont => 3, :marginLeft => marginLeft } );
         lineCharging.addText( loadpoint.getModeFormatted(), {} as DbOptions );
         if( loadpoint.getChargeRemainingDuration() > 0 ) {
             lineCharging.addText( " - ", {} as DbOptions );
@@ -239,9 +239,9 @@ import Toybox.Math;
 
 
     // Function to generate the line for heater loadpoints
-    private function getHeaterElement( loadpoint as EvccLoadPoint, dc as Dc ) as EvccHorizontalBlock {
+    private function getHeaterElement( loadpoint as EvccLoadPoint ) as EvccHorizontalBlock {
         var heater = loadpoint.getHeater() as EvccHeater;
-        var lineHeater = new EvccHorizontalBlock( dc, { :truncateSpacing => getContentArea().truncateSpacing } );
+        var lineHeater = new EvccHorizontalBlock( { :truncateSpacing => getContentArea().truncateSpacing } );
         
         lineHeater.addText( heater.getTitle(), { :isTruncatable => true } as DbOptions );
         lineHeater.addText( " " + EvccHelperWidget.formatTemp( heater.getTemperature() ), {} as DbOptions );

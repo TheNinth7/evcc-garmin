@@ -16,7 +16,7 @@ import Toybox.System;
     function onUpdate(dc as Dc) as Void {
             dc.setColor( EvccColors.FOREGROUND, EvccColors.BACKGROUND );
             dc.clear();
-            var block = new EvccVerticalBlock( dc, { :font => EvccWidgetResourceSet.FONT_XTINY } );
+            var block = new EvccVerticalBlock( { :dc => dc, :font => EvccWidgetResourceSet.FONT_XTINY } );
             block.addText( "evccg " + EvccHelperUI.getVersion(), {}  );
 
             _spacing = EvccResources.getFontHeight( EvccWidgetResourceSet.FONT_XTINY ) / 2;
