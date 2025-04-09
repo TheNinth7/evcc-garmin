@@ -107,13 +107,15 @@ class EvccContentArea {
     // Update the view
     function onUpdate( dc as Dc ) as Void {
         try {
+            /* Debug output
             var type = "unknown";
             if( self instanceof EvccWidgetSiteForecastView ) {
                 type = "forecast";
             } else if( self instanceof EvccWidgetSiteMainView ) {
                 type = "main";
             }
-            // EvccHelperBase.debug("Widget: onUpdate " + type + " view for site=" + _siteIndex );
+            EvccHelperBase.debug("Widget: onUpdate " + type + " view for site=" + _siteIndex );
+            */
 
             var stateRequest = getStateRequest();
 
