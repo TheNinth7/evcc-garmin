@@ -101,7 +101,7 @@ class EvccContentArea {
     // Activates the state request for this view
     function onShow() as Void {
         try {
-            // EvccHelperBase.debug( "Widget: onShow" );
+            EvccHelperBase.debug( "Widget: onShow" );
             EvccStateRequestRegistry.activateStateRequest( _siteIndex );
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
@@ -119,7 +119,6 @@ class EvccContentArea {
             }
             EvccHelperBase.debug("Widget: onUpdate " + type + " view for site=" + _siteIndex );
 
-            //EvccHelperBase.debug("Widget: onUpdate");
             var stateRequest = getStateRequest();
 
             dc.setColor( EvccColors.FOREGROUND, EvccColors.BACKGROUND );
@@ -131,6 +130,7 @@ class EvccContentArea {
             var block = new EvccVerticalBlock( { :dc => dc } as DbOptions );
             
             if( ! stateRequest.hasLoaded() ) {
+                EvccHelperBase.debug("Widget: onUpdate => loading");
                 block.addText( "Loading ...", {} as DbOptions );
                 // Always vertically center the Loading message
                 _ca.y = dc.getHeight() / 2;
@@ -138,6 +138,7 @@ class EvccContentArea {
                 if( stateRequest.hasError() ) {
                     throw new StateRequestException( stateRequest.getErrorCode(), stateRequest.getErrorMessage() );
                 } else { 
+                    EvccHelperBase.debug("Widget: onUpdate => addContent");
                     // The actual content comes from implementations of this class
                     addContent( block );
                 }
