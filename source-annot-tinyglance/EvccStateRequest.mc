@@ -78,6 +78,7 @@ import Toybox.PersistedContent;
                 // EvccHelperBase.debug( "StateRequest: using stored data" );
                 _hasLoaded = true;
                 if( dataAge > _refreshInterval ) {
+                    // EvccHelperBase.debug( "StateRequest: immediate request" );
                     makeRequest(); 
                 }
             }
@@ -195,6 +196,7 @@ import Toybox.PersistedContent;
 
     (:exclForGlanceTiny :typecheck(disableBackgroundCheck)) 
     private function invokeCallbacks() as Void {
+        // EvccHelperBase.debug( "StateRequest: request update for site=" + _siteIndex );
         WatchUi.requestUpdate();
     }
 }
