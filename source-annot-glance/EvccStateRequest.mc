@@ -56,7 +56,7 @@ import Toybox.PersistedContent;
     // scope check for these two functions, to avoid error about the Timer
     (:typecheck(disableBackgroundCheck))
     public function start() as Void {
-        // EvccHelperBase.debug("StateRequest: start");
+        EvccHelperBase.debug("StateRequest: start");
 
         // Only when this state request is started we load the state data
         // We cannot load the state in initialize, because on some devices,
@@ -65,20 +65,20 @@ import Toybox.PersistedContent;
         
         // If no stored data is found a request is made immediately
         if( state == null ) {
-            // EvccHelperBase.debug( "StateRequest: no stored data found");
+            EvccHelperBase.debug( "StateRequest: no stored data found");
             makeRequest(); 
         } else { 
             var dataAge = Time.now().compare( state.getTimestamp() );
             // If the persisted data is older than the expiry time it is not used and a request is made immediately
             if( dataAge > _dataExpiry ) {
-                // EvccHelperBase.debug( "StateRequest: stored data too old!" ); 
+                EvccHelperBase.debug( "StateRequest: stored data too old!" ); 
                 makeRequest(); 
             } else { 
                 // otherwise the data is used, but if it is older than refreshInterval, a request is made immediately 
-                // EvccHelperBase.debug( "StateRequest: using stored data" );
+                EvccHelperBase.debug( "StateRequest: using stored data" );
                 _hasLoaded = true;
                 if( dataAge > _refreshInterval ) {
-                    // EvccHelperBase.debug( "StateRequest: immediate request" );
+                    EvccHelperBase.debug( "StateRequest: immediate request" );
                     makeRequest(); 
                 }
             }
@@ -183,10 +183,10 @@ import Toybox.PersistedContent;
         invokeCallbacks();
     }
 
-    (:exclForGlanceFull :exclForGlanceNone) 
+    (:exclForGlanceFull :exclForGlanceNone :typecheck(disableBackgroundCheck)) 
     private function invokeCallbacks() as Void {
         if( _callbacks.size() == 0 ) {
-            requestUpdate();
+            WatchUi.requestUpdate();
         } else {
             for( var i = 0; i < _callbacks.size(); i++ ) {
                 _callbacks[i].invoke();
@@ -194,18 +194,9 @@ import Toybox.PersistedContent;
         }
     }
 
-    (:exclForGlanceTiny) 
+    (:exclForGlanceTiny :typecheck(disableBackgroundCheck)) 
     private function invokeCallbacks() as Void {
         EvccHelperBase.debug( "StateRequest: request update for site=" + _siteIndex );
-        requestUpdate();
-    }
-
-    (:typecheck([disableBackgroundCheck, disableGlanceCheck])) 
-    private function requestUpdate() as Void {
-        if( EvccApp.isGlance() ) {
-            WatchUi.requestUpdate();
-        } else {
-            EvccViewRegistry.requestUpdate();
-        }
+        WatchUi.requestUpdate();
     }
 }

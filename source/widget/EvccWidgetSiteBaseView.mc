@@ -97,99 +97,87 @@ class EvccContentArea {
         */
     }
 
-    private var _requiresUpdate as Boolean = true;
-    public function setRequiresUpdate() as Void {
-        _requiresUpdate = true;
-    }
-    
     // Called when the view is brought to the foreground.
     // Activates the state request for this view
     function onShow() as Void {
-        _requiresUpdate = true;
-        EvccViewRegistry.setActiveView( self );
-        // EvccHelperBase.debug( "Widget: onShow" );
-        EvccStateRequestRegistry.activateStateRequest( _siteIndex );
+        try {
+            EvccHelperBase.debug( "Widget: onShow" );
+            EvccStateRequestRegistry.activateStateRequest( _siteIndex );
+        } catch ( ex ) {
+            EvccHelperBase.debugException( ex );
+        }
     }
 
     // Update the view
     function onUpdate( dc as Dc ) as Void {
-        
-        var type = "unknown";
-        if( self instanceof EvccWidgetSiteForecastView ) {
-            type = "forecast";
-        } else if( self instanceof EvccWidgetSiteMainView ) {
-            type = "main";
-        }
+        try {
+            var type = "unknown";
+            if( self instanceof EvccWidgetSiteForecastView ) {
+                type = "forecast";
+            } else if( self instanceof EvccWidgetSiteMainView ) {
+                type = "main";
+            }
+            EvccHelperBase.debug("Widget: onUpdate " + type + " view for site=" + _siteIndex );
 
-        if( _requiresUpdate == false ) {
-            // EvccHelperBase.debug("Widget: skipping unnecessary onUpdate, " + type + " view for site=" + _siteIndex );
-        } else {
-            try {
-                _requiresUpdate = false;
+            var stateRequest = getStateRequest();
 
-                // EvccHelperBase.debug("Widget: onUpdate, " + type + " view for site=" + _siteIndex );
+            dc.setColor( EvccColors.FOREGROUND, EvccColors.BACKGROUND );
+            dc.clear();
 
-                var stateRequest = getStateRequest();
+            // Draw the header, footer, page indicator and select indicator
+            drawShell( dc );
 
-                dc.setColor( EvccColors.FOREGROUND, EvccColors.BACKGROUND );
-                dc.clear();
-
-                // Draw the header, footer, page indicator and select indicator
-                drawShell( dc );
-
-                var block = new EvccVerticalBlock( { :dc => dc } as DbOptions );
-                
-                if( ! stateRequest.hasLoaded() ) {
-                    // EvccHelperBase.debug("Widget: onUpdate => loading");
-                    block.addText( "Loading ...", {} as DbOptions );
-                    // Always vertically center the Loading message
-                    _ca.y = dc.getHeight() / 2;
+            var block = new EvccVerticalBlock( { :dc => dc } as DbOptions );
+            
+            if( ! stateRequest.hasLoaded() ) {
+                EvccHelperBase.debug("Widget: onUpdate => loading");
+                block.addText( "Loading ...", {} as DbOptions );
+                // Always vertically center the Loading message
+                _ca.y = dc.getHeight() / 2;
+            } else { 
+                if( stateRequest.hasError() ) {
+                    throw new StateRequestException( stateRequest.getErrorCode(), stateRequest.getErrorMessage() );
                 } else { 
-                    if( stateRequest.hasError() ) {
-                        throw new StateRequestException( stateRequest.getErrorCode(), stateRequest.getErrorMessage() );
-                    } else { 
-                        // EvccHelperBase.debug("Widget: onUpdate => addContent");
-                        // The actual content comes from implementations of this class
-                        addContent( block );
-                    }
+                    EvccHelperBase.debug("Widget: onUpdate => addContent");
+                    // The actual content comes from implementations of this class
+                    addContent( block );
                 }
-
-                // Determine font size
-                var fonts = EvccResources.getGarminFonts();
-                var font = EvccWidgetResourceSet.FONT_MEDIUM; // We start with the largest font
-
-                // To save computing resources, if the block 
-                // has more than 6 elements, we do not even try the largest font
-                if( block.getElementCount() > 6 ) {
-                    font++;
-                }
-
-                // We only scale to the second-smallest font, the smallest font
-                // is reserved for explicit declarations (:font or :relativeFont)
-                // but will not automatically be choosen for the main content
-                for( ; font < fonts.size() - 1; font++ ) {
-                    block.setOption( :font, font );
-                    // The implementation of this class determines if the sizing should
-                    // happen based on height or width
-                    // Generally applying both would be to cpu-intense
-                    // Note: the main view is sized by height, but uses the truncate
-                    // feature of the EvccDrawingTools to cut content to width
-                    if( limitHeight() && block.getHeight() <= _ca.height ) {
-                        break;
-                    } else if ( limitWidth() && block.getWidth() <= _ca.width ) {
-                        break;
-                    }
-                }
-
-                // EvccHelperBase.debug( "Using font " + block.getOption( :font ) );
-
-                block.draw( _ca.x, _ca.y );
-
-            } catch ( ex ) {
-                EvccHelperBase.debugException( ex );
-                EvccHelperUI.drawError( dc, ex );
             }
 
+            // Determine font size
+            var fonts = EvccResources.getGarminFonts();
+            var font = EvccWidgetResourceSet.FONT_MEDIUM; // We start with the largest font
+
+            // To save computing resources, if the block 
+            // has more than 6 elements, we do not even try the largest font
+            if( block.getElementCount() > 6 ) {
+                font++;
+            }
+
+            // We only scale to the second-smallest font, the smallest font
+            // is reserved for explicit declarations (:font or :relativeFont)
+            // but will not automatically be choosen for the main content
+            for( ; font < fonts.size() - 1; font++ ) {
+                block.setOption( :font, font );
+                // The implementation of this class determines if the sizing should
+                // happen based on height or width
+                // Generally applying both would be to cpu-intense
+                // Note: the main view is sized by height, but uses the truncate
+                // feature of the EvccDrawingTools to cut content to width
+                if( limitHeight() && block.getHeight() <= _ca.height ) {
+                    break;
+                } else if ( limitWidth() && block.getWidth() <= _ca.width ) {
+                    break;
+                }
+            }
+
+            // EvccHelperBase.debug( "Using font " + block.getOption( :font ) );
+
+            block.draw( _ca.x, _ca.y );
+
+        } catch ( ex ) {
+            EvccHelperBase.debugException( ex );
+            EvccHelperUI.drawError( dc, ex );
         }
     }
 
