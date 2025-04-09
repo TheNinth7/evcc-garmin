@@ -185,7 +185,7 @@ import Toybox.PersistedContent;
     (:exclForGlanceFull :exclForGlanceNone :typecheck(disableBackgroundCheck)) 
     private function invokeCallbacks() as Void {
         if( _callbacks.size() == 0 ) {
-            WatchUi.requestUpdate();
+            EvccViewRegistry.requestUpdate();
         } else {
             for( var i = 0; i < _callbacks.size(); i++ ) {
                 _callbacks[i].invoke();
@@ -195,6 +195,6 @@ import Toybox.PersistedContent;
 
     (:exclForGlanceTiny :typecheck(disableBackgroundCheck)) 
     private function invokeCallbacks() as Void {
-        WatchUi.requestUpdate();
+        EvccViewRegistry.requestUpdate();
     }
 }

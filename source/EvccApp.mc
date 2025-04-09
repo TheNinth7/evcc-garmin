@@ -195,7 +195,7 @@ import Toybox.Math;
     function onStorageChanged() {  
         try {
             // EvccHelperBase.debug( "EvccApp: onStorageChanged" );
-            if( ! _isInBackground ) {
+            if( ! _isInBackground && _isGlance ) {
                 // EvccHelperBase.debug( "EvccApp: requesting update" );
                 WatchUi.requestUpdate();
             }
