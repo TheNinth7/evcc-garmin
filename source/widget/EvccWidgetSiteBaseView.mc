@@ -31,7 +31,7 @@ class EvccContentArea {
     private var _siteIndex as Number;
     protected function getSiteIndex() as Number { return _siteIndex; }
     protected function setSiteIndex( siteIndex as Number ) as Void { _siteIndex = siteIndex; }
-    protected function getStateRequest() as EvccStateRequest { return EvccStateRequestSingleton.getStateRequest( _siteIndex ); }
+    protected function getStateRequest() as EvccStateRequest { return EvccStateRequestRegistry.getStateRequest( _siteIndex ); }
 
     // Organization of views
 
@@ -102,7 +102,7 @@ class EvccContentArea {
     function onShow() as Void {
         try {
             // EvccHelperBase.debug( "Widget: onShow" );
-            EvccStateRequestSingleton.activateStateRequest( _siteIndex );
+            EvccStateRequestRegistry.activateStateRequest( _siteIndex );
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
         }
@@ -111,6 +111,14 @@ class EvccContentArea {
     // Update the view
     function onUpdate( dc as Dc ) as Void {
         try {
+            var type = "unknown";
+            if( self instanceof EvccWidgetSiteForecastView ) {
+                type = "forecast";
+            } else if( self instanceof EvccWidgetSiteMainView ) {
+                type = "main";
+            }
+            EvccHelperBase.debug("Widget: onUpdate " + type + " view for site=" + _siteIndex );
+
             //EvccHelperBase.debug("Widget: onUpdate");
             var stateRequest = getStateRequest();
 

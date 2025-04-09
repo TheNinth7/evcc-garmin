@@ -167,7 +167,7 @@ import Toybox.Math;
             // EvccHelperBase.debug( "EvccApp: onStop" );
             hideGlance();
             if( ! _isGlance && ! _isInBackground ) {
-                EvccStateRequestSingleton.stopStateRequest();
+                EvccStateRequestRegistry.stopStateRequest();
             }
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );

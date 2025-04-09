@@ -195,6 +195,7 @@ import Toybox.PersistedContent;
 
     (:exclForGlanceTiny :typecheck(disableBackgroundCheck)) 
     private function invokeCallbacks() as Void {
+        EvccHelperBase.debug( "StateRequest: request update for site=" + _siteIndex );
         WatchUi.requestUpdate();
     }
 }

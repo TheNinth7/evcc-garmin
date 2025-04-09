@@ -5,7 +5,7 @@ import Toybox.Lang;
 // the same site, then the EvccStateRequest persists. If a view for another
 // site is opened, the old one is stopped and deleted from memory, to
 // save resources.
-public class EvccStateRequestSingleton {
+public class EvccStateRequestRegistry {
     private static var _siteIndex as Number?;
     private static var _stateRequest as EvccStateRequest?;
 
