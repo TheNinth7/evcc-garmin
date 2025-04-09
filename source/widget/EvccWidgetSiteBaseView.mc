@@ -100,12 +100,8 @@ class EvccContentArea {
     // Called when the view is brought to the foreground.
     // Activates the state request for this view
     function onShow() as Void {
-        try {
-            EvccHelperBase.debug( "Widget: onShow" );
-            EvccStateRequestRegistry.activateStateRequest( _siteIndex );
-        } catch ( ex ) {
-            EvccHelperBase.debugException( ex );
-        }
+        EvccHelperBase.debug( "Widget: onShow" );
+        EvccStateRequestRegistry.activateStateRequest( _siteIndex );
     }
 
     // Update the view
