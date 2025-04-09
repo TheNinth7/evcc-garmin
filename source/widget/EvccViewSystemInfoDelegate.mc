@@ -9,7 +9,7 @@ import Toybox.Application;
     }
 
     public function onBack() as Boolean {
-        WatchUi.popView( WatchUi.SLIDE_LEFT );
+        WatchUi.popView( WatchUi.SLIDE_BLINK );
         return true;
     }
 }
