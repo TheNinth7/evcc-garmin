@@ -2,13 +2,6 @@ import Toybox.Lang;
 import Toybox.Timer;
 import Toybox.Application.Properties;
 
-import Toybox.Lang;
-import Toybox.WatchUi;
-import Toybox.Timer;
-import Toybox.Application.Properties;
-import Toybox.Time;
-import Toybox.PersistedContent;
-
 // In widget mode, this registry singleton centrally manages all EvccStateRequest instances
 // There are three implementations:
 // 1. for devices with multiple sites and pre-rendering of views, the EvccStateRequest
@@ -108,55 +101,13 @@ public class EvccStateRequestTimer {
 }
 
 
-(:exclForSitesOne :exclForViewPreRenderingDisabled) 
-public class EvccEventQueue {
-
-    private static var _instance as EvccEventQueue?;
-    public static function getInstance() as EvccEventQueue {
-        if( _instance == null ) { _instance = new EvccEventQueue(); }
-        return _instance as EvccEventQueue;
-    }
-
-    private var _methods as Array<Method> = new Array<Method>[0];
-    private var _timer as Timer.Timer = new Timer.Timer();
-    
-    public function add( method as Method ) as Void {
-        _methods.add( method );
-        if( _methods.size() == 1 ) {
-            startTimer();
-        }
-    }
-
-    public function addToFront( method as Method ) as Void {
-        var methods = new Array<Method>[0];
-        methods.add( method );
-        if( _methods.size() > 0 ) {
-            methods.addAll( _methods );
-        } else {
-            startTimer();
-        }
-        _methods = methods;
-    }
-
-    private function startTimer() as Void {
-        _timer.start( method( :executeMethod ), 100, false );
-    }
-
-    public function executeMethod() as Void {
-        var method = _methods[0];
-        method.invoke();
-        _methods.remove( method );
-        if( _methods.size() > 0 ) {
-            startTimer();
-        }
-    }
-}
-
 
 // 2.
 (:exclForSitesOne :exclForViewPreRenderingEnabled) public class EvccStateRequestRegistry {
     private static var _siteIndex as Number?;
     private static var _stateRequest as EvccStateRequest?;
+
+    public static function start( activeSiteIndex as Number ) as Void {}
 
     // Get the state request for a specific site
     // If the requested site is different from the one currently
@@ -186,6 +137,8 @@ public class EvccEventQueue {
 
 (:exclForSitesMultiple) public class EvccStateRequestRegistry {
     private static var _stateRequest as EvccStateRequest?;
+
+    public static function start( activeSiteIndex as Number ) as Void {}
 
     // Get the state request for the site
     // siteIndex is only kept as parameter to be compatible with the

@@ -5,14 +5,22 @@ import Toybox.Application.Properties;
 import Toybox.Time;
 import Toybox.PersistedContent;
 
+class EvccTimedStateRequest extends EvccStateRequest {
+
+    function initialize( siteIndex as Number ) {
+        EvccStateRequest.initialize( siteIndex );
+    }
+
+}
+
 // The state request manages the HTTP request to the evcc instance
 // If available and within the data expiry time, a stored state
 // is made available till new data arrives
 (:background) class EvccStateRequest {
     
+    private var _timer as Timer.Timer?;
     private var _siteIndex as Number;
 
-    private var _timer as Timer.Timer?;
     private var _refreshInterval as Number;
     private var _dataExpiry as Number;
 
@@ -29,6 +37,8 @@ import Toybox.PersistedContent;
     public function getErrorCode() as String { return _errorCode; }
     public function hasState() as Boolean { return _stateStore.getState() != null; }
     public function getState() as EvccState { return _stateStore.getState() as EvccState; }
+    public function getRefreshInterval() as Number { return _refreshInterval; }
+    (:exclForSitesOne :exclForViewPreRenderingDisabled) public function getSiteIndex() as Number { return _siteIndex; }
 
     // Classes can register callback function, which will be triggered every time
     // a web response is received
@@ -39,7 +49,6 @@ import Toybox.PersistedContent;
 
     function initialize( siteIndex as Number ) {
         // EvccHelperBase.debug("StateRequest: initialize");
-        
         _refreshInterval = Properties.getValue( EvccConstants.PROPERTY_REFRESH_INTERVAL ) as Number;
         _dataExpiry = Properties.getValue( EvccConstants.PROPERTY_DATA_EXPIRY ) as Number;
 
@@ -54,7 +63,45 @@ import Toybox.PersistedContent;
     // scope check for these two functions, to avoid error about the Timer
     (:typecheck(disableBackgroundCheck))
     public function start() as Void {
-        // EvccHelperBase.debug("StateRequest: start");
+        // Since this class is also used in the background service
+        // without starting the timer, and the Timer class is not
+        // available in the background, we initiate the timer here
+        // and not in the constructor
+        if( _timer == null ) {
+            loadInitialState();
+            _timer = new Timer.Timer();
+            _timer.start( method(:makeRequest), getRefreshInterval() * 1000, true );
+        }
+    }
+
+    // Stop the timer, cancel all open requests and persist
+    // the state
+    // Note: this class is also available in the background, but Timer ist not
+    // start/stop will not be called in background, therefore we disable the
+    // scope check for these two functions, to avoid error about the Timer
+    (:typecheck(disableBackgroundCheck))
+    public function stop() as Void {
+        // EvccHelperBase.debug("StateRequest: stop");
+        if( _timer != null ) {
+            _timer.stop();
+        }
+        Communications.cancelAllRequests();
+        persist();
+    }
+
+    // Only persists the state store, to be used by the background, which does not do
+    // a full start, but only makes a single request
+    public function persist() as Void {
+        _stateStore.persist();
+    }
+
+    // Start the request timer, and depending on whether stored state
+    // exists and how old it is make a request immediately.
+    // Note: this class is also available in the background, but Timer ist not
+    // start/stop will not be called in background, therefore we disable the
+    // scope check for these two functions, to avoid error about the Timer
+    public function loadInitialState() as Void {
+        EvccHelperBase.debug("StateRequest: start site=" + _siteIndex );
 
         // Only when this state request is started we load the state data
         // We cannot load the state in initialize, because on some devices,
@@ -80,41 +127,11 @@ import Toybox.PersistedContent;
                 }
             }
         }
-
-        // Since this class is also used in the background service
-        // without starting the timer, and the Timer class is not
-        // available in the background, we initiate the timer here
-        // and not in the constructor
-        if( _timer == null ) {
-            _timer = new Timer.Timer();
-        }
-        ( _timer as Timer.Timer ).start( method(:makeRequest), _refreshInterval * 1000, true );
-    }
-
-    // Stop the timer, cancel all open requests and persist
-    // the state
-    // Note: this class is also available in the background, but Timer ist not
-    // start/stop will not be called in background, therefore we disable the
-    // scope check for these two functions, to avoid error about the Timer
-    (:typecheck(disableBackgroundCheck))
-    public function stop() as Void {
-        // EvccHelperBase.debug("StateRequest: stop");
-        if( _timer != null ) {
-            _timer.stop();
-        }
-        Communications.cancelAllRequests();
-        _stateStore.persist();
-    }
-
-    // Only persists the state store, to be used by the background, which does not do
-    // a full start, but only makes a single request
-    (:exclForGlanceFull :exclForGlanceNone) public function persist() as Void {
-        _stateStore.persist();
     }
 
     //! Make the web request
     function makeRequest() as Void {
-        // EvccHelperBase.debug("StateRequest: makeRequest");
+        EvccHelperBase.debug("StateRequest: makeRequest site=" + _siteIndex );
         var siteConfig = new EvccSite( _siteIndex );
 
         var url = siteConfig.getUrl() + "/api/state";
@@ -148,7 +165,7 @@ import Toybox.PersistedContent;
     // Note: need to disable background check because of the call to WatchUi
     (:typecheck(disableBackgroundCheck))
     function onReceive( responseCode as Number, data as Dictionary<String,Object?> or String or PersistedContent.Iterator or Null ) as Void {
-        // EvccHelperBase.debug("StateRequest: onReceive");
+        EvccHelperBase.debug("StateRequest: onReceive site=" + _siteIndex );
         _hasLoaded = true;
         _error = false; _errorMessage = ""; _errorCode = "";
         
@@ -190,7 +207,8 @@ import Toybox.PersistedContent;
         }
     }
 
-    (:exclForWebResponseCallbacksEnabled) private function invokeCallbacks() as Void {
+    (:exclForWebResponseCallbacksEnabled :typecheck(disableBackgroundCheck)) 
+    private function invokeCallbacks() as Void {
         WatchUi.requestUpdate();
     }
 }

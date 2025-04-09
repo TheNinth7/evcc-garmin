@@ -55,7 +55,7 @@ import Toybox.WatchUi;
             _calcY = y - getHeight() / 2 + getMarginTop();
             _calcIndex = 0;
 
-            EvccEventQueue.getInstance().addToFront( method( :drawElementEvent ) );
+            EvccTaskQueue.getInstance().addToFront( method( :drawElementEvent ) );
         }
     }
 
@@ -81,7 +81,7 @@ import Toybox.WatchUi;
         _calcIndex++;
 
         if( _calcIndex < _elements.size() ){
-            EvccEventQueue.getInstance().addToFront( method( :drawElementEvent ) );
+            EvccTaskQueue.getInstance().addToFront( method( :drawElementEvent ) );
         } else {
             _calcIndex = 0;
         }

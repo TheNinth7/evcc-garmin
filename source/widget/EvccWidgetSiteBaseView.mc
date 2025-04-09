@@ -171,7 +171,7 @@ class EvccContentArea {
         }
     }
     (:exclForViewPreRenderingDisabled) function onWebResponse() as Void {
-        var eventQueue = EvccEventQueue.getInstance();
+        var eventQueue = EvccTaskQueue.getInstance();
         eventQueue.add( method( :prepareShellEvent ) );
         eventQueue.add( method( :prepareContentEvent ) );
         eventQueue.add( method( :prepareContentForDrawEvent ) );
