@@ -11,29 +11,13 @@ import Toybox.WatchUi;
     // Prepare the drawing of all
     // Vertical alignment is always centered, therefore for each element we calculate 
     // the y at the center of the element and pass it as starting point.
-    function prepareDraw( x as Number, y as Number )
+    function prepareDraw( x as Number, y as Number ) as Void
     {
         if( getJustify() != Graphics.TEXT_JUSTIFY_CENTER ) {
             throw new InvalidValueException( "EvccVerticalBlock supports only justify center." );
         }
 
-        // If spreadToHeight is set, we will check if there is more
-        // space than 1/2 text line above and below the content
-        // and if yes, spread out the elements vertically
-        var spreadToHeight = getOption( :spreadToHeight ) as Number;
-        if( spreadToHeight > 0 ) {
-            var heightWithSpace = getHeight() + getFontHeight();
-            if( spreadToHeight > heightWithSpace ) {
-                // Last element will also get spacing in the bottom, therefore we
-                // spread the space to number of elements + 1
-                // EvccHelperBase.debug( "Spreading content!");
-                var spacing = Math.round( ( spreadToHeight - heightWithSpace ) / _elements.size() ).toNumber() + 1;
-                for( var i = 0; i < _elements.size(); i++ ) {
-                    _elements[i].setOption( :marginTop, spacing );
-                }
-                _elements[_elements.size()-1].setOption( :marginBottom, spacing );
-            }
-        }
+        spreadToHeight();
 
         x += getMarginLeft(); 
         y = y - getHeight() / 2 + getMarginTop();
@@ -50,17 +34,81 @@ import Toybox.WatchUi;
             
             _elements[i].prepareDraw( elX, y );
             y += _elements[i].getHeight() / 2;
-
-            // If we have the width/height cache enabled
-            // We can discard elements after they are drawn!
-            /* Saves only minimal memory, and the if required to
-               take it out when there is no cache, take the same amount
-            if( self has :resetCache ) {
-                _elements[i] = null;
-            }
-            */
         }
     }
+
+    
+    // Prepare the drawing of all
+    // Vertical alignment is always centered, therefore for each element we calculate 
+    // the y at the center of the element and pass it as starting point.
+    (:exclForViewPreRenderingDisabled :typecheck(disableGlanceCheck))
+    public function prepareDrawEvents( x as Number, y as Number ) as Void
+    {
+        if( getJustify() != Graphics.TEXT_JUSTIFY_CENTER ) {
+            throw new InvalidValueException( "EvccVerticalBlock supports only justify center." );
+        }
+
+        if( _elements.size() > 0 ) {
+            spreadToHeight();
+
+            _calcX = x + getMarginLeft(); 
+            _calcY = y - getHeight() / 2 + getMarginTop();
+            _calcIndex = 0;
+
+            EvccEventQueue.getInstance().addToFront( method( :drawElementEvent ) );
+        }
+    }
+
+    (:exclForViewPreRenderingDisabled) private var _calcX as Number = 0;
+    (:exclForViewPreRenderingDisabled) private var _calcY as Number = 0;
+    (:exclForViewPreRenderingDisabled) private var _calcIndex as Number = 0;
+    
+    (:exclForViewPreRenderingDisabled :typecheck(disableGlanceCheck))
+    public function drawElementEvent() as Void {
+        EvccHelperBase.debug("EvccVerticalBlock: prepareDraw of element=" + _calcIndex );
+        _calcY += _elements[_calcIndex].getHeight() / 2;
+        
+        // Depending on the alignment of the element, we
+        // adjust the x coordinate we pass in
+        var elX = _calcX;
+        var elJust = _elements[_calcIndex].getJustify();
+        elX -= elJust == Graphics.TEXT_JUSTIFY_LEFT ? Math.round( getWidth() / 2 ).toNumber() : 0;
+        elX += elJust == Graphics.TEXT_JUSTIFY_RIGHT ? Math.round( getWidth() / 2 ).toNumber() : 0;
+        
+        _elements[_calcIndex].prepareDraw( elX, _calcY );
+        _calcY += _elements[_calcIndex].getHeight() / 2;
+
+        _calcIndex++;
+
+        if( _calcIndex < _elements.size() ){
+            EvccEventQueue.getInstance().addToFront( method( :drawElementEvent ) );
+        } else {
+            _calcIndex = 0;
+        }
+    }
+
+
+
+    // If spreadToHeight is set, we will check if there is more
+    // space than 1/2 text line above and below the content
+    // and if yes, spread out the elements vertically
+    protected function spreadToHeight() as Void {
+        var spreadToHeight = getOption( :spreadToHeight ) as Number;
+        if( spreadToHeight > 0 ) {
+            var heightWithSpace = getHeight() + getFontHeight();
+            if( spreadToHeight > heightWithSpace ) {
+                // Last element will also get spacing in the bottom, therefore we
+                // spread the space to number of elements + 1
+                // EvccHelperBase.debug( "Spreading content!");
+                var spacing = Math.round( ( spreadToHeight - heightWithSpace ) / _elements.size() ).toNumber() + 1;
+                for( var i = 0; i < _elements.size(); i++ ) {
+                    _elements[i].setOption( :marginTop, spacing );
+                }
+                _elements[_elements.size()-1].setOption( :marginBottom, spacing );
+            }
+        }
+    }
+
 
     // Width is max of all widths
     protected function calculateWidth() as Number

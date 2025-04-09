@@ -59,15 +59,6 @@ import Toybox.WatchUi;
             x += _elements[i].getWidth() / 2;
             _elements[i].prepareDraw( x, y );
             x += _elements[i].getWidth() / 2;
-
-            // If we have the width/height cache enabled
-            // We can discard elements after they are drawn!
-            /* Saves only minimal memory, and the if required to
-               take it out when there is no cache, take the same amount
-            if( self has :resetCache ) {
-                _elements[i] = null;
-            }
-            */
         }
     }
 

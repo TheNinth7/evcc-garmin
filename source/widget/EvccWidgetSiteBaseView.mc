@@ -97,6 +97,13 @@ class EvccContentArea {
 
     (:exclForViewPreRenderingDisabled) private var _isActiveView as Boolean = false;
     (:exclForViewPreRenderingDisabled) function onShow() as Void { 
+        var type = "unknown";
+        if( self instanceof EvccWidgetSiteForecastView ) {
+            type = "forecast";
+        } else if( self instanceof EvccWidgetSiteMainView ) {
+            type = "main";
+        }
+        EvccHelperBase.debug("Widget: showing " + type + " view for site=" + _siteIndex );
         _isActiveView = true; 
     }
     (:exclForViewPreRenderingDisabled) function onHide() as Void { _isActiveView = false; }
@@ -122,7 +129,7 @@ class EvccContentArea {
     */
     (:exclForViewPreRenderingDisabled) function prepareShellEvent() as Void {
         try {
-            EvccHelperBase.debug("Widget: prepareShellEvent" );
+            EvccHelperBase.debug("Widget: prepareShellEvent=" + _siteIndex );
             prepareShell( new EvccDcStub() );
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
@@ -132,7 +139,7 @@ class EvccContentArea {
     var _preparedContent as EvccVerticalBlock?;
     (:exclForViewPreRenderingDisabled) function prepareContentEvent() as Void {
         try {
-            EvccHelperBase.debug("Widget: prepareContentEvent" );
+            EvccHelperBase.debug("Widget: prepareContentEvent=" + _siteIndex );
             _preparedContent = prepareContent( new EvccDcStub() );
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
@@ -141,10 +148,8 @@ class EvccContentArea {
     }
     (:exclForViewPreRenderingDisabled) function prepareContentForDrawEvent() as Void {
         try {
-            EvccHelperBase.debug("Widget: prepareContentForDrawEvent" );
-            ( _preparedContent as EvccVerticalBlock).prepareDraw( _ca.x, _ca.y );
-            _content = _preparedContent;
-            _preparedContent = null;
+            EvccHelperBase.debug("Widget: prepareContentForDrawEvent=" + _siteIndex );
+            ( _preparedContent as EvccVerticalBlock).prepareDrawEvents( _ca.x, _ca.y );
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
             _exception = ex;
@@ -152,16 +157,12 @@ class EvccContentArea {
     }
     (:exclForViewPreRenderingDisabled) function requestUpdateEvent() as Void {
         try {
-            /*
-            var type = "unknown";
-            if( self instanceof EvccWidgetSiteForecastView ) {
-                type = "forecast";
-            } else if( self instanceof EvccWidgetSiteMainView ) {
-                type = "main";
-            }
-            */
+            EvccHelperBase.debug("Widget: requestUpdateEvent=" + _siteIndex );
+            _content = _preparedContent;
+            _preparedContent = null;
+
             if( _isActiveView == true ) {
-                EvccHelperBase.debug("Widget: requestUpdateEvent" );
+                EvccHelperBase.debug("Widget: requestUpdate for site=" + _siteIndex );
                 WatchUi.requestUpdate();
             }
         } catch ( ex ) {

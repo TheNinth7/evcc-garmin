@@ -127,6 +127,17 @@ public class EvccEventQueue {
         }
     }
 
+    public function addToFront( method as Method ) as Void {
+        var methods = new Array<Method>[0];
+        methods.add( method );
+        if( _methods.size() > 0 ) {
+            methods.addAll( _methods );
+        } else {
+            startTimer();
+        }
+        _methods = methods;
+    }
+
     private function startTimer() as Void {
         _timer.start( method( :executeMethod ), 100, false );
     }
