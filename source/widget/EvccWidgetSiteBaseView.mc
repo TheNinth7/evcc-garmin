@@ -97,41 +97,29 @@ class EvccContentArea {
         */
     }
 
-    // When a view is shown initially onUpdate is called
-    // twice (for reasons unknown). To not waste resources,
-    // we implement a filter based on the _requiresUpdate
-    // variable. In widget mode, the state request (and
-    // any other future triggers of changed data) have to call
-    // EvccViewRegistry to request an update, which will tell the
-    // view that a "real" update has occured
     private var _requiresUpdate as Boolean = true;
     public function setRequiresUpdate() as Void {
         _requiresUpdate = true;
     }
     
     // Called when the view is brought to the foreground.
+    // Activates the state request for this view
     function onShow() as Void {
-        // EvccHelperBase.debug( "Widget: onShow" );
-        // The first update is always required
         _requiresUpdate = true;
-        // We register this view as active view
         EvccViewRegistry.setActiveView( self );
-        
-        // Activates the state request for this view
+        // EvccHelperBase.debug( "Widget: onShow" );
         EvccStateRequestRegistry.activateStateRequest( _siteIndex );
     }
 
     // Update the view
     function onUpdate( dc as Dc ) as Void {
         
-        /* Only needed when debug output is enabled
         var type = "unknown";
         if( self instanceof EvccWidgetSiteForecastView ) {
             type = "forecast";
         } else if( self instanceof EvccWidgetSiteMainView ) {
             type = "main";
         }
-        */
 
         if( _requiresUpdate == false ) {
             // EvccHelperBase.debug("Widget: skipping unnecessary onUpdate, " + type + " view for site=" + _siteIndex );
