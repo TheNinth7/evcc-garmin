@@ -9,13 +9,12 @@ import Toybox.Application.Properties;
 // 64kB or more memory for the glance
 (:glance :exclForGlanceTiny :exclForGlanceNone) class EvccGlanceView extends WatchUi.GlanceView {
     
-    private var _stateRequest as EvccStateRequest;
-    public function getStateRequest() as EvccStateRequest { return _stateRequest; }
+    private var _stateRequest as EvccTimedStateRequest;
 
     function initialize( index as Number ) {
         // EvccHelperBase.debug("Glance: initialize");
         GlanceView.initialize();
-        _stateRequest = new EvccStateRequest( index );
+        _stateRequest = new EvccTimedStateRequest( index );
     }
 
     function onShow() as Void {

@@ -43,7 +43,7 @@ import Toybox.Application.Storage;
         } else {
             Storage.deleteValue( EvccConstants.STORAGE_BG_ERROR_MSG );
             Storage.deleteValue( EvccConstants.STORAGE_BG_ERROR_CODE );
-            _stateRequest.persist();
+            _stateRequest.persistState();
         }
     }
 }

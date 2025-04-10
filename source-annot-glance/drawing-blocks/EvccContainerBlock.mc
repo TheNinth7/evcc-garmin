@@ -56,13 +56,13 @@ import Toybox.WatchUi;
         }
     }
 
-
+    // The preparedDraw is different for horizontal and vertical block, but then
+    // drawing the elements is the same for both and thus done here, in the general
+    // container class
     function drawPrepared( dc as Dc ) as Void
     {
         for( var i = 0; i < _elements.size(); i++ ) {
             _elements[i].drawPrepared( dc );
         }
     }
-
-
 }

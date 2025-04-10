@@ -3,6 +3,14 @@ import Toybox.Graphics;
 import Toybox.WatchUi;
 
 // Base class for all drawing elements
+// - It implements an options dictionary that stores various display options (see below)
+// - It implements a cache for width/height. Once width and height is determined it
+//   can be quickly accessed without having to do recalculations. The cache is invalidated
+//   if a parameter relevant to width/height changes.
+// - It implements a cache for pre-rendering position of elements and other aspects. This
+//   allows separation of pre-rendering in the background and faster drawing of the content 
+//   once a view comes into the foreground.
+
 // In the options dictionary, the following entries are used:
 // :dc - the Dc to be used, can be a real Dc or EvccDcStubStub
 // :marginLeft, :marginRight, :marginTop, :marginBottom - margins in pixels to be put around the element
@@ -17,6 +25,7 @@ import Toybox.WatchUi;
 // :vjustifyTextToBottom - by default, text is center aligned to the passed coordinate. If :vjustifyTextToBottom of a text element within a horizontal container is set to true, it will be aligned to the bottom instead.
 // :spreadToHeight - if set for a vertical block, it will spread out the content to the specified height in pixel
 // :baseFont - not to be set but calculated only, showing the applicable :font, without considering :relativeFont
+
 (:glance) class EvccBlock {
     // The options for this block (see documentation above)
     private var _options as DbOptions;
@@ -33,10 +42,13 @@ import Toybox.WatchUi;
         _options = options;
     }
 
-    // We implement a cache to enable all calculation about positioning elements
-    // prepareDraw does the calculations
-    // drawPrepared does the actual drawing
-    // draw is for places where separation is not necessary and combines the other two
+    // We implement a cache to enable pre-rendering and drawing as separate steps
+    // This is to be able to do the pre-rendering of inactive views in the background,
+    // and improve their load times once they come into the foreground.
+    // - prepareDraw does the calculations and stores the position in _x and _y
+    // - each class can also have their own members for storing additional information
+    // - drawPrepared does the actual drawing
+    // - draw is for places where separation is not necessary and combines the other two
     protected var _x as Number?;
     protected var _y as Number?;
     protected function prepareDraw( x as Number, y as Number ) as Void;

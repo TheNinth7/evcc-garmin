@@ -98,13 +98,14 @@ import Toybox.Math;
                 // So in this case we should not request the current site from the breadcrumb
                 // but just take 0 as current site
                 var activeSite = siteCount == 1 ? 0 : breadCrumb.getSelectedChild( siteCount );
-                // If the device supports pre-rendered views, then we have to start
-                // the state registry to start all state requests. With pre-rendered views
-                // state requests for ALL sites are active and updating all the views, even
-                // if they are not shown
-                if( EvccStateRequestRegistry has :start ) {
-                    EvccStateRequestRegistry.start( activeSite );
-                }
+                
+                // We start the state request registry
+                // If the device supports pre-rendered views, then this function will start ALL 
+                // state requests. With pre-rendered views state requests for ALL sites are active 
+                // and updating all the views, even if they are not shown
+                // For the other implementations of EvccStateRequestRegistry, the start
+                // function is just a dummy
+                EvccStateRequestRegistry.start( activeSite );
 
                 var settings = System.getDeviceSettings();
                 // We check if the device supports glances

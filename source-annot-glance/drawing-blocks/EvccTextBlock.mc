@@ -65,9 +65,14 @@ import Toybox.WatchUi;
         _x = x;
         _y = y;
 
+        // Now we store all relevant data for actual drawing the bitmap
+        // There are different implementations of this, see below
         store( font, textWidth, textHeight );
     }
 
+    // Drawing vector fonts is relatively slow. Therefore for vector fonts, we create a
+    // buffered bitmap already in the pre-rendering step, draw the text there and then
+    // upon drawing on the screen only draw the bitmap
     (:exclForFontsStatic :exclForFontsStaticOptimized) private var _bufferedBitmap as BufferedBitmap?;
     (:exclForFontsStatic :exclForFontsStaticOptimized) private function store( font as EvccFont, textWidth as Number, textHeight as Number ) as Void {
         var bufferedBitmapReference = Graphics.createBufferedBitmap( { :width => textWidth, :height => textHeight } );
@@ -81,6 +86,8 @@ import Toybox.WatchUi;
         dc.drawBitmap( _x as Number, _y as Number, _bufferedBitmap as BufferedBitmap );
     }
 
+    // For static fonts we just store the Garmin font and then do the actual drawing
+    // once the screen is to be rendered
     (:exclForFontsVector) private var _garminFont as GarminFont?;
     (:exclForFontsVector) private function store( font as EvccFont, textWidth as Number, textHeight as Number ) as Void {
         _garminFont = EvccResources.getGarminFont( font );
