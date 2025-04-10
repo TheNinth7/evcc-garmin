@@ -3,6 +3,7 @@ import Toybox.Graphics;
 import Toybox.WatchUi;
 
 // Defines all the possible options used in drawing blocks
+// See EvccBlock documentation for details
 typedef DbOptions as {
     :dc as EvccDcInterface?,
     :parent as EvccContainerBlock or WeakReference or Null,
@@ -32,6 +33,9 @@ typedef DbOptionValue as EvccDcInterface or EvccContainerBlock or WeakReference 
 // stored in a separate graphics pool. We need to support both.
 typedef DbBitmap as BitmapResource or BitmapReference;
 
+// This interface describes the capabilities needed from the Dc when
+// pre-rendering views. This way either a real Dc or the EvccDcStub
+// can be used for the pre-rendering, depending on what is available.
 typedef EvccDcInterface as interface {
     function getWidth() as Number;
     function getHeight() as Number;

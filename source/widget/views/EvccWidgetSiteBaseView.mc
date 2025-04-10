@@ -136,11 +136,11 @@ class EvccContentArea {
             _exception = ex;
         }
     }
-    var _preparedContent as EvccVerticalBlock?;
+    var _contentUnderPreparation as EvccVerticalBlock?;
     (:exclForViewPreRenderingDisabled) function prepareContentEvent() as Void {
         try {
             EvccHelperBase.debug("Widget: prepareContentEvent=" + _siteIndex );
-            _preparedContent = prepareContent( new EvccDcStub() );
+            _contentUnderPreparation = prepareContent( new EvccDcStub() );
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
             _exception = ex;
@@ -149,7 +149,7 @@ class EvccContentArea {
     (:exclForViewPreRenderingDisabled) function prepareContentForDrawEvent() as Void {
         try {
             EvccHelperBase.debug("Widget: prepareContentForDrawEvent=" + _siteIndex );
-            ( _preparedContent as EvccVerticalBlock).prepareDrawEvents( _ca.x, _ca.y );
+            ( _contentUnderPreparation as EvccVerticalBlock).prepareDrawByTasks( _ca.x, _ca.y );
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
             _exception = ex;
@@ -158,8 +158,8 @@ class EvccContentArea {
     (:exclForViewPreRenderingDisabled) function requestUpdateEvent() as Void {
         try {
             EvccHelperBase.debug("Widget: requestUpdateEvent=" + _siteIndex );
-            _content = _preparedContent;
-            _preparedContent = null;
+            _content = _contentUnderPreparation;
+            _contentUnderPreparation = null;
 
             if( _isActiveView == true ) {
                 EvccHelperBase.debug("Widget: requestUpdate for site=" + _siteIndex );
@@ -170,7 +170,7 @@ class EvccContentArea {
             _exception = ex;
         }
     }
-    (:exclForViewPreRenderingDisabled) function onWebResponse() as Void {
+    (:exclForViewPreRenderingDisabled) public function onWebResponse() as Void {
         var eventQueue = EvccTaskQueue.getInstance();
         eventQueue.add( method( :prepareShellEvent ) );
         eventQueue.add( method( :prepareContentEvent ) );

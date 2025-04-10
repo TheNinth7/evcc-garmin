@@ -51,8 +51,8 @@ import Toybox.WatchUi;
     // - draw is for places where separation is not necessary and combines the other two
     protected var _x as Number?;
     protected var _y as Number?;
-    protected function prepareDraw( x as Number, y as Number ) as Void;
-    protected function drawPrepared( dc as Dc ) as Void;
+    public function prepareDraw( x as Number, y as Number ) as Void;
+    public function drawPrepared( dc as Dc ) as Void;
     public function draw( dc as Dc, x as Number, y as Number ) as Void {
         prepareDraw( x, y );
         drawPrepared( dc );

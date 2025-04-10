@@ -1,24 +1,18 @@
 import Toybox.Lang;
 import Toybox.WatchUi;
-import Toybox.Timer;
 import Toybox.Application.Properties;
 import Toybox.Time;
 import Toybox.PersistedContent;
 
-class EvccTimedStateRequest extends EvccStateRequest {
 
-    function initialize( siteIndex as Number ) {
-        EvccStateRequest.initialize( siteIndex );
-    }
-
-}
-
-// The state request manages the HTTP request to the evcc instance
-// If available and within the data expiry time, a stored state
-// is made available till new data arrives
+// The state request manages the HTTP request to the evcc instance.
+// - It makes the result (a state or an error) available.
+// - If within the data expiry time, a stored state is made available 
+//   till the web response arrives.
+// - Once a web response arrives, it calls either registered callbacks
+//   or WatchUi.requestUpdate()
 (:background) class EvccStateRequest {
     
-    private var _timer as Timer.Timer?;
     private var _siteIndex as Number;
 
     private var _refreshInterval as Number;
@@ -31,21 +25,23 @@ class EvccTimedStateRequest extends EvccStateRequest {
     private var _errorMessage as String = "";
     private var _errorCode as String = "";
 
+    // True once data (state or error) is available
+    // It is set to true if either data from storage that is within the
+    // expiry time has been loaded, or a web response has been received
     public function hasLoaded() as Boolean { return _hasLoaded; }
+    
+    // Accessor for error case
     public function hasError() as Boolean { return _error; }
     public function getErrorMessage() as String { return _errorMessage; }
     public function getErrorCode() as String { return _errorCode; }
+    
+    // Accessors for the state
     public function hasState() as Boolean { return _stateStore.getState() != null; }
     public function getState() as EvccState { return _stateStore.getState() as EvccState; }
+    public function persistState() as Void { _stateStore.persist(); } // Persists the state 
+    
     public function getRefreshInterval() as Number { return _refreshInterval; }
     (:exclForSitesOne :exclForViewPreRenderingDisabled) public function getSiteIndex() as Number { return _siteIndex; }
-
-    // Classes can register callback function, which will be triggered every time
-    // a web response is received
-    (:exclForWebResponseCallbacksDisabled) private var _callbacks as Array<Method> = [];
-    (:exclForWebResponseCallbacksDisabled) public function registerCallback( callback as Method() as Void ) as Void {
-        _callbacks.add( callback );
-    }
 
     function initialize( siteIndex as Number ) {
         // EvccHelperBase.debug("StateRequest: initialize");
@@ -56,50 +52,8 @@ class EvccTimedStateRequest extends EvccStateRequest {
         _siteIndex = siteIndex;
     }
 
-    // Start the request timer, and depending on whether stored state
-    // exists and how old it is make a request immediately.
-    // Note: this class is also available in the background, but Timer ist not
-    // start/stop will not be called in background, therefore we disable the
-    // scope check for these two functions, to avoid error about the Timer
-    (:typecheck(disableBackgroundCheck))
-    public function start() as Void {
-        // Since this class is also used in the background service
-        // without starting the timer, and the Timer class is not
-        // available in the background, we initiate the timer here
-        // and not in the constructor
-        if( _timer == null ) {
-            loadInitialState();
-            _timer = new Timer.Timer();
-            _timer.start( method(:makeRequest), getRefreshInterval() * 1000, true );
-        }
-    }
-
-    // Stop the timer, cancel all open requests and persist
-    // the state
-    // Note: this class is also available in the background, but Timer ist not
-    // start/stop will not be called in background, therefore we disable the
-    // scope check for these two functions, to avoid error about the Timer
-    (:typecheck(disableBackgroundCheck))
-    public function stop() as Void {
-        // EvccHelperBase.debug("StateRequest: stop");
-        if( _timer != null ) {
-            _timer.stop();
-        }
-        Communications.cancelAllRequests();
-        persist();
-    }
-
-    // Only persists the state store, to be used by the background, which does not do
-    // a full start, but only makes a single request
-    public function persist() as Void {
-        _stateStore.persist();
-    }
-
-    // Start the request timer, and depending on whether stored state
-    // exists and how old it is make a request immediately.
-    // Note: this class is also available in the background, but Timer ist not
-    // start/stop will not be called in background, therefore we disable the
-    // scope check for these two functions, to avoid error about the Timer
+    // Loads the initial state from storage
+    // If none is available or it is outdated, makes an immediate web request
     public function loadInitialState() as Void {
         EvccHelperBase.debug("StateRequest: start site=" + _siteIndex );
 
@@ -129,8 +83,8 @@ class EvccTimedStateRequest extends EvccStateRequest {
         }
     }
 
-    //! Make the web request
-    function makeRequest() as Void {
+    // Make the web request
+    public function makeRequest() as Void {
         EvccHelperBase.debug("StateRequest: makeRequest site=" + _siteIndex );
         var siteConfig = new EvccSite( _siteIndex );
 
@@ -190,15 +144,25 @@ class EvccTimedStateRequest extends EvccStateRequest {
             }
         }
         
-        // If there are no callbacks, we request an update, otherwise
-        // we call the callbacks. Note that in background WatchUI is not
-        // available, therefore a callback HAS TO BE registered
+        // Trigger the callback logic, see below
         invokeCallbacks();
     }
 
+    // If callbacks are enabled, other classes can register
+    // callback methods that will be called whenever a new web
+    // response is received
+    (:exclForWebResponseCallbacksDisabled) 
+    private var _callbacks as Array<Method> = [];
+    (:exclForWebResponseCallbacksDisabled) 
+    public function registerCallback( callback as Method() as Void ) as Void {
+        _callbacks.add( callback );
+    }
     (:exclForWebResponseCallbacksDisabled :typecheck(disableBackgroundCheck)) 
     private function invokeCallbacks() as Void {
         if( _callbacks.size() == 0 ) {
+            // If not callbacks are registered, we request a screen update from WatchUi
+            // Note that the background task has to register a callback, otherwise
+            // this call would trip an error
             WatchUi.requestUpdate();
         } else {
             for( var i = 0; i < _callbacks.size(); i++ ) {
@@ -207,6 +171,7 @@ class EvccTimedStateRequest extends EvccStateRequest {
         }
     }
 
+    // If callbacks are disabled, we request a screen update from WatchUi
     (:exclForWebResponseCallbacksEnabled :typecheck(disableBackgroundCheck)) 
     private function invokeCallbacks() as Void {
         WatchUi.requestUpdate();

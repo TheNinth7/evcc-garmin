@@ -53,10 +53,10 @@ import Toybox.Math;
     // Detail views present additional data for a particular site. This function adds 
     // detail views for this site, either to the lower level or to the same level views, 
     // depending on the situation.
-    // ATTENTION: this function may be called multiple times, so it has protect itself from 
-    // adding the same view twice. This is because views can be added based on the state, 
-    // which may not be available on initialization or may change over time 
-    function addDetailViews() as Void {
+    // ATTENTION: this function is called everytime there is a new web response, since changed
+    // data may lead to additional views being displayed. Therefore, this function has to protect 
+    // itself from adding the same view twice.
+    public function addDetailViews() as Void {
         if( ! _hasForecast ) {
             var stateRequest = getStateRequest();
             // Note that we DO NOT check fore staterq.hasLoaded(). In this instance we are not interested
@@ -105,16 +105,29 @@ import Toybox.Math;
     }
 
 
-    // We check if detail views are available and then pass on to the base onUpdate function
+    // With every new web response we check if there are maybe new detail views to be displayed
+    // This is important when we initially do not have an up-to-date state and therefore 
+    // state-dependent detail views are not added in the addDetailViews() call from the 
+    // constructor
+
+    // If view prerendering is disabled, we do this in the onUpdate
+    (:exclForViewPreRenderingEnabled) 
     function onUpdate( dc as Dc ) as Void {
-        // With every update we check if there are maybe new detail views to be displayed
-        // This is important when we initially do not have an up-to-date state and therefore 
-        // state-dependent detail views are not added in the addDetailViews() call from the 
-        // constructor
         addDetailViews();
         EvccWidgetSiteBaseView.onUpdate( dc );
     }
 
+    // If view prerendering is enabled, we have to do this earlier,
+    // when onWebResponse is called, so that the further prerendering
+    // of the page and select indicator is already is based on the adapted 
+    // detail views.
+    (:exclForViewPreRenderingDisabled)
+    public function onWebResponse() as Void {
+        // As with everything else happening in the prerendering, we add this
+        // as a dedicated task in the task queue
+        EvccTaskQueue.getInstance().add( method( :addDetailViews ) );
+        EvccWidgetSiteBaseView.onWebResponse();
+    }
 
     private const SMALL_LINE as Float = 0.6; // site title, charging details and logo count only as the fraction of a line specified here
     private const MAX_VAR_LINES as Number = 6; // 1 x site title, 1 x battery, 2 x loadpoints with 2 lines each
