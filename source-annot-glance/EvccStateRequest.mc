@@ -170,6 +170,16 @@ import Toybox.PersistedContent;
             }
         }
     }
+    (:exclForViewPreRenderingDisabled)
+    public function invokeFirstCallback() as Void {
+        _callbacks[0].invoke();
+    }
+    (:exclForViewPreRenderingDisabled)
+    public function invokeFurtherCallbacks() as Void {
+        for( var i = 1; i < _callbacks.size(); i++ ) {
+            _callbacks[i].invoke();
+        }
+    }
 
     // If callbacks are disabled, we request a screen update from WatchUi
     (:exclForWebResponseCallbacksEnabled :typecheck(disableBackgroundCheck)) 

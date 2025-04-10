@@ -12,8 +12,12 @@ public class EvccMultiStateRequestsTimer {
         EvccHelperBase.debug( "EvccMultiStateRequestsTimer: initializing with " + stateRequests.size() + " state requests" );
         _stateRequests = stateRequests;
         EvccHelperBase.debug( "EvccMultiStateRequestsTimer: initiating state request for site " + _stateRequests[0].getSiteIndex() );
-        _stateRequests[0].loadInitialState();
-
+        var stateRequest = _stateRequests[0];
+        stateRequest.loadInitialState();
+        if( stateRequest.hasLoaded() ) {
+            stateRequest.invokeFirstCallback();
+            EvccTaskQueue.getInstance().addToFront( new Method( stateRequest, :invokeFurtherCallbacks ) );
+        }
         if( _stateRequests.size() > 1 ) {
             EvccHelperBase.debug( "EvccMultiStateRequestsTimer: starting delayed initiation" );
             _i++;
@@ -25,7 +29,11 @@ public class EvccMultiStateRequestsTimer {
 
     public function initiateStateRequests() as Void {
         EvccHelperBase.debug( "EvccMultiStateRequestsTimer: initiating state request for site " + _stateRequests[_i].getSiteIndex() );
-        _stateRequests[_i].loadInitialState();
+        var stateRequest = _stateRequests[_i];
+        stateRequest.loadInitialState();
+        if( stateRequest.hasLoaded() ) {
+            stateRequest.invokeCallbacks();
+        }
         _i++;
         if( _i == _stateRequests.size() ) {
             _i = 0;
