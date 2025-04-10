@@ -35,15 +35,14 @@ public class EvccTaskQueue {
     // Add a task
     public function add( method as Method ) as Void {
         _methods.add( method );
-        // If there were no asks in the queue, start the timer
+        // If there were no tasks in the queue, start the timer
         if( _methods.size() == 1 ) {
             startTimer();
         }
     }
 
-    // Add a task to the front of the queue
-    // Good if an atomic task should be split into smaller
-    // tasks without anything else being processed inbetween
+    // Add a task to the front of the queue, for cases where a task
+    // should skip the line and be executed at the next opportunity
     public function addToFront( method as Method ) as Void {
         var methods = new Array<Method>[0];
         methods.add( method );
