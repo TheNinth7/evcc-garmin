@@ -1,12 +1,14 @@
 import Toybox.Lang;
 
-// Base exception for all custom exceptions of this app
-// Used to differntiate error handling for the custom
-// exceptions, which often represent well-known conditions
+// Base exception for all exceptions representing well-known
+// and expected error conditions, for example if configuration is
+// missing. This is used to differentiate error handling for those
+// expected Exceptions from unexpected errors
 (:glance :background) class EvccBaseException extends Exception {
-    function initialize() {
+    public function initialize() {
         Exception.initialize();
     }
+    public function getScreenMessage() as String? { return null; }
 }
 
 // Exception indicating that no sites were found in the
@@ -14,8 +16,11 @@ import Toybox.Lang;
 // Background service does not need this exception, because
 // it will never be started if there is no site
 (:glance) class NoSiteException extends EvccBaseException {
-    function initialize() {
+    public function initialize() {
         EvccBaseException.initialize();
+    }
+    public function getScreenMessage() as String? { 
+        return "No site, please\ncheck app settings"; 
     }
 }
 
@@ -23,10 +28,12 @@ import Toybox.Lang;
 // is specified but the password is missing
 (:glance :background) class NoPasswordException extends EvccBaseException {
     private var _index as Number;
-    function getSite() as Number { return _index + 1; }
     function initialize( index as Number ) {
         EvccBaseException.initialize();
         _index = index;
+    }
+    public function getScreenMessage() as String? { 
+        return "Password for site " + ( _index + 1 ) + " is missing"; 
     }
 }
 
@@ -37,12 +44,17 @@ import Toybox.Lang;
 // foreground service (tiny glance).
 (:glance) class StateRequestException extends EvccBaseException {
     private var _code as String?;
-    private var _msg as String?;
-    function getErrorCode() as String? { return _code; }
-    function getErrorMessage() as String? { return _msg; }
-    function initialize( code as String?, msg as String? ) {
+    private var _msg as String;
+    function initialize( msg as String, code as String? ) {
         EvccBaseException.initialize();
         _code = code;
         _msg = msg;
+    }
+    public function getScreenMessage() as String? { 
+        var errorMsg = _msg;
+        if( _code != null && ! _code.toString().equals( "" ) ) {
+            errorMsg += "\n" + _code;
+        }
+        return errorMsg;
     }
 }
