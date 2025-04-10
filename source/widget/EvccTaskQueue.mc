@@ -20,6 +20,9 @@ public class EvccTaskQueue {
         if( _instance == null ) { _instance = new EvccTaskQueue(); }
         return _instance as EvccTaskQueue;
     }
+    // Constructor is needed only to declare it private, to ensure
+    // it can not be instantiated from the outside
+    private function initialize() {}
 
     // Tasks are added as Method objects
     private var _methods as Array<Method> = new Array<Method>[0];
