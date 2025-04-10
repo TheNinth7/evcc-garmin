@@ -57,6 +57,7 @@ import Toybox.Math;
     // data may lead to additional views being displayed. Therefore, this function has to protect 
     // itself from adding the same view twice.
     public function addDetailViews() as Void {
+        EvccHelperBase.debug("WidgetSiteMain: addDetailViews" );
         if( ! _hasForecast ) {
             var stateRequest = getStateRequest();
             // Note that we DO NOT check fore staterq.hasCurrentState(). In this instance we are not interested
@@ -123,9 +124,14 @@ import Toybox.Math;
     // detail views.
     (:exclForViewPreRenderingDisabled)
     public function onWebResponse() as Void {
+        EvccHelperBase.debug("WidgetSiteMain: onWebResponse" );
         // As with everything else happening in the prerendering, we add this
         // as a dedicated task in the task queue
-        EvccTaskQueue.getInstance().add( method( :addDetailViews ) );
+        if( immediatePrepare() ) {
+            addDetailViews();
+        } else {
+            EvccTaskQueue.getInstance().add( method( :addDetailViews ) );
+        }
         EvccWidgetSiteBaseView.onWebResponse();
     }
 

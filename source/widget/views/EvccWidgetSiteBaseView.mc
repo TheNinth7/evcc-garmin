@@ -81,7 +81,7 @@ class EvccContentArea {
 
     // Constructor
     (:exclForViewPreRenderingDisabled) protected function initialize( views as ArrayOfSiteViews, parentView as EvccWidgetSiteBaseView?, siteIndex as Number ) {
-        // EvccHelperBase.debug("Widget: initialize");
+        // EvccHelperBase.debug("WidgetSiteBase: initialize");
         View.initialize();
 
         _siteIndex = siteIndex;
@@ -103,7 +103,7 @@ class EvccContentArea {
         } else if( self instanceof EvccWidgetSiteMainView ) {
             type = "main";
         }
-        EvccHelperBase.debug("Widget: showing " + type + " view for site=" + _siteIndex );
+        EvccHelperBase.debug("WidgetSiteBase: showing " + type + " view for site=" + _siteIndex );
         _isActiveView = true; 
     }
     (:exclForViewPreRenderingDisabled) function onHide() as Void { _isActiveView = false; }
@@ -112,14 +112,14 @@ class EvccContentArea {
     /*
     (:exclForViewPreRenderingDisabled) function onWebResponse() as Void {
         try {
-            EvccHelperBase.debug("Widget: onWebResponse for site=" + _siteIndex );
+            EvccHelperBase.debug("WidgetSiteBase: onWebResponse for site=" + _siteIndex );
             var dc = new EvccDcStub();
             prepareShell( dc );
             _content = prepareContent( dc );
             if( _isActiveView ) {
                 WatchUi.requestUpdate();
             }
-            EvccHelperBase.debug("Widget: onWebResponse for site=" + _siteIndex + "done!" );
+            EvccHelperBase.debug("WidgetSiteBase: onWebResponse for site=" + _siteIndex + "done!" );
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
             _exception = ex;
@@ -127,43 +127,45 @@ class EvccContentArea {
     }
     */
     (:exclForViewPreRenderingDisabled) function prepareShellEvent() as Void {
-        EvccHelperBase.debug("Widget: prepareShellEvent=" + _siteIndex );
+        EvccHelperBase.debug("WidgetSiteBase: prepareShellEvent=" + _siteIndex );
         prepareShell( new EvccDcStub() );
     }
     var _contentUnderPreparation as EvccVerticalBlock?;
     (:exclForViewPreRenderingDisabled) function prepareContentEvent() as Void {
-        EvccHelperBase.debug("Widget: prepareContentEvent=" + _siteIndex );
+        EvccHelperBase.debug("WidgetSiteBase: prepareContentEvent=" + _siteIndex );
         _contentUnderPreparation = prepareContent( new EvccDcStub() );
     }
     (:exclForViewPreRenderingDisabled) function prepareContentForDrawEvent() as Void {
-        EvccHelperBase.debug("Widget: prepareContentForDrawEvent=" + _siteIndex );
+        EvccHelperBase.debug("WidgetSiteBase: prepareContentForDrawEvent=" + _siteIndex );
         ( _contentUnderPreparation as EvccVerticalBlock).prepareDrawByTasks( _ca.x, _ca.y );
         //throw new InvalidOptionsException( "Test" );
     }
     (:exclForViewPreRenderingDisabled) function requestUpdateEvent() as Void {
-        EvccHelperBase.debug("Widget: requestUpdateEvent=" + _siteIndex );
+        EvccHelperBase.debug("WidgetSiteBase: requestUpdateEvent=" + _siteIndex );
         _content = _contentUnderPreparation;
         _contentUnderPreparation = null;
 
         if( _isActiveView == true ) {
-            EvccHelperBase.debug("Widget: requestUpdate for site=" + _siteIndex );
+            EvccHelperBase.debug("WidgetSiteBase: requestUpdate for site=" + _siteIndex );
             WatchUi.requestUpdate();
         }
     }
 
-    (:exclForViewPreRenderingDisabled) private var _alreadyHasRealContent as Boolean = false;
+    private var _alreadyHasRealContent as Boolean = false;
+
+    protected function immediatePrepare() as Boolean { return _isActiveView && ! _alreadyHasRealContent; }
 
     (:exclForViewPreRenderingDisabled) public function onWebResponse() as Void {
-        EvccHelperBase.debug("Widget: onWebResponse for site=" + _siteIndex );
-        if( _isActiveView && ! _alreadyHasRealContent ) {
-            EvccHelperBase.debug("Widget: immediate preparation for site=" + _siteIndex );
+        EvccHelperBase.debug("WidgetSiteBase: onWebResponse for site=" + _siteIndex );
+        if( immediatePrepare() ) {
+            EvccHelperBase.debug("WidgetSiteBase: immediate preparation for site=" + _siteIndex );
             var dcStub = new EvccDcStub();
             prepareShell( dcStub );
             _content = prepareContent( new EvccDcStub() );
             _content.prepareDraw( _ca.x, _ca.y );
             WatchUi.requestUpdate();
         } else {
-            EvccHelperBase.debug("Widget: task queue preparation for site=" + _siteIndex );
+            EvccHelperBase.debug("WidgetSiteBase: task queue preparation for site=" + _siteIndex );
             var eventQueue = EvccTaskQueue.getInstance();
             eventQueue.add( method( :prepareShellEvent ) );
             eventQueue.add( method( :prepareContentEvent ) );
@@ -172,10 +174,9 @@ class EvccContentArea {
         }
     }
 
-
     (:exclForViewPreRenderingDisabled) function onUpdate( dc as Dc ) as Void {
         try {
-            EvccHelperBase.debug("Widget: onUpdate for site=" + _siteIndex );
+            EvccHelperBase.debug("WidgetSiteBase: onUpdate for site=" + _siteIndex );
             dc.clear();
 
             EvccTaskQueue.getInstance().checkForException();
@@ -214,7 +215,7 @@ class EvccContentArea {
     }
 
     (:exclForViewPreRenderingEnabled) protected function initialize( views as ArrayOfSiteViews, parentView as EvccWidgetSiteBaseView?, siteIndex as Number ) {
-        // EvccHelperBase.debug("Widget: initialize");
+        // EvccHelperBase.debug("WidgetSiteBase: initialize");
         View.initialize();
 
         _siteIndex = siteIndex;
@@ -229,7 +230,7 @@ class EvccContentArea {
     // Update the view
     (:exclForViewPreRenderingEnabled) function onUpdate( dc as Dc ) as Void {
         try {
-            EvccHelperBase.debug("Widget: onUpdate for site=" + _siteIndex );
+            EvccHelperBase.debug("WidgetSiteBase: onUpdate for site=" + _siteIndex );
             dc.clear();
 
             prepareShell( dc );
@@ -308,7 +309,7 @@ class EvccContentArea {
     }
     */
     private function prepareShell( calcDc as EvccDcInterface ) as Void {
-        EvccHelperBase.debug("Widget: prepareShell");
+        EvccHelperBase.debug("WidgetSiteBase: prepareShell");
 
         var stateRequest = getStateRequest();
 
@@ -409,7 +410,7 @@ class EvccContentArea {
 
 
     function prepareContent( calcDc as EvccDcInterface ) as EvccVerticalBlock {
-        EvccHelperBase.debug("Widget: prepareContent");
+        EvccHelperBase.debug("WidgetSiteBase: prepareContent");
         var stateRequest = getStateRequest();
 
         var content = new EvccVerticalBlock( { :dc => calcDc } as DbOptions );

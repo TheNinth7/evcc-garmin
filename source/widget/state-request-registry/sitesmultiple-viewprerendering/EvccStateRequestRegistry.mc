@@ -26,24 +26,6 @@ import Toybox.Lang;
         _stateRequestTimer = new EvccMultiStateRequestsTimer( sortedSites );
     }
 
-    public static function loadInitialData( activeSiteIndex as Number ) as Void {
-        var inactiveSites = new Array<EvccStateRequest>[0];
-        var sortedSites = new Array<EvccStateRequest>[0];
-        for( var i = 0; i < EvccSiteConfiguration.getSiteCount(); i++ ) {
-            var stateRequest = new EvccStateRequest( i );
-            _stateRequests.add( stateRequest );
-            if( i == activeSiteIndex ) {
-                sortedSites.add( stateRequest );
-            } else {
-                inactiveSites.add( stateRequest );
-            }
-        }
-        if( inactiveSites.size() > 0 ) {
-            sortedSites.addAll( inactiveSites );
-        }
-        _stateRequestTimer = new EvccMultiStateRequestsTimer( sortedSites );
-    }
-
     // Get the state request for a specific site
     // If the array is still empty, we instantiate all state requests
     public static function getStateRequest( siteIndex as Number ) as EvccStateRequest {
@@ -57,6 +39,10 @@ import Toybox.Lang;
                 _stateRequests[i].persistState();
             }
         }
-        ( _stateRequestTimer as EvccMultiStateRequestsTimer ).stopRequestTimer();
+        // If there is an error before we start the registry, then there may not
+        // be a timer to stop. (e.g. if there is no site configuration)
+        if( _stateRequestTimer != null ) {
+            ( _stateRequestTimer as EvccMultiStateRequestsTimer ).stopRequestTimer();
+        }
     }
 }

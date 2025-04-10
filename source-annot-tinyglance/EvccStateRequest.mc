@@ -18,7 +18,7 @@ import Toybox.PersistedContent;
     private var _refreshInterval as Number;
     private var _dataExpiry as Number;
 
-    private var _hasLoaded as Boolean = false;
+    private var _hasCurrentState as Boolean = false;
     private var _stateStore as EvccStateStore;
 
     private var _error as Boolean = false;
@@ -28,7 +28,7 @@ import Toybox.PersistedContent;
     // True once data (state or error) is available
     // It is set to true if either data from storage that is within the
     // expiry time has been loaded, or a web response has been received
-    public function hasCurrentState() as Boolean { return _hasLoaded; }
+    public function hasCurrentState() as Boolean { return _hasCurrentState; }
     
     // Accessor for error case
     public function hasError() as Boolean { return _error; }
@@ -55,7 +55,7 @@ import Toybox.PersistedContent;
     // Loads the initial state from storage
     // If none is available or it is outdated, makes an immediate web request
     public function loadInitialState() as Void {
-        EvccHelperBase.debug("StateRequest: start site=" + _siteIndex );
+        EvccHelperBase.debug("StateRequest: loadInitialState site=" + _siteIndex );
 
         // Only when this state request is started we load the state data
         // We cannot load the state in initialize, because on some devices,
@@ -75,7 +75,7 @@ import Toybox.PersistedContent;
             } else { 
                 // otherwise the data is used, but if it is older than refreshInterval, a request is made immediately 
                 // EvccHelperBase.debug( "StateRequest: using stored data" );
-                _hasLoaded = true;
+                _hasCurrentState = true;
                 if( dataAge > _refreshInterval ) {
                     makeRequest(); 
                 }
@@ -120,7 +120,7 @@ import Toybox.PersistedContent;
     (:typecheck(disableBackgroundCheck))
     function onReceive( responseCode as Number, data as Dictionary<String,Object?> or String or PersistedContent.Iterator or Null ) as Void {
         EvccHelperBase.debug("StateRequest: onReceive site=" + _siteIndex );
-        _hasLoaded = true;
+        _hasCurrentState = true;
         _error = false; _errorMessage = ""; _errorCode = "";
         
         if( responseCode == 200 ) {
@@ -158,7 +158,7 @@ import Toybox.PersistedContent;
         _callbacks.add( callback );
     }
     (:exclForWebResponseCallbacksDisabled :typecheck(disableBackgroundCheck)) 
-    private function invokeCallbacks() as Void {
+    public function invokeCallbacks() as Void {
         if( _callbacks.size() == 0 ) {
             // If not callbacks are registered, we request a screen update from WatchUi
             // Note that the background task has to register a callback, otherwise
@@ -168,6 +168,16 @@ import Toybox.PersistedContent;
             for( var i = 0; i < _callbacks.size(); i++ ) {
                 _callbacks[i].invoke();
             }
+        }
+    }
+    // This is used only after the initial loadInitialState for the
+    // active site. The first callback is the main view, and for the
+    // active site the pre-rendering is anyway then done in the
+    // first onUpdate
+    (:exclForViewPreRenderingDisabled)
+    public function invokeAllCallbacksButFirst() as Void {
+        for( var i = 1; i < _callbacks.size(); i++ ) {
+            _callbacks[i].invoke();
         }
     }
 
