@@ -109,7 +109,6 @@ class EvccContentArea {
     (:exclForViewPreRenderingDisabled) function onHide() as Void { _isActiveView = false; }
 
     (:exclForViewPreRenderingDisabled) private var _content as EvccVerticalBlock?;
-    (:exclForViewPreRenderingDisabled) private var _exception as Exception?;
     /*
     (:exclForViewPreRenderingDisabled) function onWebResponse() as Void {
         try {
@@ -128,54 +127,49 @@ class EvccContentArea {
     }
     */
     (:exclForViewPreRenderingDisabled) function prepareShellEvent() as Void {
-        try {
-            EvccHelperBase.debug("Widget: prepareShellEvent=" + _siteIndex );
-            prepareShell( new EvccDcStub() );
-        } catch ( ex ) {
-            EvccHelperBase.debugException( ex );
-            _exception = ex;
-        }
+        EvccHelperBase.debug("Widget: prepareShellEvent=" + _siteIndex );
+        prepareShell( new EvccDcStub() );
     }
     var _contentUnderPreparation as EvccVerticalBlock?;
     (:exclForViewPreRenderingDisabled) function prepareContentEvent() as Void {
-        try {
-            EvccHelperBase.debug("Widget: prepareContentEvent=" + _siteIndex );
-            _contentUnderPreparation = prepareContent( new EvccDcStub() );
-        } catch ( ex ) {
-            EvccHelperBase.debugException( ex );
-            _exception = ex;
-        }
+        EvccHelperBase.debug("Widget: prepareContentEvent=" + _siteIndex );
+        _contentUnderPreparation = prepareContent( new EvccDcStub() );
     }
     (:exclForViewPreRenderingDisabled) function prepareContentForDrawEvent() as Void {
-        try {
-            EvccHelperBase.debug("Widget: prepareContentForDrawEvent=" + _siteIndex );
-            ( _contentUnderPreparation as EvccVerticalBlock).prepareDrawByTasks( _ca.x, _ca.y );
-        } catch ( ex ) {
-            EvccHelperBase.debugException( ex );
-            _exception = ex;
-        }
+        EvccHelperBase.debug("Widget: prepareContentForDrawEvent=" + _siteIndex );
+        ( _contentUnderPreparation as EvccVerticalBlock).prepareDrawByTasks( _ca.x, _ca.y );
+        //throw new InvalidOptionsException( "Test" );
     }
     (:exclForViewPreRenderingDisabled) function requestUpdateEvent() as Void {
-        try {
-            EvccHelperBase.debug("Widget: requestUpdateEvent=" + _siteIndex );
-            _content = _contentUnderPreparation;
-            _contentUnderPreparation = null;
+        EvccHelperBase.debug("Widget: requestUpdateEvent=" + _siteIndex );
+        _content = _contentUnderPreparation;
+        _contentUnderPreparation = null;
 
-            if( _isActiveView == true ) {
-                EvccHelperBase.debug("Widget: requestUpdate for site=" + _siteIndex );
-                WatchUi.requestUpdate();
-            }
-        } catch ( ex ) {
-            EvccHelperBase.debugException( ex );
-            _exception = ex;
+        if( _isActiveView == true ) {
+            EvccHelperBase.debug("Widget: requestUpdate for site=" + _siteIndex );
+            WatchUi.requestUpdate();
         }
     }
+
+    (:exclForViewPreRenderingDisabled) private var _alreadyHasRealContent as Boolean = false;
+
     (:exclForViewPreRenderingDisabled) public function onWebResponse() as Void {
-        var eventQueue = EvccTaskQueue.getInstance();
-        eventQueue.add( method( :prepareShellEvent ) );
-        eventQueue.add( method( :prepareContentEvent ) );
-        eventQueue.add( method( :prepareContentForDrawEvent ) );
-        eventQueue.add( method( :requestUpdateEvent ) );
+        EvccHelperBase.debug("Widget: onWebResponse for site=" + _siteIndex );
+        if( _isActiveView && ! _alreadyHasRealContent ) {
+            EvccHelperBase.debug("Widget: immediate preparation for site=" + _siteIndex );
+            var dcStub = new EvccDcStub();
+            prepareShell( dcStub );
+            _content = prepareContent( new EvccDcStub() );
+            _content.prepareDraw( _ca.x, _ca.y );
+            WatchUi.requestUpdate();
+        } else {
+            EvccHelperBase.debug("Widget: task queue preparation for site=" + _siteIndex );
+            var eventQueue = EvccTaskQueue.getInstance();
+            eventQueue.add( method( :prepareShellEvent ) );
+            eventQueue.add( method( :prepareContentEvent ) );
+            eventQueue.add( method( :prepareContentForDrawEvent ) );
+            eventQueue.add( method( :requestUpdateEvent ) );
+        }
     }
 
 
@@ -184,11 +178,7 @@ class EvccContentArea {
             EvccHelperBase.debug("Widget: onUpdate for site=" + _siteIndex );
             dc.clear();
 
-            if( _exception != null ) {
-                var ex = _exception;
-                _exception = null;
-                throw ex;
-            }
+            EvccTaskQueue.getInstance().checkForException();
 
             if( _header == null || _logo == null ) {
                 prepareShell( dc );
@@ -432,6 +422,7 @@ class EvccContentArea {
             if( stateRequest.hasError() ) {
                 throw new StateRequestException( stateRequest.getErrorMessage(), stateRequest.getErrorCode() );
             } else { 
+                _alreadyHasRealContent = true;
                 // The actual content comes from implementations of this class
                 addContent( content, calcDc );
             }

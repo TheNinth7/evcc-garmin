@@ -1,7 +1,6 @@
 import Toybox.Lang;
 
 // In widget mode, this registry singleton centrally manages all EvccStateRequest instances
-
 // This implementation is for devices with multiple sites and pre-rendering of views.
 // In this case the EvccStateRequest instances for all sites are kept in memory and active.
 

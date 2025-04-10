@@ -158,7 +158,7 @@ import Toybox.PersistedContent;
         _callbacks.add( callback );
     }
     (:exclForWebResponseCallbacksDisabled :typecheck(disableBackgroundCheck)) 
-    private function invokeCallbacks() as Void {
+    public function invokeCallbacks() as Void {
         if( _callbacks.size() == 0 ) {
             // If not callbacks are registered, we request a screen update from WatchUi
             // Note that the background task has to register a callback, otherwise

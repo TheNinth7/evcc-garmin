@@ -58,3 +58,20 @@ import Toybox.Lang;
         return errorMsg;
     }
 }
+
+(:exclForViewPreRenderingDisabled)
+class TaskQueueException extends Exception {
+    private var _ex as Exception;
+    function initialize( ex as Exception ) {
+        Exception.initialize();
+        _ex = ex;
+    }
+    public function getErrorMessage() as String? { 
+        var msg = _ex.getErrorMessage();
+        msg = "TaskQueue: " + ( msg == null ? "Unknown Exception" : msg );
+        return msg;
+    }
+    public function printStackTrace() as Void {
+        _ex.printStackTrace();
+    }
+}
