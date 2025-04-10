@@ -56,7 +56,7 @@ import Toybox.Application.Storage;
             // Check the storage for error messages
             if( errorMsg != null && ! errorMsg.equals( "" ) ) {
                 var errorCode = Storage.getValue( EvccConstants.STORAGE_BG_ERROR_CODE ) as String;
-                throw new StateRequestException( errorCode, errorMsg );
+                throw new StateRequestException( errorMsg, errorCode );
             }
 
             dc.setColor( EvccColors.FOREGROUND, Graphics.COLOR_TRANSPARENT );

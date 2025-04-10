@@ -430,7 +430,7 @@ class EvccContentArea {
             _ca.y = calcDc.getHeight() / 2;
         } else { 
             if( stateRequest.hasError() ) {
-                throw new StateRequestException( stateRequest.getErrorCode(), stateRequest.getErrorMessage() );
+                throw new StateRequestException( stateRequest.getErrorMessage(), stateRequest.getErrorCode() );
             } else { 
                 // The actual content comes from implementations of this class
                 addContent( content, calcDc );

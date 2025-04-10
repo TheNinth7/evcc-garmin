@@ -84,16 +84,8 @@ import Toybox.Application;
         dc.setColor( EvccColors.ERROR, backgroundColor );
         dc.clear();
 
-        if( ex instanceof NoSiteException ) {
-            errorMsg = "No site, please\ncheck app settings";
-        } else if ( ex instanceof NoPasswordException ) {
-            errorMsg = "Password for site " + ex.getSite() + " is missing"; 
-        } else if ( ex instanceof StateRequestException ) {
-            errorMsg = ex.getErrorMessage();
-            var errorCode = ex.getErrorCode();
-            if( errorCode != null && ! errorCode.toString().equals( "" ) ) {
-                errorMsg += "\n" + errorCode;
-            }
+        if( ex instanceof EvccBaseException ) {
+            errorMsg = ex.getScreenMessage();
         } else {
             // For unknown errors we show the evcc version, to help supporting
             // users on the forum. Also unknown errors are displayed in a text

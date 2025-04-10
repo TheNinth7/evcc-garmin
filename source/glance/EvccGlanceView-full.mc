@@ -41,7 +41,7 @@ import Toybox.Application.Properties;
                 line.addText( "Loading ...", {} as DbOptions );
             } else { 
                 if( _stateRequest.hasError() ) {
-                    throw new StateRequestException( _stateRequest.getErrorCode(), _stateRequest.getErrorMessage() );
+                    throw new StateRequestException( _stateRequest.getErrorMessage(), _stateRequest.getErrorCode() );
                 } else { 
                     var state=_stateRequest.getState();
                     if( state.hasBattery() ) {
