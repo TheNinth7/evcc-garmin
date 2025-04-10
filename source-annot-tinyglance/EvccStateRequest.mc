@@ -28,7 +28,7 @@ import Toybox.PersistedContent;
     // True once data (state or error) is available
     // It is set to true if either data from storage that is within the
     // expiry time has been loaded, or a web response has been received
-    public function hasLoaded() as Boolean { return _hasLoaded; }
+    public function hasCurrentState() as Boolean { return _hasLoaded; }
     
     // Accessor for error case
     public function hasError() as Boolean { return _error; }

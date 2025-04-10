@@ -13,10 +13,12 @@ public class EvccMultiStateRequestsTimer {
         _stateRequests = stateRequests;
         EvccHelperBase.debug( "EvccMultiStateRequestsTimer: initiating state request for site " + _stateRequests[0].getSiteIndex() );
         var stateRequest = _stateRequests[0];
+        // We load the initial state of the first state request
         stateRequest.loadInitialState();
-        if( stateRequest.hasLoaded() ) {
-            stateRequest.invokeFirstCallback();
-            EvccTaskQueue.getInstance().addToFront( new Method( stateRequest, :invokeFurtherCallbacks ) );
+        if( stateRequest.hasCurrentState() ) {
+            // If current data is available in storage, trigger the callbacks
+            // The first callback is the initial view, so we do not need to invoke its callback
+            EvccTaskQueue.getInstance().addToFront( stateRequest.method( :invokeAllCallbacksButFirst ) );
         }
         if( _stateRequests.size() > 1 ) {
             EvccHelperBase.debug( "EvccMultiStateRequestsTimer: starting delayed initiation" );
@@ -30,8 +32,10 @@ public class EvccMultiStateRequestsTimer {
     public function initiateStateRequests() as Void {
         EvccHelperBase.debug( "EvccMultiStateRequestsTimer: initiating state request for site " + _stateRequests[_i].getSiteIndex() );
         var stateRequest = _stateRequests[_i];
+        // We load the initial state of the first state request
         stateRequest.loadInitialState();
-        if( stateRequest.hasLoaded() ) {
+        if( stateRequest.hasCurrentState() ) {
+            // If current data is available in storage, trigger the callbacks
             stateRequest.invokeCallbacks();
         }
         _i++;

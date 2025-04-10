@@ -37,7 +37,7 @@ import Toybox.Application.Properties;
 
             var spacing = dc.getTextDimensions( " ", Graphics.FONT_GLANCE )[0];
 
-            if( ! _stateRequest.hasLoaded() ) {
+            if( ! _stateRequest.hasCurrentState() ) {
                 line.addText( "Loading ...", {} as DbOptions );
             } else { 
                 if( _stateRequest.hasError() ) {
