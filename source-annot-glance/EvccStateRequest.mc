@@ -55,7 +55,7 @@ import Toybox.PersistedContent;
     // Loads the initial state from storage
     // If none is available or it is outdated, makes an immediate web request
     public function loadInitialState() as Void {
-        EvccHelperBase.debug("StateRequest: loadInitialState site=" + _siteIndex );
+        // EvccHelperBase.debug("StateRequest: loadInitialState site=" + _siteIndex );
 
         // Only when this state request is started we load the state data
         // We cannot load the state in initialize, because on some devices,
@@ -85,7 +85,7 @@ import Toybox.PersistedContent;
 
     // Make the web request
     public function makeRequest() as Void {
-        EvccHelperBase.debug("StateRequest: makeRequest site=" + _siteIndex );
+        //EvccHelperBase.debug("StateRequest: makeRequest site=" + _siteIndex );
         var siteConfig = new EvccSite( _siteIndex );
 
         var url = siteConfig.getUrl() + "/api/state";
@@ -113,13 +113,14 @@ import Toybox.PersistedContent;
         }
 
         Communications.makeWebRequest( url, parameters, options, method(:onReceive) );
+        //EvccHelperBase.debug("StateRequest: makeRequest done" );
     }
 
     // Receive the data from the web request
     // Note: need to disable background check because of the call to WatchUi
     (:typecheck(disableBackgroundCheck))
     function onReceive( responseCode as Number, data as Dictionary<String,Object?> or String or PersistedContent.Iterator or Null ) as Void {
-        EvccHelperBase.debug("StateRequest: onReceive site=" + _siteIndex );
+        //EvccHelperBase.debug("StateRequest: onReceive site=" + _siteIndex );
         _hasCurrentState = true;
         _error = false; _errorMessage = ""; _errorCode = "";
         
@@ -146,6 +147,7 @@ import Toybox.PersistedContent;
         
         // Trigger the callback logic, see below
         invokeCallbacks();
+        //EvccHelperBase.debug("StateRequest: onReceive done" );
     }
 
     // If callbacks are enabled, other classes can register

@@ -9,6 +9,7 @@ class EvccPrepareDrawTask {
         _element = element; _x = x; _y = y;
     }
     public function invoke() as Void {
+        EvccHelperBase.debug( "EvccPrepareDrawTask: executing prepareDraw" );
         _element.prepareDraw( _x, _y );
     }
 }

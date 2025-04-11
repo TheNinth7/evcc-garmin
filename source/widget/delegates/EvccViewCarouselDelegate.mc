@@ -114,7 +114,7 @@ class EvccViewCarouselDelegateBase extends EvccViewSimpleDelegate {
     // When the select action is triggered, we open the active sub view
     public function onSelect() as Boolean {
         try {
-            EvccHelperBase.debug("ViewCarouselDelegate: onSelect");
+            //EvccHelperBase.debug("ViewCarouselDelegate: onSelect");
 
             // For devices that do not have glances, this view
             // acts as glance, displaying only the selected site
@@ -158,7 +158,7 @@ class EvccViewCarouselDelegateBase extends EvccViewSimpleDelegate {
     // i.e. the last view goes to the first and vice versa.
     public function onNextPage() as Boolean {
         try {
-            // EvccHelperBase.debug("ViewCarouselDelegate: onNextPage");
+            //EvccHelperBase.debug("ViewCarouselDelegate: onNextPage");
             var activeView = _breadCrumb.getSelectedChild( _views.size() );
             activeView = activeView == _views.size() - 1 ? 0 : activeView + 1;
             WatchUi.switchToView( _views[activeView], self, WatchUi.SLIDE_UP );
@@ -171,7 +171,7 @@ class EvccViewCarouselDelegateBase extends EvccViewSimpleDelegate {
     }
     public function onPreviousPage() as Boolean {
         try {
-            // EvccHelperBase.debug("ViewCarouselDelegate: onPreviousPage");
+            //EvccHelperBase.debug("ViewCarouselDelegate: onPreviousPage");
             var activeView = _breadCrumb.getSelectedChild( _views.size() );
             activeView = activeView == 0 ? _views.size() - 1 : activeView - 1;
             WatchUi.switchToView( _views[activeView], self, WatchUi.SLIDE_DOWN );

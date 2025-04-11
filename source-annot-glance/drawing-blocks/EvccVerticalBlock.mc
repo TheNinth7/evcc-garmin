@@ -77,6 +77,7 @@ import Toybox.WatchUi;
     (:exclForViewPreRenderingDisabled :typecheck(disableGlanceCheck))
     private function prepareDrawOfElement( element as EvccBlock, x as Number, y as Number, byTasks as Boolean ) as Void {
         if( byTasks ) {
+            // EvccHelperBase.debug("VerticalBlock: adding prepareDraw for element" );
             EvccTaskQueue.getInstance().addToFront( new EvccPrepareDrawTask( element, x, y ) );
         } else {
             element.prepareDraw( x, y );
@@ -112,7 +113,7 @@ import Toybox.WatchUi;
     
     (:exclForViewPreRenderingDisabled :typecheck(disableGlanceCheck))
     public function drawElementEvent() as Void {
-        EvccHelperBase.debug("EvccVerticalBlock: prepareDraw of element=" + _calcIndex );
+        //EvccHelperBase.debug("EvccVerticalBlock: prepareDraw of element=" + _calcIndex );
         _calcY += _elements[_calcIndex].getHeight() / 2;
         
         // Depending on the alignment of the element, we

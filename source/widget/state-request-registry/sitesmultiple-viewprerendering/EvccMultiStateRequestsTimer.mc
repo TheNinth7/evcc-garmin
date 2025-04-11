@@ -9,28 +9,29 @@ public class EvccMultiStateRequestsTimer {
     private var _timer as Timer.Timer = new Timer.Timer();
     
     public function initialize( stateRequests as Array<EvccStateRequest> ) {
-        EvccHelperBase.debug( "EvccMultiStateRequestsTimer: initializing with " + stateRequests.size() + " state requests" );
+        // EvccHelperBase.debug( "EvccMultiStateRequestsTimer: initializing with " + stateRequests.size() + " state requests" );
         _stateRequests = stateRequests;
-        EvccHelperBase.debug( "EvccMultiStateRequestsTimer: initiating state request for site " + _stateRequests[0].getSiteIndex() );
+        // EvccHelperBase.debug( "EvccMultiStateRequestsTimer: initiating state request for site " + _stateRequests[0].getSiteIndex() );
         var stateRequest = _stateRequests[0];
         // We load the initial state of the first state request
         stateRequest.loadInitialState();
         if( stateRequest.hasCurrentState() ) {
             // If current data is available in storage, trigger the callbacks
             // The first callback is the initial view, so we do not need to invoke its callback
+            // EvccHelperBase.debug("MultiStateRequestsTimer: adding invokeAllCallbacksButFirst" );
             EvccTaskQueue.getInstance().addToFront( stateRequest.method( :invokeAllCallbacksButFirst ) );
         }
         if( _stateRequests.size() > 1 ) {
-            EvccHelperBase.debug( "EvccMultiStateRequestsTimer: starting delayed initiation" );
+            // EvccHelperBase.debug( "EvccMultiStateRequestsTimer: starting delayed initiation" );
             _i++;
             _timer.start( method( :initiateStateRequests ), 1000, true );
         } else {
-            startRequestTimer();
+            addStartRequestTimerToTaskQueue();
         }
     }
 
     public function initiateStateRequests() as Void {
-        EvccHelperBase.debug( "EvccMultiStateRequestsTimer: initiating state request for site " + _stateRequests[_i].getSiteIndex() );
+        //EvccHelperBase.debug( "MultiStateRequestsTimer: initiating state request for site " + _stateRequests[_i].getSiteIndex() );
         var stateRequest = _stateRequests[_i];
         // We load the initial state of the first state request
         stateRequest.loadInitialState();
@@ -42,19 +43,26 @@ public class EvccMultiStateRequestsTimer {
         if( _i == _stateRequests.size() ) {
             _i = 0;
             _timer.stop();
-            startRequestTimer();
+            addStartRequestTimerToTaskQueue();
         }
     }
 
+    public function addStartRequestTimerToTaskQueue() as Void {
+        EvccTaskQueue.getInstance().addWhenAllTasksDone( method( :startRequestTimer ) );
+    }
+    
     public function startRequestTimer() as Void {
+        //EvccHelperBase.debug( "MultiStateRequestsTimer: startRequestTimer" );
         var refreshInterval = Properties.getValue( EvccConstants.PROPERTY_REFRESH_INTERVAL ) as Number;
         var timerInterval = ( refreshInterval / _stateRequests.size() ).toNumber();
         _timer.start( method( :makeRequest ), timerInterval * 1000, true );
     }
 
     public function makeRequest() as Void {
+        //EvccHelperBase.debug( "MultiStateRequestsTimer: makeRequest for site=" + _stateRequests[_i].getSiteIndex() );
         _stateRequests[_i].makeRequest();       
         _i++; if( _i == _stateRequests.size() ) { _i = 0; }
+        //EvccHelperBase.debug( "MultiStateRequestsTimer: makeRequest done" );
     }
     public function stopRequestTimer() as Void {
         _timer.stop();

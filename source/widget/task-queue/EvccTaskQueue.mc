@@ -42,7 +42,7 @@ class EvccTaskQueue {
 
     // Starts the timmer for executing tasks
     private function startTimer() as Void {
-        _timer.start( method( :executeTask ), 100, false );
+        _timer.start( method( :executeTask ), 50, false );
     }
 
     // Add a task
@@ -53,8 +53,10 @@ class EvccTaskQueue {
             _tasks.add( task );
             // If there were no tasks in the queue, start the timer
             if( _tasks.size() == 1 ) {
+                //EvccHelperBase.debug( "TaskQueue: Starting timer" );
                 startTimer();
             }
+            //EvccHelperBase.debug( "TaskQueue: add " + _tasks.size() );
         }
     }
 
@@ -69,22 +71,38 @@ class EvccTaskQueue {
             if( _tasks.size() > 0 ) {
                 tasks.addAll( _tasks );
             } else {
+                //EvccHelperBase.debug( "TaskQueue: Starting timer" );
                 startTimer();
             }
             _tasks = tasks;
+            //EvccHelperBase.debug( "TaskQueue: addToFront 1/" + _tasks.size() );
         }
     }
+
+    private var _waitingList as Array<EvccTask> = new Array<EvccTask>[0];
+    public function addWhenAllTasksDone( task as EvccTask ) as Void {
+        _waitingList.add( task );
+    }
+
 
     // Executes the task next in the queue and then
     // if there are remaining tasks, start the timer again
     public function executeTask() as Void {
         try {
+            //EvccHelperBase.debug( "TaskQueue: Executing task 1/" + _tasks.size() + " ..." );
             var task = _tasks[0];
             task.invoke();
             _tasks.remove( task );
             if( _tasks.size() > 0 ) {
+                //EvccHelperBase.debug( "TaskQueue: Starting timer" );
+                startTimer();
+            } else if( _waitingList.size() > 0 ) {
+                //EvccHelperBase.debug( "TaskQueue: Adding tasks from waiting list" );
+                _tasks = _waitingList;
+                _waitingList = new Array<EvccTask>[0];
                 startTimer();
             }
+            //EvccHelperBase.debug( "TaskQueue: ... done" );
         } catch ( ex ) {
             _exception = new TaskQueueException( ex );
             EvccHelperBase.debugException( ex );

@@ -93,7 +93,7 @@ import Toybox.WatchUi;
         } else {
             // If no more parent is present, we apply the following default behavior
             if( option == :dc ) { 
-                if( $ has :EvccDcStub ) { return new EvccDcStub(); } 
+                if( $ has :EvccDcStub ) { return EvccDcStub.getInstance(); } 
                 else { throw new InvalidValueException( ":dc not set!" ); }
             }
             if( option == :font ) { throw new InvalidValueException( ":font not set!"); }

@@ -57,7 +57,7 @@ import Toybox.Math;
     // data may lead to additional views being displayed. Therefore, this function has to protect 
     // itself from adding the same view twice.
     public function addDetailViews() as Void {
-        EvccHelperBase.debug("WidgetSiteMain: addDetailViews" );
+        // EvccHelperBase.debug("WidgetSiteMain: addDetailViews" );
         if( ! _hasForecast ) {
             var stateRequest = getStateRequest();
             // Note that we DO NOT check fore staterq.hasCurrentState(). In this instance we are not interested
@@ -119,27 +119,26 @@ import Toybox.Math;
     }
 
     // If view prerendering is enabled, we have to do this earlier,
-    // when onWebResponse is called, so that the further prerendering
+    // when onStateChange is called, so that the further prerendering
     // of the page and select indicator is already is based on the adapted 
     // detail views.
-    (:exclForViewPreRenderingDisabled)
-    public function onWebResponse() as Void {
-        EvccHelperBase.debug("WidgetSiteMain: onWebResponse" );
-        // As with everything else happening in the prerendering, we add this
-        // as a dedicated task in the task queue
-        if( immediatePrepare() ) {
-            addDetailViews();
-        } else {
-            EvccTaskQueue.getInstance().add( method( :addDetailViews ) );
-        }
-        EvccWidgetSiteBaseView.onWebResponse();
+    (:exclForViewPreRenderingDisabled) function prepareImmediately() as Void {
+        EvccHelperBase.debug( "WidgetSiteMain: prepareImmediately site=" + getSiteIndex() );
+        addDetailViews();
+        EvccWidgetSiteBaseView.prepareImmediately();
     }
+    (:exclForViewPreRenderingDisabled) function prepareByTasks() as Void {
+        EvccHelperBase.debug("WidgetSiteMain: prepareByTasks site=" + getSiteIndex() );
+        EvccTaskQueue.getInstance().add( method( :addDetailViews ) );
+        EvccWidgetSiteBaseView.prepareByTasks();
+    }
+
 
     private const SMALL_LINE as Float = 0.6; // site title, charging details and logo count only as the fraction of a line specified here
     private const MAX_VAR_LINES as Number = 6; // 1 x site title, 1 x battery, 2 x loadpoints with 2 lines each
 
     // Generate the content
-    function addContent( block as EvccVerticalBlock, calcDc as EvccDcInterface ) {
+    public function addContent( block as EvccVerticalBlock, calcDc as EvccDcInterface ) {
         var state = getStateRequest().getState();
         var variableLineCount = 0;
 
