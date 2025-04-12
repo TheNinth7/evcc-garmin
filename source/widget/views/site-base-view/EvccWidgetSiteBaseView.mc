@@ -132,7 +132,11 @@ class EvccWidgetSiteBaseView extends WatchUi.View {
     // Functions for devices with pre-rendering of views
 
     (:exclForViewPreRenderingDisabled) private var _isActiveView as Boolean = false;
-    (:exclForViewPreRenderingDisabled) function onShow() as Void { _isActiveView = true; }
+    (:exclForViewPreRenderingDisabled) 
+    function onShow() as Void { 
+        _isActiveView = true; 
+        EvccStateRequestRegistry.setActiveSite( _siteIndex );
+    }
     (:exclForViewPreRenderingDisabled) function onHide() as Void { _isActiveView = false; }
 
     (:exclForViewPreRenderingDisabled) private var _content as EvccSiteContentPreRenderer;
