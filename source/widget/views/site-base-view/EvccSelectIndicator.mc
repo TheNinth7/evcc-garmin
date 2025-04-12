@@ -33,8 +33,8 @@ import Toybox.Lang;
         var lineWidth = dc.getWidth() * SELECT_LINE_WIDTH_FACTOR;
         dc.setPenWidth( lineWidth );
         
-        dc.drawArc( WatchUi.LAYOUT_HALIGN_CENTER, 
-                    WatchUi.LAYOUT_VALIGN_CENTER, 
+        dc.drawArc( dc.getWidth() / 2, 
+                    dc.getHeight() / 2, 
                     dc.getWidth() * SELECT_RADIUS_FACTOR,
                     Graphics.ARC_COUNTER_CLOCKWISE,
                     SELECT_CENTER_ANGLE - SELECT_LENGTH / 2,
