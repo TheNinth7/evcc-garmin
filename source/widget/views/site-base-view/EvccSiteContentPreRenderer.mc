@@ -11,16 +11,16 @@ class EvccSiteContentPreRenderer extends EvccSiteContent {
 
     // Each step needs its own function
     public function assembleTask() as Void {
-        EvccHelperBase.debug( "EvccSiteContentPreRenderer: assembleTask" );
+        // EvccHelperBase.debug( "EvccSiteContentPreRenderer: assembleTask" );
         _contentUnderPreparation = assembleInternal( EvccDcStub.getInstance() );
     }
     public function prepareTask() as Void {
-        EvccHelperBase.debug( "EvccSiteContentPreRenderer: prepareTask" );
+        // EvccHelperBase.debug( "EvccSiteContentPreRenderer: prepareTask" );
         var ca = _view.getContentArea();
         ( _contentUnderPreparation as EvccVerticalBlock).prepareDrawByTasks( ca.x, ca.y );
     }
     public function finalizeTask() as Void {
-        EvccHelperBase.debug( "EvccSiteContentPreRenderer: finalizeTask" );
+        // EvccHelperBase.debug( "EvccSiteContentPreRenderer: finalizeTask" );
         _content = _contentUnderPreparation;
         _contentUnderPreparation = null;
     }

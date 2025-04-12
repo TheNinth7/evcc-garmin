@@ -10,7 +10,7 @@ import Toybox.Lang;
 
     // Sets the active site (information is only passed on to the handler, not needed in this class)
     public static function setActiveSite( activeSite as Number ) as Void { 
-        EvccHelperBase.debug( "EvccStateRequestRegistry: setting activeSite=" + activeSite );
+        // EvccHelperBase.debug( "EvccStateRequestRegistry: setting activeSite=" + activeSite );
         ( _stateRequestTimer as EvccMultiStateRequestsHandler ).setActiveSite( activeSite );
     }
 

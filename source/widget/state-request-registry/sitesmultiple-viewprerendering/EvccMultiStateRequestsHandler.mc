@@ -38,7 +38,7 @@ public class EvccMultiStateRequestsHandler {
             EvccTaskQueue.getInstance().addToFront( stateRequest.method( :invokeAllCallbacksButFirst ) );
         }
         if( _stateRequests.size() > 1 ) {
-            EvccHelperBase.debug( "EvccMultiStateRequestsHandler: starting delayed initiation" );
+            // EvccHelperBase.debug( "EvccMultiStateRequestsHandler: starting delayed initiation" );
             _timer.start( method( :loadInitialStates ), 1000, true );
         } else {
             startRequestTimer();
@@ -53,7 +53,7 @@ public class EvccMultiStateRequestsHandler {
     // site and use this one. In other words, if another site becomes active while thie loading procedure
     // is still going on, the loading process is not affected.
     public function loadInitialStates() as Void {
-        EvccHelperBase.debug( "MultiStateRequestsTimer: initiating state request for site " + _stateRequests[_i].getSiteIndex() );
+        // EvccHelperBase.debug( "MultiStateRequestsTimer: initiating state request for site " + _stateRequests[_i].getSiteIndex() );
         
         // We skip the initially active site, which was already loaded during startup
         if( _i == _initialActiveSite ) { _i++; }
@@ -83,8 +83,8 @@ public class EvccMultiStateRequestsHandler {
     
     // Start the timer that makes regular web requests
     public function startRequestTimer() as Void {
-        EvccHelperBase.debug( "MultiStateRequestsTimer: all sites initiated (pre-rendering may still be in progress)" );
-        EvccHelperBase.debug( "MultiStateRequestsTimer: startRequestTimer" );
+        // EvccHelperBase.debug( "MultiStateRequestsTimer: all sites initiated (pre-rendering may still be in progress)" );
+        // EvccHelperBase.debug( "MultiStateRequestsTimer: startRequestTimer" );
         // We set the timer interval at half the configured interval
         var refreshInterval = Properties.getValue( EvccConstants.PROPERTY_REFRESH_INTERVAL ) as Number;
         var timerInterval = ( refreshInterval / 2 ).toNumber();
@@ -99,7 +99,7 @@ public class EvccMultiStateRequestsHandler {
         if( EvccTaskQueue.getInstance().isEmpty() ) {
             if( _isActiveSitesTurn ) {
                 // If it is the active site's turn, we make that request
-                EvccHelperBase.debug( "MultiStateRequestsTimer: makeRequest for active site=" + _activeSite );
+                // EvccHelperBase.debug( "MultiStateRequestsTimer: makeRequest for active site=" + _activeSite );
                 _stateRequests[_activeSite].makeRequest();
             } else {
                 // Otherwise we make a request to the next inactive site
@@ -107,7 +107,7 @@ public class EvccMultiStateRequestsHandler {
                 if( _i == _activeSite ) { _i++; }
                 // And reset the counter if we reached the end
                 if( _i == _stateRequests.size() ) { _i = 0; }
-                EvccHelperBase.debug( "MultiStateRequestsTimer: makeRequest for inactive site=" + _i );
+                // EvccHelperBase.debug( "MultiStateRequestsTimer: makeRequest for inactive site=" + _i );
                 _stateRequests[_i].makeRequest();
                 _i++;
             }

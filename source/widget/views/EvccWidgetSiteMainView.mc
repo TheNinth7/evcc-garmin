@@ -123,12 +123,12 @@ import Toybox.Math;
     // of the page and select indicator is already is based on the adapted 
     // detail views.
     (:exclForViewPreRenderingDisabled) function prepareImmediately() as Void {
-        EvccHelperBase.debug( "WidgetSiteMain: prepareImmediately site=" + getSiteIndex() );
+        // EvccHelperBase.debug( "WidgetSiteMain: prepareImmediately site=" + getSiteIndex() );
         addDetailViews();
         EvccWidgetSiteBaseView.prepareImmediately();
     }
     (:exclForViewPreRenderingDisabled) function prepareByTasks() as Void {
-        EvccHelperBase.debug("WidgetSiteMain: prepareByTasks site=" + getSiteIndex() );
+        // EvccHelperBase.debug("WidgetSiteMain: prepareByTasks site=" + getSiteIndex() );
         EvccTaskQueue.getInstance().add( method( :addDetailViews ) );
         EvccWidgetSiteBaseView.prepareByTasks();
     }

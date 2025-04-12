@@ -178,7 +178,7 @@ class EvccWidgetSiteBaseView extends WatchUi.View {
     // It is called initially when a current state is loaded from storage,
     // and after that whenever a new web response is received
     (:exclForViewPreRenderingDisabled) public function onStateChange() as Void {
-        EvccHelperBase.debug( "WidgetSiteBase: onStateChange " + getType() + " site=" + _siteIndex );
+        // EvccHelperBase.debug( "WidgetSiteBase: onStateChange " + getType() + " site=" + _siteIndex );
         if( _isActiveView && ! _content.alreadyHasRealContent() ) {
             // In the case that we are active and have not received 
             // any "real" content yet (in other words: are showing "Loading..."),
@@ -193,7 +193,7 @@ class EvccWidgetSiteBaseView extends WatchUi.View {
     }
     // Prepare shell and content without task qeueu
     (:exclForViewPreRenderingDisabled) function prepareImmediately() as Void {
-        EvccHelperBase.debug("WidgetSiteBase: prepareImmediately " + getType() + " site=" + _siteIndex );
+        // EvccHelperBase.debug("WidgetSiteBase: prepareImmediately " + getType() + " site=" + _siteIndex );
         var dcStub = EvccDcStub.getInstance();
         _shell.prepare( dcStub );
         _content.assemble( dcStub );
@@ -204,7 +204,7 @@ class EvccWidgetSiteBaseView extends WatchUi.View {
     }
     // Prepare shell and content via the task queue    
     (:exclForViewPreRenderingDisabled) function prepareByTasks() as Void {
-        EvccHelperBase.debug("WidgetSiteBase: prepareByTasks " + getType() + " site=" + _siteIndex );
+        // EvccHelperBase.debug("WidgetSiteBase: prepareByTasks " + getType() + " site=" + _siteIndex );
         _shell.queueTasks();
         _content.queueTasks();
         // Only if we are the active view, we request an update of the screen
@@ -220,7 +220,7 @@ class EvccWidgetSiteBaseView extends WatchUi.View {
     // Update the screen
     (:exclForViewPreRenderingDisabled) function onUpdate( dc as Dc ) as Void {
         try {
-            EvccHelperBase.debug("WidgetSiteBase: onUpdate " + getType() + " site=" + _siteIndex );
+            // EvccHelperBase.debug("WidgetSiteBase: onUpdate " + getType() + " site=" + _siteIndex );
             dc.clear();
             EvccTaskQueue.getInstance().checkForException();
             _shell.drawHeaderAndLogo( dc, false ); // false to keep the header/logo in memory
