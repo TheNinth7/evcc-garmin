@@ -53,8 +53,10 @@ fontsStaticOptimized = exclForFontsStaticOptimized
 calcComplex = exclForCalcComplex
 calcSimple = exclForCalcSimple
 
-# For low-memory devices, the system info may be excluded. Issue is here not the
-# runtime memory the execution of the system info takes, but the code memory space it occupies.
+# For low-memory devices, some functionality may be excluded, to reduce the footprint
+# of the code base in memory. Excluded are:
+# - System info view
+# - Advanced debug statements
 memoryLow = exclForMemoryLow
 memoryStandard = exclForMemoryStandard
 
