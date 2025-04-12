@@ -48,13 +48,13 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
                 addForecast( block, energy, scale );
 
                 if( applyScale ) {
-                    block.addText( "adj. w\\ real data", { :relativeFont => 4, :marginTop => dcHeight * 0.007 } );
+                    block.addTextWithOptions( "adj. w\\ real data", { :relativeFont => 4, :marginTop => dcHeight * 0.007 } );
                 }
 
             }
         } else {
-            block.addText( "Site has no forecast!", {} as DbOptions );
-            block.addText( "Restart app to remove view", { :relativeFont => 4, :marginTop => dcHeight * 0.007 } );
+            block.addText( "Site has no forecast!" );
+            block.addTextWithOptions( "Restart app to remove view", { :relativeFont => 4, :marginTop => dcHeight * 0.007 } );
         }
 
         // Add a small margin to the bottom. While the content is centered vertically between title and logo,
@@ -75,14 +75,14 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
         var column2 = new EvccVerticalBlock( {} as DbOptions );
 
         for( var i = 0; i < energy.size(); i++ ) {
-            column1.addText( _label[i] + ": ", {:justify => Graphics.TEXT_JUSTIFY_RIGHT} );
+            column1.addTextWithOptions( _label[i] + ": ", {:justify => Graphics.TEXT_JUSTIFY_RIGHT} );
             var value = new EvccHorizontalBlock( {:justify => Graphics.TEXT_JUSTIFY_RIGHT} );
-            value.addText( formatEnergy( energy[i] * scale ), {} as DbOptions );
+            value.addText( formatEnergy( energy[i] * scale ) );
             column2.addBlock( value );
             var unit = new EvccHorizontalBlock( {:justify => Graphics.TEXT_JUSTIFY_LEFT} );
-            unit.addText( " kWh", {} as DbOptions );
+            unit.addText( " kWh" );
             if( _indicator[i] != null ) {
-                unit.addText( " " + _indicator[i], { :relativeFont => 4, :vjustifyTextToBottom => true } );
+                unit.addTextWithOptions( " " + _indicator[i], { :relativeFont => 4, :vjustifyTextToBottom => true } );
             }
             column3.addBlock( unit );
         }
@@ -100,9 +100,9 @@ class EvccWidgetSiteForecastView extends EvccWidgetSiteBaseView {
     (:exclForCalcComplex) function addForecast( block as EvccVerticalBlock, energy as Array<Float>, scale as Float ) as Void {
         for( var i = 0; i < energy.size(); i++ ) {
             var line = new EvccHorizontalBlock( { :justify => Graphics.TEXT_JUSTIFY_LEFT } );
-            line.addText( _label[i] + ": " + formatEnergy( energy[i] * scale ) + "kWh", {} as DbOptions );
+            line.addTextWithOptions( _label[i] + ": " + formatEnergy( energy[i] * scale ) + "kWh", {} as DbOptions );
             if( _indicator[i] != null ) {
-                line.addText( " " + _indicator[i], { :relativeFont => 4, :vjustifyTextToBottom => true } );
+                line.addTextWithOptions( " " + _indicator[i], { :relativeFont => 4, :vjustifyTextToBottom => true } );
             }
             block.addBlock( line );
         }

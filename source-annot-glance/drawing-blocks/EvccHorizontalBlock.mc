@@ -84,7 +84,7 @@ import Toybox.WatchUi;
     
     // If text is added to a horizontal element and the previous element
     // is also text, then the text is just appended to the previous element
-    function addText( text as String, options as DbOptions ) {
+    function addTextWithOptions( text as String, options as DbOptions ) {
         // We append the text to an existing element if:
         // - there is a previous element
         // - it is a text element

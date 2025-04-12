@@ -38,7 +38,7 @@ import Toybox.Application.Properties;
             var spacing = dc.getTextDimensions( " ", Graphics.FONT_GLANCE )[0];
 
             if( ! _stateRequest.hasCurrentState() ) {
-                line.addText( "Loading ...", {} as DbOptions );
+                line.addText( "Loading ..." );
             } else { 
                 if( _stateRequest.hasError() ) {
                     throw new StateRequestException( _stateRequest.getErrorMessage(), _stateRequest.getErrorCode() );
@@ -49,7 +49,7 @@ import Toybox.Application.Properties;
                         column.addIcon( EvccIconBlock.ICON_BATTERY, { :batterySoc => state.getBatterySoc() } );
 
                         var batteryState = new EvccHorizontalBlock( { :font => EvccGlanceResourceSet.FONT_GLANCE } );
-                        batteryState.addText( EvccHelperUI.formatSoc( state.getBatterySoc() ), {} as DbOptions );
+                        batteryState.addText( EvccHelperUI.formatSoc( state.getBatterySoc() ) );
                         
                         batteryState.addIcon( EvccIconBlock.ICON_POWER_FLOW, { :power => state.getBatteryPowerRounded() } );
 
@@ -76,12 +76,12 @@ import Toybox.Application.Properties;
                         var vehicle = loadpoint.getVehicle();
                         if( vehicle != null ) {
                             var column = new EvccVerticalBlock( { :font => EvccGlanceResourceSet.FONT_GLANCE, :marginLeft => spacing } );
-                            column.addText( vehicle.getTitle().substring( 0, 8 ) as String, {} as DbOptions );
+                            column.addText( vehicle.getTitle().substring( 0, 8 ) as String );
                             var vehicleState = new EvccHorizontalBlock( { :font => EvccGlanceResourceSet.FONT_GLANCE } );
                             if( vehicle.isGuest() ) {
                                 vehicleState.addBitmap( Rez.Drawables.car_glance, {} as DbOptions );
                             } else {
-                                vehicleState.addText( EvccHelperUI.formatSoc( vehicle.getSoc() ), {} as DbOptions );
+                                vehicleState.addText( EvccHelperUI.formatSoc( vehicle.getSoc() ) );
                             }
                             vehicleState.addIcon( EvccIconBlock.ICON_ACTIVE_PHASES, { :charging => loadpoint.isCharging(), :activePhases => loadpoint.getActivePhases() } );
                             column.addBlock( vehicleState );
@@ -91,7 +91,7 @@ import Toybox.Application.Properties;
                     }
 
                     if( ! hasVehicle ) {
-                        line.addText( "No vehicle", { :marginLeft => spacing } );
+                        line.addTextWithOptions( "No vehicle", { :marginLeft => spacing } );
                     }
                 }
             }

@@ -5,7 +5,7 @@ import Toybox.Lang;
 import Toybox.System;
 
 // Simple view for showing version of the app and some other device settings
-(:exclForSystemInfoNone) class EvccWidgetSystemInfoView extends WatchUi.View {
+(:exclForMemoryLow) class EvccWidgetSystemInfoView extends WatchUi.View {
     private var _spacing as Number = 0;
 
     function initialize() {
@@ -17,15 +17,15 @@ import Toybox.System;
             dc.setColor( EvccColors.FOREGROUND, EvccColors.BACKGROUND );
             dc.clear();
             var block = new EvccVerticalBlock( { :font => EvccWidgetResourceSet.FONT_XTINY } );
-            block.addText( "evccg " + EvccHelperUI.getVersion(), {}  );
+            block.addText( "evccg " + EvccHelperUI.getVersion() );
 
             _spacing = EvccResources.getFontHeight( EvccWidgetResourceSet.FONT_XTINY ) / 2;
 
             var monkeyVersion = Lang.format("$1$.$2$.$3$", System.getDeviceSettings().monkeyVersion );
 
-            block.addText( "monkey v" + monkeyVersion, { :marginTop => _spacing } );
+            block.addTextWithOptions( "monkey v" + monkeyVersion, { :marginTop => _spacing } );
 
-            block.addText( "part # " + System.getDeviceSettings().partNumber, { :marginTop => _spacing } );
+            block.addTextWithOptions( "part # " + System.getDeviceSettings().partNumber, { :marginTop => _spacing } );
 
             // Show font mode and if icons are the correct size
             checkFonts( block, dc );
@@ -44,7 +44,7 @@ import Toybox.System;
     // For full-glance devices we also check the glance icons
     (:debug) function checkFonts( block as EvccVerticalBlock, dc as Dc ) as Void {
         if( ! _debugDone ) { EvccHelperBase.debug( "Icon sizes:" ); }
-        block.addText( "fonts: " + fontMode(), { :marginTop => _spacing } );
+        block.addTextWithOptions( "fonts: " + fontMode(), { :marginTop => _spacing } );
         checkFontsDeviceSpecific( block, dc );
         _debugDone = true;
     }
@@ -112,7 +112,7 @@ import Toybox.System;
             }
             if( ! _debugDone ) { EvccHelperBase.debug( debug ); }
         } 
-        block.addText( prefix + "-" + text, {} as DbOptions );
+        block.addText( prefix + "-" + text );
     }
 
     (:debug :exclForFontsStatic :exclForFontsStaticOptimized) function fontMode() as String { return "vector"; }

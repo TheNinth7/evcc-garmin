@@ -42,7 +42,7 @@ class EvccSiteContent {
         var content = new EvccVerticalBlock( { :dc => calcDc } as DbOptions );
         
         if( ! stateRequest.hasCurrentState() ) {
-            content.addText( "Loading ...", {} as DbOptions );
+            content.addText( "Loading ..." );
             // Always vertically center the Loading message
             _view.getContentArea().y = calcDc.getHeight() / 2;
         } else { 

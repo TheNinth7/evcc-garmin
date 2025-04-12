@@ -3,7 +3,7 @@ import Toybox.WatchUi;
 import Toybox.Application;
 
 // Delegate processing user input for single screen mode (only one site)
-(:exclForSystemInfoNone) class EvccViewSimpleDelegate extends WatchUi.BehaviorDelegate {
+(:exclForMemoryLow) class EvccViewSimpleDelegate extends WatchUi.BehaviorDelegate {
     function initialize() {
         // EvccHelperBase.debug( "EvccViewSimpleDelegate: initialize" );
         BehaviorDelegate.initialize();
@@ -24,7 +24,7 @@ import Toybox.Application;
     }
 }
 
-(:exclForSystemInfo) class EvccViewSimpleDelegate extends WatchUi.BehaviorDelegate {
+(:exclForMemoryStandard) class EvccViewSimpleDelegate extends WatchUi.BehaviorDelegate {
     function initialize() {
         // EvccHelperBase.debug( "EvccViewSimpleDelegate: initialize" );
         BehaviorDelegate.initialize();

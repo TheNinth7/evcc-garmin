@@ -70,13 +70,16 @@ class EvccWidgetSiteBaseView extends WatchUi.View {
     public function addContent( block as EvccVerticalBlock, calcDc as EvccDcInterface ) as Void {}
 
     // Function to allow debug output state the type of view
-    (:debug :exclDebug) private function getType() as String {
+    (:debug :exclForMemoryLow) private function getType() as String {
         if( self instanceof EvccWidgetSiteForecastView ) {
             return "forecast";
         } else if( self instanceof EvccWidgetSiteMainView ) {
             return "main";
         }
         return "unknown";
+    }
+    (:debug :exclForMemoryStandard) private function getType() as String {
+        return "";
     }
 
     // ****************************************************

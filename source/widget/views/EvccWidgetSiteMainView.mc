@@ -174,7 +174,7 @@ import Toybox.Math;
             }
         }
         if( ! hasVehicle ) {
-            block.addText( "No vehicle", {} as DbOptions );
+            block.addText( "No vehicle" );
             variableLineCount++;
         }
 
@@ -199,10 +199,10 @@ import Toybox.Math;
         var line = new EvccHorizontalBlock( lineOptions );
         line.addIcon( icon, iconOptions );
         // For battery we display the SoC as text as well
-        if( icon == EvccIconBlock.ICON_BATTERY ) { line.addText( EvccHelperUI.formatSoc( state.getBatterySoc() ), {} as DbOptions ); }
+        if( icon == EvccIconBlock.ICON_BATTERY ) { line.addText( EvccHelperUI.formatSoc( state.getBatterySoc() ) ); }
 
         if( power != 0 ) {
-            line.addText( " ", {} as DbOptions );
+            line.addText( " " );
             var flowOptions = {};
             if( flowIcon == EvccIconBlock.ICON_POWER_FLOW ) { flowOptions[:power] = power; }
             line.addIcon( flowIcon, flowOptions );
@@ -210,7 +210,7 @@ import Toybox.Math;
         // For battery we show the power only if it is not 0,
         // for all others we always show it
         if( icon != EvccIconBlock.ICON_BATTERY || power != 0 ) {
-            line.addText( " " + EvccHelperWidget.formatPower( power.abs() ), {} as DbOptions );
+            line.addText( " " + EvccHelperWidget.formatPower( power.abs() ) );
         }
         return line;
     }
@@ -221,23 +221,23 @@ import Toybox.Math;
 
         var lineVehicle = new EvccHorizontalBlock( { :truncateSpacing => getContentArea().truncateSpacing } );
         
-        lineVehicle.addText( vehicle.getTitle(), { :isTruncatable => true } as DbOptions );
+        lineVehicle.addTextWithOptions( vehicle.getTitle(), { :isTruncatable => true } as DbOptions );
         
         // For guest vehicles there is no SoC
         if( ! vehicle.isGuest() ) {
-            lineVehicle.addText( " " + EvccHelperUI.formatSoc( vehicle.getSoc() ), {} as DbOptions );
+            lineVehicle.addText( " " + EvccHelperUI.formatSoc( vehicle.getSoc() ) );
         }
         // If the vehicle is charging, we show the power
         if( loadpoint.isCharging() ) {
-            lineVehicle.addText( " ", {} as DbOptions );
+            lineVehicle.addText( " " );
             lineVehicle.addIcon( EvccIconBlock.ICON_ACTIVE_PHASES, { :charging => true, :activePhases => loadpoint.getActivePhases() } );
-            lineVehicle.addText( " " + EvccHelperWidget.formatPower( loadpoint.getChargePowerRounded() ), {} as DbOptions );
+            lineVehicle.addText( " " + EvccHelperWidget.formatPower( loadpoint.getChargePowerRounded() ) );
             if( ! showChargingDetails ) {
-                lineVehicle.addText( " (" + loadpoint.getModeFormatted() + ")", { :relativeFont => 4 } );
+                lineVehicle.addTextWithOptions( " (" + loadpoint.getModeFormatted() + ")", { :relativeFont => 4 } );
             }
         }
         else {
-            lineVehicle.addText( " (" + loadpoint.getModeFormatted() + ")", { :relativeFont => 4 } );
+            lineVehicle.addTextWithOptions( " (" + loadpoint.getModeFormatted() + ")", { :relativeFont => 4 } );
         }
         
         return lineVehicle;
@@ -246,11 +246,11 @@ import Toybox.Math;
     // Function to generate charging info below main loadpoint line
     private function getChargingElement( loadpoint as EvccLoadPoint, marginLeft as Number ) as EvccHorizontalBlock {
         var lineCharging = new EvccHorizontalBlock( { :relativeFont => 3, :marginLeft => marginLeft } );
-        lineCharging.addText( loadpoint.getModeFormatted(), {} as DbOptions );
+        lineCharging.addText( loadpoint.getModeFormatted() );
         if( loadpoint.getChargeRemainingDuration() > 0 ) {
-            lineCharging.addText( " - ", {} as DbOptions );
+            lineCharging.addText( " - " );
             lineCharging.addIcon( EvccIconBlock.ICON_DURATION, {} as DbOptions );
-            lineCharging.addText( " " + EvccHelperWidget.formatDuration( loadpoint.getChargeRemainingDuration() ), {} as DbOptions );
+            lineCharging.addText( " " + EvccHelperWidget.formatDuration( loadpoint.getChargeRemainingDuration() ) );
         }
         return lineCharging;
     }
@@ -261,18 +261,18 @@ import Toybox.Math;
         var heater = loadpoint.getHeater() as EvccHeater;
         var lineHeater = new EvccHorizontalBlock( { :truncateSpacing => getContentArea().truncateSpacing } );
         
-        lineHeater.addText( heater.getTitle(), { :isTruncatable => true } as DbOptions );
-        lineHeater.addText( " " + EvccHelperWidget.formatTemp( heater.getTemperature() ), {} as DbOptions );
+        lineHeater.addTextWithOptions( heater.getTitle(), { :isTruncatable => true } as DbOptions );
+        lineHeater.addText( " " + EvccHelperWidget.formatTemp( heater.getTemperature() ) );
         
         // If the heater is charging, we show the power
         if( loadpoint.getChargePowerRounded() > 0 ) {
-            lineHeater.addText( " ", {} as DbOptions );
+            lineHeater.addText( " " );
             lineHeater.addIcon( EvccIconBlock.ICON_ACTIVE_PHASES, { :charging => true, :activePhases => loadpoint.getActivePhases() } );
-            lineHeater.addText( " " + EvccHelperWidget.formatPower( loadpoint.getChargePowerRounded() ), {} as DbOptions );
-            lineHeater.addText( " (" + loadpoint.getModeFormatted() + ")", { :relativeFont => 4 } );
+            lineHeater.addText( " " + EvccHelperWidget.formatPower( loadpoint.getChargePowerRounded() ) );
+            lineHeater.addTextWithOptions( " (" + loadpoint.getModeFormatted() + ")", { :relativeFont => 4 } );
         }
         else {
-            lineHeater.addText( " (" + loadpoint.getModeFormatted() + ")", { :relativeFont => 4 } );
+            lineHeater.addTextWithOptions( " (" + loadpoint.getModeFormatted() + ")", { :relativeFont => 4 } );
         }
         
         return lineHeater;

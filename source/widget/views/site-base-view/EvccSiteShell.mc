@@ -65,7 +65,7 @@ class EvccSiteShell {
             hasSiteTitle = true;
             if( stateRequest.hasState() ) {
                 // We display a max of 9 characters
-                header.addText( (stateRequest.getState().getSiteTitle().substring(0,9) as String), {} as DbOptions );
+                header.addText( (stateRequest.getState().getSiteTitle().substring(0,9) as String) );
             }
         }
         

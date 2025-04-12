@@ -15,7 +15,10 @@ import Toybox.WatchUi;
     }
 
     // Add text is implemented differently for vertical and horizontal containers
-    function addText( text as String, options as DbOptions ) as Void {}
+    function addTextWithOptions( text as String, options as DbOptions ) as Void {}
+    function addText( text as String ) as Void {
+        addTextWithOptions( text, {} as DbOptions );
+    }
 
     // Functions to add elements
     function addError( text as String, options as DbOptions ) as Void {

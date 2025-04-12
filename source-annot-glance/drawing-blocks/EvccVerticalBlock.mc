@@ -125,7 +125,7 @@ import Toybox.WatchUi;
     }
 
     // For the vertical container, new text is always added as new element
-    function addText( text as String, options as DbOptions ) as Void {
+    function addTextWithOptions( text as String, options as DbOptions ) as Void {
         options[:parent] = self;
         _elements.add( new EvccTextBlock( text, options as DbOptions ) );
     }
