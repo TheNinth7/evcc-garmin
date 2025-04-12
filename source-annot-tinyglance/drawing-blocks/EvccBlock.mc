@@ -55,7 +55,9 @@ class EvccBlock {
     public function drawPrepared( dc as Dc ) as Void;
     public function draw( dc as Dc, x as Number, y as Number ) as Void {
         prepareDraw( x, y );
+        _height = 0; _width = 0;
         drawPrepared( dc );
+        _x = 0; y = 0;
     }
 
     // Returning the value of a certain option
@@ -91,11 +93,6 @@ class EvccBlock {
             }
             return value;
         } else {
-            // If no more parent is present, we apply the following default behavior
-            if( option == :dc ) { 
-                if( $ has :EvccDcStub ) { return new EvccDcStub(); } 
-                else { throw new InvalidValueException( ":dc not set!" ); }
-            }
             if( option == :font ) { throw new InvalidValueException( ":font not set!"); }
             if( option == :backgroundColor ) { return EvccColors.BACKGROUND; }
             if( option == :color ) { return EvccColors.FOREGROUND; }
@@ -127,7 +124,24 @@ class EvccBlock {
     public function getMarginTop() as Number { return getOption( :marginTop ) as Number; }
     public function getMarginBottom() as Number { return getOption( :marginBottom ) as Number; }
     public function getFont() as EvccFont { return getOption( :font ) as EvccFont; }
-    public function getDc() as EvccDcInterface { return getOption( :dc ) as EvccDcInterface; }
+    
+    // For view pre-rendering, we default to the stub since pre-rendering
+    // happens at a time where no real Dc is available
+    (:exclForViewPreRenderingDisabled) 
+    public function getDc() as EvccDcInterface { 
+        var dc = getOption( :dc );
+        return ( dc == null ? EvccDcStub.getInstance() : dc ) as EvccDcInterface;
+    }
+    // Without view pre-rendering, a real Dc must be set
+    (:exclForViewPreRenderingEnabled) 
+    public function getDc() as EvccDcInterface { 
+        var dc = getOption( :dc );
+        if( dc == null ) {
+            throw new InvalidValueException( ":dc not set!" );
+        } else {
+            return dc as EvccDcInterface;
+        }
+    }
 
     // Accessor for parent needs special treatment
     // Parent can be passed into an element either in the options structure

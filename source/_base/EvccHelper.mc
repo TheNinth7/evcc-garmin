@@ -52,7 +52,7 @@ import Toybox.Application;
             System.println(" ");
         }
     }
-
+  
     // For release builds, there shall be no debug output
     (:release) public static function debug( text as String ) as Void {}
     (:release) public static function debugException( ex as Exception ) as Void {}
@@ -127,7 +127,7 @@ import Toybox.Application;
             if( glance ) {
                 dc.drawText( 0, dc.getHeight() / 2 * 0.9, Graphics.FONT_GLANCE, errorMsg, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER );
             } else {
-                dc.drawText( dc.getWidth() / 2, dc.getHeight() / 2, Graphics.FONT_SMALL, errorMsg, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER );
+                dc.drawText( WatchUi.LAYOUT_HALIGN_CENTER, WatchUi.LAYOUT_VALIGN_CENTER, Graphics.FONT_SMALL, errorMsg, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER );
             }
         }
     }

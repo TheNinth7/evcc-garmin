@@ -70,7 +70,7 @@ class EvccWidgetSiteBaseView extends WatchUi.View {
     public function addContent( block as EvccVerticalBlock, calcDc as EvccDcInterface ) as Void {}
 
     // Function to allow debug output state the type of view
-    (:debug) private function getType() as String {
+    (:debug :exclDebug) private function getType() as String {
         if( self instanceof EvccWidgetSiteForecastView ) {
             return "forecast";
         } else if( self instanceof EvccWidgetSiteMainView ) {
@@ -106,12 +106,13 @@ class EvccWidgetSiteBaseView extends WatchUi.View {
 
             var shell = new EvccSiteShell( self );
             shell.drawHeaderAndLogo( dc, true ); // true to remove header and logo from memory after drawing them
+            shell.drawIndicators( dc );
+            shell = null;
 
             var content = new EvccSiteContent( self );
             content.draw( dc );
             content = null; // to save memory before the next step
 
-            shell.drawIndicators( dc );
             // shell = null; // Not needed, since there is no more processing after it
 
             // Code for drawing visual alignment grid 
@@ -132,10 +133,14 @@ class EvccWidgetSiteBaseView extends WatchUi.View {
     // Functions for devices with pre-rendering of views
 
     (:exclForViewPreRenderingDisabled) private var _isActiveView as Boolean = false;
-    (:exclForViewPreRenderingDisabled) 
+    (:exclForViewPreRenderingDisabled :exclForSitesOne) 
     function onShow() as Void { 
         _isActiveView = true; 
         EvccStateRequestRegistry.setActiveSite( _siteIndex );
+    }
+    (:exclForViewPreRenderingDisabled :exclForSitesMultiple) 
+    function onShow() as Void { 
+        _isActiveView = true; 
     }
     (:exclForViewPreRenderingDisabled) function onHide() as Void { _isActiveView = false; }
 

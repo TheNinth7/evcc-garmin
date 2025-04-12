@@ -10,10 +10,19 @@ import Toybox.Graphics;
     private var _height as Number;
     private var _bufferedBitmap as BufferedBitmapReference or BufferedBitmap;
 
+    private static var _instance as EvccDcStub?;
+    
+    public static function getInstance() as EvccDcStub {
+        if( _instance == null ) {
+            _instance = new EvccDcStub();
+        }
+        return _instance as EvccDcStub;
+    }
+    
     // Width and height is obtained from device settings
     // For text width we need to create a BufferedBitmap to obtain
     // a real Dc
-    public function initialize() {
+    private function initialize() {
         var systemSettings = System.getDeviceSettings();
         _width = systemSettings.screenWidth;
         _height = systemSettings.screenHeight;

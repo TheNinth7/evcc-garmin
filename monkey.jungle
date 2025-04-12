@@ -120,6 +120,8 @@ fenix7s.resourcePath=resources-site-settings/site5;resources;resources-drawables
 fenix7x.resourcePath=resources-site-settings/site5;resources;resources-drawables/fenix7x
 epix2pro42mm.resourcePath=resources-site-settings/site5;resources;resources-drawables/epix2pro42mm
 epix2pro47mm.resourcePath=resources-site-settings/site5;resources;resources-drawables/epix2pro47mm
+#To run epix2pro47mm in configuration of low-memory devices
+#epix2pro47mm.resourcePath=resources-site-settings/site1;resources;resources-drawables/epix2pro47mm
 epix2pro51mm.resourcePath=resources-site-settings/site5;resources;resources-drawables/epix2pro51mm
 fenix7pro.resourcePath=$(fenix7.resourcePath)
 fenix7pronowifi.resourcePath=$(fenix7.resourcePath)
@@ -168,6 +170,9 @@ fr265.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemI
 fr265s.excludeAnnotations = $(fr265.excludeAnnotations)
 fr965.excludeAnnotations = $(fr265.excludeAnnotations)
 # Full glance devices, but with swipe left override
+# For testing purposes, use these entries to run epix2pro47mm in configuration of low-memory devices
+#epix2pro47mm.sourcePath = $(sourceGlanceNone)
+#epix2pro47mm.excludeAnnotations = $(glanceNone);$(calcSimple);$(fontsStatic);$(systemInfoNone);$(sitesOne);$(selectNone);$(swipeLeftDefault);$(viewPreRenderingDisabled);$(webResponseCallbacksDisabled)
 epix2pro47mm.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(systemInfo);$(sitesMultiple);$(select30);$(hasSelect);$(swipeLeftOverride);$(viewPreRenderingEnabled)
 epix2pro42mm.excludeAnnotations = $(epix2pro47mm.excludeAnnotations)
 epix2pro51mm.excludeAnnotations = $(epix2pro47mm.excludeAnnotations)

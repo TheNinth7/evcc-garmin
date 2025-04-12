@@ -27,7 +27,8 @@ class EvccSiteShell {
     private var _header as EvccVerticalBlock?;
     private var _logo as EvccBitmapBlock?;
     private var _pageIndicator as EvccPageIndicator?;
-    private var _selectIndicator as EvccSelectIndicator?;
+    (:exclForSelectNone) private var _selectIndicator as EvccSelectIndicator?;
+    (:exclForSelectTouch :exclForSelect27 :exclForSelect30) private var _selectIndicator as Object?;
 
     public function initialize( view as EvccWidgetSiteBaseView ) {
         _view = view;
@@ -115,9 +116,9 @@ class EvccSiteShell {
 
         // If there are lower level views, draw the select indicator
         var siSpacing = 0;        
-        if( _view.getLowerLevelViewCount() > 0 ) {
+        if( $ has :EvccSelectIndicator && _view.getLowerLevelViewCount() > 0 ) {
             _selectIndicator = new EvccSelectIndicator();
-            siSpacing = _selectIndicator.getSpacing( calcDc );
+            siSpacing = ( _selectIndicator as EvccSelectIndicator ).getSpacing( calcDc ) as Number;
         }
 
         // Calculate the dimensions of the content area
@@ -166,8 +167,8 @@ class EvccSiteShell {
         if( _pageIndicator != null ) {
             _pageIndicator.draw( dc );
         }
-        if( _selectIndicator != null ) {
-            _selectIndicator.draw( dc );
+        if( $ has :EvccSelectIndicator && _selectIndicator != null ) {
+            (_selectIndicator as EvccSelectIndicator).draw( dc );
         }
     }
 }
