@@ -7,7 +7,7 @@ import Toybox.Lang;
 // It is to be used where only one state request is needed. 
 
 // For devices with pre-rendered views, multiple state requests are active 
-// at the same time, and that is managed in a the separate class EvccMultiStateRequestsTimer.
+// at the same time, and that is managed in a the separate class EvccMultiStateRequestsHandler.
 
 (:glance) class EvccTimedStateRequest extends EvccStateRequest {
 

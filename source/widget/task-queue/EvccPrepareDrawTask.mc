@@ -1,5 +1,7 @@
 import Toybox.Lang;
 
+// Since the task queue only accepts tasks with an invoke() method without parameters,
+// this wrapper encapsulates an EvccBlock.prepareDraw call with certain coordinates
 (:exclForViewPreRenderingDisabled :typecheck(disableGlanceCheck))
 class EvccPrepareDrawTask {
     private var _element as EvccBlock;
