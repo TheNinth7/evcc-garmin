@@ -26,7 +26,7 @@ public class EvccMultiStateRequestsTimer {
             _i++;
             _timer.start( method( :initiateStateRequests ), 1000, true );
         } else {
-            addStartRequestTimerToTaskQueue();
+            startRequestTimer();
         }
     }
 
@@ -43,13 +43,10 @@ public class EvccMultiStateRequestsTimer {
         if( _i == _stateRequests.size() ) {
             _i = 0;
             _timer.stop();
-            addStartRequestTimerToTaskQueue();
+            startRequestTimer();
         }
     }
 
-    public function addStartRequestTimerToTaskQueue() as Void {
-        EvccTaskQueue.getInstance().addWhenAllTasksDone( method( :startRequestTimer ) );
-    }
     
     public function startRequestTimer() as Void {
         //EvccHelperBase.debug( "MultiStateRequestsTimer: startRequestTimer" );
@@ -59,10 +56,13 @@ public class EvccMultiStateRequestsTimer {
     }
 
     public function makeRequest() as Void {
-        //EvccHelperBase.debug( "MultiStateRequestsTimer: makeRequest for site=" + _stateRequests[_i].getSiteIndex() );
-        _stateRequests[_i].makeRequest();       
-        _i++; if( _i == _stateRequests.size() ) { _i = 0; }
-        //EvccHelperBase.debug( "MultiStateRequestsTimer: makeRequest done" );
+        EvccHelperBase.debug( "MultiStateRequestsTimer: makeRequest for site=" + _stateRequests[_i].getSiteIndex() );
+        // Only if the task queue is empty, we will start a request, otherwise
+        // we will skip it this time and wait for the next timer event
+        if( EvccTaskQueue.getInstance().isEmpty() ) {
+            _stateRequests[_i].makeRequest();       
+            _i++; if( _i == _stateRequests.size() ) { _i = 0; }
+        }
     }
     public function stopRequestTimer() as Void {
         _timer.stop();

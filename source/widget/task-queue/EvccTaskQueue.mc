@@ -40,10 +40,13 @@ class EvccTaskQueue {
     // Stores any exception that may have occured during task execution
     private var _exception as TaskQueueException? = null;
 
-    // Starts the timmer for executing tasks
+    // Starts the timer for executing tasks
     private function startTimer() as Void {
         _timer.start( method( :executeTask ), 50, false );
     }
+
+    // Determines if the task list ist empty
+    public function isEmpty() as Boolean { return _tasks.size() == 0; }
 
     // Add a task
     // If a previous task resulted in an exception, new
@@ -79,12 +82,6 @@ class EvccTaskQueue {
         }
     }
 
-    private var _waitingList as Array<EvccTask> = new Array<EvccTask>[0];
-    public function addWhenAllTasksDone( task as EvccTask ) as Void {
-        _waitingList.add( task );
-    }
-
-
     // Executes the task next in the queue and then
     // if there are remaining tasks, start the timer again
     public function executeTask() as Void {
@@ -95,11 +92,6 @@ class EvccTaskQueue {
             _tasks.remove( task );
             if( _tasks.size() > 0 ) {
                 //EvccHelperBase.debug( "TaskQueue: Starting timer" );
-                startTimer();
-            } else if( _waitingList.size() > 0 ) {
-                //EvccHelperBase.debug( "TaskQueue: Adding tasks from waiting list" );
-                _tasks = _waitingList;
-                _waitingList = new Array<EvccTask>[0];
                 startTimer();
             }
             //EvccHelperBase.debug( "TaskQueue: ... done" );

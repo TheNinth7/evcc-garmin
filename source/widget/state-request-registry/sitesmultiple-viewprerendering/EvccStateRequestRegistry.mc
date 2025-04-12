@@ -8,12 +8,21 @@ import Toybox.Lang;
     private static var _stateRequests as Array<EvccStateRequest> = [];
     private static var _stateRequestTimer as EvccMultiStateRequestsTimer?;
 
+    // For this instance, we need an initialization function to be called by
+    // EvccApp when it is started in widget mode
+    // This functions instantiates all state requests, sorts them (with the
+    // active site first) and hands them over to the EvccMultiStateRequestTimer
+    // for the initial loading of data and then regular request of new data
     public static function start( activeSiteIndex as Number ) as Void {
         var inactiveSites = new Array<EvccStateRequest>[0];
         var sortedSites = new Array<EvccStateRequest>[0];
         for( var i = 0; i < EvccSiteConfiguration.getSiteCount(); i++ ) {
             var stateRequest = new EvccStateRequest( i );
+            
+            // _stateRequest retains the original order, because that is needed
+            // to access sites by their index
             _stateRequests.add( stateRequest );
+            
             if( i == activeSiteIndex ) {
                 sortedSites.add( stateRequest );
             } else {
