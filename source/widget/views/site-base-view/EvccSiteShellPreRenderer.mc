@@ -10,7 +10,7 @@ class EvccSiteShellPreRenderer extends EvccSiteShell {
 
     // Only one task here
     public function prepareTask() as Void {
-        EvccHelperBase.debug( "EvccSiteShellPreRenderer: prepareTask" );
+        // EvccHelperBase.debug( "EvccSiteShellPreRenderer: prepareTask" );
         prepare( EvccDcStub.getInstance() );
     }
 

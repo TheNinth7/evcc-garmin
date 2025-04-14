@@ -98,12 +98,15 @@ import Toybox.PersistedContent;
     private const JQ_FORECAST = 
         ",forecast:{solar:.forecast.solar|{scale,today:{energy:.today.energy},tomorrow:{energy:.tomorrow.energy},dayAfterTomorrow:{energy:.dayAfterTomorrow.energy}}}";
 
+    private const JQ_STATISTICS = 
+        ",statistics:.statistics|map_values({solarPercentage})";
+
     // Close the main filter and add function to remove all null values and empty objects or arrays
     private const JQ_BASE_CLOSING = 
         "}}" +
         "|walk(if type==\"object\"then with_entries(select(.value!=null and .value!={} and .value!=[]))elif type==\"array\"then map(select(.!=null and .!={} and .!=[]))else . end)";
 
-    private const JQ = JQ_BASE_OPENING + JQ_FORECAST + JQ_BASE_CLOSING;
+    private const JQ = JQ_BASE_OPENING + JQ_FORECAST + JQ_STATISTICS + JQ_BASE_CLOSING;
 
     // Make the web request
     public function makeRequest() as Void {
@@ -144,26 +147,23 @@ import Toybox.PersistedContent;
     function onReceive( responseCode as Number, data as Dictionary<String,Object?> or String or PersistedContent.Iterator or Null ) as Void {
         //EvccHelperBase.debug("StateRequest: onReceive site=" + _siteIndex );
         _hasCurrentState = true;
-        _error = false; _errorMessage = ""; _errorCode = "";
+        _error = true; _errorMessage = ""; _errorCode = "";
         
         if( responseCode == 200 ) {
             if( data instanceof Dictionary && data["result"] != null ) {
                 _stateStore.setState( data["result"] as JsonContainer );
+                _error = false;
             } else {
-                _error = true; _errorMessage = "Unexpected response: " + data;
+                _errorMessage = "Unexpected response: " + data;
             }
         // To mask temporary errors because of instable connections, we report
         // errors only if the data we have now has expired, otherwise we continue
         // to display the existing data
         } else if( _stateStore.getState() == null || Time.now().compare( (_stateStore.getState() as EvccState).getTimestamp() ) > _dataExpiry ) {
             if ( responseCode == -104 ) {
-                _error = true; _errorMessage = "No phone"; _errorCode = "";
-                // EvccHelperBase.debug( _errorMessage + " " + _errorCode );
+                _errorMessage = "No phone"; _errorCode = "";
             } else {
-                _error = true; _errorMessage = "Request failed"; _errorCode = responseCode.toString();
-                if( EvccApp.isBackground ) {
-                    EvccHelperBase.debug( _errorMessage + " " + _errorCode );
-                }
+                _errorMessage = "Request failed"; _errorCode = responseCode.toString();
             }
         }
         

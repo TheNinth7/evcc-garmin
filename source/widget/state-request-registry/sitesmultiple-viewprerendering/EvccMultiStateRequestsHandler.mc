@@ -27,7 +27,7 @@ public class EvccMultiStateRequestsHandler {
         _activeSite = activeSite;
         _initialActiveSite = activeSite;
 
-        EvccHelperBase.debug( "EvccMultiStateRequestsHandler: initiating state request for site " + activeSite );
+        // EvccHelperBase.debug( "EvccMultiStateRequestsHandler: initiating state request for site " + activeSite );
         var stateRequest = stateRequests[activeSite];
         // We load the initial state of the first state request
         stateRequest.loadInitialState();
