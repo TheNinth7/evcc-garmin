@@ -242,12 +242,24 @@ class EvccWidgetSiteBaseView extends WatchUi.View {
             dc.drawRectangle( _ca.x - _ca.width / 2, _ca.y - _ca.height / 2, _ca.width, _ca.height );
             dc.drawLine( _ca.x - _ca.width / 2, _ca.y, _ca.x + _ca.width / 2, _ca.y );
             */
-            //EvccHelperBase.debug("WidgetSiteBase: onUpdate completed for " + getType() + " site=" + _siteIndex );
+            
+            EvccHelperBase.debug("WidgetSiteBase: onUpdate completed for " + getType() + " site=" + _siteIndex );
+
+            _updateCounter++;
+            if( _updateCounter > 2 ) {
+                var timer = new Toybox.Timer.Timer();
+                timer.start( method( :testTimer ), 50, false );
+            }
+
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
             EvccHelperUI.drawError( dc, ex );
         }
     }
 
-}
+    private var _updateCounter as Number = 0;
+    public function testTimer() as Void {
+        EvccHelperBase.debug( "WidgetSiteBase: timer triggered" );
+    }
 
+}
