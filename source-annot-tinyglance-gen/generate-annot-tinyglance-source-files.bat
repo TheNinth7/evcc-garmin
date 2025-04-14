@@ -6,5 +6,5 @@ robocopy .\source-annot-glance .\source-annot-tinyglance /MIR
 REM copy ..\source-annot-glance\*.mc .\
 cd .\source-annot-tinyglance
 for /R %%f in (*.mc) do sed -i "s/(:glance) //g" "%%f"
-for /R %%f in (*.mc) do sed -i "s/(:glance :background) /(:background) /g" "%%f"
+for /R %%f in (*.mc) do sed -i "s/(:glance :/(:/g" "%%f"
 del sed*

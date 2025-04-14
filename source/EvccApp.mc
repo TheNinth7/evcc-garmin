@@ -12,12 +12,16 @@ import Toybox.Math;
     // :tinyglance. For other devices, the background service
     // is still started briefly but stopped immediately. To be able
     // to detect that these executions are in background, especially in the
-    // onStop() method, we therefore set the _isInBackground to true and 
+    // onStop() method, we therefore set the isBackground to true and 
     // only set it to false when getGlanceView() or getInitialView() are called.
-    public static var _isInBackground as Boolean = true;
+    public static var isBackground as Boolean = true;
     (:exclForGlanceNone) private static var _glanceView as EvccGlanceView?;
-    private static var _isGlance as Boolean = false;
-    public static function isGlance() as Boolean { return _isGlance; }
+    public static var isGlance as Boolean = false;
+    
+    (:exclForGlanceNone :exclForGlanceFull) 
+    public static var deviceUsesTinyGlance as Boolean = true;
+    (:exclForGlanceTiny) 
+    public static var deviceUsesTinyGlance as Boolean = false;
 
     function initialize() {
         try {
@@ -33,8 +37,8 @@ import Toybox.Math;
     function getGlanceView() as [ GlanceView ] or [ GlanceView, GlanceViewDelegate ] or Null {
         try {
             // EvccHelperBase.debug( "EvccApp: getGlanceView" );
-            _isInBackground = false;
-            _isGlance = true;
+            isBackground = false;
+            isGlance = true;
 
             // Read the site count
             var siteCount = EvccSiteConfiguration.getSiteCount();
@@ -67,7 +71,7 @@ import Toybox.Math;
     function getInitialView() as [Views] or [Views, InputDelegates] {
         try {
             // EvccHelperBase.debug( "EvccApp: getInitialView" );
-            _isInBackground = false;
+            isBackground = false;
 
             // Initialize the resources here, to save computing time
             // in the view (reduce chance to trip the watchdog)
@@ -171,7 +175,7 @@ import Toybox.Math;
         try {
             // EvccHelperBase.debug( "EvccApp: onStop" );
             hideGlance();
-            if( ! _isGlance && ! _isInBackground ) {
+            if( ! isGlance && ! isBackground ) {
                 EvccStateRequestRegistry.stopStateRequests();
             }
         } catch ( ex ) {
@@ -200,7 +204,7 @@ import Toybox.Math;
     function onStorageChanged() {  
         try {
             // EvccHelperBase.debug( "EvccApp: onStorageChanged" );
-            if( ! _isInBackground ) {
+            if( ! isBackground ) {
                 // EvccHelperBase.debug( "EvccApp: requesting update" );
                 WatchUi.requestUpdate();
             }

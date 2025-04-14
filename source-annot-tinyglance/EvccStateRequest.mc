@@ -73,15 +73,37 @@ import Toybox.PersistedContent;
                 // EvccHelperBase.debug( "StateRequest: stored data too old!" ); 
                 makeRequest(); 
             } else { 
-                // otherwise the data is used, but if it is older than refreshInterval, a request is made immediately 
+                // otherwise the data is used, but if it is older than refreshInterval, a request is made immediately^
+                // if the device is using tiny glance, then also a request is made immediately, because the data obtained by
+                // the tiny glance may be incomplete due to memory restrictions in the tiny glance's background service. 
                 // EvccHelperBase.debug( "StateRequest: using stored data" );
                 _hasCurrentState = true;
-                if( dataAge > _refreshInterval ) {
+                if( dataAge > _refreshInterval || EvccApp.deviceUsesTinyGlance ) {
                     makeRequest(); 
                 }
             }
         }
     }
+
+    // On older devices, there is not enough memory to process the complete
+    // JSON response from evcc. We therefore use a jq filter to narrow the
+    // response to the fields we need on the server side
+    private const JQ_BASE_OPENING = 
+        "{result:{" +
+        "loadpoints:[.loadpoints[]|{chargePower,chargerFeatureHeating,charging,connected,vehicleName,vehicleSoc,title,phasesActive,mode,chargeRemainingDuration}]" +
+        ",pvPower,homePower,siteTitle,batterySoc,batteryPower" +
+        ",gridPower,grid:{power:.grid.power}" + 
+        ",vehicles:.vehicles|map_values({title})";
+
+    private const JQ_FORECAST = 
+        ",forecast:{solar:.forecast.solar|{scale,today:{energy:.today.energy},tomorrow:{energy:.tomorrow.energy},dayAfterTomorrow:{energy:.dayAfterTomorrow.energy}}}";
+
+    // Close the main filter and add function to remove all null values and empty objects or arrays
+    private const JQ_BASE_CLOSING = 
+        "}}" +
+        "|walk(if type==\"object\"then with_entries(select(.value!=null and .value!={} and .value!=[]))elif type==\"array\"then map(select(.!=null and .!={} and .!=[]))else . end)";
+
+    private const JQ = JQ_BASE_OPENING + JQ_FORECAST + JQ_BASE_CLOSING;
 
     // Make the web request
     public function makeRequest() as Void {
@@ -90,16 +112,16 @@ import Toybox.PersistedContent;
 
         var url = siteConfig.getUrl() + "/api/state";
         var parameters = null;
-
-        // On older devices, there is not enough memory to process the complete
-        // JSON response from evcc. We therefore use a jq filter to narrow the
-        // response to the fields we need on the server side
-        var jq = "{result:{loadpoints:[.loadpoints[]|{chargePower,chargerFeatureHeating,charging,connected,vehicleName,vehicleSoc,title,phasesActive,mode,chargeRemainingDuration}],pvPower,gridPower,grid:{power:.grid.power},homePower,siteTitle,batterySoc,batteryPower,vehicles:.vehicles|map_values({title}),forecast:{solar:.forecast.solar|{scale,today:{energy:.today.energy},tomorrow:{energy:.tomorrow.energy},dayAfterTomorrow:{energy:.dayAfterTomorrow.energy}}}}}";
-        // Remove all null values and empty objects or arrays
-        jq = jq + "|walk(if type==\"object\"then with_entries(select(.value!=null and .value!={} and .value!=[]))elif type==\"array\"then map(select(.!=null and .!={} and .!=[]))else . end)";
-
-        parameters = { "jq" => jq };
-
+        
+        // In the background we use a reduced filter, because memory for processing
+        // the response is limited. The full data will then be loaded once the
+        // widget app is started.
+        if( EvccApp.isBackground ) {
+            parameters = { "jq" => JQ_BASE_OPENING + JQ_FORECAST + JQ_BASE_CLOSING };
+        } else {
+            parameters = { "jq" => JQ };
+        }
+        
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_GET,
             :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_JSON
@@ -139,7 +161,7 @@ import Toybox.PersistedContent;
                 // EvccHelperBase.debug( _errorMessage + " " + _errorCode );
             } else {
                 _error = true; _errorMessage = "Request failed"; _errorCode = responseCode.toString();
-                if( EvccApp._isInBackground ) {
+                if( EvccApp.isBackground ) {
                     EvccHelperBase.debug( _errorMessage + " " + _errorCode );
                 }
             }

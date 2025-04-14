@@ -25,7 +25,7 @@ import Toybox.Graphics;
     // mode we are in
     (:exclForGlanceTiny :exclForGlanceNone :typecheck(disableGlanceCheck)) 
     private function initialize() {
-        if( EvccApp.isGlance() ) {
+        if( EvccApp.isGlance ) {
             _resourceSet = new EvccGlanceResourceSet();
         } else {
             _resourceSet = new EvccWidgetResourceSet();

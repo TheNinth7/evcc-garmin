@@ -81,7 +81,7 @@ import Toybox.Application;
     (:exclForMemoryLow) public static function drawError( dc as Dc, ex as Exception ) as Void {
         var errorMsg;
         var useTxtArea = false;
-        var glance = EvccApp.isGlance();
+        var glance = EvccApp.isGlance;
         var backgroundColor = glance ? Graphics.COLOR_TRANSPARENT : EvccColors.BACKGROUND;
 
         dc.setColor( EvccColors.ERROR, backgroundColor );
@@ -206,5 +206,4 @@ class EvccHelperWidget {
             return minutes.format("%02d") + ":" + seconds.format("%02d") + " m"; 
         }
     }
-
 }

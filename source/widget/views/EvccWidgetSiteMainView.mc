@@ -30,6 +30,7 @@ import Toybox.Math;
     // When we process the state the first time, we check if a
     // forecast is available and if yes add the forecast view 
     var _hasForecast as Boolean = false;
+    var _hasStatistics as Boolean = false;
 
     function initialize( views as ArrayOfSiteViews, parentView as EvccWidgetSiteBaseView?, siteIndex as Number, actAsGlance as Boolean ) {
         // EvccHelperBase.debug("Widget: initialize");
@@ -58,17 +59,23 @@ import Toybox.Math;
     // itself from adding the same view twice.
     public function addDetailViews() as Void {
         // EvccHelperBase.debug("WidgetSiteMain: addDetailViews" );
-        if( ! _hasForecast ) {
-            var stateRequest = getStateRequest();
-            // Note that we DO NOT check fore staterq.hasCurrentState(). In this instance we are not interested
-            // whether the stored state is current or not. Regardless of age, if the previous state had a 
-            // forecast we assume that there is still a forecast
-            if( ! stateRequest.hasError() ) {
-                if( stateRequest.hasState() && stateRequest.getState().hasForecast() ) {
-                    _hasForecast = true;
-                    addDetailView( EvccWidgetSiteForecastView );
-                }
+        var stateRequest = getStateRequest();
+
+        // Note that we DO NOT check fore staterq.hasCurrentState(). In this instance we are not interested
+        // whether the stored state is current or not. Regardless of age, if the previous state had a 
+        // forecast we assume that there is still a forecast
+        if( ! stateRequest.hasError() ) {
+            if( ! _hasForecast && stateRequest.hasState() && stateRequest.getState().hasForecast() ) {
+                _hasForecast = true;
+                addDetailView( EvccWidgetSiteForecastView );
             }
+            if( $ has :EvccStatistics && ! _hasStatistics && stateRequest.hasCurrentState() && stateRequest.getState().hasStatistics() ) {
+                _hasStatistics = true;
+                addDetailView( EvccWidgetSiteStatisticsView );
+            }
+        }
+
+        if( ! _hasForecast ) {
         }
     }
     // This function is the one actually decides if a detail view is added

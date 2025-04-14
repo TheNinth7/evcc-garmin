@@ -55,9 +55,7 @@ class EvccBlock {
     public function drawPrepared( dc as Dc ) as Void;
     public function draw( dc as Dc, x as Number, y as Number ) as Void {
         prepareDraw( x, y );
-        _height = 0; _width = 0;
         drawPrepared( dc );
-        _x = 0; y = 0;
     }
 
     // Returning the value of a certain option
