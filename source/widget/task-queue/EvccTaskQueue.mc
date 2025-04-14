@@ -86,8 +86,8 @@ class EvccTaskQueue {
     // if there are remaining tasks, start the timer again
     public function executeTask() as Void {
         try {
-            // EvccHelperBase.debug( "TaskQueue: Executing task 1/" + _tasks.size() + " ..." );
-            if( _exception != null ) {
+            EvccHelperBase.debug( "TaskQueue: Executing task 1/" + _tasks.size() + " ..." );
+            if( _exception == null ) {
                 var task = _tasks[0];
                 task.invoke();
                 _tasks.remove( task );
