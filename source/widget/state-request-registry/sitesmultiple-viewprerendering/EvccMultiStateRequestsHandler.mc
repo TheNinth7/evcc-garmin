@@ -99,7 +99,7 @@ public class EvccMultiStateRequestsHandler {
         if( EvccTaskQueue.getInstance().isEmpty() ) {
             if( _isActiveSitesTurn ) {
                 // If it is the active site's turn, we make that request
-                // EvccHelperBase.debug( "MultiStateRequestsTimer: makeRequest for active site=" + _activeSite );
+                EvccHelperBase.debug( "MultiStateRequestsTimer: makeRequest for active site=" + _activeSite );
                 _stateRequests[_activeSite].makeRequest();
             } else {
                 // Otherwise we make a request to the next inactive site
@@ -107,7 +107,7 @@ public class EvccMultiStateRequestsHandler {
                 if( _i == _activeSite ) { _i++; }
                 // And reset the counter if we reached the end
                 if( _i == _stateRequests.size() ) { _i = 0; }
-                // EvccHelperBase.debug( "MultiStateRequestsTimer: makeRequest for inactive site=" + _i );
+                EvccHelperBase.debug( "MultiStateRequestsTimer: makeRequest for inactive site=" + _i );
                 _stateRequests[_i].makeRequest();
                 _i++;
             }

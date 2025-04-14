@@ -228,7 +228,7 @@ class EvccWidgetSiteBaseView extends WatchUi.View {
     // Update the screen
     (:exclForViewPreRenderingDisabled) function onUpdate( dc as Dc ) as Void {
         try {
-            // EvccHelperBase.debug("WidgetSiteBase: onUpdate " + getType() + " site=" + _siteIndex );
+            EvccHelperBase.debug("WidgetSiteBase: onUpdate " + getType() + " site=" + _siteIndex );
             dc.clear();
             EvccTaskQueue.getInstance().checkForException();
             _shell.drawHeaderAndLogo( dc, false ); // false to keep the header/logo in memory
@@ -243,13 +243,13 @@ class EvccWidgetSiteBaseView extends WatchUi.View {
             dc.drawLine( _ca.x - _ca.width / 2, _ca.y, _ca.x + _ca.width / 2, _ca.y );
             */
             
-            EvccHelperBase.debug("WidgetSiteBase: onUpdate completed for " + getType() + " site=" + _siteIndex );
-
             _updateCounter++;
             if( _updateCounter > 2 ) {
                 var timer = new Toybox.Timer.Timer();
                 timer.start( method( :testTimer ), 50, false );
             }
+
+            EvccHelperBase.debug("WidgetSiteBase: onUpdate completed for " + getType() + " site=" + _siteIndex );
 
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
