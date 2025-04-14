@@ -114,7 +114,7 @@ import Toybox.PersistedContent;
         var siteConfig = new EvccSite( _siteIndex );
 
         var url = siteConfig.getUrl() + "/api/state";
-        var parameters = null;
+        var parameters;
         
         // In the background we use a reduced filter, because memory for processing
         // the response is limited. The full data will then be loaded once the
