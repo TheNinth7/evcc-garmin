@@ -12,6 +12,10 @@ class EvccPrepareDrawTask {
     }
     public function invoke() as Void {
         // EvccHelperBase.debug( "EvccPrepareDrawTask: executing prepareDraw" );
-        _element.prepareDraw( _x, _y );
+        try {
+            _element.prepareDraw( _x, _y );
+        } catch ( ex ) {
+            EvccTaskQueue.getInstance().registerException( ex );
+        }
     }
 }

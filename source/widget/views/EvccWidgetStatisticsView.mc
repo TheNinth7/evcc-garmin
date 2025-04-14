@@ -22,25 +22,30 @@ class EvccWidgetStatisticsView extends EvccWidgetSiteViewBase {
     // Add the content
     function addContent( block as EvccVerticalBlock, calcDc as EvccDcInterface ) {
 
-        var state = getStateRequest().getState() as EvccState;
+        var stateRequest = getStateRequest();
         var dcHeight = calcDc.getHeight();
 
-        if( state.hasStatistics() ) {
-            var statisticsPeriods = state.getStatistics().getStatisticsPeriods();
+        if( stateRequest.hasCurrentState() ) {
+            var state = stateRequest.getState();
+            if( state.hasStatistics() ) {
+                var statisticsPeriods = state.getStatistics().getStatisticsPeriods();
 
-            var row = new EvccHorizontalBlock( {} as DbOptions );
-            var column1 = new EvccVerticalBlock( {} as DbOptions );
-            var column2 = new EvccVerticalBlock( {} as DbOptions );
+                var row = new EvccHorizontalBlock( {} as DbOptions );
+                var column1 = new EvccVerticalBlock( {} as DbOptions );
+                var column2 = new EvccVerticalBlock( {} as DbOptions );
 
-            for( var i = 0; i < statisticsPeriods.size(); i++ ) {
-                var value = statisticsPeriods[i].getSolarPercentage();
-                column1.addTextWithOptions( LABELS[i] + ": ", { :justify => Graphics.TEXT_JUSTIFY_RIGHT} );
-                column2.addTextWithOptions( formatSolarPercentage( value ), {:justify => Graphics.TEXT_JUSTIFY_RIGHT} );
+                for( var i = 0; i < statisticsPeriods.size(); i++ ) {
+                    var value = statisticsPeriods[i].getSolarPercentage();
+                    column1.addTextWithOptions( LABELS[i] + ": ", { :justify => Graphics.TEXT_JUSTIFY_RIGHT} );
+                    column2.addTextWithOptions( formatSolarPercentage( value ), {:justify => Graphics.TEXT_JUSTIFY_RIGHT} );
+                }
+                row.addBlock( column1 );
+                row.addBlock( column2 );
+                block.addBlock( row );
+                block.addTextWithOptions( "solar energy", { :relativeFont => 4, :marginTop => dcHeight * 0.007 } );
+            } else {
+                block.addText( "Loading ..." );
             }
-            row.addBlock( column1 );
-            row.addBlock( column2 );
-            block.addBlock( row );
-            block.addTextWithOptions( "solar energy", { :relativeFont => 4, :marginTop => dcHeight * 0.007 } );
         } else {
             block.addText( "Loading ..." );
         }

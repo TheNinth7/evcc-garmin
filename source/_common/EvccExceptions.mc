@@ -43,12 +43,12 @@ import Toybox.Lang;
 // the error is written into storage to be processed by the 
 // foreground service (tiny glance).
 (:glance) class StateRequestException extends EvccBaseException {
-    private var _code as String?;
     private var _msg as String;
+    private var _code as String?;
     function initialize( msg as String, code as String? ) {
         EvccBaseException.initialize();
-        _code = code;
         _msg = msg;
+        _code = code;
     }
     public function getScreenMessage() as String? { 
         var errorMsg = _msg;
@@ -56,22 +56,5 @@ import Toybox.Lang;
             errorMsg += "\n" + _code;
         }
         return errorMsg;
-    }
-}
-
-(:exclForViewPreRenderingDisabled)
-class TaskQueueException extends Exception {
-    private var _ex as Exception;
-    function initialize( ex as Exception ) {
-        Exception.initialize();
-        _ex = ex;
-    }
-    public function getErrorMessage() as String? { 
-        var msg = _ex.getErrorMessage();
-        msg = "TaskQueue: " + ( msg == null ? "Unknown Exception" : msg );
-        return msg;
-    }
-    public function printStackTrace() as Void {
-        _ex.printStackTrace();
     }
 }

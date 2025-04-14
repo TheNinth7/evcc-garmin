@@ -186,17 +186,21 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
     // It is called initially when a current state is loaded from storage,
     // and after that whenever a new web response is received
     (:exclForViewPreRenderingDisabled) public function onStateChange() as Void {
-        // EvccHelperBase.debug( "WidgetSiteBase: onStateChange " + getType() + " site=" + _siteIndex );
-        if( _isActiveView && ! _content.alreadyHasRealContent() ) {
-            // In the case that we are active and have not received 
-            // any "real" content yet (in other words: are showing "Loading..."),
-            // we do not want to loose them and prepare the content right away, without
-            // using the task queue
-            prepareImmediately();
-        } else {
-            // If we already had "real" content, we prepare via the task queue,
-            // for better responsiveness to user input
-            prepareByTasks();
+        try {
+            // EvccHelperBase.debug( "WidgetSiteBase: onStateChange " + getType() + " site=" + _siteIndex );
+            if( _isActiveView && ! _content.alreadyHasRealContent() ) {
+                // In the case that we are active and have not received 
+                // any "real" content yet (in other words: are showing "Loading..."),
+                // we do not want to loose them and prepare the content right away, without
+                // using the task queue
+                prepareImmediately();
+            } else {
+                // If we already had "real" content, we prepare via the task queue,
+                // for better responsiveness to user input
+                prepareByTasks();
+            }
+        } catch ( ex ) {
+            EvccTaskQueue.getInstance().registerException( ex );
         }
     }
     // Prepare shell and content without task qeueu
@@ -222,7 +226,11 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
     }
     // Function for scheduling the screen update request via the task queue
     (:exclForViewPreRenderingDisabled) function requestUpdateTask() as Void {
-        WatchUi.requestUpdate();
+        try {
+            WatchUi.requestUpdate();
+        } catch ( ex ) {
+            EvccTaskQueue.getInstance().registerException( ex );
+        }
     }
 
     // Update the screen

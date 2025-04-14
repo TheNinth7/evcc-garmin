@@ -38,7 +38,7 @@ class EvccTaskQueue {
     private var _timer as Timer.Timer = new Timer.Timer();
     
     // Stores any exception that may have occured during task execution
-    private var _exception as TaskQueueException? = null;
+    private var _exception as Exception? = null;
 
     // Starts the timer for executing tasks
     private function startTimer() as Void {
@@ -87,19 +87,25 @@ class EvccTaskQueue {
     public function executeTask() as Void {
         try {
             // EvccHelperBase.debug( "TaskQueue: Executing task 1/" + _tasks.size() + " ..." );
-            var task = _tasks[0];
-            task.invoke();
-            _tasks.remove( task );
-            if( _tasks.size() > 0 ) {
-                // EvccHelperBase.debug( "TaskQueue: Starting timer" );
-                startTimer();
+            if( _exception != null ) {
+                var task = _tasks[0];
+                task.invoke();
+                _tasks.remove( task );
+                if( _tasks.size() > 0 ) {
+                    // EvccHelperBase.debug( "TaskQueue: Starting timer" );
+                    startTimer();
+                }
             }
             // EvccHelperBase.debug( "TaskQueue: ... done" );
         } catch ( ex ) {
-            _exception = new TaskQueueException( ex );
-            EvccHelperBase.debugException( ex );
-            _timer.stop();
+            registerException( ex );
         }
+    }
+
+    public function registerException( ex as Exception ) as Void {
+        _exception = ex;
+        EvccHelperBase.debugException( ex );
+        _timer.stop();
     }
 
     // Check if an exception has occured, and if yes, throw it
