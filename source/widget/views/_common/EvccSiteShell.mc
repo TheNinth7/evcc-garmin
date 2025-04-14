@@ -133,7 +133,7 @@ class EvccSiteShell {
 
         // AFTER x is calculated, we add some horizontal spacing to the content area
         // Value was fine-tuned during regression testing on different devices
-        ca.width = Math.round( ca.width * 0.93 ).toNumber(); 
+        ca.width = Math.round( ca.width * 0.90 ).toNumber(); 
 
         ca.truncateSpacing = dcWidth - ca.width;
     }
