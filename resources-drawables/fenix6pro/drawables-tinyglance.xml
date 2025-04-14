@@ -67,6 +67,7 @@ It is automatically copied by generate.js into each device resource folder, sinc
     <bitmap scope="foreground" id="grid_xtiny" filename="icon_xtiny_grid.png" packingFormat="png"/>
     <!-- exceptions - icons not available in all font sizes -->
     <bitmap scope="foreground" id="forecast_xtiny" filename="icon_xtiny_forecast.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="statistics_xtiny" filename="icon_xtiny_statistics.png" packingFormat="png"/>
     <bitmap scope="foreground" id="clock_xtiny" filename="icon_xtiny_clock.png" packingFormat="png"/>
 
 
@@ -110,5 +111,6 @@ It is automatically copied by generate.js into each device resource folder, sinc
     <bitmap scope="foreground" id="grid_medium" filename="icon_medium_grid.png" packingFormat="png"/>
     <!-- exceptions - icons not available in all font sizes -->
     <bitmap scope="foreground" id="forecast_medium" filename="icon_medium_forecast.png" packingFormat="png"/>
+    <bitmap scope="foreground" id="statistics_medium" filename="icon_medium_statistics.png" packingFormat="png"/>
 
 </drawables>

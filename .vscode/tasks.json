@@ -34,7 +34,7 @@
       {
         "label": "evccg: Generate Icons for epix2pro47mm",
         "type": "shell",
-        "command": "cd .\\resources-drawables-gen;.\\generate.bat resources-epix2pro47mm",
+        "command": "cd .\\resources-drawables-gen;.\\generate.bat epix2pro47mm",
         "group": {
           "kind": "build",
           "isDefault": false

@@ -2,7 +2,7 @@ import Toybox.Lang;
 import Toybox.Graphics;
 
 // Reusable array types
-typedef ArrayOfSiteViews as Array<EvccWidgetSiteBaseView>;
+typedef ArrayOfSiteViews as Array<EvccWidgetSiteViewBase>;
 typedef ArrayOfLoadPoints as Array<EvccLoadPoint>;
 typedef GarminFont as FontDefinition or VectorFont;
 typedef ArrayOfGarminFonts as Array<GarminFont>;

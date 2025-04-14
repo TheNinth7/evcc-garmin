@@ -18,7 +18,8 @@ project.typecheck = 3
 # as part of the glance scope (:glance) for the full-featured glance but not for the tiny glance.
 # Unfortunately the only way to achieve that is to duplicate the code in two directories, same
 # code but different annotation.
-sourceBase = source;source\_base;source\background;source\glance;source\widget
+sourceBase = source
+#;source\_base;source\background;source\glance;source\widget
 sourceGlanceFull = $(sourceBase);source-annot-glance
 sourceGlanceTiny = $(sourceBase);source-annot-tinyglance
 sourceGlanceNone = $(sourceBase);source-annot-glance

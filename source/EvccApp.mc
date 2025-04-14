@@ -118,12 +118,12 @@ import Toybox.Math;
                 if ( ! ( settings has :isGlanceModeEnabled ) || ! settings.isGlanceModeEnabled ) {
                     // EvccHelperBase.debug( "EvccApp: no glance, starting with active site only" );
                     var views = new ArrayOfSiteViews[0];
-                    new EvccWidgetSiteMainView( views, null, activeSite, true ); // The view adds itself to views
+                    new EvccWidgetMainView( views, null, activeSite, true ); // The view adds itself to views
                     var delegate = new EvccViewCarouselDelegate( views, breadCrumb );
                     return [views[0], delegate];
                 // If glances are supported, we present the full list of sites or menu entries right away
                 } else {
-                    var views = EvccWidgetSiteMainView.getAllSiteViews();
+                    var views = EvccWidgetMainView.getAllSiteViews();
                     // We use the number of views to determine the maximum number of children
                     // since it can be either multiple sites, or one site with detailed views
                     // (such as forecast) presented on the same level

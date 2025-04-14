@@ -56,10 +56,10 @@ class EvccTaskQueue {
             _tasks.add( task );
             // If there were no tasks in the queue, start the timer
             if( _tasks.size() == 1 ) {
-                EvccHelperBase.debug( "TaskQueue: Starting timer" );
+                // EvccHelperBase.debug( "TaskQueue: Starting timer" );
                 startTimer();
             }
-            //EvccHelperBase.debug( "TaskQueue: add " + _tasks.size() );
+            // EvccHelperBase.debug( "TaskQueue: add " + _tasks.size() );
         }
     }
 
@@ -74,11 +74,11 @@ class EvccTaskQueue {
             if( _tasks.size() > 0 ) {
                 tasks.addAll( _tasks );
             } else {
-                EvccHelperBase.debug( "TaskQueue: Starting timer" );
+                // EvccHelperBase.debug( "TaskQueue: Starting timer" );
                 startTimer();
             }
             _tasks = tasks;
-            //EvccHelperBase.debug( "TaskQueue: addToFront 1/" + _tasks.size() );
+            // EvccHelperBase.debug( "TaskQueue: addToFront 1/" + _tasks.size() );
         }
     }
 
@@ -86,15 +86,15 @@ class EvccTaskQueue {
     // if there are remaining tasks, start the timer again
     public function executeTask() as Void {
         try {
-            EvccHelperBase.debug( "TaskQueue: Executing task 1/" + _tasks.size() + " ..." );
+            // EvccHelperBase.debug( "TaskQueue: Executing task 1/" + _tasks.size() + " ..." );
             var task = _tasks[0];
             task.invoke();
             _tasks.remove( task );
             if( _tasks.size() > 0 ) {
-                EvccHelperBase.debug( "TaskQueue: Starting timer" );
+                // EvccHelperBase.debug( "TaskQueue: Starting timer" );
                 startTimer();
             }
-            EvccHelperBase.debug( "TaskQueue: ... done" );
+            // EvccHelperBase.debug( "TaskQueue: ... done" );
         } catch ( ex ) {
             _exception = new TaskQueueException( ex );
             EvccHelperBase.debugException( ex );

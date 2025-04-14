@@ -25,7 +25,8 @@ class EvccIconBlock extends EvccBitmapBlock {
         ICON_HOME,
         ICON_GRID,
         ICON_DURATION,
-        ICON_FORECAST
+        ICON_FORECAST,
+        ICON_STATISTICS
     }
 
     enum ConditionalIcon {
