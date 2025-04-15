@@ -14,14 +14,12 @@ class EvccWidgetStatisticsView extends EvccWidgetSiteViewBase {
         EvccWidgetSiteViewBase.initialize( views, parentView, siteIndex );
     }
 
-    // Show the statistics icon as page title
-    function getPageTitle() as EvccBlock? {
-        var pageTitle = new EvccVerticalBlock( {} as DbOptions );
-        pageTitle.addIcon( EvccIconBlock.ICON_STATISTICS, {} as DbOptions );
-        pageTitle.addTextWithOptions( "solar energy", { :relativeFont => 2 } );
-        return pageTitle;
-
-        //return new EvccIconBlock( EvccIconBlock.ICON_STATISTICS, {} as DbOptions );
+    // Set icon and title for this page
+    function getPageTitle() as EvccTextBlock? {
+        return new EvccTextBlock( "solar energy", {} as DbOptions );
+    }
+    function getPageIcon() as EvccIconBlock? {
+        return new EvccIconBlock( EvccIconBlock.ICON_STATISTICS, {} as DbOptions );
     }
 
     // Add the content
@@ -45,7 +43,7 @@ class EvccWidgetStatisticsView extends EvccWidgetSiteViewBase {
                     label.addTextWithOptions( LABELS[i] + ":", { :relativeFont => 2, :verticalJustifyToBaseFont => true } as DbOptions );
                     label.addTextWithOptions( " ", { :relativeFont => 0 } );
 
-                    var value = new EvccHorizontalBlock( { :justify => Graphics.TEXT_JUSTIFY_LEFT } as DbOptions );
+                    var value = new EvccHorizontalBlock( { :justify => Graphics.TEXT_JUSTIFY_RIGHT } as DbOptions );
                     value.addText( formatSolarPercentage( statisticsPeriods[i].getSolarPercentage() ) );
                     value.addTextWithOptions( "%", { :relativeFont => 2, :verticalJustifyToBaseFont => true } );
 
@@ -56,6 +54,7 @@ class EvccWidgetStatisticsView extends EvccWidgetSiteViewBase {
                 row.addBlock( column2 );
                 //block.addTextWithOptions( "solar energy", { :relativeFont => 2 } );
                 block.addBlock( row );
+                //block.addTextWithOptions( "solar energy", { :relativeFont => 2 } );
                 //block.addTextWithOptions( "solar energy share", { :relativeFont => 4, :marginTop => dcHeight * 0.007 } );
             } else {
                 block.addText( "Loading ..." );

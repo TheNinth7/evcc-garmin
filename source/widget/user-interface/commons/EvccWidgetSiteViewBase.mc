@@ -51,8 +51,9 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
     // Below some functions to be overriden by the implementations of this class,
     // to define the behavior and provide content
 
-    // Function to be overriden to add a page title to the view
-    public function getPageTitle() as EvccBlock? { return null; }
+    // Function to be overriden to add a page title/icon to the view
+    public function getPageIcon() as EvccIconBlock? { return null; }
+    public function getPageTitle() as EvccTextBlock? { return null; }
 
     // Decide whether the content shall be limited by
     // height and/or width. Default is height only

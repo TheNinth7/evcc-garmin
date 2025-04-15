@@ -21,7 +21,11 @@ class EvccWidgetForecastView extends EvccWidgetSiteViewBase {
     }
 
     // Show the forecast icon as page title
-    function getPageTitle() as EvccBlock? {
+    // Set icon and title for this page
+    function getPageTitle() as EvccTextBlock? {
+        return new EvccTextBlock( "forecast", {} as DbOptions );
+    }
+    function getPageIcon() as EvccIconBlock? {
         return new EvccIconBlock( EvccIconBlock.ICON_FORECAST, {} as DbOptions );
     }
 
