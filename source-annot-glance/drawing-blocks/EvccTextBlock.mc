@@ -37,7 +37,7 @@ import Toybox.WatchUi;
 
         // Align text to have the same baseline as the base font would have
         // this is for aligning two different font sizes in one line of text
-        if( getOption( :vjustifyTextToBottom ) ) {
+        if( getOption( :verticalJustifyToBaseFont ) ) {
             var fontHeight = getFontHeight();
             var baseFont = getOption( :baseFont ) as EvccFont;
             var baseFontHeight = EvccResources.getFontHeight( baseFont );

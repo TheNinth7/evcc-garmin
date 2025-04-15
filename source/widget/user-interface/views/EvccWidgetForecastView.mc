@@ -82,7 +82,7 @@ class EvccWidgetForecastView extends EvccWidgetSiteViewBase {
             var unit = new EvccHorizontalBlock( {:justify => Graphics.TEXT_JUSTIFY_LEFT} );
             unit.addText( " kWh" );
             if( _indicator[i] != null ) {
-                unit.addTextWithOptions( " " + _indicator[i], { :relativeFont => 4, :vjustifyTextToBottom => true } );
+                unit.addTextWithOptions( " " + _indicator[i], { :relativeFont => 4, :verticalJustifyToBaseFont => true } );
             }
             column3.addBlock( unit );
         }
@@ -102,7 +102,7 @@ class EvccWidgetForecastView extends EvccWidgetSiteViewBase {
             var line = new EvccHorizontalBlock( { :justify => Graphics.TEXT_JUSTIFY_LEFT } );
             line.addTextWithOptions( _label[i] + ": " + formatEnergy( energy[i] * scale ) + "kWh", {} as DbOptions );
             if( _indicator[i] != null ) {
-                line.addTextWithOptions( " " + _indicator[i], { :relativeFont => 4, :vjustifyTextToBottom => true } );
+                line.addTextWithOptions( " " + _indicator[i], { :relativeFont => 4, :verticalJustifyToBaseFont => true } );
             }
             block.addBlock( line );
         }
