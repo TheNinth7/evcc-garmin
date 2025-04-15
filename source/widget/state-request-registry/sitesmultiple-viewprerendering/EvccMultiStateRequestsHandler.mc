@@ -74,7 +74,6 @@ public class EvccMultiStateRequestsHandler {
         
         // If we have reached the end, reset the counter, stop the initial timer and start the request timer
         if( _i == _stateRequests.size() ) {
-            _i = 0;
             _timer.stop();
             startRequestTimer();
         }
@@ -89,6 +88,11 @@ public class EvccMultiStateRequestsHandler {
         var refreshInterval = Properties.getValue( EvccConstants.PROPERTY_REFRESH_INTERVAL ) as Number;
         var timerInterval = ( refreshInterval / 2 ).toNumber();
         _timer.start( method( :makeRequest ), timerInterval * 1000, true );
+        
+        // For requests for sites not currently displayed (inactive requests)
+        // we loop through all requests. The loop starts with incrementing the
+        // counter, so we initialize it with -1 to then start with 0.
+        _i = -1;
     }
 
     private var _isActiveSitesTurn as Boolean = true;
@@ -97,19 +101,28 @@ public class EvccMultiStateRequestsHandler {
         // Only if the task queue is empty, we will start a request, otherwise
         // we will skip it this time and wait for the next timer event
         if( EvccTaskQueue.getInstance().isEmpty() ) {
+            
+            if( _stateRequests.size() == 1 ) {
+                _isActiveSitesTurn = true;
+            }
+            
             if( _isActiveSitesTurn ) {
                 // If it is the active site's turn, we make that request
-                // EvccHelperBase.debug( "MultiStateRequestsTimer: makeRequest for active site=" + _activeSite );
+                EvccHelperBase.debug( "MultiStateRequestsTimer: makeRequest for active site=" + _activeSite );
                 _stateRequests[_activeSite].makeRequest();
             } else {
                 // Otherwise we make a request to the next inactive site
-                // For that we skip the active site
-                if( _i == _activeSite ) { _i++; }
-                // And reset the counter if we reached the end
-                if( _i == _stateRequests.size() ) { _i = 0; }
-                // EvccHelperBase.debug( "MultiStateRequestsTimer: makeRequest for inactive site=" + _i );
+                
+                // We increment the counter, set it to 0 if we reached the end
+                // and do that again if we hit the active site
+                do {
+                    _i++;
+                    if( _i >= _stateRequests.size() ) { _i = 0; }
+                } while( _i == _activeSite );
+                
+                // And skip the active site
+                EvccHelperBase.debug( "MultiStateRequestsTimer: makeRequest for inactive site=" + _i );
                 _stateRequests[_i].makeRequest();
-                _i++;
             }
             // Alternate between active site and inactive sites
             _isActiveSitesTurn = ! _isActiveSitesTurn;
