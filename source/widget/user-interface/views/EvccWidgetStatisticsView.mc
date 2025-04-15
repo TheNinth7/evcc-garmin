@@ -16,7 +16,12 @@ class EvccWidgetStatisticsView extends EvccWidgetSiteViewBase {
 
     // Show the statistics icon as page title
     function getPageTitle() as EvccBlock? {
-        return new EvccIconBlock( EvccIconBlock.ICON_STATISTICS, {} as DbOptions );
+        var pageTitle = new EvccVerticalBlock( {} as DbOptions );
+        pageTitle.addIcon( EvccIconBlock.ICON_STATISTICS, {} as DbOptions );
+        pageTitle.addTextWithOptions( "solar energy", { :relativeFont => 2 } );
+        return pageTitle;
+
+        //return new EvccIconBlock( EvccIconBlock.ICON_STATISTICS, {} as DbOptions );
     }
 
     // Add the content
@@ -35,14 +40,23 @@ class EvccWidgetStatisticsView extends EvccWidgetSiteViewBase {
                 var column2 = new EvccVerticalBlock( {} as DbOptions );
 
                 for( var i = 0; i < statisticsPeriods.size(); i++ ) {
-                    var value = statisticsPeriods[i].getSolarPercentage();
-                    column1.addTextWithOptions( LABELS[i] + ": ", { :justify => Graphics.TEXT_JUSTIFY_RIGHT} );
-                    column2.addTextWithOptions( formatSolarPercentage( value ), {:justify => Graphics.TEXT_JUSTIFY_RIGHT} );
+
+                    var label = new EvccHorizontalBlock( { :justify => Graphics.TEXT_JUSTIFY_RIGHT } as DbOptions );
+                    label.addTextWithOptions( LABELS[i] + ":", { :relativeFont => 2, :verticalJustifyToBaseFont => true } as DbOptions );
+                    label.addTextWithOptions( " ", { :relativeFont => 0 } );
+
+                    var value = new EvccHorizontalBlock( { :justify => Graphics.TEXT_JUSTIFY_LEFT } as DbOptions );
+                    value.addText( formatSolarPercentage( statisticsPeriods[i].getSolarPercentage() ) );
+                    value.addTextWithOptions( "%", { :relativeFont => 2, :verticalJustifyToBaseFont => true } );
+
+                    column1.addBlock( label );
+                    column2.addBlock( value );
                 }
                 row.addBlock( column1 );
                 row.addBlock( column2 );
+                //block.addTextWithOptions( "solar energy", { :relativeFont => 2 } );
                 block.addBlock( row );
-                block.addTextWithOptions( "solar energy", { :relativeFont => 4, :marginTop => dcHeight * 0.007 } );
+                //block.addTextWithOptions( "solar energy share", { :relativeFont => 4, :marginTop => dcHeight * 0.007 } );
             } else {
                 block.addText( "Loading ..." );
             }
@@ -52,7 +66,7 @@ class EvccWidgetStatisticsView extends EvccWidgetSiteViewBase {
 
         // Add a small margin to the bottom. While the content is centered vertically between title and logo,
         // the spacing in the fonts make it seem a bit off, and this is to compensate for that.
-        block.setOption( :marginBottom, dcHeight * 0.02 );
+        block.setOption( :marginBottom, dcHeight * 0.035 );
     }
 
     // Statistics is limited by width not the default height
@@ -61,6 +75,6 @@ class EvccWidgetStatisticsView extends EvccWidgetSiteViewBase {
 
     // Format the percentage
     private function formatSolarPercentage( percentage as Float ) as String {
-        return percentage.format("%.0f") + "%";
+        return percentage.format("%.0f");
     }
 }
