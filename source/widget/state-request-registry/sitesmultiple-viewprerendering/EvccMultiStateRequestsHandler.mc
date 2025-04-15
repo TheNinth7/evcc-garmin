@@ -126,6 +126,8 @@ public class EvccMultiStateRequestsHandler {
             }
             // Alternate between active site and inactive sites
             _isActiveSitesTurn = ! _isActiveSitesTurn;
+        } else {
+            EvccHelperBase.debug( "MultiStateRequestsTimer: skipping makeRequest" );
         }
     }
     
