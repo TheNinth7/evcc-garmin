@@ -5,6 +5,11 @@ import Toybox.Time;
 import Toybox.PersistedContent;
 
 
+// The interface to be implemented by objects passed in as callbacks
+typedef EvccStateRequestCallback as interface {
+    function onStateUpdate() as Void;
+};
+
 // The state request manages the HTTP request to the evcc instance.
 // - It makes the result (a state or an error) available.
 // - If within the data expiry time, a stored state is made available 
@@ -176,9 +181,9 @@ import Toybox.PersistedContent;
     // callback methods that will be called whenever a new web
     // response is received
     (:exclForWebResponseCallbacksDisabled) 
-    private var _callbacks as Array<Method> = [];
+    private var _callbacks as Array<EvccStateRequestCallback> = [];
     (:exclForWebResponseCallbacksDisabled) 
-    public function registerCallback( callback as Method() as Void ) as Void {
+    public function registerCallback( callback as EvccStateRequestCallback ) as Void {
         _callbacks.add( callback );
     }
     (:exclForWebResponseCallbacksDisabled :typecheck(disableBackgroundCheck)) 
@@ -190,7 +195,7 @@ import Toybox.PersistedContent;
             WatchUi.requestUpdate();
         } else {
             for( var i = 0; i < _callbacks.size(); i++ ) {
-                _callbacks[i].invoke();
+                _callbacks[i].onStateUpdate();
             }
         }
     }
@@ -201,7 +206,7 @@ import Toybox.PersistedContent;
     (:exclForViewPreRenderingDisabled)
     public function invokeAllCallbacksButFirst() as Void {
         for( var i = 1; i < _callbacks.size(); i++ ) {
-            _callbacks[i].invoke();
+            _callbacks[i].onStateUpdate();
         }
     }
 
