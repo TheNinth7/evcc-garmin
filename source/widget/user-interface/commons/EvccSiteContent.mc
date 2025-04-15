@@ -41,18 +41,16 @@ class EvccSiteContent {
 
         var content = new EvccVerticalBlock( { :dc => calcDc } as DbOptions );
         
+        stateRequest.checkForError();
+
         if( ! stateRequest.hasCurrentState() ) {
             content.addText( "Loading ..." );
             // Always vertically center the Loading message
             _view.getContentArea().y = calcDc.getHeight() / 2;
         } else { 
-            if( stateRequest.hasError() ) {
-                throw new StateRequestException( stateRequest.getErrorMessage(), stateRequest.getErrorCode() );
-            } else { 
-                setAlreadyHasRealContent();
-                // The actual content comes from implementations of this class
-                _view.addContent( content, calcDc );
-            }
+            setAlreadyHasRealContent();
+            // The actual content comes from implementations of this class
+            _view.addContent( content, calcDc );
         }
 
         // Determine font size

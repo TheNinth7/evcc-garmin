@@ -64,6 +64,8 @@ import Toybox.Math;
         // Note that we DO NOT check fore staterq.hasCurrentState(). In this instance we are not interested
         // whether the stored state is current or not. Regardless of age, if the previous state had a 
         // forecast we assume that there is still a forecast
+        // If there is an error, we do not add anything. The actual error will be handled by
+        // the content assembly of this view.
         if( ! stateRequest.hasError() && stateRequest.hasState() ) {
             if( ! _hasForecast && stateRequest.getState().hasForecast() ) {
                 _hasForecast = true;

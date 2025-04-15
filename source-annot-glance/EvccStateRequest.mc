@@ -39,6 +39,16 @@ typedef EvccStateRequestCallback as interface {
     public function hasError() as Boolean { return _error; }
     public function getErrorMessage() as String { return _errorMessage; }
     public function getErrorCode() as String { return _errorCode; }
+    // If there was a web request error, throw an exception
+    // This should be only called in the foreground, the background service
+    // checks directly for hasError and writes errors into storage
+    (:typecheck(disableBackgroundCheck)) 
+    public function checkForError() as Void {
+        if( _error ) {
+            throw new StateRequestException( _errorMessage, _errorCode );
+        }
+    }
+
     
     // Accessors for the state
     public function hasState() as Boolean { return _stateStore.getState() != null; }
