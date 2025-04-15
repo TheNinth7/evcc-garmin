@@ -12,11 +12,16 @@ import Toybox.Timer;
 // the current event processing and allows other events in the CIQ queue to
 // be processed
 
-// A task can be a Toybox.lang.Method, or any other class that has
-// in invoke function
-typedef EvccTask as interface {
-    function invoke() as Void;
-};
+// For error handling, each task has to come with an associated exception handler
+// - If an exception occurs when executing the task, it will be registered with
+//   that exception handler.
+// - Tasks whose exception handler already has an exception will not be added
+//   to the queue.
+// - Tasks whose exception handler already has an exception will not be executed
+
+// This way, each view can instantiate their own exception handler and access
+// exceptions that happened during the execution of its tasks.
+// If an error affects only a subset of views, the others will continue to work
 
 (:exclForViewPreRenderingDisabled)
 class EvccTaskQueue {
@@ -37,9 +42,6 @@ class EvccTaskQueue {
     // The timer that controls the task execution
     private var _timer as Timer.Timer = new Timer.Timer();
     
-    // Stores any exception that may have occured during task execution
-    private var _exception as Exception? = null;
-
     // Starts the timer for executing tasks
     private function startTimer() as Void {
         _timer.start( method( :executeTask ), 50, false );
@@ -49,10 +51,10 @@ class EvccTaskQueue {
     public function isEmpty() as Boolean { return _tasks.size() == 0; }
 
     // Add a task
-    // If a previous task resulted in an exception, new
-    // tasks will be ignored
     public function add( task as EvccTask ) as Void {
-        if( _exception == null ) {
+        // If the exception handler associated with the task
+        // already has an exception, the task will be ignored
+        if( ! task.getExceptionHandler().hasException() ) {
             _tasks.add( task );
             // If there were no tasks in the queue, start the timer
             if( _tasks.size() == 1 ) {
@@ -65,10 +67,10 @@ class EvccTaskQueue {
 
     // Add a task to the front of the queue, for cases where a task
     // should skip the line and be executed at the next opportunity
-    // If a previous task resulted in an exception, new
-    // tasks will be ignored
     public function addToFront( task as EvccTask ) as Void {
-        if( _exception == null ) {
+        // If the exception handler associated with the task
+        // already has an exception, the task will be ignored
+        if( ! task.getExceptionHandler().hasException() ) {
             var tasks = new Array<EvccTask>[0];
             tasks.add( task );
             if( _tasks.size() > 0 ) {
@@ -85,33 +87,23 @@ class EvccTaskQueue {
     // Executes the task next in the queue and then
     // if there are remaining tasks, start the timer again
     public function executeTask() as Void {
-        try {
-            EvccHelperBase.debug( "TaskQueue: Executing task 1/" + _tasks.size() + " ..." );
-            if( _exception == null ) {
-                var task = _tasks[0];
+        EvccHelperBase.debug( "TaskQueue: Executing task 1/" + _tasks.size() + " ..." );
+        var task = _tasks[0];
+        // If the exception handler associated with the task
+        // already has an exception, the task will not be executed
+        if( ! task.getExceptionHandler().hasException() ) {
+            try {
                 task.invoke();
-                _tasks.remove( task );
-                if( _tasks.size() > 0 ) {
+                if( _tasks.size() > 1 ) {
                     // EvccHelperBase.debug( "TaskQueue: Starting timer" );
                     startTimer();
                 }
+            } catch ( ex ) {
+                // Any exception occuring will be registered with the
+                // exception handler associated with this task
+                task.getExceptionHandler().registerException( ex );
             }
-            // EvccHelperBase.debug( "TaskQueue: ... done" );
-        } catch ( ex ) {
-            registerException( ex );
         }
-    }
-
-    public function registerException( ex as Exception ) as Void {
-        _exception = ex;
-        EvccHelperBase.debugException( ex );
-        _timer.stop();
-    }
-
-    // Check if an exception has occured, and if yes, throw it
-    public function checkForException() as Void {
-        if( _exception != null ) {
-            throw _exception;
-        }
+        _tasks.remove( task );
     }
 }

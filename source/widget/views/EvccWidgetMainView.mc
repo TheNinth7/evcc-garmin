@@ -73,17 +73,6 @@ import Toybox.Math;
         }
     }
 
-    // For adding the detail views as task, we need a wrapper that does exception handling
-    (:exclForViewPreRenderingDisabled) public function addDetailViewsTask() as Void {
-        try {
-            addDetailViews();
-        } catch ( ex ) {
-            EvccTaskQueue.getInstance().registerException( ex );
-        }
-    }
-
-
-    
     (:exclForMemoryLow)   
     public function addOptionalDetailViews() as Void {
         if( ! _hasStatistics ) {
@@ -152,7 +141,7 @@ import Toybox.Math;
     }
     (:exclForViewPreRenderingDisabled) function prepareByTasks() as Void {
         // EvccHelperBase.debug("WidgetSiteMain: prepareByTasks site=" + getSiteIndex() );
-        EvccTaskQueue.getInstance().add( method( :addDetailViewsTask ) );
+        EvccTaskQueue.getInstance().add( new EvccAddDetailViewsTask( self ) );
         EvccWidgetSiteViewBase.prepareByTasks();
     }
 

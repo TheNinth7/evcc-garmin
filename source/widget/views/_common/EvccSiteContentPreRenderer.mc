@@ -10,39 +10,27 @@ class EvccSiteContentPreRenderer extends EvccSiteContent {
     }
 
     // Each step needs its own function
-    public function assembleTask() as Void {
-        // EvccHelperBase.debug( "EvccSiteContentPreRenderer: assembleTask" );
-        try {
-            _contentUnderPreparation = assembleInternal( EvccDcStub.getInstance() );
-        } catch ( ex ) {
-            EvccTaskQueue.getInstance().registerException( ex );
-        }
+    public function taskAssemble() as Void {
+        // EvccHelperBase.debug( "EvccSiteContentPreRenderer: taskAssemble" );
+        _contentUnderPreparation = assembleInternal( EvccDcStub.getInstance() );
     }
-    public function prepareTask() as Void {
-        // EvccHelperBase.debug( "EvccSiteContentPreRenderer: prepareTask" );
-        try {
-            var ca = _view.getContentArea();
-            ( _contentUnderPreparation as EvccVerticalBlock).prepareDrawByTasks( ca.x, ca.y );
-        } catch ( ex ) {
-            EvccTaskQueue.getInstance().registerException( ex );
-        }
+    public function taskPrepare() as Void {
+        // EvccHelperBase.debug( "EvccSiteContentPreRenderer: taskPrepare" );
+        var ca = _view.getContentArea();
+        ( _contentUnderPreparation as EvccVerticalBlock).prepareDrawByTasks( ca.x, ca.y, _view.getExceptionHandler() );
     }
-    public function finalizeTask() as Void {
-        // EvccHelperBase.debug( "EvccSiteContentPreRenderer: finalizeTask" );
-        try {
-            _content = _contentUnderPreparation;
-            _contentUnderPreparation = null;
-        } catch ( ex ) {
-            EvccTaskQueue.getInstance().registerException( ex );
-        }
+    public function taskFinalize() as Void {
+        // EvccHelperBase.debug( "EvccSiteContentPreRenderer: taskFinalize" );
+        _content = _contentUnderPreparation;
+        _contentUnderPreparation = null;
     }
     
     // Queue all the steps
     public function queueTasks() as Void {
         var taskQueue = EvccTaskQueue.getInstance();
-        taskQueue.add( method( :assembleTask ) );
-        taskQueue.add( method( :prepareTask ) );
-        taskQueue.add( method( :finalizeTask ) );
+        taskQueue.add( new EvccPreRenderContentTask( self, :taskAssemble, _view ) );
+        taskQueue.add( new EvccPreRenderContentTask( self, :taskPrepare, _view ) );
+        taskQueue.add( new EvccPreRenderContentTask( self, :taskFinalize, _view ) );
     }
 
     // Bypass the queue and prepare everything right away

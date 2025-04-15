@@ -19,7 +19,7 @@ import Toybox.Graphics;
 // not separated.
 
 class EvccSiteShell {
-    private var _view as EvccWidgetSiteViewBase;
+    protected var _view as EvccWidgetSiteViewBase;
     private var _prepared as Boolean = false;
 
     // Draws the "shell", containing:

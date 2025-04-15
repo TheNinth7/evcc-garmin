@@ -176,7 +176,7 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
         // instead should trigger a callback to all views related to the state. Therefore
         // each view registers a callback with the corresponding state request.
         // We register with the state request for callbacks
-        getStateRequest().registerCallback( method( :onStateChange ) );
+        getStateRequest().registerCallback( self );
         
         // For content and shell, we instantiate the versions
         // working with tasks. Updating all views needs a lot of resources and
@@ -190,7 +190,7 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
     // The callback function for state changes
     // It is called initially when a current state is loaded from storage,
     // and after that whenever a new web response is received
-    (:exclForViewPreRenderingDisabled) public function onStateChange() as Void {
+    (:exclForViewPreRenderingDisabled) public function onStateUpdate() as Void {
         try {
             EvccHelperBase.debug( "WidgetSiteBase: onStateChange " + getType() + " site=" + _siteIndex );
             if( _isActiveView && ! _content.alreadyHasRealContent() ) {
@@ -204,8 +204,8 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
                 // for better responsiveness to user input
                 prepareByTasks();
             }
-        } catch ( ex ) {
-            EvccTaskQueue.getInstance().registerException( ex );
+        } catch( ex ) {
+            getExceptionHandler().registerException( ex );
         }
     }
     // Prepare shell and content without task qeueu
@@ -226,24 +226,21 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
         _content.queueTasks();
         // Only if we are the active view, we request an update of the screen
         if( _isActiveView ) {
-            EvccTaskQueue.getInstance().add( method( :requestUpdateTask ) );
-        }
-    }
-    // Function for scheduling the screen update request via the task queue
-    (:exclForViewPreRenderingDisabled) function requestUpdateTask() as Void {
-        try {
-            WatchUi.requestUpdate();
-        } catch ( ex ) {
-            EvccTaskQueue.getInstance().registerException( ex );
+            EvccTaskQueue.getInstance().add( new EvccRequestUpdateTask( self ) );
         }
     }
 
+    (:exclForViewPreRenderingDisabled) 
+    private var _exceptionHandler as EvccExceptionHandler = new EvccExceptionHandler();
+    (:exclForViewPreRenderingDisabled) 
+    public function getExceptionHandler() as EvccExceptionHandler { return _exceptionHandler; }
+    
     // Update the screen
     (:exclForViewPreRenderingDisabled) function onUpdate( dc as Dc ) as Void {
         try {
             EvccHelperBase.debug("WidgetSiteBase: onUpdate " + getType() + " site=" + _siteIndex );
             dc.clear();
-            EvccTaskQueue.getInstance().checkForException();
+            _exceptionHandler.checkForException();
             _shell.drawHeaderAndLogo( dc, false ); // false to keep the header/logo in memory
             _content.draw( dc );
             _shell.drawIndicators( dc );

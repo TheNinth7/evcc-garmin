@@ -17,7 +17,7 @@ import Toybox.Application.Storage;
         System.ServiceDelegate.initialize();
         _siteIndex = siteIndex;
         _stateRequest = new EvccStateRequest( _siteIndex );
-        _stateRequest.registerCallback( method( :onWebResponse ) );
+        _stateRequest.registerCallback( self );
 	}
 	
     // When the background timer triggers, we initiate the
@@ -36,7 +36,7 @@ import Toybox.Application.Storage;
 
     // Once the response is received, we either persist an error
     // or the result
-    function onWebResponse() as Void {
+    function onStateUpdate() as Void {
         if( _stateRequest.hasError() ) {
             Storage.setValue( EvccConstants.STORAGE_BG_ERROR_MSG, _stateRequest.getErrorMessage() );
             Storage.setValue( EvccConstants.STORAGE_BG_ERROR_CODE, _stateRequest.getErrorCode() );

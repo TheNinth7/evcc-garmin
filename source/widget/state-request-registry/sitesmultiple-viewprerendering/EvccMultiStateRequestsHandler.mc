@@ -35,7 +35,7 @@ public class EvccMultiStateRequestsHandler {
             // If current data is available in storage, trigger the callbacks
             // The first callback of the active site is the initial view, so we do not need to invoke its callback
             // EvccHelperBase.debug("MultiStateRequestsTimer: adding invokeAllCallbacksButFirst" );
-            EvccTaskQueue.getInstance().addToFront( stateRequest.method( :invokeAllCallbacksButFirst ) );
+            EvccTaskQueue.getInstance().addToFront( new EvccInvokeAllCallbacksButFirstTask( stateRequest ) );
         }
         if( _stateRequests.size() > 1 ) {
             // EvccHelperBase.debug( "EvccMultiStateRequestsHandler: starting delayed initiation" );

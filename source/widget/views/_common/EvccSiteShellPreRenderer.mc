@@ -9,19 +9,15 @@ class EvccSiteShellPreRenderer extends EvccSiteShell {
     }
 
     // Only one task here
-    public function prepareTask() as Void {
-        // EvccHelperBase.debug( "EvccSiteShellPreRenderer: prepareTask" );
-        try {
-            prepare( EvccDcStub.getInstance() );
-        } catch ( ex ) {
-            EvccTaskQueue.getInstance().registerException( ex );
-        }
+    public function taskPrepare() as Void {
+        // EvccHelperBase.debug( "EvccSiteShellPreRenderer: taskPrepare" );
+        prepare( EvccDcStub.getInstance() );
     }
 
     // Queue the task
     public function queueTasks() as Void {
         var taskQueue = EvccTaskQueue.getInstance();
-        taskQueue.add( method( :prepareTask ) );
+        taskQueue.add( new EvccPreRenderShellTask( self, _view.getExceptionHandler() ) );
     }
 
     // Bypass the queue and prepare everything right away
