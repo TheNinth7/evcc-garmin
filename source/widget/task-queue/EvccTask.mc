@@ -11,10 +11,10 @@ class EvccTask {
     // The interface is used to support a EvccWidgetSiteViewBase to be passed in and
     // its exception handler to be used
     public function initialize( handler as EvccHasExceptionHandler or EvccExceptionHandler ) {
-        if( handler has :getExceptionHandler ) {
-            _exceptionHandler = ( handler as EvccHasExceptionHandler ).getExceptionHandler();
+        if( handler instanceof EvccExceptionHandler ) {
+            _exceptionHandler = ( handler as EvccExceptionHandler );
         } else {
-            _exceptionHandler = handler as EvccExceptionHandler;
+            _exceptionHandler = ( handler as EvccHasExceptionHandler ).getExceptionHandler();
         }
     }
 
