@@ -54,9 +54,11 @@ import Toybox.Math;
     // Detail views present additional data for a particular site. This function adds 
     // detail views for this site, either to the lower level or to the same level views, 
     // depending on the situation.
+    // Detail views are not available on low-memory devices.    
     // ATTENTION: this function is called everytime there is a new web response, since changed
     // data may lead to additional views being displayed. Therefore, this function has to protect 
     // itself from adding the same view twice.
+    (:exclForMemoryLow)   
     public function addDetailViews() as Void {
         // EvccHelperBase.debug("WidgetSiteMain: addDetailViews" );
         var stateRequest = getStateRequest();
@@ -71,24 +73,18 @@ import Toybox.Math;
                 _hasForecast = true;
                 addDetailView( EvccWidgetForecastView );
             }
-            addOptionalDetailViews();
+            if( ! _hasStatistics ) {
+                _hasStatistics = true;
+                addDetailView( EvccWidgetStatisticsView );
+            }
         }
     }
-
-    (:exclForMemoryLow)   
-    public function addOptionalDetailViews() as Void {
-        if( ! _hasStatistics ) {
-            _hasStatistics = true;
-            addDetailView( EvccWidgetStatisticsView );
-        }
-    }
-    (:exclForMemoryStandard)   
-    public function addOptionalDetailViews() as Void {}
 
     // This function is the one actually decides if a detail view is added
     // on the same or on the lower level. To be able to apply this to 
     // different detail views, it accepts a class type as input
-    (:typecheck(false)) private function addDetailView( viewClass ) as Void {
+    (:exclForMemoryLow :typecheck(false))   
+    private function addDetailView( viewClass ) as Void {
         var siteCount = EvccSiteConfiguration.getSiteCount();
         // If we act as glance, and there is only one site, then we add the detail view to the lower level views
         // Also if we do not act as glance, but there is more than one site, it goes to the lower level views 
@@ -101,6 +97,9 @@ import Toybox.Math;
         }
     }
 
+    // Dummy function for low memory devices
+    (:exclForMemoryDefault)   
+    public function addDetailViews() as Void {}
 
     // If we act as glance, we update the current site
     function onShow() as Void {

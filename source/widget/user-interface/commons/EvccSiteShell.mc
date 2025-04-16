@@ -18,6 +18,10 @@ import Toybox.Graphics;
 // this makes it easier to use for cases where the pre-rendering and drawing is
 // not separated.
 
+// For low memory devices, only the logo is needed, and there is a simpler
+// implementation for a logo-only shell at the end of this file
+
+(:exclForMemoryLow)
 class EvccSiteShell {
     protected var _view as EvccWidgetSiteViewBase;
     private var _prepared as Boolean = false;
@@ -197,4 +201,61 @@ class EvccSiteShell {
             (_selectIndicator as EvccSelectIndicator).draw( dc );
         }
     }
+}
+
+// Variant for low-memory devices
+// Since low memory devices only have one site and
+// do not have detail views, only the logo is shown
+(:exclForMemoryDefault)
+class EvccSiteShell {
+    protected var _view as EvccWidgetSiteViewBase;
+    private var _logo as EvccBitmapBlock?;
+
+    public function initialize( view as EvccWidgetSiteViewBase ) {
+        _view = view;
+    }
+
+    // Prepare the drawing and calculate the content area
+    public function prepare( calcDc as EvccDcInterface ) as Void {
+        var dcWidth = calcDc.getWidth();
+        var dcHeight = calcDc.getHeight();
+
+        var xCenter = dcWidth / 2;
+
+        // Draw the logo
+        var logo = new EvccBitmapBlock( Rez.Drawables.logo_evcc, {} as DbOptions );
+        var spacing = logo.getHeight();
+        logo.setOption( :marginTop, spacing );
+        logo.setOption( :marginBottom, spacing ); 
+        var logoHeight = logo.getHeight();
+        logo.prepareDraw( xCenter, dcHeight - logoHeight / 2 );
+        _logo = logo;
+
+        // Calculate the dimensions of the content area
+        var ca = _view.getContentArea();
+
+        // Height any y are calculated based on logo height
+        // From the top we keep 2xspacing to make the layout
+        // more balanced
+        ca.height = dcHeight - spacing*2 - logoHeight;
+        ca.y = spacing*2 + ca.height/2;
+
+        // Width is the same as Dc, since we don't have 
+        // page or select indicator
+        ca.width = dcWidth;
+        ca.x = xCenter;
+        ca.truncateSpacing = 0; // No spacing needed since no indicators
+    }
+
+    // We only need to draw the logo
+    public function drawHeaderAndLogo( dc as Dc, clear as Boolean ) as Void {
+        if( _logo == null ) {
+            prepare( dc );
+        }
+        ( _logo as EvccBitmapBlock ).drawPrepared( dc );
+        if( clear ) {
+            _logo = null;
+        }
+    }
+    public function drawIndicators( dc as Dc ) as Void {}
 }
