@@ -139,6 +139,8 @@ fr745.resourcePath=resources-site-settings/site1;resources;resources-drawables/f
 fr945.resourcePath=$(fenix6spro.resourcePath)
 fr945lte.resourcePath=$(fenix6spro.resourcePath)
 fr955.resourcePath=resources-site-settings/site5;resources;resources-drawables/fr955;resources-properties/fr955
+fr165.resourcePath=resources-site-settings/site5;resources;resources-drawables/fr165
+fr165m.resourcePath=resources-site-settings/site5;resources;resources-drawables/fr165m
 fr265.resourcePath=resources-site-settings/site5;resources;resources-drawables/fr265
 fr265s.resourcePath=resources-site-settings/site5;resources;resources-drawables/fr265s
 fr965.resourcePath=resources-site-settings/site5;resources;resources-drawables/fr965
@@ -171,6 +173,8 @@ vivoactive5.excludeAnnotations = $(venu2.excludeAnnotations)
 # Full glance devices, but with select button at 27°
 fr265.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(memoryStandard);$(sitesMultiple);$(select27);$(hasSelect);$(swipeLeftDefault);$(viewPreRenderingEnabled)
 fr265s.excludeAnnotations = $(fr265.excludeAnnotations)
+fr165.excludeAnnotations = $(fr265.excludeAnnotations)
+fr165m.excludeAnnotations = $(fr265.excludeAnnotations)
 fr965.excludeAnnotations = $(fr265.excludeAnnotations)
 # Full glance devices, but with swipe left override
 # For testing purposes, use these entries to run epix2pro47mm in configuration of low-memory devices
