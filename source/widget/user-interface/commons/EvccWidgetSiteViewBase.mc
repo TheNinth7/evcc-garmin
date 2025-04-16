@@ -239,9 +239,9 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
     // Update the screen
     (:exclForViewPreRenderingDisabled) function onUpdate( dc as Dc ) as Void {
         try {
-            EvccHelperBase.debug("WidgetSiteBase: onUpdate " + getType() + " site=" + _siteIndex );
+            EvccHelperBase.debug( "WidgetSiteBase: onUpdate " + getType() + " site=" + _siteIndex );
             dc.clear();
-            _exceptionHandler.checkForException();
+            //_exceptionHandler.checkForException();
             _shell.drawHeaderAndLogo( dc, false ); // false to keep the header/logo in memory
             _content.draw( dc );
             _shell.drawIndicators( dc );
@@ -254,24 +254,10 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
             dc.drawLine( _ca.x - _ca.width / 2, _ca.y, _ca.x + _ca.width / 2, _ca.y );
             */
             
-            /*
-            _updateCounter++;
-            if( _updateCounter > 2 ) {
-                var timer = new Toybox.Timer.Timer();
-                timer.start( method( :testTimer ), 50, false );
-            }
-            EvccHelperBase.debug("WidgetSiteBase: onUpdate completed for " + getType() + " site=" + _siteIndex );
-            */
+            EvccHelperBase.debug( "WidgetSiteBase: onUpdate completed for " + getType() + " site=" + _siteIndex );
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
             EvccHelperUI.drawError( dc, ex );
         }
     }
-
-    /*
-    private var _updateCounter as Number = 0;
-    public function testTimer() as Void {
-        EvccHelperBase.debug( "WidgetSiteBase: timer triggered" );
-    }
-    */
 }

@@ -30,6 +30,7 @@ public class EvccMultiStateRequestsHandler {
         // EvccHelperBase.debug( "EvccMultiStateRequestsHandler: initiating state request for site " + activeSite );
         var stateRequest = stateRequests[activeSite];
         // We load the initial state of the first state request
+        EvccHelperBase.debug( "MultiStateRequestsTimer: initialize active site=" + activeSite );
         stateRequest.loadInitialState();
         if( stateRequest.hasCurrentState() ) {
             // If current data is available in storage, trigger the callbacks
@@ -63,6 +64,7 @@ public class EvccMultiStateRequestsHandler {
         if( _i < _stateRequests.size() ) {
             var stateRequest = _stateRequests[_i];
             // We load the initial state of the first state request
+            EvccHelperBase.debug( "MultiStateRequestsTimer: loadInitialStates site=" + _i );
             stateRequest.loadInitialState();
             if( stateRequest.hasCurrentState() ) {
                 // If current data is available in storage, trigger the callbacks

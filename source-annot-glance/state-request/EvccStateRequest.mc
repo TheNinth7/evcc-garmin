@@ -49,7 +49,6 @@ typedef EvccStateRequestCallback as interface {
         }
     }
 
-    
     // Accessors for the state
     public function hasState() as Boolean { return _stateStore.getState() != null; }
     public function getState() as EvccState { return _stateStore.getState() as EvccState; }
@@ -79,13 +78,13 @@ typedef EvccStateRequestCallback as interface {
         
         // If no stored data is found a request is made immediately
         if( state == null ) {
-            // EvccHelperBase.debug( "StateRequest: no stored data found");
+            EvccHelperBase.debug( "StateRequest: no stored data found");
             makeRequest(); 
         } else { 
             var dataAge = Time.now().compare( state.getTimestamp() );
             // If the persisted data is older than the expiry time it is not used and a request is made immediately
             if( dataAge > _dataExpiry ) {
-                // EvccHelperBase.debug( "StateRequest: stored data too old!" ); 
+                EvccHelperBase.debug( "StateRequest: stored data too old!" ); 
                 makeRequest(); 
             } else { 
                 // otherwise the data is used, but if it is older than refreshInterval, a request is made immediately^
@@ -94,6 +93,7 @@ typedef EvccStateRequestCallback as interface {
                 // EvccHelperBase.debug( "StateRequest: using stored data" );
                 _hasCurrentState = true;
                 if( dataAge > _refreshInterval || EvccApp.deviceUsesTinyGlance ) {
+                    EvccHelperBase.debug( "StateRequest: using stored data, making request immediately!" ); 
                     makeRequest(); 
                 }
             }
@@ -125,7 +125,7 @@ typedef EvccStateRequestCallback as interface {
 
     // Make the web request
     public function makeRequest() as Void {
-        // EvccHelperBase.debug("StateRequest: makeRequest site=" + _siteIndex );
+        EvccHelperBase.debug("StateRequest: makeRequest site=" + _siteIndex );
         var siteConfig = new EvccSite( _siteIndex );
 
         var url = siteConfig.getUrl() + "/api/state";
@@ -153,14 +153,14 @@ typedef EvccStateRequestCallback as interface {
         }
 
         Communications.makeWebRequest( url, parameters, options, method(:onReceive) );
-        // EvccHelperBase.debug("StateRequest: makeRequest done" );
+        EvccHelperBase.debug("StateRequest: makeRequest done" );
     }
 
     // Receive the data from the web request
     // Note: need to disable background check because of the call to WatchUi
     (:typecheck(disableBackgroundCheck))
     function onReceive( responseCode as Number, data as Dictionary<String,Object?> or String or PersistedContent.Iterator or Null ) as Void {
-        // EvccHelperBase.debug("StateRequest: onReceive site=" + _siteIndex );
+        EvccHelperBase.debug("StateRequest: onReceive site=" + _siteIndex );
         _hasCurrentState = true;
         _error = true; _errorMessage = ""; _errorCode = "";
         
@@ -184,7 +184,7 @@ typedef EvccStateRequestCallback as interface {
         
         // Trigger the callback logic, see below
         invokeCallbacks();
-        // EvccHelperBase.debug("StateRequest: onReceive done" );
+        EvccHelperBase.debug("StateRequest: onReceive done" );
     }
 
     // If callbacks are enabled, other classes can register
@@ -202,8 +202,10 @@ typedef EvccStateRequestCallback as interface {
             // If not callbacks are registered, we request a screen update from WatchUi
             // Note that the background task has to register a callback, otherwise
             // this call would trip an error
+            EvccHelperBase.debug( "StateRequest: invoke requestUpdate site=" + _siteIndex );
             WatchUi.requestUpdate();
         } else {
+            EvccHelperBase.debug( "StateRequest: invoking callbacks site=" + _siteIndex );
             for( var i = 0; i < _callbacks.size(); i++ ) {
                 _callbacks[i].onStateUpdate();
             }

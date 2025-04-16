@@ -8,6 +8,7 @@ class EvccRequestUpdateTask extends EvccTask {
         EvccTask.initialize( hasExHandler );
     }
     public function invoke() as Void {
+        EvccHelperBase.debug( "EvccRequestUpdateTask: executing requestUpdate" );
         WatchUi.requestUpdate();
     }
 }
