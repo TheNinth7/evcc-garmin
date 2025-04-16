@@ -123,8 +123,6 @@ fenix7s.resourcePath=resources-site-settings/site5;resources;resources-drawables
 fenix7x.resourcePath=resources-site-settings/site5;resources;resources-drawables/fenix7x
 epix2pro42mm.resourcePath=resources-site-settings/site5;resources;resources-drawables/epix2pro42mm
 epix2pro47mm.resourcePath=resources-site-settings/site5;resources;resources-drawables/epix2pro47mm
-#To run epix2pro47mm in configuration of low-memory devices
-#epix2pro47mm.resourcePath=resources-site-settings/site1;resources;resources-drawables/epix2pro47mm
 epix2pro51mm.resourcePath=resources-site-settings/site5;resources;resources-drawables/epix2pro51mm
 fenix7pro.resourcePath=$(fenix7.resourcePath)
 fenix7pronowifi.resourcePath=$(fenix7.resourcePath)
@@ -140,7 +138,7 @@ fr945.resourcePath=$(fenix6spro.resourcePath)
 fr945lte.resourcePath=$(fenix6spro.resourcePath)
 fr955.resourcePath=resources-site-settings/site5;resources;resources-drawables/fr955;resources-properties/fr955
 fr165.resourcePath=resources-site-settings/site5;resources;resources-drawables/fr165
-fr165m.resourcePath=resources-site-settings/site5;resources;resources-drawables/fr165m
+fr165m.resourcePath=$(fr165.resourcePath)
 fr265.resourcePath=resources-site-settings/site5;resources;resources-drawables/fr265
 fr265s.resourcePath=resources-site-settings/site5;resources;resources-drawables/fr265s
 fr965.resourcePath=resources-site-settings/site5;resources;resources-drawables/fr965
@@ -177,9 +175,6 @@ fr165.excludeAnnotations = $(fr265.excludeAnnotations)
 fr165m.excludeAnnotations = $(fr265.excludeAnnotations)
 fr965.excludeAnnotations = $(fr265.excludeAnnotations)
 # Full glance devices, but with swipe left override
-# For testing purposes, use these entries to run epix2pro47mm in configuration of low-memory devices
-#epix2pro47mm.sourcePath = $(sourceGlanceNone)
-#epix2pro47mm.excludeAnnotations = $(glanceNone);$(calcSimple);$(fontsStatic);$(memoryLow);$(sitesOne);$(selectNone);$(swipeLeftDefault);$(viewPreRenderingDisabled);$(webResponseCallbacksDisabled)
 epix2pro47mm.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(memoryStandard);$(sitesMultiple);$(select30);$(hasSelect);$(swipeLeftOverride);$(viewPreRenderingEnabled)
 epix2pro42mm.excludeAnnotations = $(epix2pro47mm.excludeAnnotations)
 epix2pro51mm.excludeAnnotations = $(epix2pro47mm.excludeAnnotations)
