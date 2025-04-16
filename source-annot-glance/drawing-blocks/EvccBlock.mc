@@ -22,7 +22,7 @@ import Toybox.WatchUi;
 // :truncateSpacing - indicates spacing that needs to be left for the page indicator when truncating
 // :parent - parent drawing element. :color, :backgroundColor and :font may be inherited from a parent
 // :batterySoc, :power, :activePhases - for icons that change bases on these inputs
-// :vjustifyTextToBottom - by default, text is center aligned to the passed coordinate. If :vjustifyTextToBottom of a text element within a horizontal container is set to true, it will be aligned to the bottom instead.
+// :verticalJustifyToBaseFont - by default, text is center aligned to the passed coordinate. If :verticalJustifyToBaseFont of a text element within a horizontal container is set to true, it will be aligned to the bottom instead.
 // :spreadToHeight - if set for a vertical block, it will spread out the content to the specified height in pixel
 // :baseFont - not to be set but calculated only, showing the applicable :font, without considering :relativeFont
 
@@ -70,7 +70,7 @@ import Toybox.WatchUi;
         // set to default values
         if( option == :marginLeft || option == :marginRight || option == :marginTop || option == :marginBottom || option == :truncateSpacing || option == :spreadToHeight ) { return 0; }
         if( option == :justify ) { return Graphics.TEXT_JUSTIFY_CENTER; }
-        if( option == :vjustifyTextToBottom ) { return false; }
+        if( option == :verticalJustifyToBaseFont ) { return false; }
         
         // All other options can be inherited, so we look up the parent
         var parent = getParent();

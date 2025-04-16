@@ -19,7 +19,7 @@ import Toybox.Graphics;
 // not separated.
 
 class EvccSiteShell {
-    private var _view as EvccWidgetSiteViewBase;
+    protected var _view as EvccWidgetSiteViewBase;
     private var _prepared as Boolean = false;
 
     // Draws the "shell", containing:
@@ -71,17 +71,43 @@ class EvccSiteShell {
         
         // Page title (icon) is provided by the class' implementation
         var pageTitle = _view.getPageTitle();
-        if( pageTitle != null ) {
+        var pageIcon = _view.getPageIcon();
+
+        if( pageTitle != null || pageIcon != null ) {
             if( hasSiteTitle ) {
+                /*
+                var block;
+                if( pageTitle != null && pageIcon != null ) {
+                    block = new EvccHorizontalBlock( {} as DbOptions );
+                    block.addBlock( pageIcon );
+                    block.addText( " ");
+                    block.addBlock( pageTitle );
+                } else {
+                    block = pageTitle != null ? pageTitle : pageIcon;
+                }
+                */
+
+                var block = ( pageIcon != null ? pageIcon : pageTitle ) as EvccBlock;
+                block.setOption( :marginTop, spacing * 2 / 3 );
+                header.addBlock( block );
                 // If we have a site title, we leave the font (=icon size) for the 
                 // page title the same as the site title, and add a bit of space
-                pageTitle.setOption( :marginTop, spacing * 2 / 3 );
             } else {
                 // If there is no site title, we set the font (=icon size) to the
                 // largest available
-                pageTitle.setOption( :font, EvccWidgetResourceSet.FONT_MEDIUM );
+                if( pageIcon != null ) {
+                    pageIcon.setOption( :font, EvccWidgetResourceSet.FONT_MEDIUM );
+                    pageIcon.setOption( :marginTop, spacing * 2 / 3 );
+                    header.addBlock( pageIcon );
+                }
+                if( pageTitle != null ) {
+                    pageTitle.setOption( :font, EvccWidgetResourceSet.FONT_TINY );
+                    if( pageIcon == null ) {
+                        pageTitle.setOption( :marginTop, spacing * 2 / 3 );
+                    }
+                    header.addBlock( pageTitle );
+                }
             }
-            header.addBlock( pageTitle );
         }
         
         // If there is no header content, we leave 1 x spacing in marginTop to

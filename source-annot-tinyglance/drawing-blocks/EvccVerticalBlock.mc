@@ -13,7 +13,7 @@ class EvccVerticalBlock extends EvccContainerBlock {
     // The standard prepareDraw prepares all elements in this container
     // immediately
     public function prepareDraw( x as Number, y as Number ) as Void {
-        prepareDrawInternal( x, y, false );
+        prepareDrawInternal( x, y, false, null );
     }
     
     // This function delegates the preparation of each element to a task
@@ -21,8 +21,8 @@ class EvccVerticalBlock extends EvccContainerBlock {
     // split the processing in smaller tasks with possibility to process user
     // input between them
     (:exclForViewPreRenderingDisabled)
-    public function prepareDrawByTasks( x as Number, y as Number ) as Void {
-        prepareDrawInternal( x, y, true );
+    public function prepareDrawByTasks( x as Number, y as Number, exceptionHandler as EvccExceptionHandler ) as Void {
+        prepareDrawInternal( x, y, true, exceptionHandler );
     }
 
     // This is an internal function that prepares the drawing of 
@@ -32,7 +32,7 @@ class EvccVerticalBlock extends EvccContainerBlock {
 
     // Vertical alignment is always centered, therefore for each element we calculate 
     // the y at the center of the element and pass it as starting point.
-    private function prepareDrawInternal( x as Number, y as Number, byTasks as Boolean ) as Void
+    private function prepareDrawInternal( x as Number, y as Number, byTasks as Boolean, exceptionHandler as EvccExceptionHandler? ) as Void
     {
         if( getJustify() != Graphics.TEXT_JUSTIFY_CENTER ) {
             throw new InvalidValueException( "EvccVerticalBlock supports only justify center." );
@@ -58,7 +58,7 @@ class EvccVerticalBlock extends EvccContainerBlock {
             // Actual preparation of the element is done in this function
             // which has two different implementations for different
             // build options
-            prepareDrawOfElement( _elements[i], elX, y, byTasks );
+            prepareDrawOfElement( _elements[i], elX, y, byTasks, exceptionHandler );
             
             y += _elements[i].getHeight() / 2;
         }
@@ -66,7 +66,7 @@ class EvccVerticalBlock extends EvccContainerBlock {
 
     // This function ignores the byTasks and calls prepareDraw immediately
     (:exclForViewPreRenderingEnabled)
-    private function prepareDrawOfElement( element as EvccBlock, x as Number, y as Number, byTasks as Boolean ) as Void {
+    private function prepareDrawOfElement( element as EvccBlock, x as Number, y as Number, byTasks as Boolean, exceptionHandler as EvccExceptionHandler? ) as Void {
         element.prepareDraw( x, y );
     }
     
@@ -75,10 +75,10 @@ class EvccVerticalBlock extends EvccContainerBlock {
     // Type check for glance scope is disabled, because EvccPreparedDrawTask is not available
     // in glance scope. Therefore, this function must never be called from a glance.
     (:exclForViewPreRenderingDisabled :typecheck(disableGlanceCheck))
-    private function prepareDrawOfElement( element as EvccBlock, x as Number, y as Number, byTasks as Boolean ) as Void {
+    private function prepareDrawOfElement( element as EvccBlock, x as Number, y as Number, byTasks as Boolean, exceptionHandler as EvccExceptionHandler? ) as Void {
         if( byTasks ) {
             // EvccHelperBase.debug("VerticalBlock: adding prepareDraw for element" );
-            EvccTaskQueue.getInstance().addToFront( new EvccPrepareDrawTask( element, x, y ) );
+            EvccTaskQueue.getInstance().addToFront( new EvccPrepareDrawTask( element, x, y, exceptionHandler as EvccExceptionHandler ) );
         } else {
             element.prepareDraw( x, y );
         }

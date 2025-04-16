@@ -8,7 +8,7 @@ typedef DbOptions as {
     :dc as EvccDcInterface?,
     :parent as EvccContainerBlock or WeakReference or Null,
     :justify as TextJustification?,
-    :vjustifyTextToBottom as Boolean?,
+    :verticalJustifyToBaseFont as Boolean?,
     :marginLeft as Numeric?,
     :marginRight as Numeric?,
     :marginTop as Numeric?,

@@ -5,13 +5,18 @@ import Toybox.Time;
 import Toybox.PersistedContent;
 
 
+// The interface to be implemented by objects passed in as callbacks
+typedef EvccStateRequestCallback as interface {
+    function onStateUpdate() as Void;
+};
+
 // The state request manages the HTTP request to the evcc instance.
 // - It makes the result (a state or an error) available.
 // - If within the data expiry time, a stored state is made available 
 //   till the web response arrives.
 // - Once a web response arrives, it calls either registered callbacks
 //   or WatchUi.requestUpdate()
-(:background) class EvccStateRequest {
+(:glance :background) class EvccStateRequest {
     
     private var _siteIndex as Number;
 
@@ -34,6 +39,16 @@ import Toybox.PersistedContent;
     public function hasError() as Boolean { return _error; }
     public function getErrorMessage() as String { return _errorMessage; }
     public function getErrorCode() as String { return _errorCode; }
+    // If there was a web request error, throw an exception
+    // This should be only called in the foreground, the background service
+    // checks directly for hasError and writes errors into storage
+    (:typecheck(disableBackgroundCheck)) 
+    public function checkForError() as Void {
+        if( _error ) {
+            throw new StateRequestException( _errorMessage, _errorCode );
+        }
+    }
+
     
     // Accessors for the state
     public function hasState() as Boolean { return _stateStore.getState() != null; }
@@ -176,9 +191,9 @@ import Toybox.PersistedContent;
     // callback methods that will be called whenever a new web
     // response is received
     (:exclForWebResponseCallbacksDisabled) 
-    private var _callbacks as Array<Method> = [];
+    private var _callbacks as Array<EvccStateRequestCallback> = [];
     (:exclForWebResponseCallbacksDisabled) 
-    public function registerCallback( callback as Method() as Void ) as Void {
+    public function registerCallback( callback as EvccStateRequestCallback ) as Void {
         _callbacks.add( callback );
     }
     (:exclForWebResponseCallbacksDisabled :typecheck(disableBackgroundCheck)) 
@@ -190,7 +205,7 @@ import Toybox.PersistedContent;
             WatchUi.requestUpdate();
         } else {
             for( var i = 0; i < _callbacks.size(); i++ ) {
-                _callbacks[i].invoke();
+                _callbacks[i].onStateUpdate();
             }
         }
     }
@@ -201,7 +216,7 @@ import Toybox.PersistedContent;
     (:exclForViewPreRenderingDisabled)
     public function invokeAllCallbacksButFirst() as Void {
         for( var i = 1; i < _callbacks.size(); i++ ) {
-            _callbacks[i].invoke();
+            _callbacks[i].onStateUpdate();
         }
     }
 

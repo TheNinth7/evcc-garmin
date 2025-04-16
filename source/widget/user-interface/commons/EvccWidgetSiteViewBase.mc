@@ -51,8 +51,9 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
     // Below some functions to be overriden by the implementations of this class,
     // to define the behavior and provide content
 
-    // Function to be overriden to add a page title to the view
-    public function getPageTitle() as EvccBlock? { return null; }
+    // Function to be overriden to add a page title/icon to the view
+    public function getPageIcon() as EvccIconBlock? { return null; }
+    public function getPageTitle() as EvccTextBlock? { return null; }
 
     // Decide whether the content shall be limited by
     // height and/or width. Default is height only
@@ -75,10 +76,15 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
             return "forecast";
         } else if( self instanceof EvccWidgetMainView ) {
             return "main";
+        } else if( self instanceof EvccWidgetStatisticsView ) {
+            return "statistics";
         }
         return "unknown";
     }
     (:debug :exclForMemoryStandard) private function getType() as String {
+        return "";
+    }
+    (:release) private function getType() as String {
         return "";
     }
 
@@ -171,7 +177,7 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
         // instead should trigger a callback to all views related to the state. Therefore
         // each view registers a callback with the corresponding state request.
         // We register with the state request for callbacks
-        getStateRequest().registerCallback( method( :onStateChange ) );
+        getStateRequest().registerCallback( self );
         
         // For content and shell, we instantiate the versions
         // working with tasks. Updating all views needs a lot of resources and
@@ -185,18 +191,22 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
     // The callback function for state changes
     // It is called initially when a current state is loaded from storage,
     // and after that whenever a new web response is received
-    (:exclForViewPreRenderingDisabled) public function onStateChange() as Void {
-        // EvccHelperBase.debug( "WidgetSiteBase: onStateChange " + getType() + " site=" + _siteIndex );
-        if( _isActiveView && ! _content.alreadyHasRealContent() ) {
-            // In the case that we are active and have not received 
-            // any "real" content yet (in other words: are showing "Loading..."),
-            // we do not want to loose them and prepare the content right away, without
-            // using the task queue
-            prepareImmediately();
-        } else {
-            // If we already had "real" content, we prepare via the task queue,
-            // for better responsiveness to user input
-            prepareByTasks();
+    (:exclForViewPreRenderingDisabled) public function onStateUpdate() as Void {
+        try {
+            EvccHelperBase.debug( "WidgetSiteBase: onStateChange " + getType() + " site=" + _siteIndex );
+            if( _isActiveView && ! _content.alreadyHasRealContent() ) {
+                // In the case that we are active and have not received 
+                // any "real" content yet (in other words: are showing "Loading..."),
+                // we do not want to loose them and prepare the content right away, without
+                // using the task queue
+                prepareImmediately();
+            } else {
+                // If we already had "real" content, we prepare via the task queue,
+                // for better responsiveness to user input
+                prepareByTasks();
+            }
+        } catch( ex ) {
+            getExceptionHandler().registerException( ex );
         }
     }
     // Prepare shell and content without task qeueu
@@ -217,20 +227,21 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
         _content.queueTasks();
         // Only if we are the active view, we request an update of the screen
         if( _isActiveView ) {
-            EvccTaskQueue.getInstance().add( method( :requestUpdateTask ) );
+            EvccTaskQueue.getInstance().add( new EvccRequestUpdateTask( self ) );
         }
     }
-    // Function for scheduling the screen update request via the task queue
-    (:exclForViewPreRenderingDisabled) function requestUpdateTask() as Void {
-        WatchUi.requestUpdate();
-    }
 
+    (:exclForViewPreRenderingDisabled) 
+    private var _exceptionHandler as EvccExceptionHandler = new EvccExceptionHandler();
+    (:exclForViewPreRenderingDisabled) 
+    public function getExceptionHandler() as EvccExceptionHandler { return _exceptionHandler; }
+    
     // Update the screen
     (:exclForViewPreRenderingDisabled) function onUpdate( dc as Dc ) as Void {
         try {
-            // EvccHelperBase.debug("WidgetSiteBase: onUpdate " + getType() + " site=" + _siteIndex );
+            EvccHelperBase.debug("WidgetSiteBase: onUpdate " + getType() + " site=" + _siteIndex );
             dc.clear();
-            EvccTaskQueue.getInstance().checkForException();
+            _exceptionHandler.checkForException();
             _shell.drawHeaderAndLogo( dc, false ); // false to keep the header/logo in memory
             _content.draw( dc );
             _shell.drawIndicators( dc );
@@ -249,9 +260,8 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
                 var timer = new Toybox.Timer.Timer();
                 timer.start( method( :testTimer ), 50, false );
             }
+            EvccHelperBase.debug("WidgetSiteBase: onUpdate completed for " + getType() + " site=" + _siteIndex );
             */
-            // EvccHelperBase.debug("WidgetSiteBase: onUpdate completed for " + getType() + " site=" + _siteIndex );
-
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
             EvccHelperUI.drawError( dc, ex );
@@ -261,7 +271,7 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
     /*
     private var _updateCounter as Number = 0;
     public function testTimer() as Void {
-        // EvccHelperBase.debug( "WidgetSiteBase: timer triggered" );
+        EvccHelperBase.debug( "WidgetSiteBase: timer triggered" );
     }
     */
 }
