@@ -101,7 +101,7 @@ class EvccSiteShell {
                     header.addBlock( pageIcon );
                 }
                 if( pageTitle != null ) {
-                    pageTitle.setOption( :font, EvccWidgetResourceSet.FONT_TINY );
+                    pageTitle.setOption( :font, EvccWidgetResourceSet.FONT_XTINY );
                     if( pageIcon == null ) {
                         pageTitle.setOption( :marginTop, spacing * 2 / 3 );
                     }
