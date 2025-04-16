@@ -48,7 +48,7 @@ import Toybox.Application.Properties;
             // RobotoCondensedBold: system font on Fenix 8 Solar and older versions
             // The devices where RobotoCondensedBold is system font do not have
             // RobotoRegular, so this one array works for both types
-             fontFaces = [ "RobotoRegular", "RobotoCondensedBold" ];
+            fontFaces = [ "RobotoRegular", "RobotoCondensedBold" ];
         }
 
         for( var i = 0; i < _fonts.size(); i++ ) {

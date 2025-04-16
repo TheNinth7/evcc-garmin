@@ -532,6 +532,8 @@ Below is an additional reference for developers, showing the Connect IQ (CIQ) AP
 | fr945                | 3.3.0         |
 | fr945lte             | 3.4.0         |
 | fr955                | 5.1.0         |
+| fr165                | 5.1.0         |
+| fr165m               | 5.1.0         |
 | fr265                | 5.1.0         |
 | fr265s               | 5.1.0         |
 | fr965                | 5.1.0         |

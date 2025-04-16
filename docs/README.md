@@ -286,6 +286,8 @@ The table below lists supported devices along with their capabilities. Click on 
 | fr945              | Tiny              | 1                       | Yes                              | Static           |                                                                                    |
 | fr945lte           | Tiny              | 1                       | Yes                              | Static           |                                                                                    |
 | fr955              | Full              | 5                       | Yes                              | Vector           |                                                                                    |
+| fr165              | Full              | 5                       | Yes                              | Vector           |                                                                                    |
+| fr165m             | Full              | 5                       | Yes                              | Vector           |                                                                                    |
 | fr265              | Full              | 5                       | Yes                              | Vector           |                                                                                    |
 | fr265s             | Full              | 5                       | Yes                              | Vector           |                                                                                    |
 | fr965              | Full              | 5                       | Yes                              | Vector           |                                                                                    |
