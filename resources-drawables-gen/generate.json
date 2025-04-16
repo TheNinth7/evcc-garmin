@@ -215,6 +215,17 @@
             "icon_small":"45",
             "icon_medium":"51"
         },
+        "fr165":{
+            "fontMode":"vector",
+            "logo_flash":"54",
+            "logo_evcc":"20",
+            "icon_glance":"34",
+            "icon_micro":"40",
+            "icon_xtiny":"40",
+            "icon_tiny":"47",
+            "icon_small":"59",
+            "icon_medium":"70"
+        },
         "fr265s":{
             "fontMode":"vector",
             "logo_flash":"60",
