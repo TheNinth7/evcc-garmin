@@ -29,16 +29,25 @@ import Toybox.Lang;
             dc.setAntiAlias( true );
         }
         
-        // Spacing is set to the line width
+        // Calculate all parameters for the arc
         var lineWidth = dc.getWidth() * SELECT_LINE_WIDTH_FACTOR;
-        dc.setPenWidth( lineWidth );
+        var x = dc.getWidth() / 2;
+        var y = dc.getHeight() / 2;
+        var r = dc.getWidth() * SELECT_RADIUS_FACTOR;
+        var from = SELECT_CENTER_ANGLE - SELECT_LENGTH / 2;
+        var to = SELECT_CENTER_ANGLE + SELECT_LENGTH / 2;
         
-        dc.drawArc( dc.getWidth() / 2, 
-                    dc.getHeight() / 2, 
-                    dc.getWidth() * SELECT_RADIUS_FACTOR,
-                    Graphics.ARC_COUNTER_CLOCKWISE,
-                    SELECT_CENTER_ANGLE - SELECT_LENGTH / 2,
-                    SELECT_CENTER_ANGLE + SELECT_LENGTH / 2 );
+        // First draw a wider and longer arc in background color
+        // In case of overlaps with content, this visually offsets
+        // the select indicator from the underlying content
+        dc.setColor( EvccColors.BACKGROUND, EvccColors.BACKGROUND );
+        dc.setPenWidth( lineWidth * 4 );
+        dc.drawArc( x, y, r, Graphics.ARC_COUNTER_CLOCKWISE, from - 2, to + 2 );
+
+        // Now draw the indicator in foreground color
+        dc.setColor( EvccColors.FOREGROUND, EvccColors.BACKGROUND );
+        dc.setPenWidth( lineWidth );
+        dc.drawArc( x, y, r, Graphics.ARC_COUNTER_CLOCKWISE, from, to );
     }
     (:exclForSelectTouch) public function getSpacing( calcDc as EvccDcInterface ) as Number { return Math.round( calcDc.getWidth() * SELECT_LINE_WIDTH_FACTOR ).toNumber(); }
     
@@ -56,7 +65,6 @@ import Toybox.Lang;
         
         // Set the line width
         var penWidth = Math.round( dc.getWidth() * TOUCH_LINE_WIDTH_FACTOR );
-        dc.setPenWidth( penWidth );
 
         // Inner radius is the dot, outer the half circle on top of it
         var radiusInner = dc.getWidth() * TOUCH_RADIUS_INNER_FACTOR;
@@ -77,12 +85,18 @@ import Toybox.Lang;
         y = y - centerToCenter * Math.sin( radian );
         x = x + centerToCenter * Math.cos( radian );
 
-        // x = x + dc.getWidth()/2 - radiusOuter - penWidth/2;
+        // First draw a bigger version in background color
+        // In case of overlaps with content, this visually offsets
+        // the select indicator from the underlying content
+        dc.setColor( EvccColors.BACKGROUND, EvccColors.BACKGROUND );
+        dc.drawArc( x, y, radiusOuter, Graphics.ARC_COUNTER_CLOCKWISE, 340, 200 );
+        dc.setPenWidth( penWidth * 4 );
+        dc.fillCircle( x, y, radiusInner * 2 );
 
-        // Draw the inner dot
+        // Now draw the indicator in foreground color
+        dc.setColor( EvccColors.FOREGROUND, EvccColors.BACKGROUND );
         dc.fillCircle( x, y, radiusInner );
-        
-        // Draw the half-circle
+        dc.setPenWidth( penWidth );
         dc.drawArc( x, y, radiusOuter, Graphics.ARC_COUNTER_CLOCKWISE, 0, 180 );
     }
     (:exclForSelect30 :exclForSelect27) public function getSpacing( calcDc as EvccDcInterface ) as Number { 
