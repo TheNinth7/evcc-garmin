@@ -54,7 +54,7 @@ The following settings are applied to all configured sites:
 
 | Setting             | Description      |
 |---------------------|------------------|
-| Refresh&nbsp;interval    | The frequency at which new data is requested from your evcc site. The refresh interval can be set between 5 and 60 seconds. |
+| Refresh&nbsp;interval    | The frequency at which new data is requested from your evcc site. The refresh interval can be set between 5 and 60 seconds. If you have multiple sites configured, the currently displayed site will be updated at the configured interval. At the same interval - but offset in time - another site will be updated in a round-robin fashion. |
 | Data&nbsp;expiry         | When viewing the [full-featured glance](#glance) or the widget, data within the expiry time may be shown until new data is retrieved. The expiry time can be set between 5 and 3600 seconds. |
 
 # User Interface
@@ -131,7 +131,11 @@ If a battery is present, the house battery is always displayed first. When multi
 
 Load points appear only when a vehicle is connected. Each load point displays a main line with the vehicle name, power flow, state of charge (SoC), and charging mode. If the vehicle is charging, a smaller secondary line shows the charging mode and estimated remaining charge time. The layout prioritizes displaying as many load points as possible, with secondary lines shown only if space permits.
 
-A dedicated forecast view is also available:
+Beyond the main view, additional detail views are available:
+
+#### Forecast View
+
+The forecast displays the remaining energy for today, tomorrow, and partially for the day after tomorrow. Since data is available for a 48-hour period, the forecast for the day after tomorrow includes values up to the current time.
 
 <table class="layoutTable">
   <tr>
@@ -141,9 +145,23 @@ A dedicated forecast view is also available:
   </tr>
 </table>
 
-The forecast displays the remaining energy for today, tomorrow, and partially for the day after tomorrow. Since data is available for a 48-hour period, the forecast for the day after tomorrow includes values up to the current time.
-
 The view includes an option equivalent to the "Adjust solar forecast based on real production data" setting in the evcc user interface. When this option is enabled in the [Site Settings](#sites) of the app, the forecast view will display data adjusted using the scale factor provided by evcc. This adjustment is indicated by the label "adj. w/ real data" in the view.
+
+#### Statistics View
+
+The statistics view displays the percentage of solar energy relative to the total energy consumed across all load points.
+
+<table class="layoutTable">
+  <tr>
+    <td width="33.33%"><img src="screenshots/widget_views_statistics_300px.png"/></td>
+    <td></td>
+    <td></td>
+  </tr>
+</table>
+
+Data is presented for four time periods: the last 30 days, year to date, the last 365 days, and the entire period since data collection began.
+
+<br>
 
 ### Navigation Flow: one site, launched from glance
 
