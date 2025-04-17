@@ -564,7 +564,9 @@ A collection of useful information for working on this project.
 
 ## Removing Debug Statements
 
-In VS Code, press `CTRL+SHIFT+H` to open the global search and replace panel. Enable regular expressions by clicking the `.*` icon next to the search field, and use the following pattern to locate all active debug statements:
+While debug statements are only printed in debug builds, they still occupy code space in release builds. Therefore, when building a release, all debug statements should be commented out.
+
+To find all active debug statements in VS Code, press `CTRL+SHIFT+H` to open the global search and replace panel. Enable regular expressions by clicking the `.*` icon next to the search field, and use the following pattern to locate all active debug statements:
 
 ```
 (?<!\/\/ )EvccHelperBase\.debug\(
