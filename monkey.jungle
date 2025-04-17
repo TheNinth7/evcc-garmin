@@ -113,8 +113,8 @@ viewPreRenderingEnabled  = exclForViewPreRenderingEnabled;exclForWebResponseCall
 # resources:                     the general resource directory
 # resources-drawables\<device>:  the folder with device specific drawables
 # resources-properties\<device>: the folder with device specific properties, optional and only used for some devices
-fenix6.resourcePath=resources-site-settings/site1;resources;resources-drawables/fenix6
-fenix6s.resourcePath=resources-site-settings/site1;resources;resources-drawables/fenix6s
+fenix6.resourcePath=resources-site-settings/site1-noforecast;resources;resources-drawables/fenix6
+fenix6s.resourcePath=resources-site-settings/site1-noforecast;resources;resources-drawables/fenix6s
 fenix6pro.resourcePath=resources-site-settings/site1;resources;resources-drawables/fenix6pro
 fenix6spro.resourcePath=resources-site-settings/site1;resources;resources-drawables/fenix6spro
 fenix6xpro.resourcePath=resources-site-settings/site1;resources;resources-drawables/fenix6xpro
@@ -147,8 +147,8 @@ venu2plus.resourcePath=$(venu2.resourcePath)
 venu2s.resourcePath=resources-site-settings/site5;resources;resources-drawables/venu2s
 venu3.resourcePath=resources-site-settings/site5;resources;resources-drawables/venu3
 venu3s.resourcePath=resources-site-settings/site5;resources;resources-drawables/venu3s
-vivoactive3.resourcePath=resources-site-settings/site1;resources;resources-drawables/vivoactive3
-vivoactive3m.resourcePath=resources-site-settings/site1;resources;resources-drawables/vivoactive3m
+vivoactive3.resourcePath=resources-site-settings/site1-noforecast;resources;resources-drawables/vivoactive3
+vivoactive3m.resourcePath=resources-site-settings/site5;resources;resources-drawables/vivoactive3m
 vivoactive3mlte.resourcePath=$(vivoactive3m.resourcePath)
 vivoactive4.resourcePath=resources-site-settings/site5;resources;resources-drawables/vivoactive4
 vivoactive4s.resourcePath=resources-site-settings/site5;resources;resources-drawables/vivoactive4s
@@ -205,10 +205,10 @@ fenix6xpro.excludeAnnotations = $(fenix6pro.excludeAnnotations)
 # With one site only
 vivoactive3.sourcePath = $(sourceGlanceNone)
 vivoactive3.excludeAnnotations = $(glanceNone);$(calcSimple);$(fontsStatic);$(memoryLow);$(sitesOne);$(selectTouch);$(swipeLeftDefault);$(viewPreRenderingDisabled);$(webResponseCallbacksDisabled)
-vivoactive3m.sourcePath = $(vivoactive3.sourcePath)
-vivoactive3m.excludeAnnotations = $(vivoactive3.excludeAnnotations)
-vivoactive3mlte.sourcePath = $(vivoactive3.sourcePath)
-vivoactive3mlte.excludeAnnotations = $(vivoactive3.excludeAnnotations)
+vivoactive3m.sourcePath = $(sourceGlanceNone)
+vivoactive3m.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(memoryStandard);$(sitesMultiple);$(selectTouch);$(swipeLeftDefault);$(viewPreRenderingEnabled)
+vivoactive3mlte.sourcePath = $(vivoactive3m.sourcePath)
+vivoactive3mlte.excludeAnnotations = $(vivoactive3m.excludeAnnotations)
 # With multiple sites
 vivoactive4.sourcePath = $(sourceGlanceNone)
 vivoactive4.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(memoryStandard);$(sitesMultiple);$(selectTouch);$(swipeLeftDefault);$(viewPreRenderingEnabled)

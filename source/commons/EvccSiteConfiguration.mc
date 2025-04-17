@@ -26,13 +26,13 @@ import Toybox.Application.Properties;
     private var _user as String;
     private var _pass as String;
     private var _basicAuth as Boolean = false;
-    private var _scaleForecast as Boolean = true;
+    (:exclForMemoryLow) private var _scaleForecast as Boolean = true;
 
     function getUrl() as String { return _url; }
     function needsBasicAuth() as Boolean { return _basicAuth; }
     function getUser() as String { return _user; }
     function getPassword() as String { return _pass; }
-    function scaleForecast() as Boolean { return _scaleForecast; }
+    (:exclForMemoryLow) function scaleForecast() as Boolean { return _scaleForecast; }
     
     function initialize( index as Number ) {
         _url = Properties.getValue( EvccConstants.PROPERTY_SITE_PREFIX + index + EvccConstants.PROPERTY_SITE_URL_SUFFIX ) as String;
@@ -44,7 +44,13 @@ import Toybox.Application.Properties;
         if( _basicAuth && _pass.equals( "" ) ) {
             throw new NoPasswordException( index );
         }
- 
+
+        readScaleForecast( index );
+    }
+
+    (:exclForMemoryLow) 
+    function readScaleForecast( index as Number ) as Void {
         _scaleForecast = Properties.getValue( EvccConstants.PROPERTY_SITE_PREFIX + index + EvccConstants.PROPERTY_SITE_SCALE_FORECAST_SUFFIX ) as Boolean;
     }
+    (:exclForMemoryStandard) function readScaleForecast( index as Number ) as Void {}
 }

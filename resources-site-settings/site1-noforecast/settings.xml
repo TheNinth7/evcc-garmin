@@ -1,0 +1,19 @@
+<resources>
+    <properties>
+        <property id="s0_url" type="string"></property>
+        <property id="s0_usr" type="string"></property>
+        <property id="s0_pss" type="string"></property>
+    </properties>
+
+    <settings>
+        <setting propertyKey="@Properties.s0_url" title="URL (e.g. https://yourhost:yourport) - Note: http works only with iOS, Android requires https with valid certificate!">
+            <settingConfig type="url" required="true"/>
+        </setting>
+        <setting propertyKey="@Properties.s0_usr" title="User name (basic authentication)">
+            <settingConfig type="alphaNumeric" required="false"/>
+        </setting>
+        <setting propertyKey="@Properties.s0_pss" title="Password">
+            <settingConfig type="password" required="false"/>
+        </setting>
+    </settings>
+</resources>
