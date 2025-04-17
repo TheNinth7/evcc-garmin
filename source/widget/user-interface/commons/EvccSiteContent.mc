@@ -63,6 +63,8 @@ class EvccSiteContent {
             font++;
         }
 
+        //content.setOption( :font, 2 );
+
         // We only scale to the second-smallest font, the smallest font
         // is reserved for explicit declarations (:font or :relativeFont)
         // but will not automatically be choosen for the main content
@@ -80,7 +82,7 @@ class EvccSiteContent {
             }
         }
 
-        // EvccHelperBase.debug( "Using font " + block.getOption( :font ) );
+        EvccHelperBase.debug( "Using font " + content.getOption( :font ) );
 
         return content;
     }
