@@ -36,7 +36,7 @@ import Toybox.Math;
     (:exclForGlanceNone :typecheck(disableBackgroundCheck)) 
     function getGlanceView() as [ GlanceView ] or [ GlanceView, GlanceViewDelegate ] or Null {
         try {
-            EvccHelperBase.debug( "EvccApp: getGlanceView" );
+            // EvccHelperBase.debug( "EvccApp: getGlanceView" );
             isBackground = false;
             isGlance = true;
 
@@ -69,7 +69,7 @@ import Toybox.Math;
     // Called if the app runs in widget mode
     (:typecheck([disableBackgroundCheck, disableGlanceCheck]))
     function getInitialView() as [Views] or [Views, InputDelegates] {
-        EvccHelperBase.debug( "EvccApp: getInitialView" );
+        // EvccHelperBase.debug( "EvccApp: getInitialView" );
         try {
             isBackground = false;
 
@@ -156,7 +156,7 @@ import Toybox.Math;
     // It is currently only used in tinyglance mode
     (:exclForGlanceFull :exclForGlanceNone :typecheck(disableGlanceCheck)) 
     function getServiceDelegate() as [ System.ServiceDelegate ] {  
-        EvccHelperBase.debug( "EvccApp: getServiceDelegate" );
+        // EvccHelperBase.debug( "EvccApp: getServiceDelegate" );
 
         // We store the active site, so when the widget is reopened, it 
         // starts with the site displayed last. Also the glance is using
@@ -202,10 +202,10 @@ import Toybox.Math;
     // before updating the screen after the response is received initially
     (:exclForGlanceFull :exclForGlanceNone :typecheck(disableBackgroundCheck))
     function onStorageChanged() {  
-        EvccHelperBase.debug( "EvccApp: onStorageChanged" );
+        // EvccHelperBase.debug( "EvccApp: onStorageChanged" );
         try {
             if( ! isBackground ) {
-                EvccHelperBase.debug( "EvccApp: requesting update" );
+                // EvccHelperBase.debug( "EvccApp: requesting update" );
                 WatchUi.requestUpdate();
             }
         } catch ( ex ) {

@@ -20,6 +20,13 @@ import Toybox.Application;
         return Math.round( power / 100.0 ).toNumber() * 100;
     }
 
+    // Info should be used in places where the output shall remain
+    // permanent part of the code. As opposed to temporary debug
+    // statements that may be commented in/out as needed for debugging
+    public static function info( text as String ) as Void {
+        debug( text );
+    }
+
     // Output a debug statement
     (:debug) public static function debug( text as String ) as Void {
         var now = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
@@ -46,7 +53,7 @@ import Toybox.Application;
         if( ! ( ex instanceof EvccBaseException ) ) {
             var errorMsg = ex.getErrorMessage();
             if( errorMsg != null ) {
-                EvccHelperBase.debug( errorMsg );
+                EvccHelperBase.info( errorMsg );
             }
             ex.printStackTrace();
             System.println(" ");

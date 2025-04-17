@@ -43,7 +43,7 @@ import Toybox.System;
     (:debug) private var _debugDone as Boolean = false;
     // For full-glance devices we also check the glance icons
     (:debug) function checkFonts( block as EvccVerticalBlock, dc as Dc ) as Void {
-        if( ! _debugDone ) { EvccHelperBase.debug( "Icon sizes:" ); }
+        if( ! _debugDone ) { EvccHelperBase.info( "Icon sizes:" ); }
         block.addTextWithOptions( "fonts: " + fontMode(), { :marginTop => _spacing } );
         checkFontsDeviceSpecific( block, dc );
         _debugDone = true;
@@ -81,7 +81,7 @@ import Toybox.System;
             prefix = "w";
             // For widget, we also derive a recommendation for the logo size from the xtiny font size
             if( ! _debugDone ) { 
-                EvccHelperBase.debug( "logo_evcc=" + Math.round( dc.getFontHeight( fonts[3]) * 0.60 ).toNumber() + " (recommendation only)" );
+                EvccHelperBase.info( "logo_evcc=" + Math.round( dc.getFontHeight( fonts[3]) * 0.60 ).toNumber() + " (recommendation only)" );
             }
         } else {
             fontSizeNames = [ "glance" ];
@@ -110,7 +110,7 @@ import Toybox.System;
             } else {
                 text = "icons: icon missing";
             }
-            if( ! _debugDone ) { EvccHelperBase.debug( debug ); }
+            if( ! _debugDone ) { EvccHelperBase.info( debug ); }
         } 
         block.addText( prefix + "-" + text );
     }

@@ -13,7 +13,7 @@ import Toybox.Application.Storage;
     var _stateRequest as EvccStateRequest;
 
     function initialize( siteIndex as Number ) {
-        EvccHelperBase.debug( "EvccBackground: initialize" );
+        // EvccHelperBase.debug "EvccBackground: initialize" );
         System.ServiceDelegate.initialize();
         _siteIndex = siteIndex;
         _stateRequest = new EvccStateRequest( _siteIndex );
@@ -23,7 +23,7 @@ import Toybox.Application.Storage;
     // When the background timer triggers, we initiate the
     // web request to evcc.
     function onTemporalEvent() {
-        EvccHelperBase.debug("EvccBackground: onTemporalEvent");
+        // EvccHelperBase.debug"EvccBackground: onTemporalEvent");
         try {
             // We do not want to start the state request timer with .start()
             // but only do a single request. Start would not work, since
@@ -37,7 +37,7 @@ import Toybox.Application.Storage;
     // Once the response is received, we either persist an error
     // or the result
     function onStateUpdate() as Void {
-        EvccHelperBase.debug("EvccBackground: onStateUpdate");
+        // EvccHelperBase.debug"EvccBackground: onStateUpdate");
         if( _stateRequest.hasError() ) {
             Storage.setValue( EvccConstants.STORAGE_BG_ERROR_MSG, _stateRequest.getErrorMessage() );
             Storage.setValue( EvccConstants.STORAGE_BG_ERROR_CODE, _stateRequest.getErrorCode() );

@@ -108,7 +108,7 @@ public class EvccMultiStateRequestsHandler {
             
             if( _isActiveSitesTurn ) {
                 // If it is the active site's turn, we make that request
-                EvccHelperBase.debug( "MultiStateRequestsTimer: makeRequest for active site=" + _activeSite );
+                // EvccHelperBase.debug "MultiStateRequestsTimer: makeRequest for active site=" + _activeSite );
                 _stateRequests[_activeSite].makeRequest();
             } else {
                 // Otherwise we make a request to the next inactive site
@@ -121,13 +121,13 @@ public class EvccMultiStateRequestsHandler {
                 } while( _i == _activeSite );
                 
                 // And skip the active site
-                EvccHelperBase.debug( "MultiStateRequestsTimer: makeRequest for inactive site=" + _i );
+                // EvccHelperBase.debug "MultiStateRequestsTimer: makeRequest for inactive site=" + _i );
                 _stateRequests[_i].makeRequest();
             }
             // Alternate between active site and inactive sites
             _isActiveSitesTurn = ! _isActiveSitesTurn;
         } else {
-            EvccHelperBase.debug( "MultiStateRequestsTimer: skipping makeRequest" );
+            // EvccHelperBase.debug "MultiStateRequestsTimer: skipping makeRequest" );
         }
     }
     

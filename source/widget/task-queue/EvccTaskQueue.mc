@@ -87,7 +87,7 @@ class EvccTaskQueue {
     // Executes the task next in the queue and then
     // if there are remaining tasks, start the timer again
     public function executeTask() as Void {
-        EvccHelperBase.debug( "TaskQueue: executing task 1/" + _tasks.size() + " ..." );
+        // EvccHelperBase.debug( "TaskQueue: executing task 1/" + _tasks.size() + " ..." );
         var task = _tasks[0];
         // If the exception handler associated with the task
         // already has an exception, the task will not be executed
@@ -97,13 +97,13 @@ class EvccTaskQueue {
             } catch ( ex ) {
                 // Any exception occuring will be registered with the
                 // exception handler associated with this task
-                EvccHelperBase.debug( "TaskQueue: registering exception" );
+                // EvccHelperBase.debug( "TaskQueue: registering exception" );
                 task.getExceptionHandler().registerException( ex );
             }
         }
         _tasks.remove( task );
         if( _tasks.size() > 0 ) {
-            EvccHelperBase.debug( "TaskQueue: starting timer" );
+            // EvccHelperBase.debug( "TaskQueue: starting timer" );
             startTimer();
         }
     }

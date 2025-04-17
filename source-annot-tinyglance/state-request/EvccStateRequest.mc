@@ -131,7 +131,7 @@ typedef EvccStateRequestCallback as interface {
 
     // Make the web request
     public function makeRequest() as Void {
-        EvccHelperBase.debug( "StateRequest: makeRequest site=" + _siteIndex );
+        // EvccHelperBase.debug "StateRequest: makeRequest site=" + _siteIndex );
         var siteConfig = new EvccSite( _siteIndex );
 
         var url = siteConfig.getUrl() + "/api/state";
@@ -141,10 +141,10 @@ typedef EvccStateRequestCallback as interface {
         // the response is limited. The full data will then be loaded once the
         // widget app is started.
         if( EvccApp.isBackground ) {
-            EvccHelperBase.debug( "StateRequest: using background JQ" );
+            // EvccHelperBase.debug "StateRequest: using background JQ" );
             parameters = { "jq" => JQ_BG };
         } else {
-            EvccHelperBase.debug( "StateRequest: using foreground JQ" );
+            // EvccHelperBase.debug "StateRequest: using foreground JQ" );
             parameters = { "jq" => JQ };
         }
         

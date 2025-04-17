@@ -192,7 +192,7 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
     // and after that whenever a new web response is received
     (:exclForViewPreRenderingDisabled) public function onStateUpdate() as Void {
         try {
-            EvccHelperBase.debug( "WidgetSiteBase: onStateChange " + getType() + " site=" + _siteIndex );
+            // EvccHelperBase.debug( "WidgetSiteBase: onStateChange " + getType() + " site=" + _siteIndex );
             if( _isActiveView && ! _content.alreadyHasRealContent() ) {
                 // In the case that we are active and have not received 
                 // any "real" content yet (in other words: are showing "Loading..."),
@@ -238,7 +238,7 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
     // Update the screen
     (:exclForViewPreRenderingDisabled) function onUpdate( dc as Dc ) as Void {
         try {
-            EvccHelperBase.debug("WidgetSiteBase: onUpdate " + getType() + " site=" + _siteIndex );
+            // EvccHelperBase.debug("WidgetSiteBase: onUpdate " + getType() + " site=" + _siteIndex );
             dc.clear();
             _exceptionHandler.checkForException();
             _shell.drawHeaderAndLogo( dc, false ); // false to keep the header/logo in memory
@@ -259,7 +259,7 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
                 var timer = new Toybox.Timer.Timer();
                 timer.start( method( :testTimer ), 50, false );
             }
-            EvccHelperBase.debug("WidgetSiteBase: onUpdate completed for " + getType() + " site=" + _siteIndex );
+            // EvccHelperBase.debug("WidgetSiteBase: onUpdate completed for " + getType() + " site=" + _siteIndex );
             */
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
@@ -270,7 +270,7 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
     /*
     private var _updateCounter as Number = 0;
     public function testTimer() as Void {
-        EvccHelperBase.debug( "WidgetSiteBase: timer triggered" );
+        // EvccHelperBase.debug( "WidgetSiteBase: timer triggered" );
     }
     */
 }

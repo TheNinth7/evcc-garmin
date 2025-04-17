@@ -25,7 +25,7 @@ import Toybox.Application.Storage;
     // Start the timer for the background service
     // Start a local timer for updating the view regularly
     function onShow() as Void {
-        EvccHelperBase.debug("TinyGlance: onShow");
+        // EvccHelperBase.debug"TinyGlance: onShow");
         try {
             Background.registerForTemporalEvent( new Time.Duration( 300 ) );
             _timer.start( method(:onTimer), 10000, true );
@@ -35,7 +35,7 @@ import Toybox.Application.Storage;
     }
 
     function onTimer() as Void {
-        EvccHelperBase.debug("TinyGlance: onTimer");
+        // EvccHelperBase.debug"TinyGlance: onTimer");
         try {
             WatchUi.requestUpdate();
         } catch ( ex ) {
