@@ -38,24 +38,20 @@ class EvccWidgetStatisticsView extends EvccWidgetSiteViewBase {
                 var column2 = new EvccVerticalBlock( {} as DbOptions );
 
                 for( var i = 0; i < statisticsPeriods.size(); i++ ) {
+                    // Add the label
+                    column1.addTextWithOptions( LABELS[i] + ": ", { :relativeFont => 2, :verticalJustifyToBaseFont => true } as DbOptions );
 
-                    var label = new EvccHorizontalBlock( { :justify => Graphics.TEXT_JUSTIFY_RIGHT } as DbOptions );
-                    label.addTextWithOptions( LABELS[i] + ":", { :relativeFont => 2, :verticalJustifyToBaseFont => true } as DbOptions );
-                    label.addTextWithOptions( " ", { :relativeFont => 0 } );
-
+                    // Add the value as one right-justified horizontal block,
+                    // with value and unit in different sizes
                     var value = new EvccHorizontalBlock( { :justify => Graphics.TEXT_JUSTIFY_RIGHT } as DbOptions );
-                    value.addText( formatSolarPercentage( statisticsPeriods[i].getSolarPercentage() ) );
+                    value.addText( statisticsPeriods[i].getSolarPercentage().format("%.0f") ); // format with no digits after the decimal point
                     value.addTextWithOptions( "%", { :relativeFont => 2, :verticalJustifyToBaseFont => true } );
 
-                    column1.addBlock( label );
                     column2.addBlock( value );
                 }
                 row.addBlock( column1 );
                 row.addBlock( column2 );
-                //block.addTextWithOptions( "solar energy", { :relativeFont => 2 } );
                 block.addBlock( row );
-                //block.addTextWithOptions( "solar energy", { :relativeFont => 2 } );
-                //block.addTextWithOptions( "solar energy share", { :relativeFont => 4, :marginTop => dcHeight * 0.007 } );
             } else {
                 block.addText( "Loading ..." );
             }
@@ -71,9 +67,4 @@ class EvccWidgetStatisticsView extends EvccWidgetSiteViewBase {
     // Statistics is limited by width not the default height
     function limitHeight() as Boolean { return false; }
     function limitWidth() as Boolean { return true; }
-
-    // Format the percentage
-    private function formatSolarPercentage( percentage as Float ) as String {
-        return percentage.format("%.0f");
-    }
 }

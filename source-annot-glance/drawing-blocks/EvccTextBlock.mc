@@ -29,24 +29,40 @@ import Toybox.WatchUi;
     protected function calculateWidth() as Number { return getTextWidth() + getMarginLeft() + getMarginRight(); }
     protected function calculateHeight() as Number { return getTextHeight() + getMarginTop() + getMarginBottom(); }
     function getTextWidth() as Number { return getDc().getTextWidthInPixels( _text, EvccResources.getGarminFont( getFont() ) ); }
-    function getTextHeight() as Number { return getFontHeight(); }
+    function getTextHeight() as Number { 
+        // return getFontHeight(); 
+        return EvccResources.getFontHeight( getOption( :baseFont ) as EvccFont );
+    }
 
     // Make all calculations necessary for drawing
     function prepareDraw( x as Number, y as Number ) {
-        var font = getFont();
+        // The drawing assumes that y identifies the top of the text
+        // This way y can be used also for drawing the buffered bitmap
+        y = y - getHeight() / 2 + getMarginTop();
 
-        // Align text to have the same baseline as the base font would have
-        // this is for aligning two different font sizes in one line of text
-        if( getOption( :verticalJustifyToBaseFont ) ) {
-            var fontHeight = getFontHeight();
-            var baseFont = getOption( :baseFont ) as EvccFont;
-            var baseFontHeight = EvccResources.getFontHeight( baseFont );
-            var fontDescent = EvccResources.getFontDescent( font );
-            var baseFontDescent = EvccResources.getFontDescent( baseFont );
-            if( fontHeight < baseFontHeight ) {
-                y += baseFontHeight/2 - baseFontDescent - ( fontHeight/2 - fontDescent );
+        // Obtain font and base font and their heights
+        var font = getFont();
+        var fontHeight = EvccResources.getFontHeight( font );
+        var baseFont = getOption( :baseFont ) as EvccFont;
+        var baseFontHeight = EvccResources.getFontHeight( baseFont );
+        
+        // If the font height is smaller than the base font ...
+        if( fontHeight < baseFontHeight ) {
+            // ... we have two options for vertical alignment:
+            if( getOption( :verticalJustifyToBaseFont ) ) {
+                // Align text to have the same baseline as the base font would have
+                // this is for aligning two different font sizes in one line of text
+                var fontDescent = EvccResources.getFontDescent( font );
+                var baseFontDescent = EvccResources.getFontDescent( baseFont );
+                y += baseFontHeight - fontHeight - ( baseFontDescent - fontDescent );
+                // Old formula, when getTextHeight() was still based on font, not base font
+                // y += baseFontHeight/2 - baseFontDescent - ( fontHeight/2 - fontDescent );
+            } else {
+                // Align the center of the texts
+                y += ( baseFontHeight - fontHeight ) / 2;
             }
         }
+
 
         var justify = getJustify();
         var textWidth = getTextWidth();
@@ -60,7 +76,6 @@ import Toybox.WatchUi;
             x = x - getWidth() / 2 + getMarginLeft();
         }
 
-        y = y - getHeight() / 2 + getMarginTop();
 
         _x = x;
         _y = y;
