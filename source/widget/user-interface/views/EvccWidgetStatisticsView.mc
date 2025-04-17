@@ -39,12 +39,12 @@ class EvccWidgetStatisticsView extends EvccWidgetSiteViewBase {
 
                 for( var i = 0; i < statisticsPeriods.size(); i++ ) {
                     // Add the label
-                    column1.addTextWithOptions( LABELS[i] + ": ", { :relativeFont => 2, :verticalJustifyToBaseFont => true } as DbOptions );
+                    column1.addTextWithOptions( LABELS[i] + ":", { :relativeFont => 2, :verticalJustifyToBaseFont => true, :justify => Graphics.TEXT_JUSTIFY_RIGHT } as DbOptions );
 
                     // Add the value as one right-justified horizontal block,
                     // with value and unit in different sizes
                     var value = new EvccHorizontalBlock( { :justify => Graphics.TEXT_JUSTIFY_RIGHT } as DbOptions );
-                    value.addText( statisticsPeriods[i].getSolarPercentage().format("%.0f") ); // format with no digits after the decimal point
+                    value.addText( " " + statisticsPeriods[i].getSolarPercentage().format("%.0f") ); // format with no digits after the decimal point
                     value.addTextWithOptions( "%", { :relativeFont => 2, :verticalJustifyToBaseFont => true } );
 
                     column2.addBlock( value );
