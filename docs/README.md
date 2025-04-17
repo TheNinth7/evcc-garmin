@@ -244,7 +244,7 @@ If multiple sites are configured, the main view of the last selected site will a
 
 On most devices, a system info view is available, though a few lack this feature due to limited memory. Check the [devices section](#supported-devices) to see if your device includes the system info view.  
 
-You can open it from any widget (but not from the glance) by using the menu key or the corresponding touch gesture. For example, on Fenix and Epix wearables, the menu key is accessed by long-pressing the middle button on the left side.
+You can open it from any widget (but not from the glance) by using the menu key or the corresponding touch gesture. For example, on Fenix and Epix wearables, the menu key is accessed by long-pressing the middle button on the left side. On touch-oriented devices, tap and hold the touch screen.
 
 The view shows the evcc-garmin version, the Connect IQ (monkey) version supported by the device, and the device's part number.
 
@@ -260,10 +260,10 @@ The view shows the evcc-garmin version, the Connect IQ (monkey) version supporte
 
 The table below lists supported devices along with their capabilities. Click on a column header to learn more about a specific property.
 
-| Watch              | [Glance](#glance) | [Max Sites](#max-sites) | [System Info](#system-info-view) | [Fonts](#fonts)  | Notes                                                                              |
+| Watch              | [Glance](#glance) | [Max Sites](#max-sites) | [Detail Views](#detail-views) | [Fonts](#fonts)  | Notes                                                                              |
 |--------------------|:-----------------:|:-----------------------:|:--------------------------------:|:----------------:|------------------------------------------------------------------------------------|
-| fenix6             | -                 | 1                       | No                               | Static           | May not work with large sites (memory limit) <br> No glance due to memory limits   |
-| fenix6s            | -                 | 1                       | No                               | Static           | May not work with large sites (memory limit) <br> No glance due to memory limits   |
+| fenix6             | Tiny              | 1                       | No                               | Static           | May not work with large sites (memory limit) <br> No glance due to memory limits   |
+| fenix6s            | Tiny              | 1                       | No                               | Static           | May not work with large sites (memory limit) <br> No glance due to memory limits   |
 | fenix6pro          | Tiny              | 1                       | Yes                              | Static           |                                                                                    |
 | fenix6spro         | Tiny              | 1                       | Yes                              | Static           |                                                                                    |
 | fenix6xpro         | Tiny              | 1                       | Yes                              | Static           |                                                                                    |
@@ -297,12 +297,12 @@ The table below lists supported devices along with their capabilities. Click on 
 | venu3              | Full              | 5                       | Yes                              | Vector           |                                                                                    |
 | venu3s             | Full              | 5                       | Yes                              | Vector           |                                                                                    |
 | vivoactive3        | -                 | 1                       | No                               | Static           | May not work with large sites (memory limit)                                       |
-| vivoactive3m       | -                 | 1                       | No                               | Static           |                                                                                    |
-| vivoactive3mlte    | -                 | 1                       | No                               | Static           | May not work with large sites (cpu limit)                                          |
+| vivoactive3m       | -                 | 5                       | Yes                              | Static           |                                                                                    |
+| vivoactive3mlte    | -                 | 5                       | Yes                              | Static           | May not work with large sites (cpu limit)                                          |
 | vivoactive4        | -                 | 5                       | Yes                              | Static           |                                                                                    |
 | vivoactive4s       | -                 | 5                       | Yes                              | Static           |                                                                                    |
 | vivoactive5        | Full              | 5                       | Yes                              | Static&#8209;Opt |                                                                                    |
-| vivoactive6        | Full              | 5                       | No                               | Vector           | Does not support a suitable key/gesture for the system info view                   |
+| vivoactive6        | Full              | 5                       | Yes                              | Vector           |                                                                                    |
 
 ## Max Sites
 
@@ -317,6 +317,10 @@ The app offers five font sizes and selects the most suitable one based on the co
 | Vector | If the device supports vector fonts, the five sizes are evenly distributed from largest to smallest for a balanced appearance. |
 | Static | On devices without vector font support, predefined font sizes must be used (medium, small, tiny, glance, xtiny). This can result in uneven size differences, such as a larger gap between the largest and second-largest font than between the smallest ones. |
 | Static&#8209;Opt | "Opt" stands for optimized. On some devices, certain adjacent font sizes may be identical (e.g., small and tiny could appear the same). In such cases, duplicate sizes are removed, effectively increasing the range of distinct font sizes available for better content display. |
+
+## Detail Views
+
+On some devices with very limited memory available to apps, the [detail views](#site-views) of the site and the [system info view](#system-info-view) are not available.
 
 # Troubleshooting
 
