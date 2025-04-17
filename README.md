@@ -39,6 +39,7 @@ This README covers the following topics:
       - [3. `EvccResourceSet.mc`](#3-source_baseevccresourcesetmc)
     - [Generating the Device-Specific PNG Files](#generating-the-device-specific-png-files)
 - [Supported Devices](#supported-devices)
+- [Helpful Tips and Notes](#helpful-tips-and-notes)
 
 <br>
 
@@ -554,3 +555,25 @@ Below is an additional reference for developers, showing the Connect IQ (CIQ) AP
 
 - [Connect IQ SDK - Compatible Devices](https://developer.garmin.com/connect-iq/compatible-devices/)
 - [Connect IQ SDK - Device Reference](https://developer.garmin.com/connect-iq/reference-guides/devices-reference)
+
+<br>
+
+# Helpful Tips and Notes
+
+A collection of useful information for working on this project.
+
+## Removing Debug Statements
+
+In VS Code, press `CTRL+SHIFT+H` to open the global search and replace panel. Enable regular expressions by clicking the `.*` icon next to the search field, and use the following pattern to locate all active debug statements:
+
+```
+(?<!\/\/ )EvccHelperBase\.debug\(
+```
+
+To deactivate the debug statements, replace them with:
+
+```
+// EvccHelperBase.debug(
+```
+
+This will comment them out without affecting any lines that are already commented.
