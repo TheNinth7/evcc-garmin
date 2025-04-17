@@ -80,12 +80,15 @@ class EvccWidgetForecastView extends EvccWidgetSiteViewBase {
         var column2 = new EvccVerticalBlock( {} as DbOptions );
 
         for( var i = 0; i < energy.size(); i++ ) {
-            column1.addTextWithOptions( _label[i] + ": ", {:justify => Graphics.TEXT_JUSTIFY_RIGHT} );
-            var value = new EvccHorizontalBlock( {:justify => Graphics.TEXT_JUSTIFY_RIGHT} );
-            value.addText( formatEnergy( energy[i] * scale ) );
-            column2.addBlock( value );
-            var unit = new EvccHorizontalBlock( {:justify => Graphics.TEXT_JUSTIFY_LEFT} );
-            unit.addText( " kWh" );
+            // Start with the label
+            column1.addTextWithOptions( _label[i] + ": ", { :relativeFont => 2, :verticalJustifyToBaseFont => true, :justify => Graphics.TEXT_JUSTIFY_RIGHT} );
+            
+            // Then add the value
+            column2.addTextWithOptions( formatEnergy( energy[i] * scale ), {:justify => Graphics.TEXT_JUSTIFY_RIGHT} );
+
+            // And finally the unit with the optional indicator
+            var unit = new EvccHorizontalBlock( { :justify => Graphics.TEXT_JUSTIFY_LEFT} );
+            unit.addTextWithOptions( " kWh", { :relativeFont => 2, :verticalJustifyToBaseFont => true } );
             if( _indicator[i] != null ) {
                 unit.addTextWithOptions( " " + _indicator[i], { :relativeFont => 4, :verticalJustifyToBaseFont => true } );
             }
