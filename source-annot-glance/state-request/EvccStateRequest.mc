@@ -110,9 +110,11 @@ typedef EvccStateRequestCallback as interface {
         ",gridPower,grid:{power:.grid.power}" + 
         ",vehicles:.vehicles|map_values({title})";
 
+    (:exclForMemoryLow) 
     private const JQ_FORECAST = 
         ",forecast:{solar:.forecast.solar|{scale,today:{energy:.today.energy},tomorrow:{energy:.tomorrow.energy},dayAfterTomorrow:{energy:.dayAfterTomorrow.energy}}}";
 
+    (:exclForMemoryLow) 
     private const JQ_STATISTICS = 
         ",statistics:.statistics|map_values({solarPercentage})";
 
@@ -121,11 +123,15 @@ typedef EvccStateRequestCallback as interface {
         "}}" +
         "|walk(if type==\"object\"then with_entries(select(.value!=null and .value!={} and .value!=[]))elif type==\"array\"then map(select(.!=null and .!={} and .!=[]))else . end)";
 
-    private const JQ = JQ_BASE_OPENING + JQ_FORECAST + JQ_STATISTICS + JQ_BASE_CLOSING;
+    (:exclForMemoryLow)     private const JQ = JQ_BASE_OPENING + JQ_FORECAST + JQ_STATISTICS + JQ_BASE_CLOSING;
+    (:exclForMemoryLow)     private const JQ_BG = JQ_BASE_OPENING + JQ_BASE_CLOSING;
+
+    (:exclForMemoryStandard) private const JQ = JQ_BASE_OPENING + JQ_BASE_CLOSING;
+    (:exclForMemoryStandard) private const JQ_BG = JQ;
 
     // Make the web request
     public function makeRequest() as Void {
-        // EvccHelperBase.debug("StateRequest: makeRequest site=" + _siteIndex );
+        EvccHelperBase.debug( "StateRequest: makeRequest site=" + _siteIndex );
         var siteConfig = new EvccSite( _siteIndex );
 
         var url = siteConfig.getUrl() + "/api/state";
@@ -135,8 +141,10 @@ typedef EvccStateRequestCallback as interface {
         // the response is limited. The full data will then be loaded once the
         // widget app is started.
         if( EvccApp.isBackground ) {
-            parameters = { "jq" => JQ_BASE_OPENING + JQ_FORECAST + JQ_BASE_CLOSING };
+            EvccHelperBase.debug( "StateRequest: using background JQ" );
+            parameters = { "jq" => JQ_BG };
         } else {
+            EvccHelperBase.debug( "StateRequest: using foreground JQ" );
             parameters = { "jq" => JQ };
         }
         

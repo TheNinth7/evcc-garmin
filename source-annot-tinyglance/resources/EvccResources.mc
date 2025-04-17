@@ -51,7 +51,7 @@ class EvccResources {
         return getInstance()._resourceSet._fonts;
     }
     public static function getGarminFont( f as EvccFont ) as GarminFont {
-        return getGarminFonts()[f];
+        return getGarminFonts()[f as Number];
     }
     public static function getFontHeight( f as EvccFont ) as Number {
         return Graphics.getFontHeight( getGarminFont( f ) );

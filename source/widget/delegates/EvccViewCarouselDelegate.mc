@@ -86,13 +86,17 @@ import Toybox.Application;
 
 // Main class implementing most of the delegate functionality
 class EvccViewCarouselDelegateBase extends EvccViewSimpleDelegate {
-    private var _views as ArrayOfSiteViews;
-    private var _breadCrumb as EvccBreadCrumb;
+    (:exclForMemoryLow) private var _views as ArrayOfSiteViews;
+    (:exclForMemoryLow) private var _breadCrumb as EvccBreadCrumb;
 
-    function initialize( views as ArrayOfSiteViews, breadCrumb as EvccBreadCrumb ) {
+    (:exclForMemoryLow) function initialize( views as ArrayOfSiteViews, breadCrumb as EvccBreadCrumb ) {
         EvccViewSimpleDelegate.initialize();
         _views = views;
         _breadCrumb = breadCrumb;
+    }
+
+    (:exclForMemoryStandard) function initialize( views as ArrayOfSiteViews, breadCrumb as EvccBreadCrumb ) {
+        EvccViewSimpleDelegate.initialize();
     }
 
     // For enter key and swipe left we trigger the onSelect

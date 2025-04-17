@@ -188,8 +188,8 @@ fr945.excludeAnnotations = $(fr745.excludeAnnotations)
 fr945lte.sourcePath = $(sourceGlanceTiny)
 fr945lte.excludeAnnotations = $(fr745.excludeAnnotations)
 #Fenix 6
-fenix6.sourcePath = $(sourceGlanceNone)
-fenix6.excludeAnnotations = $(glanceNone);$(calcSimple);$(fontsStatic);$(memoryLow);$(sitesOne);$(selectNone);$(swipeLeftDefault);$(viewPreRenderingDisabled);$(webResponseCallbacksDisabled)
+fenix6.sourcePath = $(sourceGlanceTiny)
+fenix6.excludeAnnotations = $(glanceTiny);$(calcSimple);$(fontsStatic);$(memoryLow);$(sitesOne);$(selectNone);$(swipeLeftDefault);$(viewPreRenderingDisabled)
 fenix6s.sourcePath = $(fenix6.sourcePath)
 fenix6s.excludeAnnotations = $(fenix6.excludeAnnotations)
 

@@ -21,7 +21,7 @@ import Toybox.Application;
     }
 
     // Output a debug statement
-    (:debug :exclForMemoryLow) public static function debug( text as String ) as Void {
+    (:debug) public static function debug( text as String ) as Void {
         var now = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
         var dateString = Lang.format(
             "$4$.$5$.$6$ $1$:$2$:$3$",
@@ -37,7 +37,7 @@ import Toybox.Application;
     }
 
     // Output the content of an exception
-    (:debug :exclForMemoryLow) public static function debugException( ex as Exception ) as Void
+    (:debug) public static function debugException( ex as Exception ) as Void
     {
         // We only output the content of unknown exceptions
         // The exceptions we have defined based on EvccBaseException
@@ -53,9 +53,6 @@ import Toybox.Application;
         }
     }
   
-    (:debug :exclForMemoryStandard) public static function debug( text as String ) as Void {}
-    (:debug :exclForMemoryStandard) public static function debugException( ex as Exception ) as Void {}
-
     // For release builds, there shall be no debug output
     (:release) public static function debug( text as String ) as Void {}
     (:release) public static function debugException( ex as Exception ) as Void {}

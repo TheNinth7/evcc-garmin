@@ -2,9 +2,10 @@
     "device-families":{
         "fenix6":{
             "fontMode":"static",
-            "deviceType":"noglance-lowmemory",
+            "deviceType":"tinyglance",
             "logo_flash":"40",
             "logo_evcc":"13",
+            "icon_glance":"22",
             "icon_micro":"19",
             "icon_xtiny":"22",
             "icon_tiny":"29",
@@ -13,9 +14,10 @@
         },
         "fenix6s":{
             "fontMode":"static",
-            "deviceType":"noglance-lowmemory",
+            "deviceType":"tinyglance",
             "logo_flash":"40",
             "logo_evcc":"13",
+            "icon_glance":"22",
             "icon_micro":"19",
             "icon_xtiny":"22",
             "icon_tiny":"26",
