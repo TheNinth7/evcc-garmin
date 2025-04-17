@@ -208,7 +208,8 @@ Follow the steps below to build, run, and test the app using the Connect IQ SDK 
 
 The following command generates the `.iq` file, which is used for uploading the app to the Garmin Connect IQ Store.
 
-1. Press `CTRL+SHIFT+P` → `Monkey C: Export Project`
+1. Make sure all debug statements are commented out. See [Removing Debug Statements](#removing-debug-statements) for details.
+2. Press `CTRL+SHIFT+P` → `Monkey C: Export Project`
 
 <br>
 
