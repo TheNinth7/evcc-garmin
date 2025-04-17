@@ -206,7 +206,7 @@ class EvccSiteShell {
 // Variant for low-memory devices
 // Since low memory devices only have one site and
 // do not have detail views, only the logo is shown
-(:exclForMemoryDefault)
+(:exclForMemoryStandard)
 class EvccSiteShell {
     protected var _view as EvccWidgetSiteViewBase;
     private var _logo as EvccBitmapBlock?;

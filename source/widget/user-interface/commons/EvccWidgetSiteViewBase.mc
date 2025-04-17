@@ -115,13 +115,12 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
 
             var shell = new EvccSiteShell( self );
             shell.drawHeaderAndLogo( dc, true ); // true to remove header and logo from memory after drawing them
-            shell.drawIndicators( dc );
-            shell = null;
-
+ 
             var content = new EvccSiteContent( self );
             content.draw( dc );
             content = null; // to save memory before the next step
 
+           shell.drawIndicators( dc );
             // shell = null; // Not needed, since there is no more processing after it
 
             // Code for drawing visual alignment grid 

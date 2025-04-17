@@ -98,7 +98,7 @@ import Toybox.Math;
     }
 
     // Dummy function for low memory devices
-    (:exclForMemoryDefault)   
+    (:exclForMemoryStandard)   
     public function addDetailViews() as Void {}
 
     // If we act as glance, we update the current site

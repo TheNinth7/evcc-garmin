@@ -17,6 +17,7 @@ import Toybox.Application;
     function initialize( views as ArrayOfSiteViews, breadCrumb as EvccBreadCrumb ) {
         EvccViewCarouselDelegateBase.initialize( views, breadCrumb );
     }
+    (:exclForMemoryLow) 
     public function onSwipe( swipeEvent ) as Boolean {
         // EvccHelperBase.debug("ViewCarouselDelegate: onSwipe");
         if( swipeEvent.getDirection() == SWIPE_LEFT ) {
@@ -35,12 +36,14 @@ import Toybox.Application;
 // To circumvent this, excplicitly does not handle onNextPage(), and instead
 // uses onKey() and onSwipe()
 (:exclForSwipeLeftDefault) class EvccViewCarouselDelegate extends EvccViewCarouselDelegateBase {
+    (:exclForMemoryLow) 
     private var _onNextPage as Boolean = false;
     function initialize( views as ArrayOfSiteViews, breadCrumb as EvccBreadCrumb ) {
         EvccViewCarouselDelegateBase.initialize( views, breadCrumb );
     }
     // We call onNextPage again if it was the original behavior,
     // or hand over to our base class
+    (:exclForMemoryLow) 
     public function onKey( keyEvent ) as Boolean {
         // EvccHelperBase.debug("ViewCarouselDelegate (override): onKey");
         if( _onNextPage ) {
@@ -53,6 +56,7 @@ import Toybox.Application;
     // For any other input, we call onNextPage
     // again if it was the original behavior,
     // or hand over to our base class
+    (:exclForMemoryLow) 
     public function onSwipe( swipeEvent ) as Boolean {
         // EvccHelperBase.debug("ViewCarouselDelegate (override): onSwipe");
         if( swipeEvent.getDirection() == SWIPE_LEFT ) {
@@ -68,6 +72,7 @@ import Toybox.Application;
     // and return false
     // The event is then processed by either onKey or onSwipe, which will
     // call onNextPage again if the input was not swipe left
+    (:exclForMemoryLow) 
     public function onNextPage() as Boolean {
         if( _onNextPage ) {
             _onNextPage = false;
@@ -93,7 +98,7 @@ class EvccViewCarouselDelegateBase extends EvccViewSimpleDelegate {
     // For enter key and swipe left we trigger the onSelect
     // behavior. In some gesture-based devices the keys are not
     // associated with that behavior (Venu, Vivoactive)
-    (:exclForHasSelect) public function onKey( keyEvent ) as Boolean {
+    (:exclForMemoryLow :exclForHasSelect) public function onKey( keyEvent ) as Boolean {
         // EvccHelperBase.debug("ViewCarouselDelegate: onKey");
         if( keyEvent.getKey() == KEY_ENTER ) {
             return onSelect();
@@ -101,17 +106,8 @@ class EvccViewCarouselDelegateBase extends EvccViewSimpleDelegate {
         return false;
     }
 
-    /* Trial for VA6 system info view, but does not work
-    public function onTap( clickEvent ) as Boolean {
-        // EvccHelperBase.debug("ViewCarouselDelegate: onTap");
-        if( clickEvent.getType() == CLICK_TYPE_HOLD ) {
-            return onMenu();
-        }
-        return false;
-    }
-    */
-
     // When the select action is triggered, we open the active sub view
+    (:exclForMemoryLow) 
     public function onSelect() as Boolean {
         try {
             // EvccHelperBase.debug("ViewCarouselDelegate: onSelect");
@@ -156,6 +152,7 @@ class EvccViewCarouselDelegateBase extends EvccViewSimpleDelegate {
     // For next/previous we switch to the next/previous view
     // on the current level. This methods implement wrapping,
     // i.e. the last view goes to the first and vice versa.
+    (:exclForMemoryLow) 
     public function onNextPage() as Boolean {
         try {
             // EvccHelperBase.debug("ViewCarouselDelegate: onNextPage");
@@ -169,6 +166,7 @@ class EvccViewCarouselDelegateBase extends EvccViewSimpleDelegate {
             return false;
         }
     }
+    (:exclForMemoryLow) 
     public function onPreviousPage() as Boolean {
         try {
             // EvccHelperBase.debug("ViewCarouselDelegate: onPreviousPage");
