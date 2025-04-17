@@ -49,11 +49,6 @@ fontsStatic = exclForFontsStatic
 fontsVector = exclForFontsVector
 fontsStaticOptimized = exclForFontsStaticOptimized
 
-# Devices with less computing power may revert to code with less functionality
-# Currently this is only used in the forecast, to use a less-computing intense layout
-calcComplex = exclForCalcComplex
-calcSimple = exclForCalcSimple
-
 # For low-memory devices, some functionality may be excluded, to reduce the footprint
 # of the code base in memory. Excluded are:
 # - System info view
@@ -161,41 +156,41 @@ vivoactive6.resourcePath=resources-site-settings/site5;resources;resources-drawa
 # This is applied to all devices that do not have build instructions
 # Full glance, complex code, vector fonts, multipole sites, select indicator at 30° and having onSelect behavior
 base.sourcePath = $(sourceGlanceFull)
-base.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(memoryStandard);$(sitesMultiple);$(select30);$(hasSelect);$(swipeLeftDefault);$(viewPreRenderingEnabled)
+base.excludeAnnotations = $(glanceFull);$(fontsVector);$(memoryStandard);$(sitesMultiple);$(select30);$(hasSelect);$(swipeLeftDefault);$(viewPreRenderingEnabled)
 
 # Full glance devices, but with static/optimized fonts
-venu2.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsStaticOptimized);$(memoryStandard);$(sitesMultiple);$(select30);$(swipeLeftDefault);$(viewPreRenderingEnabled)
+venu2.excludeAnnotations = $(glanceFull);$(fontsStaticOptimized);$(memoryStandard);$(sitesMultiple);$(select30);$(swipeLeftDefault);$(viewPreRenderingEnabled)
 venu2plus.excludeAnnotations = $(venu2.excludeAnnotations)
 venu2s.excludeAnnotations = $(venu2.excludeAnnotations)
 vivoactive5.excludeAnnotations = $(venu2.excludeAnnotations)
 # Full glance devices, but with select button at 27°
-fr265.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(memoryStandard);$(sitesMultiple);$(select27);$(hasSelect);$(swipeLeftDefault);$(viewPreRenderingEnabled)
+fr265.excludeAnnotations = $(glanceFull);$(fontsVector);$(memoryStandard);$(sitesMultiple);$(select27);$(hasSelect);$(swipeLeftDefault);$(viewPreRenderingEnabled)
 fr265s.excludeAnnotations = $(fr265.excludeAnnotations)
 fr165.excludeAnnotations = $(fr265.excludeAnnotations)
 fr165m.excludeAnnotations = $(fr265.excludeAnnotations)
 fr965.excludeAnnotations = $(fr265.excludeAnnotations)
 # Full glance devices, but with swipe left override
-epix2pro47mm.excludeAnnotations = $(glanceFull);$(calcComplex);$(fontsVector);$(memoryStandard);$(sitesMultiple);$(select30);$(hasSelect);$(swipeLeftOverride);$(viewPreRenderingEnabled)
+epix2pro47mm.excludeAnnotations = $(glanceFull);$(fontsVector);$(memoryStandard);$(sitesMultiple);$(select30);$(hasSelect);$(swipeLeftOverride);$(viewPreRenderingEnabled)
 epix2pro42mm.excludeAnnotations = $(epix2pro47mm.excludeAnnotations)
 epix2pro51mm.excludeAnnotations = $(epix2pro47mm.excludeAnnotations)
 
 # Tiny glance devices
 # One site, static font, no select behavior since there is only one site and never a select action
 fr745.sourcePath = $(sourceGlanceTiny)
-fr745.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(memoryStandard);$(sitesOne);$(selectNone);$(swipeLeftDefault);$(viewPreRenderingEnabled)
+fr745.excludeAnnotations = $(glanceTiny);$(fontsStatic);$(memoryStandard);$(sitesOne);$(selectNone);$(swipeLeftDefault);$(viewPreRenderingEnabled)
 fr945.sourcePath = $(sourceGlanceTiny)
 fr945.excludeAnnotations = $(fr745.excludeAnnotations)
 fr945lte.sourcePath = $(sourceGlanceTiny)
 fr945lte.excludeAnnotations = $(fr745.excludeAnnotations)
 #Fenix 6
 fenix6.sourcePath = $(sourceGlanceTiny)
-fenix6.excludeAnnotations = $(glanceTiny);$(calcSimple);$(fontsStatic);$(memoryLow);$(sitesOne);$(selectNone);$(swipeLeftDefault);$(viewPreRenderingDisabled)
+fenix6.excludeAnnotations = $(glanceTiny);$(fontsStatic);$(memoryLow);$(sitesOne);$(selectNone);$(swipeLeftDefault);$(viewPreRenderingDisabled)
 fenix6s.sourcePath = $(fenix6.sourcePath)
 fenix6s.excludeAnnotations = $(fenix6.excludeAnnotations)
 
 # Fenix 6 Pro
 fenix6pro.sourcePath = $(sourceGlanceTiny)
-fenix6pro.excludeAnnotations = $(glanceTiny);$(calcComplex);$(fontsStatic);$(memoryStandard);$(sitesOne);$(selectNone);$(swipeLeftDefault);$(viewPreRenderingEnabled)
+fenix6pro.excludeAnnotations = $(glanceTiny);$(fontsStatic);$(memoryStandard);$(sitesOne);$(selectNone);$(swipeLeftDefault);$(viewPreRenderingEnabled)
 fenix6spro.sourcePath = $(fenix6pro.sourcePath)
 fenix6spro.excludeAnnotations = $(fenix6pro.excludeAnnotations)
 fenix6xpro.sourcePath = $(fenix6pro.sourcePath)
@@ -204,13 +199,13 @@ fenix6xpro.excludeAnnotations = $(fenix6pro.excludeAnnotations)
 # No glance
 # With one site only
 vivoactive3.sourcePath = $(sourceGlanceNone)
-vivoactive3.excludeAnnotations = $(glanceNone);$(calcSimple);$(fontsStatic);$(memoryLow);$(sitesOne);$(selectTouch);$(swipeLeftDefault);$(viewPreRenderingDisabled);$(webResponseCallbacksDisabled)
+vivoactive3.excludeAnnotations = $(glanceNone);$(fontsStatic);$(memoryLow);$(sitesOne);$(selectTouch);$(swipeLeftDefault);$(viewPreRenderingDisabled);$(webResponseCallbacksDisabled)
 vivoactive3m.sourcePath = $(sourceGlanceNone)
-vivoactive3m.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(memoryStandard);$(sitesMultiple);$(selectTouch);$(swipeLeftDefault);$(viewPreRenderingEnabled)
+vivoactive3m.excludeAnnotations = $(glanceNone);$(fontsStatic);$(memoryStandard);$(sitesMultiple);$(selectTouch);$(swipeLeftDefault);$(viewPreRenderingEnabled)
 vivoactive3mlte.sourcePath = $(vivoactive3m.sourcePath)
 vivoactive3mlte.excludeAnnotations = $(vivoactive3m.excludeAnnotations)
 # With multiple sites
 vivoactive4.sourcePath = $(sourceGlanceNone)
-vivoactive4.excludeAnnotations = $(glanceNone);$(calcComplex);$(fontsStatic);$(memoryStandard);$(sitesMultiple);$(selectTouch);$(swipeLeftDefault);$(viewPreRenderingEnabled)
+vivoactive4.excludeAnnotations = $(glanceNone);$(fontsStatic);$(memoryStandard);$(sitesMultiple);$(selectTouch);$(swipeLeftDefault);$(viewPreRenderingEnabled)
 vivoactive4s.sourcePath = $(vivoactive4.sourcePath)
 vivoactive4s.excludeAnnotations = $(vivoactive4.excludeAnnotations)

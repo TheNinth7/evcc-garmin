@@ -68,10 +68,7 @@ class EvccWidgetForecastView extends EvccWidgetSiteViewBase {
     }
 
     
-    // Complex forecast layout, with multiple columns to have
-    // a nice table structure
-    // The layouting is cpu-intense, so below this there is 
-    // more light-weight variant for older devices
+    // Assemble one row of the table
     (:exclForCalcSimple) function addForecast( block as EvccVerticalBlock, energy as Array<Float>, scale as Float ) as Void {
 
         var row = new EvccHorizontalBlock( {} as DbOptions );
@@ -100,20 +97,6 @@ class EvccWidgetForecastView extends EvccWidgetSiteViewBase {
         row.addBlock( column3 );
         
         block.addBlock( row );
-    }
-
-    // Simple forecast layout, with just single lines
-    // Content of the lines will not be aligned, but this is
-    // much simpler to layout
-    (:exclForCalcComplex) function addForecast( block as EvccVerticalBlock, energy as Array<Float>, scale as Float ) as Void {
-        for( var i = 0; i < energy.size(); i++ ) {
-            var line = new EvccHorizontalBlock( { :justify => Graphics.TEXT_JUSTIFY_LEFT } );
-            line.addTextWithOptions( _label[i] + ": " + formatEnergy( energy[i] * scale ) + "kWh", {} as DbOptions );
-            if( _indicator[i] != null ) {
-                line.addTextWithOptions( " " + _indicator[i], { :relativeFont => 4, :verticalJustifyToBaseFont => true } );
-            }
-            block.addBlock( line );
-        }
     }
 
     // Forecast is limited by width not the default height
