@@ -61,7 +61,7 @@ class EvccWidgetStatisticsView extends EvccWidgetSiteViewBase {
 
         // Add a small margin to the bottom. While the content is centered vertically between title and logo,
         // the spacing in the fonts make it seem a bit off, and this is to compensate for that.
-        block.setOption( :marginBottom, dcHeight * 0.035 );
+        block.setOption( :marginBottom, dcHeight * 0.0375 );
     }
 
     // Statistics is limited by width not the default height
