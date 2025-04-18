@@ -58,9 +58,9 @@ import Toybox.Application.Properties;
             
             // Code for testing creating a vector font with :font and :scale from a standard font
             // This does not work on epix2pro47mm, but does work on fr165            
-            //// EvccHelperBase.debug "Testing vector font ... " );
+            //// EvccHelperBase.debug( "Testing vector font ... " );
             //var vectorFont = Graphics.getVectorFont( { :font => Graphics.FONT_MEDIUM, :scale => 1.0 } );
-            //// EvccHelperBase.debug "... done" );
+            //// EvccHelperBase.debug( "... done" );
 
             if( vectorFont == null ) {
                 throw new InvalidValueException( "Font faces not found!" );

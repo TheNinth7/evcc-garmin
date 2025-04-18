@@ -82,7 +82,7 @@ class EvccSiteContent {
             }
         }
 
-        // EvccHelperBase.debug "Using font " + content.getOption( :font ) );
+        // EvccHelperBase.debug( "Using font " + content.getOption( :font ) );
 
         return content;
     }

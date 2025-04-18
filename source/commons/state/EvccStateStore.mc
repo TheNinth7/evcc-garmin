@@ -69,14 +69,14 @@ import Toybox.Time;
     function persist() as Void {
         var state = _state;
         if( state != null ) {
-            // EvccHelperBase.debug "EvccStateStore: persisting site " + _siteIndex );
+            // EvccHelperBase.debug( "EvccStateStore: persisting site " + _siteIndex );
             var siteData = {} as JsonContainer;
             siteData[NAME_DATA] = state.serialize();
             siteData[NAME_DATATIMESTAMP] = state.getTimestamp().value();
+           _state = null;
             Storage.setValue( EvccConstants.STORAGE_SITE_PREFIX + _siteIndex, siteData as Dictionary<Application.PropertyKeyType, Application.PropertyValueType> );
-            _state = null;
         } else {
-            // EvccHelperBase.debug "EvccStateStore: state is null!" );
+            // EvccHelperBase.debug( "EvccStateStore: state is null!" );
         }
     }
 }

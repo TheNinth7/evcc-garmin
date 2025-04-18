@@ -45,9 +45,9 @@ import Toybox.Time;
     public function getLoadPoints() as ArrayOfLoadPoints { return _loadPoints; }
     public function getNumOfLPsCharging() as Number { return _numOfLPsCharging; }
 
-    private var _forecast as EvccSolarForecast?;
-    public function getForecast() as EvccSolarForecast? { return _forecast; }
-    public function hasForecast() as Boolean { return _forecast == null ? false : _forecast.hasForecast(); }
+    (:exclForMemoryLow) private var _forecast as EvccSolarForecast?;
+    (:exclForMemoryLow) public function getForecast() as EvccSolarForecast? { return _forecast; }
+    (:exclForMemoryLow :typecheck([disableBackgroundCheck])) public function hasForecast() as Boolean { return _forecast == null ? false : _forecast.hasForecast(); }
 
     (:exclForMemoryLow) protected var _statistics as EvccStatistics?;
     (:exclForMemoryLow) public function getStatistics() as EvccStatistics { return _statistics as EvccStatistics; }
@@ -98,11 +98,6 @@ import Toybox.Time;
             _loadPoints.add( loadPoint );
         }
 
-        var forecast = result[FORECAST] as JsonContainer?;
-        if( forecast != null ) {
-            _forecast = new EvccSolarForecast( forecast );
-        }
-
         initializeOptionalElements( result );
     }
 
@@ -112,6 +107,10 @@ import Toybox.Time;
     (:exclForMemoryLow :typecheck([disableBackgroundCheck,disableGlanceCheck]))
     function initializeOptionalElements( result as JsonContainer ) as Void {
         if( ! EvccApp.isBackground ) {
+            var forecast = result[FORECAST] as JsonContainer?;
+            if( forecast != null ) {
+                _forecast = new EvccSolarForecast( forecast );
+            }
             var statistics = result[STATISTICS] as JsonContainer?;
             if( statistics != null ) {
                 self._statistics = new EvccStatistics( statistics );
@@ -141,18 +140,17 @@ import Toybox.Time;
 
         var serializedLoadPoints = new Array<Dictionary>[0];
 
-        for (var i = 0; i < _loadPoints.size(); i++) {
-            var loadPoints = _loadPoints as ArrayOfLoadPoints;
-            var serializedLoadPoint = loadPoints[i] as EvccLoadPoint;
-            serializedLoadPoints.add( serializedLoadPoint.serialize() as Dictionary );
+        for ( ; _loadPoints.size() > 0; ) {
+            serializedLoadPoints.add( _loadPoints[0].serialize() as Dictionary );
+            _loadPoints.remove( _loadPoints[0] );
         }
+        /*
+        for (var i = 0; i < _loadPoints.size(); i++) {
+            serializedLoadPoints.add( _loadPoints[i].serialize() as Dictionary );
+        }
+        */
 
         result.put( LOADPOINTS, serializedLoadPoints );
-
-        var forecast = _forecast;
-        if( forecast != null && hasForecast() ) {
-            result.put( FORECAST, forecast.serialize() );
-        }
 
         serializeOptionalElements( result );
 
@@ -164,8 +162,14 @@ import Toybox.Time;
     // in the background service of devices using the tiny glance
     (:exclForMemoryLow :typecheck([disableBackgroundCheck,disableGlanceCheck]))
     private function serializeOptionalElements( result as JsonContainer ) as Void {
-        if( _statistics != null ) {
-            result.put( STATISTICS, _statistics.serialize() );
+        if( ! EvccApp.isBackground ) {
+            var forecast = _forecast;
+            if( forecast != null && hasForecast() ) {
+                result.put( FORECAST, forecast.serialize() );
+            }
+            if( _statistics != null ) {
+                result.put( STATISTICS, _statistics.serialize() );
+            }
         }
     }
     // Dummy for low memory devices
