@@ -140,15 +140,17 @@ import Toybox.Time;
 
         var serializedLoadPoints = new Array<Dictionary>[0];
 
+        // In the glance and background service, memory can be tight when
+        // serializing and storing the state. Therefore we immediately discard
+        // each loadpoint, after it was serialized
         for ( ; _loadPoints.size() > 0; ) {
             serializedLoadPoints.add( _loadPoints[0].serialize() as Dictionary );
             _loadPoints.remove( _loadPoints[0] );
         }
-        /*
+        /* Old code, without discarding
         for (var i = 0; i < _loadPoints.size(); i++) {
             serializedLoadPoints.add( _loadPoints[i].serialize() as Dictionary );
-        }
-        */
+        } */
 
         result.put( LOADPOINTS, serializedLoadPoints );
 
