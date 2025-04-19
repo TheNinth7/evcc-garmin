@@ -10,6 +10,6 @@ class EvccAddDetailViewsTask extends EvccTask {
         _view = view;
     }
     public function invoke() as Void {
-        _view.addDetailViews();
+        _view.addDetailViews( false );
     }
 }

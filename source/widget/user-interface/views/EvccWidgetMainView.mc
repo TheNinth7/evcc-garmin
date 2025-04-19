@@ -30,7 +30,6 @@ import Toybox.Math;
     // When we process the state the first time, we check if a
     // forecast is available and if yes add the forecast view 
     var _hasForecast as Boolean = false;
-    var _hasStatistics as Boolean = false;
 
     function initialize( views as ArrayOfSiteViews, parentView as EvccWidgetSiteViewBase?, siteIndex as Number, actAsGlance as Boolean ) {
         // EvccHelperBase.debug("Widget: initialize");
@@ -47,7 +46,7 @@ import Toybox.Math;
             // If we act as glance and have only one site, they will be added as lower level views
             // If we do not act as glance, they will be either added to the lower level if there
             // are multiple sites, or to the same level
-            addDetailViews();
+            addDetailViews( true );
         }
     }
 
@@ -59,7 +58,7 @@ import Toybox.Math;
     // data may lead to additional views being displayed. Therefore, this function has to protect 
     // itself from adding the same view twice.
     (:exclForMemoryLow)   
-    public function addDetailViews() as Void {
+    public function addDetailViews( initialCall as Boolean ) as Void {
         // EvccHelperBase.debug("WidgetSiteMain: addDetailViews" );
         var stateRequest = getStateRequest();
 
@@ -71,12 +70,17 @@ import Toybox.Math;
         if( ! stateRequest.hasError() && stateRequest.hasState() ) {
             if( ! _hasForecast && stateRequest.getState().hasForecast() ) {
                 _hasForecast = true;
-                addDetailView( EvccWidgetForecastView );
+                var view = addDetailView( EvccWidgetForecastView );
+                // If we already can add the forecast during the initial call
+                // on startup, the pre-rendering is already being scheduled
+                // by the EvccMultiStateRequestsHandler
+                if( ! initialCall ) {
+                    view.onStateUpdate();
+                }
             }
-            if( ! _hasStatistics ) {
-                _hasStatistics = true;
-                addDetailView( EvccWidgetStatisticsView );
-            }
+        }
+        if( initialCall ) {
+            addDetailView( EvccWidgetStatisticsView );
         }
     }
 
@@ -84,22 +88,26 @@ import Toybox.Math;
     // on the same or on the lower level. To be able to apply this to 
     // different detail views, it accepts a class type as input
     (:exclForMemoryLow :typecheck(false))   
-    private function addDetailView( viewClass ) as Void {
+    private function addDetailView( viewClass ) as EvccWidgetSiteViewBase {
         var siteCount = EvccSiteConfiguration.getSiteCount();
         // If we act as glance, and there is only one site, then we add the detail view to the lower level views
         // Also if we do not act as glance, but there is more than one site, it goes to the lower level views 
         if( ( _actAsGlance && siteCount == 1 ) || ( ! _actAsGlance && siteCount > 1 ) ) {
-            new viewClass( getLowerLevelViews(), self, getSiteIndex() );
+            return 
+                new viewClass( getLowerLevelViews(), self, getSiteIndex() )
+                as EvccWidgetSiteViewBase;
         // But if we are not acting as glance and there is only one site, we directly add the
         // detail view to the same level view
         } else if ( siteCount == 1 ) {
-            new viewClass( getSameLevelViews(), self.getParentView(), getSiteIndex() );
+            return 
+                new viewClass( getSameLevelViews(), self.getParentView(), getSiteIndex() )
+                as EvccWidgetSiteViewBase;
         }
     }
 
     // Dummy function for low memory devices
     (:exclForMemoryStandard)   
-    public function addDetailViews() as Void {}
+    public function addDetailViews( initialCall as Boolean ) as Void {}
 
     // If we act as glance, we update the current site
     function onShow() as Void {
@@ -127,7 +135,7 @@ import Toybox.Math;
     // If view prerendering is disabled, we do this in the onUpdate
     (:exclForViewPreRenderingEnabled) 
     function onUpdate( dc as Dc ) as Void {
-        addDetailViews();
+        addDetailViews( false );
         EvccWidgetSiteViewBase.onUpdate( dc );
     }
 
@@ -137,7 +145,7 @@ import Toybox.Math;
     // detail views.
     (:exclForViewPreRenderingDisabled) function prepareImmediately() as Void {
         // EvccHelperBase.debug( "WidgetSiteMain: prepareImmediately site=" + getSiteIndex() );
-        addDetailViews();
+        addDetailViews( false );
         EvccWidgetSiteViewBase.prepareImmediately();
     }
     (:exclForViewPreRenderingDisabled) function prepareByTasks() as Void {
