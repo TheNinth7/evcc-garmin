@@ -73,10 +73,11 @@ import Toybox.Time;
             var siteData = {} as JsonContainer;
             siteData[NAME_DATA] = state.serialize();
             siteData[NAME_DATATIMESTAMP] = state.getTimestamp().value();
-           _state = null;
+            EvccHelperBase.debugMemory();
+            state = null;
+            _state = null;
+            EvccHelperBase.debugMemory();
             Storage.setValue( EvccConstants.STORAGE_SITE_PREFIX + _siteIndex, siteData as Dictionary<Application.PropertyKeyType, Application.PropertyValueType> );
-        } else {
-            // EvccHelperBase.debug( "EvccStateStore: state is null!" );
         }
     }
 }

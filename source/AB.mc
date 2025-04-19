@@ -22,7 +22,7 @@ class B {
 	function notNeededInBackground() as Void {}
 }
 */
-
+/*
 
 class Instantiator {
     static function instantiateB() as B_BG {
@@ -73,3 +73,4 @@ class B_FG extends B_BG {
 class B_BG {
 	function neededInBackground() as Void {}
 }
+*/

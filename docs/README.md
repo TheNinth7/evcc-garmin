@@ -84,7 +84,7 @@ If multiple sites are configured, glances will always display data from the last
 
 ## Widget
 
-The widget features a main view displaying key site statistics, along with additional detail views (currently limited to forecasts, with potential for more in the future).
+The widget features a main view displaying key site statistics, along with additional detail views.
 
 This section begins with the following topics:
 
@@ -146,6 +146,8 @@ The forecast displays the remaining energy for today, tomorrow, and partially fo
 </table>
 
 The view includes an option equivalent to the "Adjust solar forecast based on real production data" setting in the evcc user interface. When this option is enabled in the [Site Settings](#sites) of the app, the forecast view will display data adjusted using the scale factor provided by evcc. This adjustment is indicated by the label "adj. w/ real data" in the view.
+
+**Note for devices using the tiny glance**: These devices do not have enough memory to support the glance and background processes handling forecast data. As a result, the full state including the forecast will only be requested when the widget is opened. Since the forecast is optional, the forecast view will be added only after the response is received.
 
 #### Statistics View
 

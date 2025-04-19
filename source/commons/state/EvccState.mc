@@ -47,7 +47,7 @@ import Toybox.Time;
 
     (:exclForMemoryLow) private var _forecast as EvccSolarForecast?;
     (:exclForMemoryLow) public function getForecast() as EvccSolarForecast? { return _forecast; }
-    (:exclForMemoryLow :typecheck([disableBackgroundCheck])) public function hasForecast() as Boolean { return _forecast == null ? false : _forecast.hasForecast(); }
+    (:exclForMemoryLow :typecheck([disableBackgroundCheck,disableGlanceCheck])) public function hasForecast() as Boolean { return _forecast == null ? false : _forecast.hasForecast(); }
 
     (:exclForMemoryLow) protected var _statistics as EvccStatistics?;
     (:exclForMemoryLow) public function getStatistics() as EvccStatistics { return _statistics as EvccStatistics; }

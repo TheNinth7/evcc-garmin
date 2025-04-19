@@ -4,67 +4,35 @@ import Toybox.Application.Properties;
 import Toybox.Time;
 import Toybox.PersistedContent;
 
-
-// The interface to be implemented by objects passed in as callbacks
-typedef EvccStateRequestCallback as interface {
-    function onStateUpdate() as Void;
-};
-
 // The state request manages the HTTP request to the evcc instance.
 // - It makes the result (a state or an error) available.
 // - If within the data expiry time, a stored state is made available 
 //   till the web response arrives.
 // - Once a web response arrives, it calls either registered callbacks
 //   or WatchUi.requestUpdate()
-(:background) class EvccStateRequest {
+class EvccStateRequest extends EvccStateRequestBackground {
     
-    private var _siteIndex as Number;
+    function initialize( siteIndex as Number ) {
+        EvccStateRequestBackground.initialize( siteIndex );
+    }
 
-    private var _refreshInterval as Number;
-    private var _dataExpiry as Number;
-
-    private var _hasCurrentState as Boolean = false;
-    private var _stateStore as EvccStateStore;
-
-    private var _error as Boolean = false;
-    private var _errorMessage as String = "";
-    private var _errorCode as String = "";
-
-    // True once data (state or error) is available
-    // It is set to true if either data from storage that is within the
+    // Current state is true if either data from storage that is within the
     // expiry time has been loaded, or a web response has been received
+    // Accessors for the state
     public function hasCurrentState() as Boolean { return _hasCurrentState; }
-    
-    // Accessor for error case
-    public function hasError() as Boolean { return _error; }
-    public function getErrorMessage() as String { return _errorMessage; }
-    public function getErrorCode() as String { return _errorCode; }
+    // hasState is true if a state is available, even if it is expired
+    // this can be used for decision 
+    public function hasState() as Boolean { return _stateStore.getState() != null; }
+    public function getState() as EvccState { return _stateStore.getState() as EvccState; }
+
+    public function getRefreshInterval() as Number { return _refreshInterval; }
+    (:exclForSitesOne :exclForViewPreRenderingDisabled) public function getSiteIndex() as Number { return _siteIndex; }
+
     // If there was a web request error, throw an exception
-    // This should be only called in the foreground, the background service
-    // checks directly for hasError and writes errors into storage
-    (:typecheck(disableBackgroundCheck)) 
     public function checkForError() as Void {
         if( _error ) {
             throw new StateRequestException( _errorMessage, _errorCode );
         }
-    }
-
-    
-    // Accessors for the state
-    public function hasState() as Boolean { return _stateStore.getState() != null; }
-    public function getState() as EvccState { return _stateStore.getState() as EvccState; }
-    public function persistState() as Void { _stateStore.persist(); } // Persists the state 
-    
-    public function getRefreshInterval() as Number { return _refreshInterval; }
-    (:exclForSitesOne :exclForViewPreRenderingDisabled) public function getSiteIndex() as Number { return _siteIndex; }
-
-    function initialize( siteIndex as Number ) {
-        // EvccHelperBase.debug("StateRequest: initialize");
-        _refreshInterval = Properties.getValue( EvccConstants.PROPERTY_REFRESH_INTERVAL ) as Number;
-        _dataExpiry = Properties.getValue( EvccConstants.PROPERTY_DATA_EXPIRY ) as Number;
-
-        _stateStore = new EvccStateStore( siteIndex );
-        _siteIndex = siteIndex;
     }
 
     // Loads the initial state from storage
@@ -100,112 +68,20 @@ typedef EvccStateRequestCallback as interface {
         }
     }
 
-    // On older devices, there is not enough memory to process the complete
-    // JSON response from evcc. We therefore use a jq filter to narrow the
-    // response to the fields we need on the server side
-    private const JQ_BASE_OPENING = 
-        "{result:{" +
-        "loadpoints:[.loadpoints[]|{chargePower,chargerFeatureHeating,charging,connected,vehicleName,vehicleSoc,title,phasesActive,mode,chargeRemainingDuration}]" +
-        ",pvPower,homePower,siteTitle,batterySoc,batteryPower" +
-        ",gridPower,grid:{power:.grid.power}" + 
-        ",vehicles:.vehicles|map_values({title})";
-
-    (:exclForMemoryLow) 
-    private const JQ_FORECAST = 
-        ",forecast:{solar:.forecast.solar|{scale,today:{energy:.today.energy},tomorrow:{energy:.tomorrow.energy},dayAfterTomorrow:{energy:.dayAfterTomorrow.energy}}}";
-
     (:exclForMemoryLow) 
     private const JQ_STATISTICS = 
         ",statistics:.statistics|map_values({solarPercentage})";
 
-    // Close the main filter and add function to remove all null values and empty objects or arrays
-    private const JQ_BASE_CLOSING = 
-        "}}" +
-        "|walk(if type==\"object\"then with_entries(select(.value!=null and .value!={} and .value!=[]))elif type==\"array\"then map(select(.!=null and .!={} and .!=[]))else . end)";
+   (:exclForMemoryLow) 
+    private const JQ_FORECAST = 
+        ",forecast:{solar:.forecast.solar|{scale,today:{energy:.today.energy},tomorrow:{energy:.tomorrow.energy},dayAfterTomorrow:{energy:.dayAfterTomorrow.energy}}}";
 
-    (:exclForMemoryLow)     private const JQ = JQ_BASE_OPENING + JQ_FORECAST + JQ_STATISTICS + JQ_BASE_CLOSING;
-    (:exclForMemoryLow)     private const JQ_BG = JQ_BASE_OPENING + JQ_BASE_CLOSING;
+    (:exclForMemoryLow)
+    protected var JQ as String = JQ_BASE_OPENING + JQ_FORECAST + JQ_STATISTICS + JQ_BASE_CLOSING;
 
-    (:exclForMemoryStandard) private const JQ = JQ_BASE_OPENING + JQ_BASE_CLOSING;
-    (:exclForMemoryStandard) private const JQ_BG = JQ;
-
-    // Make the web request
-    public function makeRequest() as Void {
-        // EvccHelperBase.debug( "StateRequest: makeRequest site=" + _siteIndex );
-        var siteConfig = new EvccSite( _siteIndex );
-
-        var url = siteConfig.getUrl() + "/api/state";
-        var parameters;
-        
-        // In the background we use a reduced filter, because memory for processing
-        // the response is limited. The full data will then be loaded once the
-        // widget app is started.
-        if( EvccApp.isBackground ) {
-            // EvccHelperBase.debug( "StateRequest: using background JQ" );
-            parameters = { "jq" => JQ_BG };
-        } else {
-            // EvccHelperBase.debug( "StateRequest: using foreground JQ" );
-            parameters = { "jq" => JQ };
-        }
-        
-        var options = {
-            :method => Communications.HTTP_REQUEST_METHOD_GET,
-            :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_JSON
-        };
-
-        // Add basic authentication
-        if( siteConfig.needsBasicAuth() ) {
-            options[:headers] = { 
-                "Authorization" => "Basic " + StringUtil.encodeBase64( Lang.format( "$1$:$2$", [siteConfig.getUser(), siteConfig.getPassword() ] ) )
-            };
-        }
-
-        Communications.makeWebRequest( url, parameters, options, method(:onReceive) );
-        // EvccHelperBase.debug("StateRequest: makeRequest done" );
-    }
-
-    // Receive the data from the web request
-    // Note: need to disable background check because of the call to WatchUi
-    (:typecheck(disableBackgroundCheck))
-    function onReceive( responseCode as Number, data as Dictionary<String,Object?> or String or PersistedContent.Iterator or Null ) as Void {
-        // EvccHelperBase.debug("StateRequest: onReceive site=" + _siteIndex );
-        _hasCurrentState = true;
-        _error = true; _errorMessage = ""; _errorCode = "";
-        
-        if( responseCode == 200 ) {
-            if( data instanceof Dictionary && data["result"] != null ) {
-                _stateStore.setState( data["result"] as JsonContainer );
-                _error = false;
-            } else {
-                _errorMessage = "Unexpected response: " + data;
-            }
-        // To mask temporary errors because of instable connections, we report
-        // errors only if the data we have now has expired, otherwise we continue
-        // to display the existing data
-        } else if( _stateStore.getState() == null || Time.now().compare( (_stateStore.getState() as EvccState).getTimestamp() ) > _dataExpiry ) {
-            if ( responseCode == -104 ) {
-                _errorMessage = "No phone"; _errorCode = "";
-            } else {
-                _errorMessage = "Request failed"; _errorCode = responseCode.toString();
-            }
-        }
-        
-        // Trigger the callback logic, see below
-        invokeCallbacks();
-        // EvccHelperBase.debug("StateRequest: onReceive done" );
-    }
-
-    // If callbacks are enabled, other classes can register
-    // callback methods that will be called whenever a new web
-    // response is received
     (:exclForWebResponseCallbacksDisabled) 
-    private var _callbacks as Array<EvccStateRequestCallback> = [];
-    (:exclForWebResponseCallbacksDisabled) 
-    public function registerCallback( callback as EvccStateRequestCallback ) as Void {
-        _callbacks.add( callback );
-    }
-    (:exclForWebResponseCallbacksDisabled :typecheck(disableBackgroundCheck)) 
     public function invokeCallbacks() as Void {
+        EvccHelperBase.debug( "EvccStateRequest: invoking callbacks" );
         if( _callbacks.size() == 0 ) {
             // If not callbacks are registered, we request a screen update from WatchUi
             // Note that the background task has to register a callback, otherwise
@@ -213,24 +89,26 @@ typedef EvccStateRequestCallback as interface {
             WatchUi.requestUpdate();
         } else {
             for( var i = 0; i < _callbacks.size(); i++ ) {
+                EvccHelperBase.debug( "EvccStateRequest: invoking callback " + (i+1) + "/" + _callbacks.size() );
                 _callbacks[i].onStateUpdate();
             }
         }
     }
+    // If callbacks are disabled, we request a screen update from WatchUi
+    (:exclForWebResponseCallbacksEnabled) 
+    public function invokeCallbacks() as Void {
+        EvccHelperBase.debug( "EvccStateRequest: invoking callbacks" );
+        WatchUi.requestUpdate();
+    }    
     // This is used only after the initial loadInitialState for the
     // active site. The first callback is the main view, and for the
     // active site the pre-rendering is anyway then done in the
     // first onUpdate
     (:exclForViewPreRenderingDisabled)
     public function invokeAllCallbacksButFirst() as Void {
+        EvccHelperBase.debug( "EvccStateRequest: invoking callbacks except first" );
         for( var i = 1; i < _callbacks.size(); i++ ) {
             _callbacks[i].onStateUpdate();
         }
-    }
-
-    // If callbacks are disabled, we request a screen update from WatchUi
-    (:exclForWebResponseCallbacksEnabled :typecheck(disableBackgroundCheck)) 
-    private function invokeCallbacks() as Void {
-        WatchUi.requestUpdate();
     }
 }

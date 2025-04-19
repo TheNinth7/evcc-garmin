@@ -10,13 +10,13 @@ import Toybox.Application.Storage;
 // task, and the result passed to the glance via storage
 (:background :exclForGlanceFull :exclForGlanceNone) class EvccBackground extends Toybox.System.ServiceDelegate {
 	var _siteIndex as Number;
-    var _stateRequest as EvccStateRequest;
+    var _stateRequest as EvccStateRequestBackground;
 
     function initialize( siteIndex as Number ) {
         EvccHelperBase.debug( "EvccBackground: initialize" );
         System.ServiceDelegate.initialize();
         _siteIndex = siteIndex;
-        _stateRequest = new EvccStateRequest( _siteIndex );
+        _stateRequest = new EvccStateRequestBackground( _siteIndex );
         _stateRequest.registerCallback( self );
 	}
 	
