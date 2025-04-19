@@ -81,7 +81,7 @@ import Toybox.PersistedContent;
 
     (:exclForWebResponseCallbacksDisabled) 
     public function invokeCallbacks() as Void {
-        EvccHelperBase.debug( "EvccStateRequest: invoking callbacks" );
+        // EvccHelperBase.debug( "EvccStateRequest: invoking callbacks" );
         if( _callbacks.size() == 0 ) {
             // If not callbacks are registered, we request a screen update from WatchUi
             // Note that the background task has to register a callback, otherwise
@@ -89,7 +89,7 @@ import Toybox.PersistedContent;
             WatchUi.requestUpdate();
         } else {
             for( var i = 0; i < _callbacks.size(); i++ ) {
-                EvccHelperBase.debug( "EvccStateRequest: invoking callback " + (i+1) + "/" + _callbacks.size() );
+                // EvccHelperBase.debug( "EvccStateRequest: invoking callback " + (i+1) + "/" + _callbacks.size() );
                 _callbacks[i].onStateUpdate();
             }
         }
@@ -97,7 +97,7 @@ import Toybox.PersistedContent;
     // If callbacks are disabled, we request a screen update from WatchUi
     (:exclForWebResponseCallbacksEnabled) 
     public function invokeCallbacks() as Void {
-        EvccHelperBase.debug( "EvccStateRequest: invoking callbacks" );
+        // EvccHelperBase.debug( "EvccStateRequest: invoking callbacks" );
         WatchUi.requestUpdate();
     }    
     // This is used only after the initial loadInitialState for the
@@ -106,7 +106,7 @@ import Toybox.PersistedContent;
     // first onUpdate
     (:exclForViewPreRenderingDisabled)
     public function invokeAllCallbacksButFirst() as Void {
-        EvccHelperBase.debug( "EvccStateRequest: invoking callbacks except first" );
+        // EvccHelperBase.debug( "EvccStateRequest: invoking callbacks except first" );
         for( var i = 1; i < _callbacks.size(); i++ ) {
             _callbacks[i].onStateUpdate();
         }

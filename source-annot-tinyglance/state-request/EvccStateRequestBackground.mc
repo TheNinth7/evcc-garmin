@@ -71,7 +71,7 @@ typedef EvccStateRequestCallback as interface {
         var url = siteConfig.getUrl() + "/api/state";
         var parameters = { "jq" => JQ };
 
-        EvccHelperBase.debug( JQ );
+        // EvccHelperBase.debug( JQ );
         
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_GET,
@@ -130,7 +130,7 @@ typedef EvccStateRequestCallback as interface {
     }
 
     protected function invokeCallbacks() as Void {
-        EvccHelperBase.debug( "EvccStateRequestBackground: invoking first callback" );
+        // EvccHelperBase.debug( "EvccStateRequestBackground: invoking first callback" );
         _callbacks[0].onStateUpdate();
     }
 }
