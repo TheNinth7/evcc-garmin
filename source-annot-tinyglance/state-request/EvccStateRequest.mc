@@ -4,12 +4,13 @@ import Toybox.Application.Properties;
 import Toybox.Time;
 import Toybox.PersistedContent;
 
-// The state request manages the HTTP request to the evcc instance.
-// - It makes the result (a state or an error) available.
-// - If within the data expiry time, a stored state is made available 
-//   till the web response arrives.
-// - Once a web response arrives, it calls either registered callbacks
-//   or WatchUi.requestUpdate()
+// This is the foreground implementation, to the background
+// implementation it adds:
+// - a function to load an initial state from storage
+// - accessors that are only required by UI components
+// - for devices with standard memory additional JQ filters 
+// - additional callback logic for multiple callbacks and
+//   calling WatchUi.requestUpdate
 class EvccStateRequest extends EvccStateRequestBackground {
     
     function initialize( siteIndex as Number ) {
@@ -68,14 +69,13 @@ class EvccStateRequest extends EvccStateRequestBackground {
         }
     }
 
+    // If it is not a low memory device, we add statistics and forecast
     (:exclForMemoryLow) 
     private const JQ_STATISTICS = 
         ",statistics:.statistics|map_values({solarPercentage})";
-
    (:exclForMemoryLow) 
     private const JQ_FORECAST = 
         ",forecast:{solar:.forecast.solar|{scale,today:{energy:.today.energy},tomorrow:{energy:.tomorrow.energy},dayAfterTomorrow:{energy:.dayAfterTomorrow.energy}}}";
-
     (:exclForMemoryLow)
     protected var JQ as String = JQ_BASE_OPENING + JQ_FORECAST + JQ_STATISTICS + JQ_BASE_CLOSING;
 

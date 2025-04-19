@@ -35,7 +35,8 @@ typedef EvccStateRequestCallback as interface {
     public function getErrorMessage() as String { return _errorMessage; }
     public function getErrorCode() as String { return _errorCode; }
 
-    public function persistState() as Void { _stateStore.persist(); } // Persists the state 
+    // Persists the state 
+    public function persistState() as Void { _stateStore.persist(); }
 
     function initialize( siteIndex as Number ) {
         // EvccHelperBase.debug("StateRequest: initialize");
@@ -49,6 +50,8 @@ typedef EvccStateRequestCallback as interface {
     // On older devices, there is not enough memory to process the complete
     // JSON response from evcc. We therefore use a jq filter to narrow the
     // response to the fields we need on the server side
+    // In the background we only request basic data, the foreground
+    // class derived from this one will add additional data to the JQ filter
     protected const JQ_BASE_OPENING = 
         "{result:{" +
         "loadpoints:[.loadpoints[]|{chargePower,chargerFeatureHeating,charging,connected,vehicleName,vehicleSoc,title,phasesActive,mode,chargeRemainingDuration}]" +
@@ -61,6 +64,7 @@ typedef EvccStateRequestCallback as interface {
         "}}" +
         "|walk(if type==\"object\"then with_entries(select(.value!=null and .value!={} and .value!=[]))elif type==\"array\"then map(select(.!=null and .!={} and .!=[]))else . end)";
 
+    // Assemble the JQ filter for background
     public var JQ as String = JQ_BASE_OPENING + JQ_BASE_CLOSING;
 
     // Make the web request
@@ -90,7 +94,6 @@ typedef EvccStateRequestCallback as interface {
     }
 
     // Receive the data from the web request
-    // Note: need to disable background check because of the call to WatchUi
     function onReceive( responseCode as Number, data as Dictionary<String,Object?> or String or PersistedContent.Iterator or Null ) as Void {
         // EvccHelperBase.debug("StateRequest: onReceive site=" + _siteIndex );
         _hasCurrentState = true;
@@ -129,8 +132,16 @@ typedef EvccStateRequestCallback as interface {
         _callbacks.add( callback );
     }
 
+    // For the background we only invoke the first callback, because
+    // there should always be only one, the background service
+    (:exclForWebResponseCallbacksDisabled) 
     protected function invokeCallbacks() as Void {
         // EvccHelperBase.debug( "EvccStateRequestBackground: invoking first callback" );
         _callbacks[0].onStateUpdate();
     }
+
+    // For the background we only invoke the first callback, because
+    // there should always be only one, the background service
+    (:exclForWebResponseCallbacksEnabled) 
+    protected function invokeCallbacks() as Void {}
 }

@@ -107,30 +107,28 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
     }
 
     // Render the view
-    (:exclForViewPreRenderingEnabled) 
+    (:exclForViewPreRenderingEnabled :exclForMemoryLow) 
     function onUpdate( dc as Dc ) as Void {
+        // EvccHelperBase.debug("WidgetSiteBase: onUpdate for " + getType() + " site=" + _siteIndex );
         try {
-            // EvccHelperBase.debug("WidgetSiteBase: onUpdate for " + getType() + " site=" + _siteIndex );
             dc.clear();
-
             var shell = new EvccSiteShell( self );
             shell.drawHeaderAndLogo( dc, true ); // true to remove header and logo from memory after drawing them
- 
-            var content = new EvccSiteContent( self );
-            content.draw( dc );
-            content = null; // to save memory before the next step
+            new EvccSiteContent( self ).draw( dc );
+            shell.drawIndicators( dc );
+        } catch ( ex ) {
+            EvccHelperBase.debugException( ex );
+            EvccHelperUI.drawError( dc, ex );
+        }
+        // EvccHelperBase.debug("WidgetSiteBase: onUpdate completed for " + getType() + " site=" + _siteIndex );
+    }
 
-           shell.drawIndicators( dc );
-            // shell = null; // Not needed, since there is no more processing after it
-
-            // Code for drawing visual alignment grid 
-            /*
-            dc.setPenWidth( 1 );
-            dc.drawCircle( dc.getWidth() / 2, dc.getHeight() / 2, dc.getWidth() / 2 );
-            dc.drawRectangle( _ca.x - _ca.width / 2, _ca.y - _ca.height / 2, _ca.width, _ca.height );
-            dc.drawLine( _ca.x - _ca.width / 2, _ca.y, _ca.x + _ca.width / 2, _ca.y );
-            */
-            // EvccHelperBase.debug("WidgetSiteBase: onUpdate completed for " + getType() + " site=" + _siteIndex );
+    (:exclForViewPreRenderingEnabled :exclForMemoryStandard) 
+    function onUpdate( dc as Dc ) as Void {
+        try {
+            dc.clear();
+            new EvccSiteShell( self ).drawHeaderAndLogo( dc, true );
+            new EvccSiteContent( self ).draw( dc );
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
             EvccHelperUI.drawError( dc, ex );

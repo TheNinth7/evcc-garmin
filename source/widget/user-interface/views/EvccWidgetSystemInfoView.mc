@@ -5,7 +5,8 @@ import Toybox.Lang;
 import Toybox.System;
 
 // Simple view for showing version of the app and some other device settings
-(:exclForMemoryLow) class EvccWidgetSystemInfoView extends WatchUi.View {
+(:exclForMemoryLow) 
+class EvccWidgetSystemInfoView extends WatchUi.View {
     private var _spacing as Number = 0;
 
     function initialize() {

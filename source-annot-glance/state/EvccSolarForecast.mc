@@ -6,7 +6,7 @@ import Toybox.Lang;
 // the same structure for persiting the state in storage
 
 // Class to represent the solar forecast
-(:glance) class EvccSolarForecast {
+(:glance :exclForMemoryLow) class EvccSolarForecast {
     private var _hasForecast as Boolean = false;
     function hasForecast() as Boolean { return _hasForecast; }
     private var _scale as Float?;
