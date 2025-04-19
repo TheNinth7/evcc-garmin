@@ -246,11 +246,11 @@ import Toybox.Math;
             lineVehicle.addIcon( EvccIconBlock.ICON_ACTIVE_PHASES, { :charging => true, :activePhases => loadpoint.getActivePhases() } );
             lineVehicle.addText( " " + EvccHelperWidget.formatPower( loadpoint.getChargePowerRounded() ) );
             if( ! showChargingDetails ) {
-                lineVehicle.addTextWithOptions( " (" + loadpoint.getModeFormatted() + ")", { :relativeFont => 4 } );
+                lineVehicle.addTextWithOptions( " (" + formatMode( loadpoint ) + ")", { :relativeFont => 4 } );
             }
         }
         else {
-            lineVehicle.addTextWithOptions( " (" + loadpoint.getModeFormatted() + ")", { :relativeFont => 4 } );
+            lineVehicle.addTextWithOptions( " (" + formatMode( loadpoint ) + ")", { :relativeFont => 4 } );
         }
         
         return lineVehicle;
@@ -259,7 +259,7 @@ import Toybox.Math;
     // Function to generate charging info below main loadpoint line
     private function getChargingElement( loadpoint as EvccLoadPoint, marginLeft as Number ) as EvccHorizontalBlock {
         var lineCharging = new EvccHorizontalBlock( { :relativeFont => 3, :marginLeft => marginLeft } );
-        lineCharging.addText( loadpoint.getModeFormatted() );
+        lineCharging.addText( formatMode( loadpoint ) );
         if( loadpoint.getChargeRemainingDuration() > 0 ) {
             lineCharging.addText( " - " );
             lineCharging.addIcon( EvccIconBlock.ICON_DURATION, {} as DbOptions );
@@ -282,12 +282,22 @@ import Toybox.Math;
             lineHeater.addText( " " );
             lineHeater.addIcon( EvccIconBlock.ICON_ACTIVE_PHASES, { :charging => true, :activePhases => loadpoint.getActivePhases() } );
             lineHeater.addText( " " + EvccHelperWidget.formatPower( loadpoint.getChargePowerRounded() ) );
-            lineHeater.addTextWithOptions( " (" + loadpoint.getModeFormatted() + ")", { :relativeFont => 4 } );
+            lineHeater.addTextWithOptions( " (" + formatMode( loadpoint ) + ")", { :relativeFont => 4 } );
         }
         else {
-            lineHeater.addTextWithOptions( " (" + loadpoint.getModeFormatted() + ")", { :relativeFont => 4 } );
+            lineHeater.addTextWithOptions( " (" + formatMode( loadpoint ) + ")", { :relativeFont => 4 } );
         }
         
         return lineHeater;
+    }
+
+    // Return the text to be displayed for the mode
+    private function formatMode( loadpoint as EvccLoadPoint ) as String { 
+        var mode = loadpoint.getMode();
+        if( mode.equals( "pv" ) ) { return "Solar"; }
+        else if( mode.equals( "minpv" ) ) { return "Min+Solar"; }
+        else if( mode.equals( "now" ) ) { return "Fast"; }
+        else if( mode.equals( "off" ) ) { return "Off"; }
+        else { return mode; }
     }
 }

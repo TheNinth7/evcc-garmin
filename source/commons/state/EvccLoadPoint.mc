@@ -69,17 +69,6 @@ import Toybox.Lang;
 
     // Possible values: "pv", "now", "minpv", "off"
     public function getMode() as String { return _mode != null ? _mode : "unknown"; }
-    // Return the text to be displayed for the mode
-    public function getModeFormatted() as String { 
-        if( _mode != null && _mode instanceof String ) {
-            if( _mode.equals( "pv" ) ) { return "Solar"; }
-            else if( _mode.equals( "minpv" ) ) { return "Min+Solar"; }
-            else if( _mode.equals( "now" ) ) { return "Fast"; }
-            else if( _mode.equals( "off" ) ) { return "Off"; }
-            else { return _mode; }
-        }
-        return "";
-    }
 
     public function getChargeRemainingDuration() as Number { return _chargeRemainingDuration != null ? _chargeRemainingDuration : 0; }
 }
