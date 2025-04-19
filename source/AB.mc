@@ -1,3 +1,4 @@
+// Test code for developing design pattern for separating background scope
 /*
 class A {
 	private var _b as B;
