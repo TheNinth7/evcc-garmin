@@ -106,7 +106,9 @@ import Toybox.Time;
     // in the background service of devices using the tiny glance
     (:exclForMemoryLow :typecheck([disableBackgroundCheck,disableGlanceCheck]))
     function initializeOptionalElements( result as JsonContainer ) as Void {
-        if( ! EvccApp.isBackground ) {
+        // If we are in background, or in the glance of a tiny glance device,
+        // we do not initialize these elements to save memory
+        if( ! ( EvccApp.isBackground || ( EvccApp.isGlance && EvccApp.deviceUsesTinyGlance ) ) ) {
             var forecast = result[FORECAST] as JsonContainer?;
             if( forecast != null ) {
                 _forecast = new EvccSolarForecast( forecast );
@@ -164,6 +166,9 @@ import Toybox.Time;
     // in the background service of devices using the tiny glance
     (:exclForMemoryLow :typecheck([disableBackgroundCheck,disableGlanceCheck]))
     private function serializeOptionalElements( result as JsonContainer ) as Void {
+        // If we are in the background we do not store these elements.
+        // The glance on tiny glance does not store data, so we do not need
+        // to make that exception
         if( ! EvccApp.isBackground ) {
             var forecast = _forecast;
             if( forecast != null && hasForecast() ) {

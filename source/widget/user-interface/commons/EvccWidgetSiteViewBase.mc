@@ -189,8 +189,8 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
     // It is called initially when a current state is loaded from storage,
     // and after that whenever a new web response is received
     (:exclForViewPreRenderingDisabled) public function onStateUpdate() as Void {
+        EvccHelperBase.debug( "WidgetSiteBase: onStateChange " + getType() + " site=" + _siteIndex );
         try {
-            // EvccHelperBase.debug( "WidgetSiteBase: onStateChange " + getType() + " site=" + _siteIndex );
             if( _isActiveView && ! _content.alreadyHasRealContent() ) {
                 // In the case that we are active and have not received 
                 // any "real" content yet (in other words: are showing "Loading..."),
@@ -236,7 +236,7 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
     // Update the screen
     (:exclForViewPreRenderingDisabled) function onUpdate( dc as Dc ) as Void {
         try {
-            // EvccHelperBase.debug("WidgetSiteBase: onUpdate " + getType() + " site=" + _siteIndex );
+            EvccHelperBase.debug("WidgetSiteBase: onUpdate " + getType() + " site=" + _siteIndex );
             dc.clear();
             _exceptionHandler.checkForException();
             _shell.drawHeaderAndLogo( dc, false ); // false to keep the header/logo in memory
