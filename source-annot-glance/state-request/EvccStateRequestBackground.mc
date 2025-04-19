@@ -134,8 +134,14 @@ typedef EvccStateRequestCallback as interface {
 
     // For the background we only invoke the first callback, because
     // there should always be only one, the background service
+    (:exclForWebResponseCallbacksDisabled) 
     protected function invokeCallbacks() as Void {
         // EvccHelperBase.debug( "EvccStateRequestBackground: invoking first callback" );
         _callbacks[0].onStateUpdate();
     }
+
+    // For the background we only invoke the first callback, because
+    // there should always be only one, the background service
+    (:exclForWebResponseCallbacksEnabled) 
+    protected function invokeCallbacks() as Void {}
 }

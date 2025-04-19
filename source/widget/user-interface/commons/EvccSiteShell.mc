@@ -224,7 +224,7 @@ class EvccSiteShell {
 
         // Draw the logo
         var logo = new EvccBitmapBlock( Rez.Drawables.logo_evcc, {} as DbOptions );
-        var spacing = logo.getHeight();
+        var spacing = ( logo.getHeight() / 2 ).toNumber();
         logo.setOption( :marginTop, spacing );
         logo.setOption( :marginBottom, spacing ); 
         var logoHeight = logo.getHeight();

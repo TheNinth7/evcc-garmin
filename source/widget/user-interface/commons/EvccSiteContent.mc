@@ -81,7 +81,7 @@ class EvccSiteContent {
                 break;
             }
         }
-
+        // EvccHelperBase.debug( "Content height=" + content.getHeight() + ", CA height=" + ca.height );
         // EvccHelperBase.debug( "Using font " + content.getOption( :font ) );
 
         return content;
