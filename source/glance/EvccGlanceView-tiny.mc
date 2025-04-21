@@ -46,6 +46,9 @@ import Toybox.Application.Storage;
     // Update the view
     function onUpdate( dc as Dc ) as Void {
         try {
+            dc.setColor( EvccColors.FOREGROUND, Graphics.COLOR_TRANSPARENT );
+            dc.clear();
+
             // EvccHelperBase.debug("TinyGlance: onUpdate");
 
             // Getting the state is memory-intense, so we do it before we
@@ -59,8 +62,6 @@ import Toybox.Application.Storage;
                 throw new StateRequestException( errorMsg, errorCode );
             }
 
-            dc.setColor( EvccColors.FOREGROUND, Graphics.COLOR_TRANSPARENT );
-            dc.clear();
             var line1 = "Loading ...";
             var line2 = "";
             var line1X = 0;

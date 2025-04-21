@@ -91,11 +91,14 @@ import Toybox.Time;
 
         _loadPoints = new ArrayOfLoadPoints[0];
         var loadPoints = result[LOADPOINTS] as Array;
-        for (var i = 0; i < loadPoints.size(); i++) {
-            var loadPointData = loadPoints[i] as JsonContainer;
-            var loadPoint = new EvccLoadPoint( loadPointData, result );
-            if( ! loadPoint.isHeater() && loadPoint.isCharging() ) { _numOfLPsCharging++; }
-            _loadPoints.add( loadPoint );
+        // If there are no loadpoints, we get null, not an empty array
+        if( loadPoints != null ) {
+            for (var i = 0; i < loadPoints.size(); i++) {
+                var loadPointData = loadPoints[i] as JsonContainer;
+                var loadPoint = new EvccLoadPoint( loadPointData, result );
+                if( ! loadPoint.isHeater() && loadPoint.isCharging() ) { _numOfLPsCharging++; }
+                _loadPoints.add( loadPoint );
+            }
         }
 
         initializeOptionalElements( result );

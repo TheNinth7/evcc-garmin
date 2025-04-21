@@ -44,9 +44,7 @@ class EvccSiteContent {
         stateRequest.checkForError();
 
         if( ! stateRequest.hasCurrentState() ) {
-            content.addText( "Loading ..." );
-            // Always vertically center the Loading message
-            _view.getContentArea().y = calcDc.getHeight() / 2;
+            _view.addLoading( content, calcDc );
         } else { 
             setAlreadyHasRealContent();
             // The actual content comes from implementations of this class

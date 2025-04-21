@@ -147,7 +147,6 @@ import Toybox.Application;
         var errorMsg;
 
         dc.setColor( EvccColors.ERROR, EvccColors.BACKGROUND );
-        dc.clear();
 
         if( ex instanceof EvccBaseException ) {
             errorMsg = ex.getScreenMessage();

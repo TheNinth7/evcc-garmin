@@ -88,6 +88,12 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
         return "";
     }
 
+    public function addLoading( block as EvccVerticalBlock, calcDc as EvccDcInterface ) as Void {
+        block.addText( "Loading ..." );
+        // Always vertically center the Loading message
+        getContentArea().y = calcDc.getHeight() / 2;        
+    }
+
     // ****************************************************
     // Functions for devices without pre-rendering of views
     

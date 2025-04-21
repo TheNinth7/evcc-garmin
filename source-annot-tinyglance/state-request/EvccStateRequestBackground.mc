@@ -97,19 +97,20 @@ typedef EvccStateRequestCallback as interface {
     function onReceive( responseCode as Number, data as Dictionary<String,Object?> or String or PersistedContent.Iterator or Null ) as Void {
         EvccHelperBase.debug("StateRequest: onReceive site=" + _siteIndex );
         _hasCurrentState = true;
-        _error = true; _errorMessage = ""; _errorCode = "";
+        _error = false; _errorMessage = ""; _errorCode = "";
         
         if( responseCode == 200 ) {
             if( data instanceof Dictionary && data["result"] != null ) {
                 _stateStore.setState( data["result"] as JsonContainer );
-                _error = false;
             } else {
                 _errorMessage = "Unexpected response: " + data;
+                _error = true;
             }
         // To mask temporary errors because of instable connections, we report
         // errors only if the data we have now has expired, otherwise we continue
         // to display the existing data
         } else if( _stateStore.getState() == null || Time.now().compare( (_stateStore.getState() as EvccState).getTimestamp() ) > _dataExpiry ) {
+            _error = true;
             if ( responseCode == -104 ) {
                 _errorMessage = "No phone"; _errorCode = "";
             } else {

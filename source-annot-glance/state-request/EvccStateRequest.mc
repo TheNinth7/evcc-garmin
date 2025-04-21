@@ -17,9 +17,10 @@ import Toybox.PersistedContent;
         EvccStateRequestBackground.initialize( siteIndex );
     }
 
+    // Accessors for the state
     // Current state is true if either data from storage that is within the
     // expiry time has been loaded, or a web response has been received
-    // Accessors for the state
+    // also an error is counted as current state
     public function hasCurrentState() as Boolean { return _hasCurrentState; }
     // hasState is true if a state is available, even if it is expired
     // this can be used for decision 

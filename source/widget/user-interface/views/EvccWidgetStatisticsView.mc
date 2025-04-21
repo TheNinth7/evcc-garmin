@@ -53,10 +53,10 @@ class EvccWidgetStatisticsView extends EvccWidgetSiteViewBase {
                 row.addBlock( column2 );
                 block.addBlock( row );
             } else {
-                block.addText( "Loading ..." );
+                addLoading( block, calcDc );
             }
         } else {
-            block.addText( "Loading ..." );
+            addLoading( block, calcDc );
         }
 
         // Add a small margin to the bottom. While the content is centered vertically between title and logo,
