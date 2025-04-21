@@ -23,18 +23,8 @@ class B {
 	function notNeededInBackground() as Void {}
 }
 */
+
 /*
-
-class Instantiator {
-    static function instantiateB() as B_BG {
-        if( EvccApp.isBackground ) {
-            return new B_BG();
-        } else {
-            return new B_FG();
-        }
-    }
-}
-
 class A_FG extends A_BG {
 	function initialize() {
         A_BG.initialize();
@@ -49,12 +39,12 @@ class A_FG extends A_BG {
 	}
 }
 
-class A_BG {
+(:background) class A_BG {
 	protected var _b as B_BG;
 	
 	function initialize() {
 		// some complicated logic
-		_b = Instantiator.instantiateB();
+		_b = B_BG.newInstance();
 		// some complicated logic
 	}
 	
@@ -65,13 +55,34 @@ class A_BG {
 
 
 class B_FG extends B_BG {
-	function initialize() {
+	public function initialize() {
         B_BG.initialize();
 	}
 	function notNeededInBackground() as Void {}
 }
 
-class B_BG {
+(:background) class B_BG {
+
+	(:typecheck(disableBackgroundCheck))
+    public static function newInstance() as B_BG {
+        if( EvccApp.isBackground ) {
+            return new B_BG();
+        } else {
+            return new B_FG();
+        }
+    }
+
+	public function initialize() {
+	}
+
 	function neededInBackground() as Void {}
+}
+
+
+class B_X {
+    public static function getInstance() as B_X {
+        return new B_X();
+    }
+    private function initialize() {}
 }
 */
