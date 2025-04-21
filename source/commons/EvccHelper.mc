@@ -94,7 +94,6 @@ import Toybox.Application;
         var backgroundColor = glance ? Graphics.COLOR_TRANSPARENT : EvccColors.BACKGROUND;
 
         dc.setColor( EvccColors.ERROR, backgroundColor );
-        dc.clear();
 
         if( ex instanceof EvccBaseException ) {
             errorMsg = ex.getScreenMessage();

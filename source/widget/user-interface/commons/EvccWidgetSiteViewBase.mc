@@ -118,6 +118,7 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
             shell.drawIndicators( dc );
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
+            dc.clear();
             EvccHelperUI.drawError( dc, ex );
         }
         // EvccHelperBase.debug("WidgetSiteBase: onUpdate completed for " + getType() + " site=" + _siteIndex );
@@ -131,6 +132,7 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
             new EvccSiteContent( self ).draw( dc );
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
+            dc.clear();
             EvccHelperUI.drawError( dc, ex );
         }
     }
@@ -190,25 +192,30 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
     // and after that whenever a new web response is received
     (:exclForViewPreRenderingDisabled) public function onStateUpdate() as Void {
         EvccHelperBase.debug( "WidgetSiteBase: onStateChange " + getType() + " site=" + _siteIndex );
-        try {
-            if( _isActiveView && ! _content.alreadyHasRealContent() ) {
-                // In the case that we are active and have not received 
-                // any "real" content yet (in other words: are showing "Loading..."),
-                // we do not want to loose them and prepare the content right away, without
-                // using the task queue
+        if( _isActiveView && ! _content.alreadyHasRealContent() ) {
+            // In the case that we are active and have not received 
+            // any "real" content yet (in other words: are showing "Loading..."),
+            // we do not want to loose them and prepare the content right away, without
+            // using the task queue
+            try {
                 prepareImmediately();
-            } else {
-                // If we already had "real" content, we prepare via the task queue,
-                // for better responsiveness to user input
-                prepareByTasks();
+            } catch( ex ) {
+                getExceptionHandler().registerException( ex );
+                WatchUi.requestUpdate();
             }
-        } catch( ex ) {
-            getExceptionHandler().registerException( ex );
+        } else {
+            // If we already had "real" content, we prepare via the task queue,
+            // for better responsiveness to user input
+            try {
+                prepareByTasks();
+            } catch( ex ) {
+                getExceptionHandler().registerException( ex );
+            }
         }
     }
     // Prepare shell and content without task qeueu
     (:exclForViewPreRenderingDisabled) function prepareImmediately() as Void {
-        // EvccHelperBase.debug("WidgetSiteBase: prepareImmediately " + getType() + " site=" + _siteIndex );
+        EvccHelperBase.debug("WidgetSiteBase: prepareImmediately " + getType() + " site=" + _siteIndex );
         var dcStub = EvccDcStub.getInstance();
         _shell.prepare( dcStub );
         _content.assemble( dcStub );
@@ -219,7 +226,7 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
     }
     // Prepare shell and content via the task queue    
     (:exclForViewPreRenderingDisabled) function prepareByTasks() as Void {
-        // EvccHelperBase.debug("WidgetSiteBase: prepareByTasks " + getType() + " site=" + _siteIndex );
+        EvccHelperBase.debug("WidgetSiteBase: prepareByTasks " + getType() + " site=" + _siteIndex );
         _shell.queueTasks();
         _content.queueTasks();
         // Only if we are the active view, we request an update of the screen
@@ -260,8 +267,19 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
             // EvccHelperBase.debug("WidgetSiteBase: onUpdate completed for " + getType() + " site=" + _siteIndex );
             */
         } catch ( ex ) {
-            EvccHelperBase.debugException( ex );
-            EvccHelperUI.drawError( dc, ex );
+            try {
+                // First we try to draw the exception with
+                // the shell ...
+                dc.clear();
+                _shell.drawHeaderAndLogo( dc, false );
+                EvccHelperUI.drawError( dc, ex );
+                _shell.drawIndicators( dc );
+            } catch ( anotherex ) {
+                // ... and if that causes another exception,
+                // we just draw the (original) exception
+                dc.clear();
+                EvccHelperUI.drawError( dc, ex );
+            }
         }
     }
 

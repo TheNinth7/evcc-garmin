@@ -109,6 +109,7 @@ import Toybox.Application.Properties;
 
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
+            dc.clear();
             EvccHelperUI.drawError( dc, ex );
         }
         //System.println( "onUpdate: e " + System.getSystemStats().usedMemory );

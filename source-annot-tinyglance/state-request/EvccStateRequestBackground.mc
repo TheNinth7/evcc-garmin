@@ -95,7 +95,7 @@ typedef EvccStateRequestCallback as interface {
 
     // Receive the data from the web request
     function onReceive( responseCode as Number, data as Dictionary<String,Object?> or String or PersistedContent.Iterator or Null ) as Void {
-        // EvccHelperBase.debug("StateRequest: onReceive site=" + _siteIndex );
+        EvccHelperBase.debug("StateRequest: onReceive site=" + _siteIndex );
         _hasCurrentState = true;
         _error = true; _errorMessage = ""; _errorCode = "";
         
@@ -114,6 +114,7 @@ typedef EvccStateRequestCallback as interface {
                 _errorMessage = "No phone"; _errorCode = "";
             } else {
                 _errorMessage = "Request failed"; _errorCode = responseCode.toString();
+                EvccHelperBase.debug("StateRequest: request failed" );
             }
         }
         

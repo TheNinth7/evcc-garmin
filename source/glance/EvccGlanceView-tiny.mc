@@ -116,6 +116,7 @@ import Toybox.Application.Storage;
 
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
+            dc.clear();
             EvccHelperUI.drawError( dc, ex );
         }
     }
