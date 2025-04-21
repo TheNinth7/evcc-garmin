@@ -18,6 +18,7 @@ class EvccWidgetErrorView extends WatchUi.View {
 
     // Update the view
     function onUpdate(dc as Dc) as Void {
+        dc.clear();
         EvccHelperUI.drawError( dc, _ex );
     }
 
