@@ -11,6 +11,9 @@ If you still have questions after reading this guide, check the [Support](#help-
 - [Connectivity](#connectivity)
 - [Settings](#settings)
 - [User Interface](#user-interface)
+  - [Glance](#glance)
+  - [Widget](#widget)
+  - [Error Handling](#error-handling)
 - [Supported Devices](#supported-devices)
 - [Troubleshooting](#troubleshooting)
 - [Help & Support](#help--support)
@@ -275,6 +278,20 @@ The view shows the evcc-garmin version, the Connect IQ (monkey) version supporte
     <td></td>
   </tr>
 </table>
+
+## Error Handling
+
+Errors are displayed only in the views directly affected, ensuring the rest of the app continues to function normally. Examples include:
+
+- No configured sites: A general error message is shown.
+
+- Multiple configured sites: If an error (e.g., connection failure) affects only one site, only that site's view will show the error message. Other site views remain functional.
+
+- Detail views: If the current state cannot be fetched (e.g., due to a connectivity issue), views that are only shown when certain data is present in the state (such as the forecast) will be shown based on a previously stored state, if available. Views that are always shown (e.g., statistics) will continue to display regardless.
+
+- Glance view: When multiple sites are configured, the glance view displays only general errors or errors related to the currently displayed site.
+
+<br>
 
 # Supported Devices
 
