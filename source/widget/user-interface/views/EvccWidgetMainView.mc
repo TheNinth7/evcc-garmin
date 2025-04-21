@@ -74,7 +74,10 @@ import Toybox.Math;
                 // If we already can add the forecast during the initial call
                 // on startup, the pre-rendering is already being scheduled
                 // by the EvccMultiStateRequestsHandler
-                if( ! initialCall ) {
+                // We have to check for null since the addDetailView does not 
+                // always return a view, if we act as glance and have multiple sites, 
+                // the view is not added since the sites views are the lower level views 
+                if( ! initialCall && view != null ) {
                     view.onStateUpdate();
                 }
             }
@@ -87,7 +90,7 @@ import Toybox.Math;
     // This function is the one actually decides if a detail view is added
     // on the same or on the lower level. To be able to apply this to 
     // different detail views, it accepts a class type as input
-    (:exclForMemoryLow :typecheck(false))   
+    (:exclForMemoryLow :typecheck(false))
     private function addDetailView( viewClass ) as EvccWidgetSiteViewBase {
         var siteCount = EvccSiteConfiguration.getSiteCount();
         // If we act as glance, and there is only one site, then we add the detail view to the lower level views
