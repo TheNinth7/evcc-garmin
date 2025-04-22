@@ -46,9 +46,6 @@ import Toybox.Application.Storage;
     // Update the view
     function onUpdate( dc as Dc ) as Void {
         try {
-            dc.setColor( EvccColors.FOREGROUND, Graphics.COLOR_TRANSPARENT );
-            dc.clear();
-
             // EvccHelperBase.debug("TinyGlance: onUpdate");
 
             // Getting the state is memory-intense, so we do it before we
@@ -108,6 +105,9 @@ import Toybox.Application.Storage;
                 var age = Time.now().compare( siteData.getTimestamp() );
                 line2 = age < 60 ? "Just now" : age < 120 ? "1 minute ago" : age / 60 + " minutes ago";
             }
+
+            dc.setColor( EvccColors.FOREGROUND, Graphics.COLOR_TRANSPARENT );
+            dc.clear();
 
             dc.drawText( line1X, line1Y, Graphics.FONT_GLANCE, line1, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER );
             dc.drawText( line2X, line2Y, Graphics.FONT_GLANCE, line2, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER );
