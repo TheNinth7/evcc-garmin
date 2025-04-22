@@ -9,6 +9,7 @@ If you still have questions after reading this guide, check the [Support](#help-
 # Table of Contents
 
 - [Connectivity](#connectivity)
+
 - [Settings](#settings)
 - [User Interface](#user-interface)
   - [Glance](#glance)
@@ -158,7 +159,7 @@ The statistics view displays the percentage of solar energy relative to the tota
 
 <table class="layoutTable">
   <tr>
-    <td width="33.33%"><img src="screenshots/widget_views_statistics_300px.png"/></td>
+    <td width="33.33%"><img src="screenshots/widget_1site_statistics_300px.png"/></td>
     <td></td>
     <td></td>
   </tr>
