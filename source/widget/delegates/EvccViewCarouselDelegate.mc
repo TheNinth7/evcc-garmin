@@ -158,12 +158,16 @@ class EvccViewCarouselDelegateBase extends EvccViewSimpleDelegate {
     // i.e. the last view goes to the first and vice versa.
     (:exclForMemoryLow) 
     public function onNextPage() as Boolean {
+        // EvccHelperBase.debug("ViewCarouselDelegate: onNextPage");
         try {
-            // EvccHelperBase.debug("ViewCarouselDelegate: onNextPage");
-            var activeView = _breadCrumb.getSelectedChild( _views.size() );
-            activeView = activeView == _views.size() - 1 ? 0 : activeView + 1;
-            WatchUi.switchToView( _views[activeView], self, WatchUi.SLIDE_UP );
-            _breadCrumb.setSelectedChild( activeView );
+            // In case of errors, there may be only one view
+            // present and we do not need to execute tha page change
+            if( _views.size() > 1 ) {
+                var activeView = _breadCrumb.getSelectedChild( _views.size() );
+                activeView = activeView == _views.size() - 1 ? 0 : activeView + 1;
+                WatchUi.switchToView( _views[activeView], self, WatchUi.SLIDE_UP );
+                _breadCrumb.setSelectedChild( activeView );
+            }
             return true;
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
@@ -172,12 +176,16 @@ class EvccViewCarouselDelegateBase extends EvccViewSimpleDelegate {
     }
     (:exclForMemoryLow) 
     public function onPreviousPage() as Boolean {
+        // EvccHelperBase.debug("ViewCarouselDelegate: onPreviousPage");
         try {
-            // EvccHelperBase.debug("ViewCarouselDelegate: onPreviousPage");
-            var activeView = _breadCrumb.getSelectedChild( _views.size() );
-            activeView = activeView == 0 ? _views.size() - 1 : activeView - 1;
-            WatchUi.switchToView( _views[activeView], self, WatchUi.SLIDE_DOWN );
-            _breadCrumb.setSelectedChild( activeView );
+            // In case of errors, there may be only one view
+            // present and we do not need to execute tha page change
+            if( _views.size() > 1 ) {
+                var activeView = _breadCrumb.getSelectedChild( _views.size() );
+                activeView = activeView == 0 ? _views.size() - 1 : activeView - 1;
+                WatchUi.switchToView( _views[activeView], self, WatchUi.SLIDE_DOWN );
+                _breadCrumb.setSelectedChild( activeView );
+            }
             return true;
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
