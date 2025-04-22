@@ -22,7 +22,18 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
     // Functions to access the index and state request for the site of this view
     private var _siteIndex as Number;
     protected function getSiteIndex() as Number { return _siteIndex; }
+    (:exclForViewPreRenderingEnabled)
     protected function setSiteIndex( siteIndex as Number ) as Void { _siteIndex = siteIndex; }
+    // If view pre-rendering is active, we need to immediately redraw
+    // the content in case the site index changes
+    (:exclForViewPreRenderingDisabled) 
+    protected function setSiteIndex( siteIndex as Number ) as Void { 
+        if( _siteIndex != siteIndex ) {
+            _siteIndex = siteIndex;
+            prepareImmediately();
+        }
+    }
+    
     public function getStateRequest() as EvccStateRequest { return EvccStateRequestRegistry.getStateRequest( _siteIndex ); }
 
     // Organization of views
@@ -193,11 +204,17 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
         _content = new EvccSiteContentPreRenderer( self );
     }
 
+    (:exclForViewPreRenderingDisabled)
+    private function removeTasks() as Void {
+        EvccTaskQueue.getInstance().removeByExceptionHandler( getExceptionHandler() );
+    }
+
     // The callback function for state changes
     // It is called initially when a current state is loaded from storage,
     // and after that whenever a new web response is received
-    (:exclForViewPreRenderingDisabled) public function onStateUpdate() as Void {
-        EvccHelperBase.debug( "WidgetSiteBase: onStateChange " + getType() + " site=" + _siteIndex );
+    (:exclForViewPreRenderingDisabled) 
+    public function onStateUpdate() as Void {
+        // EvccHelperBase.debug( "WidgetSiteBase: onStateChange " + getType() + " site=" + _siteIndex );
         if( _isActiveView && ! _content.alreadyHasRealContent() ) {
             // In the case that we are active and have not received 
             // any "real" content yet (in other words: are showing "Loading..."),
@@ -221,7 +238,7 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
     }
     // Prepare shell and content without task qeueu
     (:exclForViewPreRenderingDisabled) function prepareImmediately() as Void {
-        EvccHelperBase.debug("WidgetSiteBase: prepareImmediately " + getType() + " site=" + _siteIndex );
+        // EvccHelperBase.debug("WidgetSiteBase: prepareImmediately " + getType() + " site=" + _siteIndex );
         var dcStub = EvccDcStub.getInstance();
         _shell.prepare( dcStub );
         _content.assemble( dcStub );
@@ -229,10 +246,13 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
         // This function is only called when we are the active view, 
         // so we can always trigger the update of the screen
         WatchUi.requestUpdate();
+        // When we have pre-rendered everything here, we can invalidate
+        // any scheduled pre-rendering tasks
+        removeTasks();
     }
     // Prepare shell and content via the task queue    
     (:exclForViewPreRenderingDisabled) function prepareByTasks() as Void {
-        EvccHelperBase.debug("WidgetSiteBase: prepareByTasks " + getType() + " site=" + _siteIndex );
+        // EvccHelperBase.debug("WidgetSiteBase: prepareByTasks " + getType() + " site=" + _siteIndex );
         _shell.queueTasks();
         _content.queueTasks();
         // Only if we are the active view, we request an update of the screen
@@ -249,7 +269,7 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
     // Update the screen
     (:exclForViewPreRenderingDisabled) function onUpdate( dc as Dc ) as Void {
         try {
-            EvccHelperBase.debug("WidgetSiteBase: onUpdate " + getType() + " site=" + _siteIndex );
+            // EvccHelperBase.debug("WidgetSiteBase: onUpdate " + getType() + " site=" + _siteIndex );
             dc.clear();
             _exceptionHandler.checkForException();
             _shell.drawHeaderAndLogo( dc, false ); // false to keep the header/logo in memory
