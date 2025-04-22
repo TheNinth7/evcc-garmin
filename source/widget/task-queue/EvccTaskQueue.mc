@@ -107,4 +107,18 @@ class EvccTaskQueue {
             startTimer();
         }
     }
+    
+    // Function to remove all tasks associated with an exception handler
+    public function removeByExceptionHandler( eh as EvccExceptionHandler ) as Void {
+        // EvccHelperBase.debug( "TaskQueue: removing tasks by error handler" );
+        for( var i = 0; i < _tasks.size(); i++ ) {
+            if( _tasks[i].getExceptionHandler() == eh ) {
+                _tasks.remove( _tasks[i] );
+            }            
+        }
+        if( _tasks.size() == 0 ) {
+            // EvccHelperBase.debug( "TaskQueue: stopping timer" );
+            _timer.stop();
+        }
+    }
 }
