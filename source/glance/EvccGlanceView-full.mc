@@ -37,8 +37,6 @@ import Toybox.Application.Properties;
             // EvccHelperBase.debug("Glance: onUpdate");
             var line = new EvccHorizontalBlock( { :dc => dc, :font => EvccGlanceResourceSet.FONT_GLANCE, :justify => Graphics.TEXT_JUSTIFY_LEFT, :backgroundColor => Graphics.COLOR_TRANSPARENT } );
 
-            var spacing = dc.getTextDimensions( " ", Graphics.FONT_GLANCE )[0];
-
             _stateRequest.checkForError();
             
             if( ! _stateRequest.hasCurrentState() ) {
@@ -71,12 +69,11 @@ import Toybox.Application.Properties;
                     }
                 }
 
-                if( displayedLPs.size() <= 1 ) { spacing = spacing * 3; }
                 for (var i = 0; i < displayedLPs.size(); i++) {
                     var loadpoint = displayedLPs[i] as EvccLoadPoint;
                     var vehicle = loadpoint.getVehicle();
                     if( vehicle != null ) {
-                        var column = new EvccVerticalBlock( { :font => EvccGlanceResourceSet.FONT_GLANCE, :marginLeft => spacing } );
+                        var column = new EvccVerticalBlock( { :font => EvccGlanceResourceSet.FONT_GLANCE } );
                         column.addText( vehicle.getTitle().substring( 0, 8 ) as String );
                         var vehicleState = new EvccHorizontalBlock( { :font => EvccGlanceResourceSet.FONT_GLANCE } );
                         if( vehicle.isGuest() ) {
@@ -92,10 +89,23 @@ import Toybox.Application.Properties;
                 }
 
                 if( ! hasVehicle ) {
-                    line.addTextWithOptions( "No vehicle", { :marginLeft => spacing } );
+                    line.addText( "No vehicle" );
                 }
             }
-            
+
+            var elements = line.getElements();
+            // If there is less than 3 elements, we use
+            // three times the width of a space character as spacing,
+            // otherwise only one time 
+            var spacing = dc.getTextWidthInPixels( " ", Graphics.FONT_GLANCE );
+            if( elements.size() < 3 ) {
+                spacing = spacing * 3;
+            }
+            // Add spacing to the right of each element, except the last one
+            for( var i = 0; i < elements.size() - 1; i++ ) {
+                elements[i].setOption( :marginRight, spacing );
+            }
+
             // We do this in the end, because spacing may be modified based on the number of loadpoints
             try {
                 var glanceMarginLeft = Properties.getValue( EvccConstants.PROPERTY_GLANCE_MARGIN_LEFT ) as Boolean;
