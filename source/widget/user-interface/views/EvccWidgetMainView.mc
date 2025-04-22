@@ -29,7 +29,8 @@ import Toybox.Math;
     
     // When we process the state the first time, we check if a
     // forecast is available and if yes add the forecast view 
-    var _hasForecast as Boolean = false;
+    var _alreadyHasForecastView as Boolean = false;
+    var _alreadyHasStatisticsView as Boolean = false;
 
     function initialize( views as ArrayOfSiteViews, parentView as EvccWidgetSiteViewBase?, siteIndex as Number, actAsGlance as Boolean ) {
         // EvccHelperBase.debug("Widget: initialize");
@@ -58,7 +59,7 @@ import Toybox.Math;
     // data may lead to additional views being displayed. Therefore, this function has to protect 
     // itself from adding the same view twice.
     (:exclForMemoryLow)   
-    public function addDetailViews( initialCall as Boolean ) as Void {
+    public function addDetailViews( calledDuringAppStartup as Boolean ) as Void {
         // EvccHelperBase.debug("WidgetSiteMain: addDetailViews" );
         var stateRequest = getStateRequest();
 
@@ -68,22 +69,14 @@ import Toybox.Math;
         // If there is an error, we do not add anything. The actual error will be handled by
         // the content assembly of this view.
         if( ! stateRequest.hasError() && stateRequest.hasState() ) {
-            if( ! _hasForecast && stateRequest.getState().hasForecast() ) {
-                _hasForecast = true;
-                var view = addDetailView( EvccWidgetForecastView );
-                // If we already can add the forecast during the initial call
-                // on startup, the pre-rendering is already being scheduled
-                // by the EvccMultiStateRequestsHandler
-                // We have to check for null since the addDetailView does not 
-                // always return a view, if we act as glance and have multiple sites, 
-                // the view is not added since the sites views are the lower level views 
-                if( ! initialCall && view != null ) {
-                    view.onStateUpdate();
-                }
+            if( ! _alreadyHasForecastView && stateRequest.getState().hasForecast() ) {
+                _alreadyHasForecastView = true;
+                addDetailView( EvccWidgetForecastView, calledDuringAppStartup );
             }
-        }
-        if( initialCall ) {
-            addDetailView( EvccWidgetStatisticsView );
+            if( ! _alreadyHasStatisticsView && stateRequest.getState().getStatistics() != null ) {
+                _alreadyHasStatisticsView = true;
+                addDetailView( EvccWidgetStatisticsView, calledDuringAppStartup );
+            }
         }
     }
 
@@ -91,26 +84,36 @@ import Toybox.Math;
     // on the same or on the lower level. To be able to apply this to 
     // different detail views, it accepts a class type as input
     (:exclForMemoryLow :typecheck(false))
-    private function addDetailView( viewClass ) as EvccWidgetSiteViewBase {
+    private function addDetailView( viewClass, calledDuringAppStartup as Boolean ) as Void {
         var siteCount = EvccSiteConfiguration.getSiteCount();
+        var view;
         // If we act as glance, and there is only one site, then we add the detail view to the lower level views
         // Also if we do not act as glance, but there is more than one site, it goes to the lower level views 
         if( ( _actAsGlance && siteCount == 1 ) || ( ! _actAsGlance && siteCount > 1 ) ) {
-            return 
+            view = 
                 new viewClass( getLowerLevelViews(), self, getSiteIndex() )
                 as EvccWidgetSiteViewBase;
         // But if we are not acting as glance and there is only one site, we directly add the
         // detail view to the same level view
         } else if ( siteCount == 1 ) {
-            return 
+            view =  
                 new viewClass( getSameLevelViews(), self.getParentView(), getSiteIndex() )
                 as EvccWidgetSiteViewBase;
+        }
+        // If we already can add the view during startup of the app
+        // the pre-rendering is already being scheduled
+        // by the EvccMultiStateRequestsHandler
+        // We have to check for null since statements above does not 
+        // always return a view. If we act as glance and have multiple sites, 
+        // the view is not added since the sites views are the lower level views 
+        if( ! calledDuringAppStartup && view != null ) {
+            view.onStateUpdate();
         }
     }
 
     // Dummy function for low memory devices
     (:exclForMemoryStandard)   
-    public function addDetailViews( initialCall as Boolean ) as Void {}
+    public function addDetailViews( calledDuringAppStartup as Boolean ) as Void {}
 
     // If we act as glance, we update the current site
     function onShow() as Void {
@@ -121,7 +124,15 @@ import Toybox.Math;
             // and we have to switch the glance view to the 
             // site last selected
             if( _actAsGlance ) {
-                setSiteIndex( EvccBreadCrumbSiteReadOnly.getSelectedSite( EvccSiteConfiguration.getSiteCount() ) );
+                var siteCount = EvccSiteConfiguration.getSiteCount();
+                // Only if there is more than one site, we set the site
+                // index to the currently active, in case the currently
+                // active was changed in the lower level views
+                if( siteCount > 1 ) {
+                    // setSiteIndex will also update the content
+                    // if the site index has changed
+                    setSiteIndex( EvccBreadCrumbSiteReadOnly.getSelectedSite( EvccSiteConfiguration.getSiteCount() ) );
+                }
             }
             EvccWidgetSiteViewBase.onShow();
         } catch ( ex ) {
