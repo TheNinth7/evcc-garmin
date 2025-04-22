@@ -29,7 +29,7 @@ import Toybox.Time;
     private const PVPOWER = "pvPower";
     public static const SITETITLE = "siteTitle";
     private const LOADPOINTS = "loadpoints";
-    private const FORECAST = "forecast";
+    (:exclForMemoryLow) private const FORECAST = "forecast";
     (:exclForMemoryLow) private const STATISTICS = "statistics";
 
     public function hasBattery() as Boolean { return _hasBattery; }
