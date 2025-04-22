@@ -164,8 +164,6 @@ import Toybox.Application;
         }
     }
 
-
-
     public static function maxn( n as Array<Numeric> ) as Numeric { 
         var max = 0;
         for( var i = 0; i < n.size(); i++ ) {
@@ -175,6 +173,11 @@ import Toybox.Application;
     }
     public static function max( a as Numeric, b as Numeric ) as Numeric { return a > b ? a : b; }
     public static function min( a as Numeric, b as Numeric ) as Numeric { return a < b ? a : b; }
+
+    public static function clearGlanceDc( dc as Dc ) as Void {
+        dc.setColor( EvccColors.FOREGROUND, Graphics.COLOR_TRANSPARENT );
+        dc.clear();
+    }
 }
 
 
@@ -216,5 +219,10 @@ class EvccHelperWidget {
             var seconds = ( duration % 60 ) as Number;
             return minutes.format("%02d") + ":" + seconds.format("%02d") + " m"; 
         }
+    }
+
+    public static function clearWidgetDc( dc as Dc ) as Void {
+        dc.setColor( EvccColors.FOREGROUND, EvccColors.BACKGROUND );
+        dc.clear();
     }
 }
