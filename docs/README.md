@@ -285,9 +285,11 @@ Errors are displayed only in the views directly affected, ensuring the rest of t
 
 - No configured sites: A general error message is shown.
 
-- Multiple configured sites: If an error (e.g., connection failure) affects only one site, only that site's view will show the error message. Other site views remain functional.
+- Multiple Views per Site: If a site encounters an error, all views associated with that site will display the error.
 
-- Detail views: If the current state cannot be fetched (e.g., due to a connectivity issue), views that are only shown when certain data is present in the state (such as the forecast) will be shown based on a previously stored state, if available. Views that are always shown (e.g., statistics) will continue to display regardless.
+- Multiple Configured Sites: If an error (e.g., a connection failure) affects only one site, only that site’s views will show the error. Views for other sites will remain functional.
+
+- Temporary Errors: If the current state cannot be fetched (e.g., due to a connectivity issue), the glance and widget views will display a previously stored state—provided it is still valid. Detail views will also be generated from the stored state if available. An error message will only be shown if the issue persists after the cached data expires.
 
 - Glance view: When multiple sites are configured, the glance view displays only general errors or errors related to the currently displayed site.
 
