@@ -106,8 +106,7 @@ import Toybox.Application.Storage;
                 line2 = age < 60 ? "Just now" : age < 120 ? "1 minute ago" : age / 60 + " minutes ago";
             }
 
-            dc.setColor( EvccColors.FOREGROUND, Graphics.COLOR_TRANSPARENT );
-            dc.clear();
+            EvccHelperUI.clearGlanceDc( dc );
 
             dc.drawText( line1X, line1Y, Graphics.FONT_GLANCE, line1, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER );
             dc.drawText( line2X, line2Y, Graphics.FONT_GLANCE, line2, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER );
@@ -117,7 +116,7 @@ import Toybox.Application.Storage;
 
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
-            dc.clear();
+            EvccHelperUI.clearGlanceDc( dc );
             EvccHelperUI.drawError( dc, ex );
         }
     }

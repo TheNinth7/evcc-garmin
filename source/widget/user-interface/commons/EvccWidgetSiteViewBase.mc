@@ -128,14 +128,14 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
     function onUpdate( dc as Dc ) as Void {
         // EvccHelperBase.debug("WidgetSiteBase: onUpdate for " + getType() + " site=" + _siteIndex );
         try {
-            dc.clear();
+            EvccHelperWidget.clearWidgetDc( dc );
             var shell = new EvccSiteShell( self );
             shell.drawHeaderAndLogo( dc, true ); // true to remove header and logo from memory after drawing them
             new EvccSiteContent( self ).draw( dc );
             shell.drawIndicators( dc );
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
-            dc.clear();
+            EvccHelperWidget.clearWidgetDc( dc );
             EvccHelperUI.drawError( dc, ex );
         }
         // EvccHelperBase.debug("WidgetSiteBase: onUpdate completed for " + getType() + " site=" + _siteIndex );
@@ -144,12 +144,12 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
     (:exclForViewPreRenderingEnabled :exclForMemoryStandard) 
     function onUpdate( dc as Dc ) as Void {
         try {
-            dc.clear();
+            EvccHelperWidget.clearWidgetDc( dc );
             new EvccSiteShell( self ).drawHeaderAndLogo( dc, true );
             new EvccSiteContent( self ).draw( dc );
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
-            dc.clear();
+            EvccHelperWidget.clearWidgetDc( dc );
             EvccHelperUI.drawError( dc, ex );
         }
     }
@@ -270,7 +270,7 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
     (:exclForViewPreRenderingDisabled) function onUpdate( dc as Dc ) as Void {
         try {
             // EvccHelperBase.debug("WidgetSiteBase: onUpdate " + getType() + " site=" + _siteIndex );
-            dc.clear();
+            EvccHelperWidget.clearWidgetDc( dc );
             _exceptionHandler.checkForException();
             _shell.drawHeaderAndLogo( dc, false ); // false to keep the header/logo in memory
             _content.draw( dc );
@@ -296,14 +296,14 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
             try {
                 // First we try to draw the exception with
                 // the shell ...
-                dc.clear();
+                EvccHelperWidget.clearWidgetDc( dc );
                 _shell.drawHeaderAndLogo( dc, false );
                 EvccHelperUI.drawError( dc, ex );
                 _shell.drawIndicators( dc );
             } catch ( anotherex ) {
                 // ... and if that causes another exception,
                 // we just draw the (original) exception
-                dc.clear();
+                EvccHelperWidget.clearWidgetDc( dc );
                 EvccHelperUI.drawError( dc, ex );
             }
         }
