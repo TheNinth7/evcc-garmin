@@ -17,8 +17,8 @@ import Toybox.WatchUi;
 
     // Update the view
     function onUpdate(dc as Dc) as Void {
-        EvccHelperUI.clearGlanceDc( dc );
-        EvccHelperUI.drawError( dc, _ex );
+        EvccHelperUI.clearDc( dc );
+        EvccHelperUI.drawGlanceError( _ex, dc );
     }
 
 }

@@ -19,23 +19,23 @@ import Toybox.Graphics;
         return _instance as EvccResources;
     }
  
-    public var _resourceSet as EvccResourceSet; // needs to be public for static member functions to access it
+    public var resourceSet as EvccResourceSet; // needs to be public for static member functions to access it
     
     // For full glance, we initialize the resources depending on the
     // mode we are in
     (:exclForGlanceTiny :exclForGlanceNone :typecheck(disableGlanceCheck)) 
     private function initialize() {
         if( EvccApp.isGlance ) {
-            _resourceSet = new EvccGlanceResourceSet();
+            resourceSet = new EvccGlanceResourceSet();
         } else {
-            _resourceSet = new EvccWidgetResourceSet();
+            resourceSet = new EvccWidgetResourceSet();
         }
     }
     // For tiny glance or devices without glance we
     // always work with widget resources, since they
     // do not use this class
     (:exclForGlanceFull) private function initialize() {
-        _resourceSet = new EvccWidgetResourceSet();
+        resourceSet = new EvccWidgetResourceSet();
     }
 
     // Various functions to access resources
@@ -44,11 +44,11 @@ import Toybox.Graphics;
     // widget, but in glance mode, only the glance is available.
     (:typecheck(disableGlanceCheck))
     public static function getIcons() as EvccIcons {
-        return getInstance()._resourceSet._icons;
+        return getInstance().resourceSet.icons;
     }
     (:typecheck(disableGlanceCheck))
     public static function getGarminFonts() as ArrayOfGarminFonts {
-        return getInstance()._resourceSet._fonts;
+        return getInstance().resourceSet.fonts;
     }
     public static function getGarminFont( f as EvccFont ) as GarminFont {
         return getGarminFonts()[f as Number];

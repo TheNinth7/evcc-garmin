@@ -86,63 +86,38 @@ import Toybox.Application;
         }
     }
 
-    // This is the universal function for showing erros on the UI
-    (:exclForMemoryLow) public static function drawError( dc as Dc, ex as Exception ) as Void {
-        var errorMsg;
-        var useTxtArea = false;
-        var glance = EvccApp.isGlance;
-        var backgroundColor = glance ? Graphics.COLOR_TRANSPARENT : EvccColors.BACKGROUND;
+    // Function to draw an error on a glance Dc
+    // For the glance, the error is aligned to the left
+    // and centered vertically, with a slight offset to the top which
+    // makes the text align better with the logo
+    (:exclForGlanceNone) public static function drawGlanceError( ex as Exception, dc as Dc ) as Void {
+        new WatchUi.TextArea( {
+                :text => getErrorMessage( ex ),
+                :color => EvccColors.ERROR,
+                :backgroundColor => Graphics.COLOR_TRANSPARENT,
+                :font => [Graphics.FONT_GLANCE, Graphics.FONT_XTINY],
+                :locX => WatchUi.LAYOUT_HALIGN_LEFT,
+                :locY => 0,
+                :justification => Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER,
+                :width => dc.getWidth(),
+                :height => dc.getHeight() * 0.9 
+            } ).draw( dc );
+    }
 
-        dc.setColor( EvccColors.ERROR, backgroundColor );
-
+    // Assemble the error message from an exception
+    public static function getErrorMessage( ex as Exception ) as String {
         if( ex instanceof EvccBaseException ) {
-            errorMsg = ex.getScreenMessage();
+            return ex.getScreenMessage();
         } else {
             // For unknown errors we show the evcc version, to help supporting
             // users on the forum. Also unknown errors are displayed in a text
             // area to be able to show their full text
-            errorMsg = ex.getErrorMessage() + "\nevvcg " + getVersion();
-            useTxtArea = true;
-        }
-
-        if( useTxtArea )
-        {
-            var txtWidth = 0;
-            var txtHeight = 0;
-            
-            // For glance we use the whole area, for
-            // widget we calculate a square to fit into
-            // the circular watch face
-            if( glance ) {
-                txtWidth = dc.getWidth();
-                txtHeight = dc.getHeight();
-            } else {
-                txtWidth = dc.getWidth() / Math.sqrt( 2 );
-                txtHeight = txtWidth;
-            }
-
-            var txtArea = new WatchUi.TextArea({
-                :text => errorMsg != null ? errorMsg : "",
-                :color => EvccColors.ERROR,
-                :backgroundColor => backgroundColor,
-                :font => [Graphics.FONT_TINY, Graphics.FONT_GLANCE, Graphics.FONT_XTINY],
-                :locX => WatchUi.LAYOUT_HALIGN_CENTER,
-                :locY => WatchUi.LAYOUT_VALIGN_CENTER,
-                :width => txtWidth,
-                :height => txtHeight
-            });
-
-            txtArea.draw( dc );     
-        } else {
-            // Different format and justification for glance and widget
-            if( glance ) {
-                dc.drawText( 0, dc.getHeight() / 2 * 0.9, Graphics.FONT_GLANCE, errorMsg, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER );
-            } else {
-                dc.drawText( dc.getWidth() / 2, dc.getHeight() / 2, Graphics.FONT_SMALL, errorMsg, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER );
-            }
+            return ex.getErrorMessage() + "\nevvcg " + getVersion();
         }
     }
+
     // Simpler version for devices with less memory
+    /*
     (:exclForMemoryStandard) public static function drawError( dc as Dc, ex as Exception ) as Void {
         var errorMsg;
 
@@ -163,6 +138,7 @@ import Toybox.Application;
             dc.drawText( dc.getWidth() / 2, dc.getHeight() / 2, Graphics.FONT_SMALL, errorMsg, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER );
         }
     }
+    */
 
     public static function maxn( n as Array<Numeric> ) as Numeric { 
         var max = 0;
@@ -174,8 +150,8 @@ import Toybox.Application;
     public static function max( a as Numeric, b as Numeric ) as Numeric { return a > b ? a : b; }
     public static function min( a as Numeric, b as Numeric ) as Numeric { return a < b ? a : b; }
 
-    public static function clearGlanceDc( dc as Dc ) as Void {
-        dc.setColor( EvccColors.FOREGROUND, Graphics.COLOR_TRANSPARENT );
+    public static function clearDc( dc as Dc ) as Void {
+        dc.setColor( EvccColors.FOREGROUND, EvccApp.isGlance ? Graphics.COLOR_TRANSPARENT : EvccColors.BACKGROUND );
         dc.clear();
     }
 }
@@ -221,8 +197,56 @@ class EvccHelperWidget {
         }
     }
 
-    public static function clearWidgetDc( dc as Dc ) as Void {
-        dc.setColor( EvccColors.FOREGROUND, EvccColors.BACKGROUND );
-        dc.clear();
+    // Function to draw an error on a widget Dc
+    // For the widget, the error is centered vertically and horizontally
+    // The area for the text is the square that fits into the round watch face
+    // This way we maximize the available area. There may be some overlaps with the
+    // shell, for especially with the page title of detail views, but that is
+    // acceptable. Otherwise we'd have to take the content area and calculate the coordinates
+    // of the largest rectangle that fits into both the circle and the (non-aligned)
+    // content area, which would be a quite complicated algorithm.
+    public static function drawWidgetError( ex as Exception, dc as Dc ) as Void {
+        // The text area will be in the square fitting into
+        // the round watch face
+        var width = dc.getWidth() / Math.sqrt( 2 );
+        new WatchUi.TextArea( {
+                :text => EvccHelperUI.getErrorMessage( ex ),
+                :color => EvccColors.ERROR,
+                :backgroundColor => EvccColors.BACKGROUND,
+                :font => EvccResources.getGarminFonts(),
+                :locX => WatchUi.LAYOUT_HALIGN_CENTER,
+                :locY => WatchUi.LAYOUT_VALIGN_CENTER,
+                :justification => Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER,
+                :width => width,
+                :height => width 
+            } ).draw( dc );
     }
+
+    /*
+    public static function drawWidgetError( ex as Exception, dc as Dc, contentArea as EvccContentArea? ) as Void {
+        var locX = WatchUi.LAYOUT_HALIGN_CENTER;
+        var locY = WatchUi.LAYOUT_VALIGN_CENTER;
+        var width = dc.getWidth() / Math.sqrt( 2 );
+        var height = width;
+        if( contentArea != null && contentArea.height > 0 ) {
+            width = contentArea.width;
+            height = contentArea.height;
+            locX = contentArea.x - width/2;
+            locY = contentArea.y - height/2;
+        }
+        // The text area will be in the square fitting into
+        // the round watch face
+        new WatchUi.TextArea( {
+                :text => EvccHelperUI.getErrorMessage( ex ),
+                :color => EvccColors.ERROR,
+                :backgroundColor => EvccColors.BACKGROUND,
+                :font => EvccResources.getGarminFonts(),
+                :locX => locX,
+                :locY => locY,
+                :justification => Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER,
+                :width => width,
+                :height => height 
+            } ).draw( dc );
+    }
+    */
 }

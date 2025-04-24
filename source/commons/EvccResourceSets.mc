@@ -24,12 +24,12 @@ import Toybox.Application.Properties;
             throw new OperationNotAllowedException( "Device does not support vector fonts!" );
         }
 
-        var heights = new Array<Float>[_fonts.size()];
+        var heights = new Array<Float>[fonts.size()];
         // We take either 13 % of the screen height or the size of the medium font, whichever is smaller
-        heights[0] = EvccHelperUI.min( Graphics.getFontHeight( _fonts[0] ).toFloat(), System.getDeviceSettings().screenHeight * 0.13 );
+        heights[0] = EvccHelperUI.min( Graphics.getFontHeight( fonts[0] ).toFloat(), System.getDeviceSettings().screenHeight * 0.13 );
         
         // We take either 56 % of the medium font or the height of the xtiny font, whichever is smaller
-        heights[heights.size()-1] = EvccHelperUI.min( Graphics.getFontHeight( _fonts[_fonts.size()-1] ).toFloat(), heights[0] * 0.56 );
+        heights[heights.size()-1] = EvccHelperUI.min( Graphics.getFontHeight( fonts[fonts.size()-1] ).toFloat(), heights[0] * 0.56 );
         
         var step = ( heights[0] - heights[heights.size()-1] ) / ( heights.size()-1 );
         
@@ -51,7 +51,7 @@ import Toybox.Application.Properties;
             fontFaces = [ "RobotoRegular", "RobotoCondensedBold" ];
         }
 
-        for( var i = 0; i < _fonts.size(); i++ ) {
+        for( var i = 0; i < fonts.size(); i++ ) {
             var height = Math.round( heights[i] ).toNumber();
             
             var vectorFont = Graphics.getVectorFont( { :face => fontFaces, :size => height } );
@@ -65,7 +65,7 @@ import Toybox.Application.Properties;
             if( vectorFont == null ) {
                 throw new InvalidValueException( "Font faces not found!" );
             } else {
-                _fonts[i] = vectorFont;
+                fonts[i] = vectorFont;
             }
         }
     }
@@ -93,27 +93,27 @@ import Toybox.Application.Properties;
         // Fill an array with all the heights, to avoid multiple costly 
         // requests to Graphics.getFontHeight
         var heightsPreset = new Array<Number>[0];
-        for( var i = 0; i< _fonts.size(); i++ ) { heightsPreset.add( Graphics.getFontHeight( _fonts[i] ) ); }
+        for( var i = 0; i< fonts.size(); i++ ) { heightsPreset.add( Graphics.getFontHeight( fonts[i] ) ); }
 
         // Create a new array for the optimized fonts
         var fontsOptimized = new ArrayOfGarminFonts[0];
-        fontsOptimized.add( _fonts[0] ); // the first one stays
+        fontsOptimized.add( fonts[0] ); // the first one stays
         var ipr = 1;
         // loop through all font sizes
-        for( var iop = 1; iop < _fonts.size(); ) {
+        for( var iop = 1; iop < fonts.size(); ) {
             // If current font from the preset is smaller than the last one, we add it
             // Also, if there are no more fonts left, we add the current one regardless
             // of size
-            if( heightsPreset[ipr] < heightsPreset[ipr-1] || ipr + 1 == _fonts.size() )
+            if( heightsPreset[ipr] < heightsPreset[ipr-1] || ipr + 1 == fonts.size() )
             {
-                fontsOptimized.add( _fonts[ipr] );
+                fontsOptimized.add( fonts[ipr] );
                 iop++;
             }
             // we move to the next preset, if there is one
-            ipr += ( ipr + 1 < _fonts.size() ) ? 1 : 0;
+            ipr += ( ipr + 1 < fonts.size() ) ? 1 : 0;
         }
 
-        _fonts = fontsOptimized;
+        fonts = fontsOptimized;
     }
 }
 
@@ -121,11 +121,11 @@ import Toybox.Application.Properties;
 // Below the two classes actually holding fonts and icon resources
 // Each has 
 // - an enum "Font", defining the font types to be used by the app
-// - a member "_fonts", mapping the font types from the enum to Garmin fonts
-// - a member "_icons", a two dimensional array, with the first dimension being the icons (as defined in EvccIconBlock),
+// - a member "fonts", mapping the font types from the enum to Garmin fonts
+// - a member "icons", a two dimensional array, with the first dimension being the icons (as defined in EvccIconBlock),
 //                      and the second dimension being the fonts. 
 //                      The following will return the sun icon in size medium from the widget set:
-//                      EvccWidgetResourceSet._icons[EvccIconBlock.ICON_SUN][EvccWidgetResourceSet.FONT_MEDIUM]
+//                      EvccWidgetResourceSet.icons[EvccIconBlock.ICON_SUN][EvccWidgetResourceSet.FONT_MEDIUM]
 
 // Widget
 // Base class for all three implementations
@@ -137,8 +137,8 @@ class EvccWidgetResourceSetBase {
         FONT_XTINY,
         FONT_MICRO
     }
-    public var _fonts as ArrayOfGarminFonts = [ Graphics.FONT_MEDIUM, Graphics.FONT_SMALL, Graphics.FONT_TINY, Graphics.FONT_GLANCE, Graphics.FONT_XTINY ];
-    public var _icons as EvccIcons = [
+    public var fonts as ArrayOfGarminFonts = [ Graphics.FONT_MEDIUM, Graphics.FONT_SMALL, Graphics.FONT_TINY, Graphics.FONT_GLANCE, Graphics.FONT_XTINY ];
+    public var icons as EvccIcons = [
         [ Rez.Drawables.battery_empty_medium, Rez.Drawables.battery_empty_small, Rez.Drawables.battery_empty_tiny, Rez.Drawables.battery_empty_xtiny, null ],
         [ Rez.Drawables.battery_onequarter_medium, Rez.Drawables.battery_onequarter_small, Rez.Drawables.battery_onequarter_tiny, Rez.Drawables.battery_onequarter_xtiny, null ],
         [ Rez.Drawables.battery_half_medium, Rez.Drawables.battery_half_small, Rez.Drawables.battery_half_tiny, Rez.Drawables.battery_half_xtiny, null ],
@@ -159,7 +159,7 @@ class EvccWidgetResourceSetBase {
     ];
     (:exclForMemoryLow)
     protected function initialize() {
-        _icons.addAll( _optionalIcons );
+        icons.addAll( _optionalIcons );
     }
 }
 
@@ -170,8 +170,8 @@ class EvccWidgetResourceSetBase {
     enum Font {
         FONT_GLANCE
     }
-    public var _fonts as ArrayOfGarminFonts = [Graphics.FONT_GLANCE];
-    public var _icons as EvccIcons = [
+    public var fonts as ArrayOfGarminFonts = [Graphics.FONT_GLANCE];
+    public var icons as EvccIcons = [
         [ Rez.Drawables.battery_empty_glance ],
         [ Rez.Drawables.battery_onequarter_glance ],
         [ Rez.Drawables.battery_half_glance ],

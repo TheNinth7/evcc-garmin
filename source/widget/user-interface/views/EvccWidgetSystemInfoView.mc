@@ -15,7 +15,7 @@ class EvccWidgetSystemInfoView extends WatchUi.View {
 
     // Draw the content
     function onUpdate( dc as Dc ) as Void {
-            EvccHelperWidget.clearWidgetDc( dc );
+            EvccHelperUI.clearDc( dc );
             var block = new EvccVerticalBlock( { :font => EvccWidgetResourceSet.FONT_XTINY } );
             block.addText( "evccg " + EvccHelperUI.getVersion() );
 
@@ -68,8 +68,8 @@ class EvccWidgetSystemInfoView extends WatchUi.View {
     // for tiny glances we create our own debug resource set, which
     // is not included in that type
     (:debug) function checkIcons( uiLib as EvccWidgetResourceSet or EvccGlanceResourceSet, block as EvccVerticalBlock, dc as Dc ) as Void {
-        var fonts = uiLib._fonts as ArrayOfGarminFonts;
-        var icons = uiLib._icons as EvccIcons;
+        var fonts = uiLib.fonts as ArrayOfGarminFonts;
+        var icons = uiLib.icons as EvccIcons;
         var text = "icons: OK";
         var fontSizeNames = new Array<String>[0];
         var prefix = "";
@@ -128,6 +128,6 @@ class EvccWidgetSystemInfoView extends WatchUi.View {
     enum Font {
         FONT_GLANCE
     }
-    public var _fonts as ArrayOfGarminFonts = [Graphics.FONT_GLANCE];
-    public var _icons as EvccIcons = [[ Rez.Drawables.battery_empty_glance ]];
+    public var fonts as ArrayOfGarminFonts = [Graphics.FONT_GLANCE];
+    public var icons as EvccIcons = [[ Rez.Drawables.battery_empty_glance ]];
 }

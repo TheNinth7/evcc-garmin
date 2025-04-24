@@ -118,7 +118,7 @@ import Toybox.Time;
             }
             var statistics = result[STATISTICS] as JsonContainer?;
             if( statistics != null ) {
-                self._statistics = new EvccStatistics( statistics );
+                _statistics = new EvccStatistics( statistics );
             }
         }
     }

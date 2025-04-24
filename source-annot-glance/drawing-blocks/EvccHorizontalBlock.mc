@@ -30,7 +30,7 @@ import Toybox.WatchUi;
         var availableWidth = getDcWidthAtY( y ) - getOption( :truncateSpacing ) as Number;
         if( _truncatableElement != null ) {
             var truncatableElement = _truncatableElement as EvccTextBlock;
-            while( availableWidth < getWidth() && truncatableElement._text.length() > 1 ) {
+            while( availableWidth < getWidth() && truncatableElement.getTextLength() > 1 ) {
                 //System.println( "**** before truncate " + _truncatableElement._text );
                 truncatableElement.truncate( 1 );
                 //System.println( "**** after truncate " + _truncatableElement._text );

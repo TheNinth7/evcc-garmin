@@ -8,7 +8,7 @@ import Toybox.Lang;
     public function initialize() {
         Exception.initialize();
     }
-    public function getScreenMessage() as String? { return null; }
+    public function getScreenMessage() as String { return ""; }
 }
 
 // Exception indicating that no sites were found in the
@@ -19,7 +19,7 @@ import Toybox.Lang;
     public function initialize() {
         EvccBaseException.initialize();
     }
-    public function getScreenMessage() as String? { 
+    public function getScreenMessage() as String { 
         return "No site, please\ncheck app settings"; 
     }
 }
@@ -32,7 +32,7 @@ import Toybox.Lang;
         EvccBaseException.initialize();
         _index = index;
     }
-    public function getScreenMessage() as String? { 
+    public function getScreenMessage() as String { 
         return "Password for site " + ( _index + 1 ) + " is missing"; 
     }
 }
@@ -50,7 +50,7 @@ import Toybox.Lang;
         _msg = msg;
         _code = code;
     }
-    public function getScreenMessage() as String? { 
+    public function getScreenMessage() as String { 
         var errorMsg = _msg;
         if( _code != null && ! _code.toString().equals( "" ) ) {
             errorMsg += "\n" + _code;

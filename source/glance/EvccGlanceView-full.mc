@@ -26,13 +26,24 @@ import Toybox.Application.Properties;
         }
     }
 
+    // private var callCount as Number = 0;
+
     // Update the view
     function onUpdate( dc as Dc ) as Void {
 
         //System.println( "onUpdate: s " + System.getSystemStats().usedMemory );
 
+        /*
+        dc.setColor( Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT );
+        dc.clear();
+        dc.drawText( 0, dc.getHeight()/2 - Graphics.getFontHeight( Graphics.FONT_GLANCE )*0.75, Graphics.FONT_GLANCE, "Hello World " + callCount, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER );
+        dc.setColor( Graphics.COLOR_RED, Graphics.COLOR_TRANSPARENT );
+        dc.clear();
+        dc.drawText( 0, dc.getHeight()/2 + Graphics.getFontHeight( Graphics.FONT_GLANCE )*0.75, Graphics.FONT_GLANCE, "Hello World " + callCount, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER );
+        callCount++;
+        */
         try {
-            EvccHelperUI.clearGlanceDc( dc );
+            EvccHelperUI.clearDc( dc );
 
             // EvccHelperBase.debug("Glance: onUpdate");
             var line = new EvccHorizontalBlock( { :dc => dc, :font => EvccGlanceResourceSet.FONT_GLANCE, :justify => Graphics.TEXT_JUSTIFY_LEFT, :backgroundColor => Graphics.COLOR_TRANSPARENT } );
@@ -115,13 +126,15 @@ import Toybox.Application.Properties;
             } catch ( ex ) {}
 
             line.draw( dc, 0, dc.getHeight() / 2 );
-
             // dc.drawRectangle( 0, 0, dc.getWidth(), dc.getHeight() );
-
+            //throw new InvalidOptionsException( "This is a test exception. Not sure where it happend. Beware!" );
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
-            EvccHelperUI.clearGlanceDc( dc );
-            EvccHelperUI.drawError( dc, ex );
+            // clear Dc with transparent background color does
+            // not work a second time within an onUpdate call
+            // See issue #108
+            // EvccHelperUI.clearDc( dc );
+            EvccHelperUI.drawGlanceError( ex, dc );
         }
         //System.println( "onUpdate: e " + System.getSystemStats().usedMemory );
     }

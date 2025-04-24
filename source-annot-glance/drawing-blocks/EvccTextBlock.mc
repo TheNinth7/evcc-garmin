@@ -4,11 +4,16 @@ import Toybox.WatchUi;
 
 // Text element
 (:glance) class EvccTextBlock extends EvccBlock {
-    var _text as String;
+    private var _text as String;
 
     function initialize( text as String, options as DbOptions ) {
         EvccBlock.initialize( options );
         _text = text;
+    }
+
+    // Returns the current length of the text
+    public function getTextLength() as Number {
+        return _text.length();
     }
 
     // Removes the specified number of characters from the
@@ -75,7 +80,6 @@ import Toybox.WatchUi;
         } else {
             x = x - getWidth() / 2 + getMarginLeft();
         }
-
 
         _x = x;
         _y = y;

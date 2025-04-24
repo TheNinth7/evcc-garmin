@@ -128,15 +128,15 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
     function onUpdate( dc as Dc ) as Void {
         // EvccHelperBase.debug("WidgetSiteBase: onUpdate for " + getType() + " site=" + _siteIndex );
         try {
-            EvccHelperWidget.clearWidgetDc( dc );
+            EvccHelperUI.clearDc( dc );
             var shell = new EvccSiteShell( self );
             shell.drawHeaderAndLogo( dc, true ); // true to remove header and logo from memory after drawing them
             new EvccSiteContent( self ).draw( dc );
             shell.drawIndicators( dc );
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
-            EvccHelperWidget.clearWidgetDc( dc );
-            EvccHelperUI.drawError( dc, ex );
+            EvccHelperUI.clearDc( dc );
+            EvccHelperWidget.drawWidgetError( dc, ex );
         }
         // EvccHelperBase.debug("WidgetSiteBase: onUpdate completed for " + getType() + " site=" + _siteIndex );
     }
@@ -144,13 +144,13 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
     (:exclForViewPreRenderingEnabled :exclForMemoryStandard) 
     function onUpdate( dc as Dc ) as Void {
         try {
-            EvccHelperWidget.clearWidgetDc( dc );
+            EvccHelperUI.clearDc( dc );
             new EvccSiteShell( self ).drawHeaderAndLogo( dc, true );
             new EvccSiteContent( self ).draw( dc );
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
-            EvccHelperWidget.clearWidgetDc( dc );
-            EvccHelperUI.drawError( dc, ex );
+            EvccHelperUI.clearDc( dc );
+            EvccHelperWidget.drawWidgetError( dc, ex );
         }
     }
 
@@ -270,11 +270,12 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
     (:exclForViewPreRenderingDisabled) function onUpdate( dc as Dc ) as Void {
         try {
             // EvccHelperBase.debug("WidgetSiteBase: onUpdate " + getType() + " site=" + _siteIndex );
-            EvccHelperWidget.clearWidgetDc( dc );
+            EvccHelperUI.clearDc( dc );
             _exceptionHandler.checkForException();
             _shell.drawHeaderAndLogo( dc, false ); // false to keep the header/logo in memory
             _content.draw( dc );
             _shell.drawIndicators( dc );
+            throw new InvalidOptionsException( "This is a test exception. Not sure where it happend. Beware!" );
 
             // Code for drawing visual alignment grid 
             /*
@@ -296,15 +297,15 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
             try {
                 // First we try to draw the exception with
                 // the shell ...
-                EvccHelperWidget.clearWidgetDc( dc );
+                EvccHelperUI.clearDc( dc );
                 _shell.drawHeaderAndLogo( dc, false );
-                EvccHelperUI.drawError( dc, ex );
+                EvccHelperWidget.drawWidgetError( ex, dc );
                 _shell.drawIndicators( dc );
             } catch ( anotherex ) {
                 // ... and if that causes another exception,
                 // we just draw the (original) exception
-                EvccHelperWidget.clearWidgetDc( dc );
-                EvccHelperUI.drawError( dc, ex );
+                EvccHelperUI.clearDc( dc );
+                EvccHelperWidget.drawWidgetError( ex, dc );
             }
         }
     }
