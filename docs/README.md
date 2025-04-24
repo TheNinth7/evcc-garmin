@@ -11,14 +11,20 @@ If you still have questions after reading this guide, check the [Support](#help-
 - [Connectivity](#connectivity)
 
 - [Settings](#settings)
+
 - [User Interface](#user-interface)
   - [Glance](#glance)
   - [Widget](#widget)
   - [Error Handling](#error-handling)
+
 - [Supported Devices](#supported-devices)
+
 - [Troubleshooting](#troubleshooting)
+
 - [Help & Support](#help--support)
+
 - [Changelog](#changelog)
+
 - [GitHub](#github)
 
 
@@ -398,7 +404,7 @@ You can get help by posting in [this thread](https://github.com/evcc-io/evcc/dis
 
 | Version | Changes |
 |--------:|-------------|
-| **v1.4** | Added a new statistics view displaying the percentage of solar energy used.<br>Improved performance by pre-rendering views in the background, resulting in faster view transitions.<br>Added support for the newly released Forerunner 165 / 165 Music and Vivoactive 6.<br>Updated feature compatibility for Fenix 6 and the Vivoactive 3 / 3 Music / 3 Music LTE. See [Supported Devices](#supported-devices) for full details.<br>Removed forecast and statistics querying from tiny glance. As a result, on devices using tiny glance, the widget may take a second or two after launch to fetch the full state and display the forecast view.<br>Upgraded to Garmin Connect IQ SDK 8.1.1.
+| **v1.4** | Added a new statistics view displaying the percentage of solar energy used.<br>Improved performance by pre-rendering views in the background, resulting in faster view transitions.<br>Added support for the newly releas33ed Forerunner 165 / 165 Music and Vivoactive 6.<br>Updated feature compatibility for Fenix 6 and the Vivoactive 3 / 3 Music / 3 Music LTE. See [Supported Devices](#supported-devices) for full details.<br>Removed forecast and statistics querying from tiny glance. As a result, on devices using tiny glance, the widget may take a second or two after launch to fetch the full state and display the forecast view.<br>Upgraded to Garmin Connect IQ SDK 8.1.1.
 | **v1.3.3** | Fixed an unexpected TypeError that occurred after updating to v1.3.3 on certain devices. Affected models include: Fenix 6 / 6 Pro, Forerunner 745 / 945, and Vivoactive 3 ([Issue #6](https://github.com/TheNinth7/evcc-garmin/issues/2)).
 | **v1.3.2** | Fixed issue on Vivoactive 4 where the wrong site opened in multi-site setups ([Issue #4](https://github.com/TheNinth7/evcc-garmin/issues/4)).<br>Added tap hint for Vivoactive 3 / 4 ([Issue #2](https://github.com/TheNinth7/evcc-garmin/issues/2))<br>Improved content centering between the page indicator and button or tap hints<br>Enhanced vertical spacing for better screen balance with excess whitespace([Issue #3](https://github.com/TheNinth7/evcc-garmin/issues/3))
 | **v1.3.1** | Fixed an issue where swiping left triggered a page down on some devices<br>Fixed incorrect display of the page indicator when showing the forecast for the first time<br>Added a jq filter to remove all empty fields, reducing memory usage<br>Added a property for vector font face selection, allowing per-device customization<br>Refactored resource management for improved maintainability
