@@ -192,6 +192,7 @@ class EvccHelperWidget {
         }
     }
 
+    // Sets the colors and clears the device context
     public static function clearDc( dc as Dc ) as Void {
         dc.setColor( EvccColors.FOREGROUND, EvccColors.BACKGROUND );
         dc.clear();

@@ -150,7 +150,7 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
         } catch ( ex ) {
             EvccHelperBase.debugException( ex );
             EvccHelperWidget.clearDc( dc );
-            EvccHelperWidget.drawWidgetError( dc, ex );
+            EvccHelperWidget.drawWidgetError( ex, dc );
         }
     }
 
@@ -275,7 +275,6 @@ class EvccWidgetSiteViewBase extends WatchUi.View {
             _shell.drawHeaderAndLogo( dc, false ); // false to keep the header/logo in memory
             _content.draw( dc );
             _shell.drawIndicators( dc );
-            throw new InvalidOptionsException( "This is a test exception. Not sure where it happend. Beware!" );
 
             // Code for drawing visual alignment grid 
             /*
