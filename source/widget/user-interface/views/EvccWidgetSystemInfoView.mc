@@ -15,7 +15,7 @@ class EvccWidgetSystemInfoView extends WatchUi.View {
 
     // Draw the content
     function onUpdate( dc as Dc ) as Void {
-            EvccHelperUI.clearDc( dc );
+            EvccHelperWidget.clearDc( dc );
             var block = new EvccVerticalBlock( { :font => EvccWidgetResourceSet.FONT_XTINY } );
             block.addText( "evccg " + EvccHelperUI.getVersion() );
 
