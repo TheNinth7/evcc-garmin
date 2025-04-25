@@ -2,36 +2,11 @@ import Toybox.Lang;
 import Toybox.Application.Storage;
 import Toybox.Application;
 
-typedef ArrayOfBreadCrumbs as Array<EvccBreadCrumb?>;
-// Crumb, serialized for storage
-// ATTENTION: there is a bug in the compiler typecheck that causes stack overflow
-// with recursive tuples under some circumstances. For now this code circumvents
-// these (not fully understood) circumstances, but changes may trigger the bug
-// again.
-// https://forums.garmin.com/developer/connect-iq/i/bug-reports/compiler-crash-with-recursive-typedef-tuple
-// https://forums.garmin.com/developer/connect-iq/i/bug-reports/stackoverflowerror-during-build-for-tuple-with-self-reference
-typedef SerializedBreadCrumb as [Number, Array<SerializedBreadCrumb> or Null ];
-
 // These classes are used to manage and persist the selected
 // site and lower level views. This allows us to start with the
 // previously used site, and always open lower level views with the last
 // selected view. The classes and data structures are recursive and
 // support nested menu structures
-
-// Read-only class for only the site (root) level
-// For :glance and :background to save memory
-(:glance :background) class EvccBreadCrumbSiteReadOnly {
-    static function getSelectedSite( totalSites as Number ) as Number {
-        var storedCrumb = Storage.getValue( EvccConstants.STORAGE_BREAD_CRUMBS ) as SerializedBreadCrumb?;
-
-        if( storedCrumb != null && storedCrumb[0] < totalSites ) {
-            return storedCrumb[0];
-        } else {
-            return 0;
-        }
-    }
-}
-
 
 // Main recursive class, that also can be used to 
 // update breadcrumbs
@@ -136,39 +111,4 @@ typedef SerializedBreadCrumb as [Number, Array<SerializedBreadCrumb> or Null ];
     }
 }
 
-// Non-recursive implementation, for devices that support only
-// one site
-(:exclForSitesMultiple) class EvccBreadCrumb {
-    private var _selectedChild as Number = 0;
 
-    // Initialize a new bread crumb
-    public function initialize( parentCrumb as EvccBreadCrumb? ) {
-        var storedCrumb = Storage.getValue( EvccConstants.STORAGE_BREAD_CRUMBS ) as SerializedBreadCrumb?;
-        if( storedCrumb != null && storedCrumb instanceof Array && storedCrumb.size() > 0 ) {
-            _selectedChild = storedCrumb[0];
-        } else {
-            _selectedChild = 0;
-        }
-    }
-    
-    // Return the currently selected child
-    public function getSelectedChild( totalChildren as Number ) as Number {
-        if( _selectedChild >= totalChildren) {
-            setSelectedChild( 0 );
-        }
-        return _selectedChild;
-    }
-    // Set the selected child and immediately persist
-    public function setSelectedChild( activeChild as Number ) as Void {
-        if( _selectedChild != activeChild ) {
-            _selectedChild = activeChild;
-            Storage.setValue( EvccConstants.STORAGE_BREAD_CRUMBS, [ _selectedChild, null ] );
-        }
-    }
-    
-    // get the crumb for a child, and create it if it does not exist 
-    public function getChild( key as Number ) as EvccBreadCrumb {
-        return self;
-    }
-
-}

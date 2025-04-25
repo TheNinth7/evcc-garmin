@@ -14,6 +14,11 @@ class EvccContainerBlock extends EvccBlock {
         return _elements.size();
     }
 
+    (:exclForGlanceTiny :exclForGlanceNone) 
+    function getElements() as Array<EvccBlock> {
+        return _elements;
+    }
+
     // Add text is implemented differently for vertical and horizontal containers
     function addTextWithOptions( text as String, options as DbOptions ) as Void {}
     function addText( text as String ) as Void {

@@ -45,7 +45,11 @@ import Toybox.Application.Properties;
         //System.println( "onUpdate: s " + System.getSystemStats().usedMemory );
         try {
             // EvccHelperBase.debug("Glance: onUpdate");
-            var line = new EvccHorizontalBlock( { :dc => dc, :font => EvccGlanceResourceSet.FONT_GLANCE, :justify => Graphics.TEXT_JUSTIFY_LEFT, :backgroundColor => Graphics.COLOR_TRANSPARENT } );
+            var line = new EvccHorizontalBlock( { 
+                :dc => dc, 
+                :font => EvccGlanceResourceSet.FONT_GLANCE, 
+                :justify => Graphics.TEXT_JUSTIFY_LEFT, 
+                :backgroundColor => Graphics.COLOR_TRANSPARENT } );
 
             _stateRequest.checkForError();
             
