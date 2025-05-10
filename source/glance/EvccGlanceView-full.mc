@@ -111,9 +111,9 @@ import Toybox.Application.Properties;
             // If there is less than 3 elements, we use
             // three times the width of a space character as spacing,
             // otherwise only one time 
-            var spacing = dc.getTextWidthInPixels( " ", Graphics.FONT_GLANCE );
+            var spacing = dc.getTextWidthInPixels( "  ", Graphics.FONT_GLANCE );
             if( elements.size() < 3 ) {
-                spacing = spacing * 3;
+                spacing = spacing * 2;
             }
             // Add spacing to the right of each element, except the last one
             for( var i = 0; i < elements.size() - 1; i++ ) {

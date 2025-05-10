@@ -42,7 +42,8 @@ import Toybox.WatchUi;
         // we spread to the specified height
         spreadToHeight();
 
-        x += getMarginLeft(); 
+        //x += getMarginLeft(); 
+        var elementWidth = getWidth() - getMarginLeft() - getMarginRight();
         y = y - getHeight() / 2 + getMarginTop();
         
         for( var i = 0; i < _elements.size(); i++ ) {
@@ -52,9 +53,15 @@ import Toybox.WatchUi;
             // adjust the x coordinate we pass in
             var elX = x;
             var elJust = _elements[i].getJustify();
-            elX -= elJust == Graphics.TEXT_JUSTIFY_LEFT ? Math.round( getWidth() / 2 ).toNumber() : 0;
-            elX += elJust == Graphics.TEXT_JUSTIFY_RIGHT ? Math.round( getWidth() / 2 ).toNumber() : 0;
             
+            if( elJust == Graphics.TEXT_JUSTIFY_CENTER ) {
+                elX -= Math.round( getWidth()/2 - getMarginLeft() - elementWidth/2 ).toNumber();
+            } else if ( elJust == Graphics.TEXT_JUSTIFY_LEFT ) {
+                elX -= Math.round( elementWidth/2 ).toNumber();
+            } else if ( elJust == Graphics.TEXT_JUSTIFY_RIGHT ) {
+                elX += Math.round( elementWidth/2 ).toNumber();
+            }
+
             // Actual preparation of the element is done in this function
             // which has two different implementations for different
             // build options
