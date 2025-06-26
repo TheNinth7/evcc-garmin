@@ -50,13 +50,16 @@ import Toybox.Lang;
         } as JsonContainer;
 
         if( _controllable != null ) {
+            _controllable.serialize( loadpoint );
             if( _controllable instanceof EvccConnectedVehicle ) {
                 loadpoint[CONNECTED] = true;
-            } else if ( _controllable instanceof EvccHeater ) {
+            } else if( _controllable instanceof EvccHeater ) {
                 loadpoint[CONNECTED] = true;
                 loadpoint[CHARGERFEATUREHEATING] = true;
+            } else if( _controllable instanceof EvccIntegratedDevice ) {
+                loadpoint[CONNECTED] = true;
+                loadpoint[CHARGERFEATUREINTEGRATEDDEVICE] = true;
             }
-            _controllable.serialize( loadpoint );
         }
 
         return loadpoint;
@@ -72,7 +75,7 @@ import Toybox.Lang;
     public function isHeater() as Boolean { return _controllable instanceof EvccHeater; }
     public function getHeater() as EvccHeater? { return isHeater() ? _controllable as EvccHeater : null; }
 
-    public function isIntegratedDevice() as Boolean { return _controllable instanceof EvccHeater; }
+    public function isIntegratedDevice() as Boolean { return _controllable instanceof EvccIntegratedDevice; }
     public function getIntegratedDevice() as EvccIntegratedDevice? { return isIntegratedDevice() ? _controllable as EvccIntegratedDevice : null; }
 
     // Possible values: "pv", "now", "minpv", "off"
