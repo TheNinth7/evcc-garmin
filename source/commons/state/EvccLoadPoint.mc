@@ -7,8 +7,7 @@ import Toybox.Lang;
 
 // This class represents a loadpoint
 (:glance :background) class EvccLoadPoint {
-    private var _vehicle as EvccConnectedVehicle?;
-    private var _heater as EvccHeater?;
+    private var _controllable as EvccControllable?;
 
     private var _isCharging as Boolean = false;
     private var _chargePower as Number = 0;
@@ -23,6 +22,7 @@ import Toybox.Lang;
     private const CHARGEPOWER = "chargePower";
     private const CHARGEREMAININGDURATION = "chargeRemainingDuration";
     private const CHARGERFEATUREHEATING = "chargerFeatureHeating";
+    private const CHARGERFEATUREINTEGRATEDDEVICE = "chargerFeatureIntegratedDevice";
     
     function initialize( dataLp as JsonContainer, dataResult as JsonContainer ) {
         _isCharging = dataLp[CHARGING] as Boolean;
@@ -32,9 +32,11 @@ import Toybox.Lang;
         _chargeRemainingDuration = dataLp[CHARGEREMAININGDURATION] as Number?;
 
         if( dataLp[CHARGERFEATUREHEATING] as Boolean ) {
-            _heater = new EvccHeater( dataLp );
+            _controllable = new EvccHeater( dataLp );
+        } else if( dataLp[CHARGERFEATUREINTEGRATEDDEVICE] as Boolean ) {
+            _controllable = new EvccIntegratedDevice( dataLp );
         } else if( dataLp[CONNECTED] as Boolean ) {
-            _vehicle = new EvccConnectedVehicle( dataLp, dataResult );
+            _controllable = new EvccConnectedVehicle( dataLp, dataResult );
         }
     }
     
@@ -47,13 +49,14 @@ import Toybox.Lang;
             CHARGEREMAININGDURATION => _chargeRemainingDuration
         } as JsonContainer;
 
-        if( _vehicle != null ) {
-            loadpoint[CONNECTED] = true;
-            loadpoint = _vehicle.serialize( loadpoint );
-        } else if ( _heater != null ) {
-            loadpoint[CONNECTED] = true;
-            loadpoint[CHARGERFEATUREHEATING] = true;
-            loadpoint = _heater.serialize( loadpoint );
+        if( _controllable != null ) {
+            if( _controllable instanceof EvccConnectedVehicle ) {
+                loadpoint[CONNECTED] = true;
+            } else if ( _controllable instanceof EvccHeater ) {
+                loadpoint[CONNECTED] = true;
+                loadpoint[CHARGERFEATUREHEATING] = true;
+            }
+            _controllable.serialize( loadpoint );
         }
 
         return loadpoint;
@@ -62,10 +65,15 @@ import Toybox.Lang;
     public function isCharging() as Boolean { return _isCharging; }
     public function getActivePhases() as Number { return _activePhases; }
     public function getChargePowerRounded() as Number { return EvccHelperBase.roundPower( _chargePower ); }
-    public function getVehicle() as EvccConnectedVehicle? { return _vehicle; }
 
-    public function isHeater() as Boolean { return _heater != null; }
-    public function getHeater() as EvccHeater? { return _heater; }
+    public function isVehicle() as Boolean { return _controllable instanceof EvccConnectedVehicle; }
+    public function getVehicle() as EvccConnectedVehicle? { return isVehicle() ? _controllable as EvccConnectedVehicle : null; }
+
+    public function isHeater() as Boolean { return _controllable instanceof EvccHeater; }
+    public function getHeater() as EvccHeater? { return isHeater() ? _controllable as EvccHeater : null; }
+
+    public function isIntegratedDevice() as Boolean { return _controllable instanceof EvccHeater; }
+    public function getIntegratedDevice() as EvccIntegratedDevice? { return isIntegratedDevice() ? _controllable as EvccIntegratedDevice : null; }
 
     // Possible values: "pv", "now", "minpv", "off"
     public function getMode() as String { return _mode != null ? _mode : "unknown"; }

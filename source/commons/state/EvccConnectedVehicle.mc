@@ -8,7 +8,7 @@ import Toybox.Lang;
 // Class representing a vehicle connected to a loadpoint
 // Currently only connected vehicles are relevant, others
 // are ignored
-(:glance :background) class EvccConnectedVehicle {
+(:glance :background) class EvccConnectedVehicle extends EvccControllable {
     private var _name as String;
     private var _title as String;
     private var _soc as Number = 0;
@@ -16,12 +16,13 @@ import Toybox.Lang;
     
     private const VEHICLENAME = "vehicleName";
     private const VEHICLETITLE = "vehicleTitle";
-    private const LP_TITLE = "title";
     private const VEHICLES = "vehicles";
     private const VH_TITLE = "title";
     private const VEHICLESOC = "vehicleSoc";
 
     function initialize( dataLp as JsonContainer, dataResult as JsonContainer ) {
+        EvccControllable.initialize( dataLp );
+
         var name = dataLp[VEHICLENAME] as String?;
         
         // Note: here the storage serialization diverts from the 
@@ -34,7 +35,7 @@ import Toybox.Lang;
         
         // For guest vehicles we use the loadpoint title as name/title
         if( name == null || name.equals( "" ) ) {
-            name = dataLp[LP_TITLE] as String;
+            name = EvccControllable.getTitle();
             title = name;
             _isGuest = true;
         } else {
@@ -68,6 +69,7 @@ import Toybox.Lang;
             loadpoint[VEHICLENAME] = _name;
             loadpoint[VEHICLETITLE] = _title; // diversion from evcc response structure, see above
             loadpoint[VEHICLESOC] = _soc;
+            EvccControllable.serialize( loadpoint );
         }
         return loadpoint;
     }

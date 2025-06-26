@@ -189,26 +189,30 @@ import Toybox.Math;
 
         // Loadpoints
         var loadpoints = state.getLoadPoints() as ArrayOfLoadPoints;
-        var hasVehicle = false;
+        var hasLoadPoint = false;
         var showChargingDetails = MAX_VAR_LINES - variableLineCount >= loadpoints.size() + ( state.getNumOfLPsCharging() * SMALL_LINE );
         for (var i = 0; i < loadpoints.size() && variableLineCount < MAX_VAR_LINES; i++) {
             var loadpoint = loadpoints[i] as EvccLoadPoint;
             if( loadpoint.isHeater() ) {
                 block.addBlock( getHeaterElement( loadpoint ) );
                 variableLineCount++;
-                hasVehicle = true;
-            } else if( loadpoint.getVehicle() != null ) {
-                var loadpointLine = getLoadPointElement( loadpoint, showChargingDetails );
+                hasLoadPoint = true;
+            } else if( loadpoint.isVehicle() ) {
+                var loadpointLine = getVehicleElement( loadpoint, showChargingDetails );
                 block.addBlock( loadpointLine );
                 variableLineCount++;
-                hasVehicle = true;
+                hasLoadPoint = true;
                 if( loadpoint.isCharging() && showChargingDetails ) {
                     block.addBlock( getChargingElement( loadpoint, loadpointLine.getOption( :marginLeft ) as Number ) );
                     variableLineCount += SMALL_LINE;
                 }
+            } else if( loadpoint.isIntegratedDevice() ) {
+                block.addBlock( getIntegratedDeviceElement( loadpoint ) );
+                variableLineCount++;
+                hasLoadPoint = true;
             }
         }
-        if( ! hasVehicle ) {
+        if( ! hasLoadPoint ) {
             block.addText( "No vehicle" );
             variableLineCount++;
         }
@@ -221,6 +225,22 @@ import Toybox.Math;
         block.setOption( :spreadToHeight, getContentArea().height );
     }
 
+    // Helper function to add the charge power of a loadpoint to a line
+    private function addChargePower( line as EvccHorizontalBlock, loadpoint as EvccLoadPoint ) as Void {
+        line.addText( " " );
+        line.addIcon( EvccIconBlock.ICON_ACTIVE_PHASES, { :charging => true, :activePhases => loadpoint.getActivePhases() } );
+        line.addText( " " + EvccHelperWidget.formatPower( loadpoint.getChargePowerRounded() ) );
+    }
+
+    // Helper function to add the charging mode of a loadpoint to a line
+    private function addMode( line as EvccHorizontalBlock, loadpoint as EvccLoadPoint ) as Void {
+        line.addTextWithOptions( " (" + formatMode( loadpoint ) + ")", { :relativeFont => 4 } );
+    }
+
+    // Helper function to add the title of the controllable device (vehicle, heater or integreated device)
+    private function addTitle( line as EvccHorizontalBlock, controllable as EvccControllable ) as Void {
+        line.addTextWithOptions( controllable.getTitle(), { :isTruncatable => true } as DbOptions );
+    }
 
     // Function to generate line for PV, grid, battery and home
     private function getBasicElement( icon as EvccIconBlock.Icon, power as Number, flowIcon as EvccIconBlock.Icon ) as EvccHorizontalBlock {
@@ -251,31 +271,31 @@ import Toybox.Math;
     }
 
     // Function to generate main loadpoint lines
-    private function getLoadPointElement( loadpoint as EvccLoadPoint, showChargingDetails as Boolean ) as EvccHorizontalBlock {
+    private function getVehicleElement( loadpoint as EvccLoadPoint, showChargingDetails as Boolean ) as EvccHorizontalBlock {
         var vehicle = loadpoint.getVehicle() as EvccConnectedVehicle;
 
-        var lineVehicle = new EvccHorizontalBlock( { :truncateSpacing => getContentArea().truncateSpacing } );
+        var line = new EvccHorizontalBlock( { :truncateSpacing => getContentArea().truncateSpacing } );
         
-        lineVehicle.addTextWithOptions( vehicle.getTitle(), { :isTruncatable => true } as DbOptions );
+        addTitle( line, vehicle );
         
         // For guest vehicles there is no SoC
         if( ! vehicle.isGuest() ) {
-            lineVehicle.addText( " " + EvccHelperUI.formatSoc( vehicle.getSoc() ) );
+            line.addText( " " + EvccHelperUI.formatSoc( vehicle.getSoc() ) );
         }
+
         // If the vehicle is charging, we show the power
         if( loadpoint.isCharging() ) {
-            lineVehicle.addText( " " );
-            lineVehicle.addIcon( EvccIconBlock.ICON_ACTIVE_PHASES, { :charging => true, :activePhases => loadpoint.getActivePhases() } );
-            lineVehicle.addText( " " + EvccHelperWidget.formatPower( loadpoint.getChargePowerRounded() ) );
+            addChargePower( line, loadpoint );
             if( ! showChargingDetails ) {
-                lineVehicle.addTextWithOptions( " (" + formatMode( loadpoint ) + ")", { :relativeFont => 4 } );
+                line.addTextWithOptions( " (" + formatMode( loadpoint ) + ")", { :relativeFont => 4 } );
             }
         }
-        else {
-            lineVehicle.addTextWithOptions( " (" + formatMode( loadpoint ) + ")", { :relativeFont => 4 } );
+
+        if( ! loadpoint.isCharging() || ! showChargingDetails ) {
+            addMode( line, loadpoint );
         }
-        
-        return lineVehicle;
+
+        return line;
     }
 
     // Function to generate charging info below main loadpoint line
@@ -294,23 +314,38 @@ import Toybox.Math;
     // Function to generate the line for heater loadpoints
     private function getHeaterElement( loadpoint as EvccLoadPoint ) as EvccHorizontalBlock {
         var heater = loadpoint.getHeater() as EvccHeater;
-        var lineHeater = new EvccHorizontalBlock( { :truncateSpacing => getContentArea().truncateSpacing } );
+        var line = new EvccHorizontalBlock( { :truncateSpacing => getContentArea().truncateSpacing } );
         
-        lineHeater.addTextWithOptions( heater.getTitle(), { :isTruncatable => true } as DbOptions );
-        lineHeater.addText( " " + EvccHelperWidget.formatTemp( heater.getTemperature() ) );
+        addTitle( line, heater );
+
+        line.addText( " " + EvccHelperWidget.formatTemp( heater.getTemperature() ) );
         
-        // If the heater is charging, we show the power
+        // If the heater is operating, we show the power
         if( loadpoint.getChargePowerRounded() > 0 ) {
-            lineHeater.addText( " " );
-            lineHeater.addIcon( EvccIconBlock.ICON_ACTIVE_PHASES, { :charging => true, :activePhases => loadpoint.getActivePhases() } );
-            lineHeater.addText( " " + EvccHelperWidget.formatPower( loadpoint.getChargePowerRounded() ) );
-            lineHeater.addTextWithOptions( " (" + formatMode( loadpoint ) + ")", { :relativeFont => 4 } );
+            addChargePower( line, loadpoint );
         }
-        else {
-            lineHeater.addTextWithOptions( " (" + formatMode( loadpoint ) + ")", { :relativeFont => 4 } );
-        }
+
+        addMode( line, loadpoint );
         
-        return lineHeater;
+        return line;
+    }
+
+
+    // Function to generate the line for integrated device loadpoints
+    private function getIntegratedDeviceElement( loadpoint as EvccLoadPoint ) as EvccHorizontalBlock {
+        var integratedDevice = loadpoint.getIntegratedDevice() as EvccIntegratedDevice;
+        var line = new EvccHorizontalBlock( { :truncateSpacing => getContentArea().truncateSpacing } );
+        
+        addTitle( line, integratedDevice );
+        
+        // If the integrated device is operating, we show the power
+        if( loadpoint.getChargePowerRounded() > 0 ) {
+            addChargePower( line, loadpoint );
+        }
+
+        addMode( line, loadpoint );
+        
+        return line;
     }
 
     // Return the text to be displayed for the mode

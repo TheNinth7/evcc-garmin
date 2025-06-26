@@ -5,22 +5,20 @@ import Toybox.Lang;
 // as web response, as well as serializing in a JSON dictionary with
 // the same structure for persiting the state in storage
 
-// Class representing a heater
-(:glance :background) class EvccHeater extends EvccControllable {
-    private var _temp as Number = 0;
+// Class representing an integrated device
+(:glance :background) class EvccControllable {
+    private var _title as String = "";
     
-    private const VEHICLESOC = "vehicleSoc";
+    protected const LP_TITLE = "title";
 
     function initialize( dataLp as JsonContainer ) {
-        EvccControllable.initialize( dataLp );
-        _temp = dataLp[VEHICLESOC] as Number;
+        _title = dataLp[LP_TITLE] as String;
     }
 
     function serialize( loadpoint as JsonContainer ) as JsonContainer {
-        EvccControllable.serialize( loadpoint );
-        loadpoint[VEHICLESOC] = _temp;
+        loadpoint[LP_TITLE] = _title;
         return loadpoint;
     }
 
-    public function getTemperature() as Number { return _temp; }
+    public function getTitle() as String { return _title; }
 }

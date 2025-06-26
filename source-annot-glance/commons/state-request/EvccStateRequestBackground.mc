@@ -16,7 +16,7 @@ typedef EvccStateRequestCallback as interface {
 // - It makes the result (a state or an error) available.
 // - Once a web response arrives, it calls only the first registered callback,
 //   which is the background service
-(:glance :background) class EvccStateRequestBackground {
+(:background :glance) class EvccStateRequestBackground {
     
     protected var _siteIndex as Number;
 
@@ -54,7 +54,7 @@ typedef EvccStateRequestCallback as interface {
     // class derived from this one will add additional data to the JQ filter
     protected const JQ_BASE_OPENING = 
         "{result:{" +
-        "loadpoints:[.loadpoints[]|{chargePower,chargerFeatureHeating,charging,connected,vehicleName,vehicleSoc,title,phasesActive,mode,chargeRemainingDuration}]" +
+        "loadpoints:[.loadpoints[]|{chargePower,chargerFeatureHeating,chargerFeatureIntegratedDevice,charging,connected,vehicleName,vehicleSoc,title,phasesActive,mode,chargeRemainingDuration}]" +
         ",pvPower,homePower,siteTitle,batterySoc,batteryPower" +
         ",gridPower,grid:{power:.grid.power}" + 
         ",vehicles:.vehicles|map_values({title})";
@@ -94,7 +94,7 @@ typedef EvccStateRequestCallback as interface {
     }
 
     // Receive the data from the web request
-    function onReceive( responseCode as Number, data as Dictionary<String,Object?> or String or PersistedContent.Iterator or Null ) as Void {
+    public function onReceive( responseCode as Number, data as Dictionary<String,Object?> or String or PersistedContent.Iterator or Null ) as Void {
         // EvccHelperBase.debug("StateRequest: onReceive site=" + _siteIndex );
         _hasCurrentState = true;
         _error = false; _errorMessage = ""; _errorCode = "";
