@@ -44,8 +44,14 @@ class EvccWidgetStatisticsView extends EvccWidgetSiteViewBase {
                     // Add the value as one right-justified horizontal block,
                     // with value and unit in different sizes
                     var value = new EvccHorizontalBlock( { :justify => Graphics.TEXT_JUSTIFY_RIGHT } as DbOptions );
-                    value.addText( " " + statisticsPeriods[i].getSolarPercentage().format("%.0f") ); // format with no digits after the decimal point
-                    value.addTextWithOptions( "%", { :relativeFont => 2, :verticalJustifyToBaseFont => true } );
+                    var solarPercent = statisticsPeriods[i].getSolarPercent();
+                    if( solarPercent != null ) {
+                        value.addText( " " + solarPercent.format("%.0f") ); // format with no digits after the decimal point
+                        value.addTextWithOptions( "%", { :relativeFont => 2, :verticalJustifyToBaseFont => true } );
+                    } else {
+                        value.addText( " " );
+                        value.addTextWithOptions( "n/a", { :relativeFont => 2, :verticalJustifyToBaseFont => true } );
+                    }
 
                     column2.addBlock( value );
                 }

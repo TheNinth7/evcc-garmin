@@ -16,7 +16,7 @@ typedef EvccStateRequestCallback as interface {
 // - It makes the result (a state or an error) available.
 // - Once a web response arrives, it calls only the first registered callback,
 //   which is the background service
-(:background :glance) class EvccStateRequestBackground {
+(:glance :background) class EvccStateRequestBackground {
     
     protected var _siteIndex as Number;
 

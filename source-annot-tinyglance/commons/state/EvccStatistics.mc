@@ -14,9 +14,18 @@ import Toybox.Lang;
 
     function initialize( statistics as JsonContainer ) {
         for( var i = 0; i < STATISTICS_PERIOD.size(); i++ ) {
-            var periodString = STATISTICS_PERIOD[i];
-            var statisticsPeriod = statistics[periodString] as JsonContainer;
-            _statistics.add( new EvccStatisticsPeriod( statisticsPeriod ) );
+            var statisticsPeriod = statistics[STATISTICS_PERIOD[i]];
+
+            if( statisticsPeriod instanceof Dictionary ) {
+                _statistics.add( 
+                    new EvccStatisticsPeriod( 
+                        statisticsPeriod as JsonContainer
+                    ) 
+                );
+            } else {
+                
+            }
+            
         }
     }
 
