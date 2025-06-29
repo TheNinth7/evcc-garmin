@@ -10,22 +10,15 @@ import Toybox.Lang;
     private var _statistics as Array<EvccStatisticsPeriod> = new Array<EvccStatisticsPeriod>[0];
     public function getStatisticsPeriods() as Array<EvccStatisticsPeriod> { return _statistics; }
 
-    private const STATISTICS_PERIOD = [ "30d", "thisYear", "365d", "total" ];
+    private const STATISTICS_PERIOD = [ "30dx", "thisYear", "365d", "total" ];
 
     function initialize( statistics as JsonContainer ) {
         for( var i = 0; i < STATISTICS_PERIOD.size(); i++ ) {
-            var statisticsPeriod = statistics[STATISTICS_PERIOD[i]];
-
-            if( statisticsPeriod instanceof Dictionary ) {
-                _statistics.add( 
-                    new EvccStatisticsPeriod( 
-                        statisticsPeriod as JsonContainer
-                    ) 
-                );
-            } else {
-                
-            }
-            
+            _statistics.add( 
+                new EvccStatisticsPeriod( 
+                    statistics[STATISTICS_PERIOD[i]]
+                ) 
+            );
         }
     }
 
@@ -40,16 +33,25 @@ import Toybox.Lang;
 }
 
 (:exclForMemoryLow) class EvccStatisticsPeriod {
-    private var _solarPercentage as Float;
-    function getSolarPercentage() as Float { return _solarPercentage; }
+    
+    // If no value is found, the solar percentage is left at null    
+    private var _solarPercent as Float?;
+    function getSolarPercent() as Float? { return _solarPercent; }
 
     private const STATISTICS_SOLAR_PERCENTAGE = "solarPercentage";
 
-    function initialize( statisticsPeriod as JsonContainer ) {
-        _solarPercentage = statisticsPeriod[STATISTICS_SOLAR_PERCENTAGE] as Float;
+    // Constructor
+    // The solar percentage is set only if valid data is found
+    function initialize( statisticsPeriod as Object? ) {
+        if( statisticsPeriod instanceof Dictionary ) {
+            var solarPercent = statisticsPeriod[STATISTICS_SOLAR_PERCENTAGE];
+            if( solarPercent instanceof Float ) {
+                _solarPercent = solarPercent;
+            }
+        }
     }
 
     function serialize() as JsonContainer { 
-        return { STATISTICS_SOLAR_PERCENTAGE => _solarPercentage } as JsonContainer;
+        return { STATISTICS_SOLAR_PERCENTAGE => _solarPercent } as JsonContainer;
     }
 }
