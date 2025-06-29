@@ -135,7 +135,7 @@ class EvccBlock {
     public function getDc() as EvccDcInterface { 
         var dc = getOption( :dc );
         if( dc == null ) {
-            throw new InvalidValueException( ":dc not set!" );
+            throw new InvalidValueException( "NODC" );
         } else {
             return dc as EvccDcInterface;
         }

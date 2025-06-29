@@ -56,14 +56,14 @@ class EvccPageIndicator {
 
     public function setCenterAngle( angle as Number ) as Void {
         if( angle < 0 || angle > 360 ) {
-            throw new InvalidValueException( "setCenterAngle: " + angle + " is not valid." );
+            throw new InvalidValueException( "CENTANGINV " + angle );
         }
         _centerAngle = angle;
     }
 
     public function setDotDistanceAngle( angle as Number ) as Void {
         if( angle < 1 || angle > 90 ) {
-            throw new InvalidValueException( "setDotDistanceAngle: " + angle + " is not valid" );
+            throw new InvalidValueException( "DOTANGINV " + angle );
         }
         _dotDistanceAngle = angle;
     }

@@ -38,6 +38,7 @@ This README covers the following topics:
       - [2. `drawables*.xml`](#2-drawablesxml)
       - [3. `EvccResourceSet.mc`](#3-source_baseevccresourcesetmc)
     - [Generating the Device-Specific PNG Files](#generating-the-device-specific-png-files)
+- [Exception Messages](#exception-messages)
 - [Supported Devices](#supported-devices)
 - [Helpful Tips and Notes](#helpful-tips-and-notes)
 
@@ -504,22 +505,22 @@ The script relies on the following third-party tools:
 
 # Exception Messages
 
-To save memory, short codes are used for exception messages when caused by programming errors (versus caused by user error, e.g. misconfiguration).
+To conserve memory, short codes are used for exception messages that result from programming errors (as opposed to user-related issues such as misconfiguration).
 
-Here is the table of short codes:
-
-| Shortcode | Class               | Descriptions |
-|-----------|---------------------|--------------|
-| NOREZID   | EvccBitmapBlock     | ResourceId is missing |
-| NOFONT    | EvccBlock           | :font not set |
-| JUSTCENTONL | EvccHorizontalBlock | Vertical block supports only justify center |
-| JUSTNOTSUP | EvccHorizontalBlock | Horizontal block does not support justify for elements |
-| NOIC<x>FOR<y> | EvccIconBlock | Icon <x> not found for font <y> |
-
-
-
-NOIC" + _icon + "FOR" + font
-
+| Shortcode     | Class                    | Description |
+| ------------- | ------------------------ | ----------- |
+| CENTANGINV<x> | EvccPageIndicator        | setCenterAngle: <x> is not a valid value |
+| DOTANGINV<x>  | EvccPageIndicator        | setDotDistanceAngle: <x> is not a valid value |
+| FFNTFND       | EvccResourceSets         | Font faces not found |
+| JUSTCENTONL   | EvccHorizontalBlock      | Vertical block supports only justify center |
+| JUSTNOTSUP    | EvccHorizontalBlock      | Horizontal block does not support justification for elements |
+| MTHDUN        | EvccPreRenderContentTask | Unknown method |
+| NODC          | EvccBlock                | :dc not set |
+| NOFONT        | EvccBlock                | :font not set |
+| NOIC<x>FOR<y> | EvccIconBlock            | Icon <x> not found for font <y> |
+| NOREZID       | EvccBitmapBlock          | ResourceId is missing |
+| ORBITDEG<x>   | EvccPageIndicator        | orbitXY: <x> is not a valid value |
+| VECNOTSUP     | EvccResourceSets         | Device does not support vector fonts |
 
 <br>
 

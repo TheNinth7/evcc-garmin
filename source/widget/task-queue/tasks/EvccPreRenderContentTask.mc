@@ -20,7 +20,7 @@ class EvccPreRenderContentTask extends EvccTask {
         } else if ( _method == :taskFinalize ) {
             _preRenderer.taskFinalize();
         } else {
-            throw new InvalidOptionsException( "EvccPreRenderContentTask: unknown method");
+            throw new InvalidOptionsException( "MTHDUN");
         }
 
     }

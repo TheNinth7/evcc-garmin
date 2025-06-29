@@ -21,7 +21,7 @@ import Toybox.Application.Properties;
         EvccWidgetResourceSetBase.initialize();
         
         if( !( Graphics has :getVectorFont ) ) {
-            throw new OperationNotAllowedException( "Device does not support vector fonts!" );
+            throw new OperationNotAllowedException( "VECNOTSUP" );
         }
 
         var heights = new Array<Float>[fonts.size()];
@@ -63,7 +63,7 @@ import Toybox.Application.Properties;
             //// EvccHelperBase.debug( "... done" );
 
             if( vectorFont == null ) {
-                throw new InvalidValueException( "Font faces not found!" );
+                throw new InvalidValueException( "FFNTFND" );
             } else {
                 fonts[i] = vectorFont;
             }
