@@ -161,7 +161,7 @@ The app is written in **Monkey C**, Garmin's programming language, using the Con
 
 **Key files and directories:**
 
-- `/source/EvccApp.mc`: Entry point for glance, widget, and background modes
+- `/source/app/EvccApp.mc`: Entry point for glance, widget, and background modes
 - `/source/_base`: Shared code
 - `/source/background`: Background data handling, to support the tiny glance
 - `/glance`: Glance versions (full-featured and tiny)
