@@ -28,7 +28,7 @@ class EvccBitmapBlock extends EvccBlock {
     // determined
     protected function bitmapRef() as ResourceId {
         if( _bitmapRef == null ) { 
-            throw new InvalidValueException( "ResourceId is missing!" ); 
+            throw new InvalidValueException( "NOREZID" ); 
         }
         else {
             return _bitmapRef;

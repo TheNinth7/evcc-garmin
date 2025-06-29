@@ -88,7 +88,7 @@ class EvccIconBlock extends EvccBitmapBlock {
         var ref = icons[_icon as Number][font as Number];
         // Throw an exception if we could not find the icon
         if( ref == null ) {
-            throw new InvalidValueException( "Icon " + _icon + " not found for font " + font );
+            throw new InvalidValueException( "NOIC" + _icon + "FOR" + font );
         }
         return ref;
     }

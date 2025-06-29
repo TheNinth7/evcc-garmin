@@ -502,6 +502,27 @@ The script relies on the following third-party tools:
 
 <br>
 
+# Exception Messages
+
+To save memory, short codes are used for exception messages when caused by programming errors (versus caused by user error, e.g. misconfiguration).
+
+Here is the table of short codes:
+
+| Shortcode | Class               | Descriptions |
+|-----------|---------------------|--------------|
+| NOREZID   | EvccBitmapBlock     | ResourceId is missing |
+| NOFONT    | EvccBlock           | :font not set |
+| JUSTCENTONL | EvccHorizontalBlock | Vertical block supports only justify center |
+| JUSTNOTSUP | EvccHorizontalBlock | Horizontal block does not support justify for elements |
+| NOIC<x>FOR<y> | EvccIconBlock | Icon <x> not found for font <y> |
+
+
+
+NOIC" + _icon + "FOR" + font
+
+
+<br>
+
 # Supported Devices
 
 A table listing supported devices and their features is available in the [user manual](https://evccg.the-ninth.com/#supported-devices).

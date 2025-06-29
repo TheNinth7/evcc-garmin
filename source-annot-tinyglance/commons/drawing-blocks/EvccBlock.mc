@@ -91,7 +91,7 @@ class EvccBlock {
             }
             return value;
         } else {
-            if( option == :font ) { throw new InvalidValueException( ":font not set!"); }
+            if( option == :font ) { throw new InvalidValueException( "NOFONT"); }
             if( option == :backgroundColor ) { return EvccColors.BACKGROUND; }
             if( option == :color ) { return EvccColors.FOREGROUND; }
         }

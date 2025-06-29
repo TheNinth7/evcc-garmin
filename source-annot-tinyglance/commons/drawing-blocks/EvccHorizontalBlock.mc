@@ -53,7 +53,7 @@ class EvccHorizontalBlock extends EvccContainerBlock {
             if( _elements[i].getOption(:justify) as TextJustification != Graphics.TEXT_JUSTIFY_CENTER 
                 && ! ( _elements[i] instanceof EvccVerticalBlock ) ) 
             {
-                throw new InvalidValueException( "EvccHorizontalBlock does not support justify for elements." );
+                throw new InvalidValueException( "JUSTNOTSUP" );
             }
             
             x += _elements[i].getWidth() / 2;
