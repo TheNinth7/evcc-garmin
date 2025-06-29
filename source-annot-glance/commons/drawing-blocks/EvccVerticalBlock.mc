@@ -35,18 +35,25 @@ import Toybox.WatchUi;
     private function prepareDrawInternal( x as Number, y as Number, byTasks as Boolean, exceptionHandler as EvccExceptionHandler? ) as Void
     {
         if( getJustify() != Graphics.TEXT_JUSTIFY_CENTER ) {
-            throw new InvalidValueException( "EvccVerticalBlock supports only justify center." );
+            throw new InvalidValueException( "JUSTCENTONL" );
         }
 
         // If the spreadToHeight option is enabled, 
         // we spread to the specified height
         spreadToHeight();
 
-        //x += getMarginLeft(); 
-        var elementWidth = getWidth() - getMarginLeft() - getMarginRight();
+        // Initially we set y to the upper border of the vertical block
         y = y - getHeight() / 2 + getMarginTop();
         
         for( var i = 0; i < _elements.size(); i++ ) {
+            
+            // The width of the element without margins
+            // Due to truncation, this width can change during
+            // the loop, therefore we calculate it for every
+            // iteration
+            var elementWidth = getWidth() - getMarginLeft() - getMarginRight();
+            
+            // We set y to the center of the element
             y += _elements[i].getHeight() / 2;
             
             // Depending on the alignment of the element, we
