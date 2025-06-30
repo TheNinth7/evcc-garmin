@@ -6,7 +6,7 @@ import Toybox.Lang;
 // the same structure for persiting the state in storage
 
 // Class representing an integrated device
-(:glance :background) class EvccControllable {
+(:glance) class EvccControllable {
     private var _title as String = "";
     
     protected const LP_TITLE = "title";

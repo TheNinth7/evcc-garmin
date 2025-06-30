@@ -8,7 +8,7 @@ import Toybox.Lang;
 // Class representing a vehicle connected to a loadpoint
 // Currently only connected vehicles are relevant, others
 // are ignored
-(:glance :background) class EvccConnectedVehicle extends EvccControllable {
+(:glance) class EvccConnectedVehicle extends EvccControllable {
     private var _name as String;
     private var _title as String;
     private var _soc as Number = 0;

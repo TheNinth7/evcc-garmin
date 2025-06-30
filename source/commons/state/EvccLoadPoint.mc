@@ -6,7 +6,7 @@ import Toybox.Lang;
 // the same structure for persiting the state in storage
 
 // This class represents a loadpoint
-(:glance :background) class EvccLoadPoint {
+(:glance) class EvccLoadPoint {
     private var _controllable as EvccControllable?;
 
     private var _isCharging as Boolean = false;

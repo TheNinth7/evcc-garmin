@@ -13,28 +13,63 @@ import Toybox.PersistedContent;
 //   calling WatchUi.requestUpdate
 class EvccStateRequest extends EvccStateRequestBackground {
     
-    function initialize( siteIndex as Number ) {
+    // If it is not a low memory device, we add statistics and forecast
+    (:exclForMemoryLow) 
+    private const JQ_STATISTICS = 
+        ",statistics:.statistics|map_values({solarPercentage})";
+   (:exclForMemoryLow) 
+    private const JQ_FORECAST = 
+        ",forecast:{solar:.forecast.solar|{scale,today:{energy:.today.energy},tomorrow:{energy:.tomorrow.energy},dayAfterTomorrow:{energy:.dayAfterTomorrow.energy}}}";
+    (:exclForMemoryLow)
+    protected var JQ as String = JQ_BASE_OPENING + JQ_FORECAST + JQ_STATISTICS + JQ_BASE_CLOSING;
+
+    // How long a state is valid
+    protected var _dataExpiry as Number;
+
+    // How often the state should be requested
+    protected var _refreshInterval as Number;
+
+    // Instance of the state store for persisting the state
+    protected var _stateStore as EvccStateStore;
+
+    // Constructor
+    public function initialize( siteIndex as Number ) {
         EvccStateRequestBackground.initialize( siteIndex );
+        _refreshInterval = Properties.getValue( EvccConstants.PROPERTY_REFRESH_INTERVAL ) as Number;
+        _dataExpiry = Properties.getValue( EvccConstants.PROPERTY_DATA_EXPIRY ) as Number;
+        _stateStore = new EvccStateStore( siteIndex );
     }
-
-    // Accessors for the state
-    // Current state is true if either data from storage that is within the
-    // expiry time has been loaded, or a web response has been received
-    // also an error is counted as current state
-    public function hasCurrentState() as Boolean { return _hasCurrentState; }
-    // hasState is true if a state is available, even if it is expired
-    // this can be used for decision 
-    public function hasState() as Boolean { return _stateStore.getState() != null; }
-    public function getState() as EvccState { return _stateStore.getState() as EvccState; }
-
-    public function getRefreshInterval() as Number { return _refreshInterval; }
-    (:exclForSitesOne :exclForViewPreRenderingDisabled) public function getSiteIndex() as Number { return _siteIndex; }
 
     // If there was a web request error, throw an exception
     public function checkForError() as Void {
         if( _error ) {
             throw new StateRequestException( _errorMessage, _errorCode );
         }
+    }
+
+    // Accessor for the site index
+    (:exclForSitesOne :exclForViewPreRenderingDisabled) 
+    public function getSiteIndex() as Number { return _siteIndex; }
+
+    // Accessor for the state
+    public function getState() as EvccState { return _stateStore.getState() as EvccState; }
+
+    // Accessor for refresh interval
+    public function getRefreshInterval() as Number { return _refreshInterval; }
+
+    // Current state is true if either data from storage that is within the
+    // expiry time has been loaded, or a web response has been received
+    // also an error is counted as current state
+    public function hasCurrentState() as Boolean { return _hasCurrentState; }
+
+    // hasState is true if a state is available, even if it is expired
+    // this can be used for decision 
+    public function hasState() as Boolean { return _stateStore.getState() != null; }
+
+    // Indicates to the parent class that a previousy valid state is available and
+    // therefore errors do not yet need to be reported
+    public function hasPreviousValidState() as Boolean { 
+        return _stateStore.getState() == null || Time.now().compare( (_stateStore.getState() as EvccState).getTimestamp() ) > _dataExpiry; 
     }
 
     // Loads the initial state from storage
@@ -70,15 +105,13 @@ class EvccStateRequest extends EvccStateRequestBackground {
         }
     }
 
-    // If it is not a low memory device, we add statistics and forecast
-    (:exclForMemoryLow) 
-    private const JQ_STATISTICS = 
-        ",statistics:.statistics|map_values({solarPercentage})";
-   (:exclForMemoryLow) 
-    private const JQ_FORECAST = 
-        ",forecast:{solar:.forecast.solar|{scale,today:{energy:.today.energy},tomorrow:{energy:.tomorrow.energy},dayAfterTomorrow:{energy:.dayAfterTomorrow.energy}}}";
-    (:exclForMemoryLow)
-    protected var JQ as String = JQ_BASE_OPENING + JQ_FORECAST + JQ_STATISTICS + JQ_BASE_CLOSING;
+    // Receive the data from the web request
+    public function onJsonReceive() as Void {
+        var json = EvccStateRequestBackground.consumeJson();
+        if( json != null ) {
+            _stateStore.setState( json );
+        }
+    }
 
     (:exclForWebResponseCallbacksDisabled) 
     public function invokeCallbacks() as Void {

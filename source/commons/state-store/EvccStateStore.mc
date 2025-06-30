@@ -4,28 +4,25 @@ import Toybox.Application;
 import Toybox.Time;
 
 // This class provides access to the site states in persistant storage
-(:glance :background) class EvccStateStore {
+(:glance) class EvccStateStore extends EvccStateStoreBackground {
+    
     private var _siteIndex as Number;
+    
     private var _state as EvccState?;
 
-    private const NAME_DATA = "data";
-    private const NAME_DATATIMESTAMP = "dataTimestamp";
-
-    function initialize( siteIndex as Number ) {
+    // Constructor
+    public function initialize( siteIndex as Number ) {
         // EvccHelperBase.debug("EvccStateStore: initialize");
+        EvccStateStoreBackground.initialize();
         _siteIndex = siteIndex;
     }
 
-    static function clearUnusedSites( totalSites as Number ) as Void {
+    // Delete site indexes from storage that are not in use anymore
+    public static function clearUnusedSites( totalSites as Number ) as Void {
         for( var i = totalSites; i < EvccConstants.MAX_SITES; i++ ) {
             // EvccHelperBase.debug( "EvccStateStore: clearing site " + i );
             Storage.deleteValue( EvccConstants.STORAGE_SITE_PREFIX + i );
         }
-    }
-
-    function setState( result as JsonContainer ) as Void {
-        // EvccHelperBase.debug( "EvccStateStore: storing site " + _siteIndex );
-        _state = new EvccState( result, Time.now() );
     }
 
     // The standard getState returns buffered states if available ...
@@ -66,16 +63,24 @@ import Toybox.Time;
     // both at once would cause out of memory errors. So instead we have persist()
     // be called when the application is stopped, at that point, there is no
     // JSON data in dictionary form in memory anymore.
-    function persist() as Void {
+    public function persist() as Void {
         var state = _state;
         if( state != null ) {
             // EvccHelperBase.debug( "EvccStateStore: persisting site " + _siteIndex );
-            var siteData = {} as JsonContainer;
-            siteData[NAME_DATA] = state.serialize();
-            siteData[NAME_DATATIMESTAMP] = state.getTimestamp().value();
+            var stateData = state.serialize();
+            var stateTimestamp = state.getTimestamp();
             state = null;
             _state = null;
-            Storage.setValue( EvccConstants.STORAGE_SITE_PREFIX + _siteIndex, siteData as Dictionary<Application.PropertyKeyType, Application.PropertyValueType> );
+            EvccStateStoreBackground.persistJson(
+                stateData,
+                stateTimestamp,
+                _siteIndex
+            );
         }
+    }
+
+    public function setState( result as JsonContainer ) as Void {
+        // EvccHelperBase.debug( "EvccStateStore: storing site " + _siteIndex );
+        _state = new EvccState( result, Time.now() );
     }
 }

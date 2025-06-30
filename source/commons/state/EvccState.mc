@@ -7,7 +7,7 @@ import Toybox.Time;
 // the same structure for persiting the state in storage
 
 // This is the root class, holding data on site-level
-(:glance :background) class EvccState {
+(:glance) class EvccState {
     
     private var _timestamp as Moment;
     public function getTimestamp() as Moment { return _timestamp; }
