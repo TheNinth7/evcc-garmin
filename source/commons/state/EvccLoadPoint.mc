@@ -31,15 +31,39 @@ import Toybox.Lang;
         _mode = dataLp[MODE] as String;
         _chargeRemainingDuration = dataLp[CHARGEREMAININGDURATION] as Number?;
 
-        if( dataLp[CHARGERFEATUREHEATING] as Boolean ) {
-            _controllable = new EvccHeater( dataLp );
-        } else if( dataLp[CHARGERFEATUREINTEGRATEDDEVICE] as Boolean ) {
-            _controllable = new EvccIntegratedDevice( dataLp );
-        } else if( dataLp[CONNECTED] as Boolean ) {
-            _controllable = new EvccConnectedVehicle( dataLp, dataResult );
-        }
+        _controllable = getControllable( dataLp, dataResult );
     }
-    
+
+    (:exclForMemoryLow :typecheck(disableGlanceCheck))
+    private function getControllable( 
+        dataLp as JsonContainer, 
+        dataResult as JsonContainer 
+    ) as EvccControllable? {
+        if( dataLp[CHARGERFEATUREHEATING] as Boolean ) {
+            return new EvccHeater( dataLp );
+        } else if( dataLp[CHARGERFEATUREINTEGRATEDDEVICE] as Boolean ) {
+            return new EvccIntegratedDevice( dataLp );
+        } else if( dataLp[CONNECTED] as Boolean ) {
+            return new EvccConnectedVehicle( dataLp, dataResult );
+        }
+        return null;
+    }
+
+    (:exclForMemoryStandard)
+    private function getControllable( 
+        dataLp as JsonContainer, 
+        dataResult as JsonContainer 
+    ) as EvccControllable? {
+        if(    ! ( dataLp[CHARGERFEATUREHEATING] as Boolean )
+            && ! ( dataLp[CHARGERFEATUREINTEGRATEDDEVICE] as Boolean ) 
+            &&   ( dataLp[CONNECTED] as Boolean ) ) {
+            
+            return new EvccConnectedVehicle( dataLp, dataResult );
+        }
+        return null;
+    }
+
+    (:typecheck(disableGlanceCheck))
     function serialize() as JsonContainer {
         var loadpoint = { 
             CHARGING => _isCharging,
@@ -72,9 +96,11 @@ import Toybox.Lang;
     public function isVehicle() as Boolean { return _controllable instanceof EvccConnectedVehicle; }
     public function getVehicle() as EvccConnectedVehicle? { return isVehicle() ? _controllable as EvccConnectedVehicle : null; }
 
+    (:typecheck(disableGlanceCheck))
     public function isHeater() as Boolean { return _controllable instanceof EvccHeater; }
     public function getHeater() as EvccHeater? { return isHeater() ? _controllable as EvccHeater : null; }
 
+    (:typecheck(disableGlanceCheck))
     public function isIntegratedDevice() as Boolean { return _controllable instanceof EvccIntegratedDevice; }
     public function getIntegratedDevice() as EvccIntegratedDevice? { return isIntegratedDevice() ? _controllable as EvccIntegratedDevice : null; }
 
