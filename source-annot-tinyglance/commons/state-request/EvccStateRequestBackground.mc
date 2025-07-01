@@ -138,7 +138,7 @@ typedef EvccStateRequestCallback as interface {
         // To mask temporary errors because of instable connections, we report
         // errors only if the data we have now has expired, otherwise we continue
         // to display the existing data
-        } else if( hasPreviousValidState() ) {
+        } else if( ! hasPreviousValidState() ) {
             _error = true;
             if ( responseCode == -104 ) {
                 _errorMessage = "No phone"; _errorCode = "";
