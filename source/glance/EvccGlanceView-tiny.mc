@@ -46,7 +46,7 @@ import Toybox.Application.Storage;
     // Update the view
     function onUpdate( dc as Dc ) as Void {
         try {
-            // EvccHelperBase.debug("TinyGlance: onUpdate");
+            EvccHelperBase.debug("TinyGlance: onUpdate");
 
             // Getting the state is memory-intense, so we do it before we
             // allocate space for other variables

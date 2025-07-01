@@ -39,9 +39,9 @@ import Toybox.Lang;
         dataLp as JsonContainer, 
         dataResult as JsonContainer 
     ) as EvccControllable? {
-        if( dataLp[CHARGERFEATUREHEATING] as Boolean ) {
+        if( dataLp[CHARGERFEATUREHEATING] as Boolean && ! ( EvccApp.isGlance && EvccApp.deviceUsesTinyGlance ) ) {
             return new EvccHeater( dataLp );
-        } else if( dataLp[CHARGERFEATUREINTEGRATEDDEVICE] as Boolean ) {
+        } else if( dataLp[CHARGERFEATUREINTEGRATEDDEVICE] as Boolean && ! ( EvccApp.isGlance && EvccApp.deviceUsesTinyGlance ) ) {
             return new EvccIntegratedDevice( dataLp );
         } else if( dataLp[CONNECTED] as Boolean ) {
             return new EvccConnectedVehicle( dataLp, dataResult );
