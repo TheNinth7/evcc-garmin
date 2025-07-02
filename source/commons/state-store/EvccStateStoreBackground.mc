@@ -19,6 +19,17 @@ import Toybox.Time;
     // JSON data in dictionary form in memory anymore.
     public static function persistJson( json as JsonContainer, timestamp as Moment, siteIndex as Number ) as Void {
         // EvccHelperBase.debug( "EvccStateStore: persisting site " + _siteIndex );
+
+        // For devices with tiny glance we do not store this optional data
+        // to conserve memory (reading and writing to storage is memory-intense)
+        // In the background this is redundant because the elements are actually
+        // not requested, but in the widget they are and therefore are removed
+        // by this piece of code before persisting.
+        if( EvccApp.deviceUsesTinyGlance ) {
+            json["forecast"] = null;
+            json["statistics"] = null;
+        }
+
         var siteData = {} as JsonContainer;
         siteData[NAME_DATA] = json;
         siteData[NAME_DATATIMESTAMP] = timestamp.value();

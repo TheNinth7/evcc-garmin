@@ -109,19 +109,18 @@ import Toybox.Time;
     // in the background service of devices using the tiny glance
     (:exclForMemoryLow :typecheck([disableBackgroundCheck,disableGlanceCheck]))
     function initializeOptionalElements( result as JsonContainer ) as Void {
-        // If we are in background, or in the glance of a tiny glance device,
+        // If we are in the glance of a tiny glance device,
         // we do not initialize these elements to save memory
-        if( ! ( EvccApp.isBackground || ( EvccApp.isGlance && EvccApp.deviceUsesTinyGlance ) ) ) {
-            var forecast = result[FORECAST] as JsonContainer?;
-            if( forecast != null ) {
-                _forecast = new EvccSolarForecast( forecast );
-            }
-            var statistics = result[STATISTICS] as JsonContainer?;
-            if( statistics != null ) {
-                _statistics = new EvccStatistics( statistics );
-            }
+        var forecast = result[FORECAST] as JsonContainer?;
+        if( forecast != null ) {
+            _forecast = new EvccSolarForecast( forecast );
+        }
+        var statistics = result[STATISTICS] as JsonContainer?;
+        if( statistics != null ) {
+            _statistics = new EvccStatistics( statistics );
         }
     }
+
     // Dummy for low memory devices
     (:exclForMemoryStandard)
     function initializeOptionalElements( result as JsonContainer ) as Void {}
@@ -145,17 +144,13 @@ import Toybox.Time;
 
         var serializedLoadPoints = new Array<Dictionary>[0];
 
-        // In the glance and background service, memory can be tight when
+        // In the glance memory can be tight when
         // serializing and storing the state. Therefore we immediately discard
         // each loadpoint, after it was serialized
         for ( ; _loadPoints.size() > 0; ) {
             serializedLoadPoints.add( _loadPoints[0].serialize() as Dictionary );
             _loadPoints.remove( _loadPoints[0] );
         }
-        /* Old code, without discarding
-        for (var i = 0; i < _loadPoints.size(); i++) {
-            serializedLoadPoints.add( _loadPoints[i].serialize() as Dictionary );
-        } */
 
         result.put( LOADPOINTS, serializedLoadPoints );
 
@@ -169,17 +164,12 @@ import Toybox.Time;
     // in the background service of devices using the tiny glance
     (:exclForMemoryLow :typecheck([disableBackgroundCheck,disableGlanceCheck]))
     private function serializeOptionalElements( result as JsonContainer ) as Void {
-        // If we are in the background we do not store these elements.
-        // The glance on tiny glance does not store data, so we do not need
-        // to make that exception
-        if( ! EvccApp.isBackground ) {
-            var forecast = _forecast;
-            if( forecast != null && hasForecast() ) {
-                result.put( FORECAST, forecast.serialize() );
-            }
-            if( _statistics != null ) {
-                result.put( STATISTICS, _statistics.serialize() );
-            }
+        var forecast = _forecast;
+        if( forecast != null && hasForecast() ) {
+            result.put( FORECAST, forecast.serialize() );
+        }
+        if( _statistics != null ) {
+            result.put( STATISTICS, _statistics.serialize() );
         }
     }
     // Dummy for low memory devices

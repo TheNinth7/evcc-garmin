@@ -5,7 +5,7 @@ import Toybox.Application.Properties;
 // In its current implementation, each site has setting fields
 // with an index (e.g. site_0_url ). Unfortunately array settings
 // do not work (Garmin bugs), so we had to revert to this solution
-(:glance :background) class EvccSiteConfiguration {
+(:glance :background :exclForSitesOne) class EvccSiteConfiguration {
     private static var _siteCount as Number = 0;
     static function getSiteCount() as Number { 
         if( _siteCount == 0 ) {
@@ -17,5 +17,11 @@ import Toybox.Application.Properties;
             }
         }
         return _siteCount;
+    }
+}
+
+(:glance :background :exclForSitesMultiple) class EvccSiteConfiguration {
+    static function getSiteCount() as Number { 
+        return 1;
     }
 }
