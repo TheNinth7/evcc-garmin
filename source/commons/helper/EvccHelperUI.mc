@@ -8,7 +8,8 @@ import Toybox.WatchUi;
 import Toybox.Application;
 
 // UI helper is available in glance and foreground scope
-(:glance) class EvccHelperUI {
+(:glance) 
+class EvccHelperUI {
     
     static function getVersion() as String {
         return Application.loadResource( Rez.Strings.AppVersion ) as String;
@@ -21,6 +22,12 @@ import Toybox.Application;
         } else {
             return "";
         }
+    }
+
+    // Read a Boolean value from a JsonContainer, defaulting to false if it is not present
+    public static function readBoolean( json as JsonContainer, field as String ) as Boolean {
+        var value = json[field];
+        return value != null && ( value as Boolean );
     }
 
     // Function to draw an error on a glance Dc
@@ -53,6 +60,7 @@ import Toybox.Application;
         }
     }
 
+    (:exclForMemoryLow)
     public static function maxn( n as Array<Numeric> ) as Numeric { 
         var max = 0;
         for( var i = 0; i < n.size(); i++ ) {
@@ -60,6 +68,7 @@ import Toybox.Application;
         }
         return max;
     }
+
     public static function max( a as Numeric, b as Numeric ) as Numeric { return a > b ? a : b; }
     public static function min( a as Numeric, b as Numeric ) as Numeric { return a < b ? a : b; }
 }

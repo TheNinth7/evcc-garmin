@@ -6,7 +6,8 @@ import Toybox.Lang;
 // the same structure for persiting the state in storage
 
 // Class representing a heater
-(:glance) class EvccHeater extends EvccControllable {
+(:glance :exclForMemoryLow) 
+class EvccHeater extends EvccControllable {
     private var _temp as Number = 0;
     
     private const VEHICLESOC = "vehicleSoc";

@@ -312,6 +312,7 @@ import Toybox.Math;
 
 
     // Function to generate the line for heater loadpoints
+    (:exclForMemoryLow)
     private function getHeaterElement( loadpoint as EvccLoadPoint ) as EvccHorizontalBlock {
         var heater = loadpoint.getHeater() as EvccHeater;
         var line = new EvccHorizontalBlock( { :truncateSpacing => getContentArea().truncateSpacing } );
@@ -330,8 +331,16 @@ import Toybox.Math;
         return line;
     }
 
+    // Heater elements are not supported on low memory devices,
+    // but we need a dummy function to satisfy the compiler
+    (:exclForMemoryStandard)
+    private function getHeaterElement( loadpoint as EvccLoadPoint ) as EvccHorizontalBlock {
+        return new EvccHorizontalBlock( {} );
+    }
+
 
     // Function to generate the line for integrated device loadpoints
+    (:exclForMemoryLow)
     private function getIntegratedDeviceElement( loadpoint as EvccLoadPoint ) as EvccHorizontalBlock {
         var integratedDevice = loadpoint.getIntegratedDevice() as EvccIntegratedDevice;
         var line = new EvccHorizontalBlock( { :truncateSpacing => getContentArea().truncateSpacing } );
@@ -346,6 +355,13 @@ import Toybox.Math;
         addMode( line, loadpoint );
         
         return line;
+    }
+
+    // Integrated device elements are not supported on low memory devices,
+    // but we need a dummy function to satisfy the compiler
+    (:exclForMemoryStandard)
+    private function getIntegratedDeviceElement( loadpoint as EvccLoadPoint ) as EvccHorizontalBlock {
+        return new EvccHorizontalBlock( {} );
     }
 
     // Return the text to be displayed for the mode

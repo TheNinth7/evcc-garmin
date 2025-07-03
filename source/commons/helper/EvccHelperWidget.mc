@@ -19,6 +19,7 @@ class EvccHelperWidget {
     }
 
     // Format temperature of heaters
+    (:exclForMemoryLow)
     public static function formatTemp( temp as Number ) as String { 
         if( temp != null ) {
             return temp.format("%.0f") + "°";

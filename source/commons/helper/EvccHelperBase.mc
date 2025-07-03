@@ -64,7 +64,7 @@ import Toybox.Application;
     (:release) public static function debug( text as String ) as Void {}
     (:release) public static function debugException( ex as Exception ) as Void {}
 
-    (:debug) public static function debugMemory() as Void {
+    (:debug :exclForMemoryLow) public static function debugMemory() as Void {
         var stats = Toybox.System.getSystemStats();
         System.println( "Used Memory: " + stats.usedMemory + "/" + stats.totalMemory );
     }

@@ -16,7 +16,8 @@ typedef EvccStateRequestCallback as interface {
 // - It makes the result (a state or an error) available.
 // - Once a web response arrives, it calls only the first registered callback,
 //   which is the background service
-(:background) class EvccStateRequestBackground {
+(:background) 
+class EvccStateRequestBackground {
     
     // On older devices, there is not enough memory to process the complete
     // JSON response from evcc. We therefore use a jq filter to narrow the
@@ -138,7 +139,7 @@ typedef EvccStateRequestCallback as interface {
         // To mask temporary errors because of instable connections, we report
         // errors only if the data we have now has expired, otherwise we continue
         // to display the existing data
-        } else if( ! hasPreviousValidState() ) {
+        } else if( hasPreviousValidState() ) {
             _error = true;
             if ( responseCode == -104 ) {
                 _errorMessage = "No phone"; _errorCode = "";

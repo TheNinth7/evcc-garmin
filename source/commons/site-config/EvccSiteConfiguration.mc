@@ -22,6 +22,10 @@ import Toybox.Application.Properties;
 
 (:glance :background :exclForSitesMultiple) class EvccSiteConfiguration {
     static function getSiteCount() as Number { 
-        return 1;
-    }
+        return  ( Properties.getValue( 
+                    EvccConstants.PROPERTY_SITE_PREFIX + "0" + EvccConstants.PROPERTY_SITE_URL_SUFFIX 
+                ) as String ).equals( "" )
+                ? 0
+                : 1;
+   }
 }

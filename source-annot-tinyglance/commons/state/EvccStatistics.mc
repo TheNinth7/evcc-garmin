@@ -6,7 +6,8 @@ import Toybox.Lang;
 // the same structure for persiting the state in storage
 
 // Class to represent the solar forecast
-(:exclForMemoryLow) class EvccStatistics {
+(:exclForMemoryLow) 
+class EvccStatistics {
     private var _statistics as Array<EvccStatisticsPeriod> = new Array<EvccStatisticsPeriod>[0];
     public function getStatisticsPeriods() as Array<EvccStatisticsPeriod> { return _statistics; }
 

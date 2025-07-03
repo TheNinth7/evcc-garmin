@@ -6,7 +6,8 @@ import Toybox.Lang;
 // the same structure for persiting the state in storage
 
 // Class representing an integrated device
-(:glance) class EvccIntegratedDevice extends EvccControllable {
+(:glance :exclForMemoryLow) 
+class EvccIntegratedDevice extends EvccControllable {
     function initialize( dataLp as JsonContainer ) {
         EvccControllable.initialize( dataLp );
     }

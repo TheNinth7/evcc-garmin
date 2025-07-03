@@ -39,11 +39,11 @@ import Toybox.Lang;
         dataLp as JsonContainer, 
         dataResult as JsonContainer 
     ) as EvccControllable? {
-        if( dataLp[CHARGERFEATUREHEATING] as Boolean && ! ( EvccApp.isGlance && EvccApp.deviceUsesTinyGlance ) ) {
+        if( EvccHelperUI.readBoolean( dataLp, CHARGERFEATUREHEATING ) && ! ( EvccApp.isGlance && EvccApp.deviceUsesTinyGlance ) ) {
             return new EvccHeater( dataLp );
-        } else if( dataLp[CHARGERFEATUREINTEGRATEDDEVICE] as Boolean && ! ( EvccApp.isGlance && EvccApp.deviceUsesTinyGlance ) ) {
+        } else if( EvccHelperUI.readBoolean( dataLp, CHARGERFEATUREINTEGRATEDDEVICE ) && ! ( EvccApp.isGlance && EvccApp.deviceUsesTinyGlance ) ) {
             return new EvccIntegratedDevice( dataLp );
-        } else if( dataLp[CONNECTED] as Boolean ) {
+        } else if( EvccHelperUI.readBoolean( dataLp, CONNECTED ) ) {
             return new EvccConnectedVehicle( dataLp, dataResult );
         }
         return null;
@@ -54,9 +54,9 @@ import Toybox.Lang;
         dataLp as JsonContainer, 
         dataResult as JsonContainer 
     ) as EvccControllable? {
-        if(    ! ( dataLp[CHARGERFEATUREHEATING] as Boolean )
-            && ! ( dataLp[CHARGERFEATUREINTEGRATEDDEVICE] as Boolean ) 
-            &&   ( dataLp[CONNECTED] as Boolean ) ) {
+        if(    ! EvccHelperUI.readBoolean( dataLp, CHARGERFEATUREHEATING )
+            && ! EvccHelperUI.readBoolean( dataLp, CHARGERFEATUREINTEGRATEDDEVICE ) 
+            &&   EvccHelperUI.readBoolean( dataLp, CONNECTED ) ) {
             
             return new EvccConnectedVehicle( dataLp, dataResult );
         }
@@ -73,6 +73,13 @@ import Toybox.Lang;
             CHARGEREMAININGDURATION => _chargeRemainingDuration
         } as JsonContainer;
 
+        serializeControllable( loadpoint );
+
+        return loadpoint;
+    }
+
+    (:exclForMemoryLow)
+    function serializeControllable( loadpoint as JsonContainer ) as JsonContainer {
         if( _controllable != null ) {
             _controllable.serialize( loadpoint );
             if( _controllable instanceof EvccConnectedVehicle ) {
@@ -88,7 +95,16 @@ import Toybox.Lang;
 
         return loadpoint;
     }
- 
+
+    (:exclForMemoryStandard)
+    function serializeControllable( loadpoint as JsonContainer ) as JsonContainer {
+        if( _controllable != null ) {
+            _controllable.serialize( loadpoint );
+            loadpoint[CONNECTED] = true;
+        }
+        return loadpoint;
+    }
+
     public function isCharging() as Boolean { return _isCharging; }
     public function getActivePhases() as Number { return _activePhases; }
     public function getChargePowerRounded() as Number { return EvccHelperBase.roundPower( _chargePower ); }
@@ -96,12 +112,17 @@ import Toybox.Lang;
     public function isVehicle() as Boolean { return _controllable instanceof EvccConnectedVehicle; }
     public function getVehicle() as EvccConnectedVehicle? { return isVehicle() ? _controllable as EvccConnectedVehicle : null; }
 
-    (:typecheck(disableGlanceCheck))
+    (:exclForMemoryLow :typecheck(disableGlanceCheck))
     public function isHeater() as Boolean { return _controllable instanceof EvccHeater; }
+    (:exclForMemoryStandard)
+    public function isHeater() as Boolean { return false; }
     public function getHeater() as EvccHeater? { return isHeater() ? _controllable as EvccHeater : null; }
 
-    (:typecheck(disableGlanceCheck))
+    (:exclForMemoryLow :typecheck(disableGlanceCheck))
     public function isIntegratedDevice() as Boolean { return _controllable instanceof EvccIntegratedDevice; }
+    (:exclForMemoryStandard)
+    public function isIntegratedDevice() as Boolean { return false; }
+
     public function getIntegratedDevice() as EvccIntegratedDevice? { return isIntegratedDevice() ? _controllable as EvccIntegratedDevice : null; }
 
     // Possible values: "pv", "now", "minpv", "off"
